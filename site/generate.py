@@ -13,6 +13,11 @@ they are (publication-ready Markdown). Everything here happens at build time, in
   * a chapter counts as published when a Markdown file whose first heading is
     "# Chapter N: ..." exists under chapters/; every other chapter is shown as
     "To be published";
+  * likewise, an appendix counts as published when a Markdown file whose first heading
+    is "# Appendix X: ..." exists under appendices/ (e.g. appendices/a-api-reference/);
+    it gets its own page at appendices/<folder>.html and is linked from the contents
+    on the front page and from the sidebar; appendices without a file stay
+    "To be published";
   * Markdown is rendered with markdown-it (CommonMark + GFM tables + footnotes);
   * figure images are copied next to the rendered page, "Listing N.N" captions become
     code figures, "Figure N.N" captions become <figcaption>s, and "> **Still in flux: ...**"
@@ -42,6 +47,7 @@ SITE_SRC = ROOT / "site"
 OUTLINE_MD = ROOT / "outline" / "outline.md"
 OUTLINE_PDF = ROOT / "outline" / "WebMCP_Book_Outline.pdf"
 CHAPTERS_DIR = ROOT / "chapters"
+APPENDICES_DIR = ROOT / "appendices"
 
 # --- Book identity ---------------------------------------------------------------
 BOOK_TITLE = "Tools, Not Clicks"
@@ -132,6 +138,57 @@ class Chapter:
 
 
 @dataclass
+class Appendix:
+    letter: str          # "A"
+    title: str           # inline Markdown, as written in the outline
+    source: Path | None = None   # Markdown file when published
+    slug: str = ""
+    heading: str = ""    # the title from the file's "# Appendix X: ..." heading
+    kicker: str = ""
+    words: int = 0
+
+    @property
+    def published(self) -> bool:
+        return self.source is not None
+
+    @property
+    def page_title(self) -> str:
+        return self.heading or self.title
+
+    @property
+    def title_text(self) -> str:
+        return html.unescape(re.sub(r"<[^>]+>", "", inline_md(self.page_title)))
+
+
+def parse_appendices(items: list[str]) -> list[Appendix]:
+    """Outline lines like "A. API quick reference (...)" -> Appendix objects."""
+    out = []
+    for item in items:
+        m = re.match(r"^([A-Z])\.\s*(.+)$", item)
+        if m:
+            out.append(Appendix(m.group(1), m.group(2).strip()))
+    return out
+
+
+def find_published_appendices(appendices: list[Appendix]) -> None:
+    by_letter = {a.letter: a for a in appendices}
+    if not APPENDICES_DIR.exists():
+        return
+    for md_file in sorted(APPENDICES_DIR.glob("*/*.md")):
+        head = md_file.read_text(encoding="utf-8")[:2000]
+        m = re.search(r"^# Appendix ([A-Z]):\s*(.+)$", head, re.M)
+        if not m:
+            continue
+        a = by_letter.get(m.group(1))
+        if a is None:                      # an appendix the outline doesn't list yet
+            a = Appendix(m.group(1), m.group(2).strip())
+            appendices.append(a)
+            by_letter[a.letter] = a
+        a.source, a.slug, a.heading = md_file, md_file.parent.name, m.group(2).strip()
+    appendices.sort(key=lambda a: a.letter)
+
+
+@dataclass
 class Part:
     number: str      # roman numeral as written in the outline
     title: str
@@ -191,12 +248,12 @@ def find_published(chapters: list[Chapter]) -> None:
 def transform_body(body: str) -> str:
     # "**Listing 5.1 — caption**" followed by a code block -> a code figure.
     body = re.sub(
-        r"<p><strong>(Listing [\d.]+[^<]*(?:<(?!/strong>)[^<]*)*)</strong></p>\s*(<pre><code[^>]*>.*?</code></pre>)",
+        r"<p><strong>(Listing [\dA-Z.]+[^<]*(?:<(?!/strong>)[^<]*)*)</strong></p>\s*(<pre><code[^>]*>.*?</code></pre>)",
         lambda m: f'<figure class="code"><figcaption>{m.group(1)}</figcaption>\n{m.group(2)}</figure>',
         body, flags=re.S)
     # Image paragraph followed by an italic "Figure N.N — ..." caption -> <figure>.
     body = re.sub(
-        r"<p>(<img [^>]+>)</p>\s*<p><em>(Figure [\d.]+.*?)</em></p>",
+        r"<p>(<img [^>]+>)</p>\s*<p><em>(Figure [\dA-Z.]+.*?)</em></p>",
         lambda m: f'<figure class="book-figure">{m.group(1)}<figcaption>{m.group(2)}</figcaption></figure>',
         body, flags=re.S)
     body = re.sub(r"<p>(<img [^>]+>)</p>", r'<figure class="book-figure">\1</figure>', body)
@@ -234,7 +291,7 @@ def render_chapter_markdown(ch: Chapter) -> tuple[str, list[tuple[str, str]]]:
     lines = text.splitlines()
     out, seen_h1 = [], False
     for line in lines:
-        if not seen_h1 and re.match(r"^\*Part [IVX]+ .*\*$", line.strip()):
+        if not seen_h1 and re.match(r"^\*(Part [IVX]+ .*|Appendices)\*$", line.strip()):
             ch.kicker = line.strip().strip("*")
             continue
         if not seen_h1 and line.startswith("# "):
@@ -366,11 +423,34 @@ def toc_row(ch: Chapter) -> str:
             </li>'''
 
 
-def render_index(parts: list[Part], appendices: list[str], published: list[Chapter]) -> str:
+def appendix_href(a: Appendix, prefix: str = "appendices/") -> str:
+    return f"{prefix}{a.slug}.html"
+
+
+def appendix_toc_row(a: Appendix) -> str:
+    num = esc(a.letter)
+    if a.published:
+        minutes = max(1, round(a.words / 200))
+        return f'''            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="{appendix_href(a)}">
+                <span class="toc-num">{num}</span>
+                <span class="toc-text"><span class="toc-title">{inline_md(a.title)}</span></span>
+                <span class="toc-status toc-status--ready">Read · {minutes} min</span>
+              </a>
+            </li>'''
+    return (f'''            <li class="toc-row toc-row--pending"><div class="toc-link" aria-disabled="true"><span class="toc-num">{num}</span>'''
+            f'''<span class="toc-text"><span class="toc-title">{inline_md(a.title)}</span></span>'''
+            f'''<span class="toc-status toc-status--pending">{STATUS_PENDING}</span></div></li>''')
+
+
+def render_index(parts: list[Part], appendices: list[Appendix], published: list[Chapter]) -> str:
     chapters = [c for p in parts for c in p.chapters]
     minutes = sum(max(1, round(c.words / 200)) for c in published)
     start = chapter_href(published[0]) if published else "#contents"
     pub_list = ", ".join(str(c.number) for c in published) or "none yet"
+    pub_apps = [a.letter for a in appendices if a.published]
+    app_meta = f"; appendices {', '.join(pub_apps)}" if pub_apps else ""
+    minutes += sum(max(1, round(a.words / 200)) for a in appendices if a.published)
     blocks = []
     for p in parts:
         rows = "\n".join(toc_row(c) for c in p.chapters)
@@ -386,15 +466,15 @@ def render_index(parts: list[Part], appendices: list[str], published: list[Chapt
 {rows}
           </ol>
         </section>''')
-    app_rows = "\n".join(
-        f'''            <li class="toc-row toc-row--pending"><div class="toc-link" aria-disabled="true"><span class="toc-num">{esc(a.split(".")[0])}</span><span class="toc-text"><span class="toc-title">{inline_md(a.split(".", 1)[1].strip() if "." in a else a)}</span></span><span class="toc-status toc-status--pending">{STATUS_PENDING}</span></div></li>'''
-        for a in appendices)
+    app_rows = "\n".join(appendix_toc_row(a) for a in appendices)
     if app_rows:
+        app_ready = sum(1 for a in appendices if a.published)
+        app_note = f"{app_ready} of {len(appendices)} published" if app_ready else STATUS_PENDING
         blocks.append(f'''        <section class="toc-part" aria-labelledby="part-appendices">
           <header class="toc-part-head">
             <span class="toc-part-kicker">Back matter</span>
             <h3 id="part-appendices" class="toc-part-title">Appendices</h3>
-            <span class="toc-part-note">{STATUS_PENDING}</span>
+            <span class="toc-part-note">{app_note}</span>
           </header>
           <ol class="toc-list">
 {app_rows}
@@ -423,7 +503,7 @@ def render_index(parts: list[Part], appendices: list[str], published: list[Chapt
         </div>
         <dl class="cover-meta">
           <div class="cover-meta-item"><dt>Length</dt><dd>{len(chapters)} chapters across {len(parts)} parts</dd></div>
-          <div class="cover-meta-item"><dt>Published so far</dt><dd>{len(published)} of {len(chapters)} (ch. {pub_list})</dd></div>
+          <div class="cover-meta-item"><dt>Published so far</dt><dd>{len(published)} of {len(chapters)} (ch. {pub_list}){app_meta}</dd></div>
           <div class="cover-meta-item"><dt>Reading time</dt><dd>about {minutes} minutes</dd></div>
         </dl>
       </div>
@@ -449,7 +529,10 @@ def render_index(parts: list[Part], appendices: list[str], published: list[Chapt
 """
 
 
-def sidebar_nav(parts: list[Part], current: Chapter) -> str:
+def sidebar_nav(parts: list[Part], current, appendices: list[Appendix] = (), here: str = "chapters") -> str:
+    """Sidebar for a page in chapters/ (here="chapters") or appendices/ (here="appendices")."""
+    ch_prefix = "" if here == "chapters" else "../chapters/"
+    ap_prefix = "" if here == "appendices" else "../appendices/"
     out = []
     for p in parts:
         items = []
@@ -458,7 +541,7 @@ def sidebar_nav(parts: list[Part], current: Chapter) -> str:
             if c.published:
                 cur = c is current
                 attrs = ' class="is-current" aria-current="page"' if cur else ""
-                items.append(f'<li><a{attrs} href="{c.slug}.html">{num}<span>{inline_md(c.title)}</span></a></li>')
+                items.append(f'<li><a{attrs} href="{ch_prefix}{c.slug}.html">{num}<span>{inline_md(c.title)}</span></a></li>')
             else:
                 items.append(f'<li><span class="nav-pending" title="{STATUS_PENDING}">{num}<span>{inline_md(c.title)}<em class="nav-pending-tag">{STATUS_PENDING}</em></span></span></li>')
         out.append(f'''        <div class="nav-part">
@@ -467,19 +550,42 @@ def sidebar_nav(parts: list[Part], current: Chapter) -> str:
             {"".join(items)}
           </ol>
         </div>''')
+    if appendices:
+        items = []
+        for a in appendices:
+            num = f'<span class="chapter-number">{esc(a.letter)}</span>'
+            if a.published:
+                attrs = ' class="is-current" aria-current="page"' if a is current else ""
+                items.append(f'<li><a{attrs} href="{ap_prefix}{a.slug}.html">{num}<span>{inline_md(a.title)}</span></a></li>')
+            else:
+                items.append(f'<li><span class="nav-pending" title="{STATUS_PENDING}">{num}<span>{inline_md(a.title)}<em class="nav-pending-tag">{STATUS_PENDING}</em></span></span></li>')
+        out.append(f'''        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            {"".join(items)}
+          </ol>
+        </div>''')
     return "\n".join(out)
 
 
-def render_chapter(ch: Chapter, body: str, sections, parts, published, prev_ch, next_ch) -> str:
-    def pager_link(c: Chapter | None, rel: str) -> str:
-        if not c:
-            return "<span></span>"
+def pager_link(c, rel: str, here: str = "chapters") -> str:
+    """prev/next link to a Chapter or an Appendix, from a page in chapters/ or appendices/."""
+    if not c:
+        return "<span></span>"
+    if isinstance(c, Appendix):
+        label = f"Appendix {c.letter}: {c.title_text}"
+        href = f"{'' if here == 'appendices' else '../appendices/'}{c.slug}.html"
+    else:
         label = f"Chapter {c.number}: {c.title_text}"
-        txt = f"← {esc(label)}" if rel == "prev" else f"{esc(label)} →"
-        return f'<a class="pager-link" rel="{rel}" href="{c.slug}.html">{txt}</a>'
+        href = f"{'' if here == 'chapters' else '../chapters/'}{c.slug}.html"
+    txt = f"← {esc(label)}" if rel == "prev" else f"{esc(label)} →"
+    return f'<a class="pager-link" rel="{rel}" href="{href}">{txt}</a>'
 
+
+def render_chapter(ch: Chapter, body: str, sections, parts, published, prev_ch, next_ch,
+                   appendices: list[Appendix] = ()) -> str:
     nxt_pending = None
-    if next_ch is None or next_ch.number != ch.number + 1:
+    if next_ch is None or isinstance(next_ch, Appendix) or next_ch.number != ch.number + 1:
         allc = [c for p in parts for c in p.chapters]
         nxt_pending = next((c for c in allc if c.number == ch.number + 1), None)
     pending_note = ""
@@ -506,7 +612,7 @@ def render_chapter(ch: Chapter, body: str, sections, parts, published, prev_ch, 
           {theme_toggle()}
         </div>
         <nav class="chapter-nav" aria-label="Chapter navigation">
-{sidebar_nav(parts, ch)}
+{sidebar_nav(parts, ch, appendices, "chapters")}
         </nav>
         <div class="sidebar-cta">
           {ext(NEWSLETTER_URL, "Get notified about the next chapters ↗")}
@@ -554,6 +660,73 @@ def render_chapter(ch: Chapter, body: str, sections, parts, published, prev_ch, 
 """
 
 
+def render_appendix(a: Appendix, body: str, sections, parts, appendices, published, prev_doc, next_doc) -> str:
+    toc = "".join(f'<li><a href="#{sid}">{esc(html.unescape(t))}</a></li>' for sid, t in sections)
+    minutes = max(1, round(a.words / 200))
+    description = f"Appendix {a.letter} of {FULL_TITLE} (working title) by {AUTHOR_NAME}."
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  {head(f"Appendix {a.letter}: {a.title_text} — {BOOK_TITLE}", description, "../")}
+</head>
+<body class="chapter-page appendix-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">{esc(FULL_TITLE)}</a>
+          {theme_toggle()}
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+{sidebar_nav(parts, a, appendices, "appendices")}
+        </nav>
+        <div class="sidebar-cta">
+          {ext(NEWSLETTER_URL, "Get notified about the next chapters ↗")}
+          {ext(CONTACT_URL, "Publishers: contact Maxim Salnikov ↗")}
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / <a href="../index.html#part-appendices">Appendices</a> / Appendix {esc(a.letter)} <span class="fm-sep">·</span> {ext(NEWSLETTER_URL, "Get notified about new chapters")} <span class="fm-sep">·</span> {ext(CONTACT_URL, "Publishers: contact the author")}</nav>
+        <p class="fm"><span class="fm-k">appendix:</span> <span class="fm-v">{esc(a.letter)}</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">Back matter</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">{minutes} min</span></p>
+        <h1>Appendix {esc(a.letter)}: {wbr(inline_md(a.page_title))}</h1>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol>{toc}</ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+{body}
+        </article>
+
+        {cta_band(compact=True)}
+
+        <nav class="pager" aria-label="Chapter pagination">
+          {pager_link(prev_doc, "prev", "appendices")}
+          {pager_link(next_doc, "next", "appendices")}
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>{esc(AUTHOR_NAME)}</strong> · {ext(CONTACT_URL, "Publishers: contact Maxim Salnikov")} · {ext(NEWSLETTER_URL, "Newsletter")} · <a href="../outline.html">Full outline</a> · {ext(REPO_URL, "Book repository on GitHub ↗")} · {ext(DEMOS_URL, "Demos ↗")}</p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>
+"""
+
+
 def render_simple_page(title: str, body: str, published: list[Chapter], cls: str = "doc-page") -> str:
     return f"""<!doctype html>
 <html lang="en">
@@ -575,7 +748,7 @@ def render_simple_page(title: str, body: str, published: list[Chapter], cls: str
 """
 
 
-def render_outline_page(published: list[Chapter]) -> str:
+def render_outline_page(published: list[Chapter], appendices: list[Appendix] = ()) -> str:
     body = transform_body(MD.render(OUTLINE_MD.read_text(encoding="utf-8")))
     # Mark every chapter heading with its status; published ones link to their page.
     by_num = {c.number: c for c in published}
@@ -587,6 +760,23 @@ def render_outline_page(published: list[Chapter]) -> str:
         return f"{m.group(1)}{badge}</h4>"
 
     body = re.sub(r"(<h4[^>]*>.*?Chapter (\d+):.*?)</h4>", mark, body, flags=re.S)
+    # The appendix list ("- A. ...") under "Appendices": the same badges.
+    by_letter = {a.letter: a for a in appendices}
+
+    def mark_app(m: re.Match) -> str:
+        a = by_letter.get(m.group(2))
+        if a is None:
+            return m.group(0)
+        badge = (f' <a class="toc-status toc-status--ready" href="appendices/{a.slug}.html">Read</a>' if a.published
+                 else f' <span class="toc-status toc-status--pending">{STATUS_PENDING}</span>')
+        return f"{m.group(1)}{badge}</li>"
+
+    m_app = re.search(r">Appendices(?:</a>)?</h3>", body)
+    i = m_app.start() if m_app else -1
+    if i != -1:
+        j = body.find("</ul>", i)
+        if j != -1:
+            body = body[:i] + re.sub(r"(<li>([A-Z])\. .*?)</li>", mark_app, body[i:j], flags=re.S) + body[j:]
     if OUTLINE_PDF.exists():
         body += '\n<p class="pending-note">This outline is also available as a <a href="outline/WebMCP_Book_Outline.pdf">PDF</a>.</p>'
     return render_simple_page("Book outline", body, published)
@@ -619,6 +809,9 @@ def build(out: Path) -> dict:
         sys.exit("No chapters found in outline/outline.md")
     find_published(chapters)
     published = [c for c in chapters if c.published]
+    appendices = parse_appendices(appendices)
+    find_published_appendices(appendices)
+    published_apps = [a for a in appendices if a.published]
 
     if out.exists():
         shutil.rmtree(out)
@@ -641,18 +834,39 @@ def build(out: Path) -> dict:
         body = re.sub(r'src="(?:\./)?images/', f'src="{c.slug}/images/', body)
         bodies[c.number], sections_by[c.number] = body, sections
 
-    for i, c in enumerate(published):
-        prev_ch = published[i - 1] if i > 0 else None
-        next_ch = published[i + 1] if i + 1 < len(published) else None
-        (out / "chapters" / f"{c.slug}.html").write_text(
-            render_chapter(c, bodies[c.number], sections_by[c.number], parts, published, prev_ch, next_ch), encoding="utf-8")
+    # Appendices: appendices/<dir>/<file>.md -> appendices/<dir>.html (+ appendices/<dir>/images/)
+    app_bodies: dict[str, tuple[str, list]] = {}
+    if published_apps:
+        (out / "appendices").mkdir()
+    for a in published_apps:
+        body, sections = render_chapter_markdown(a)
+        img_dir = a.source.parent / "images"
+        if img_dir.exists():
+            shutil.copytree(img_dir, out / "appendices" / a.slug / "images")
+        body = re.sub(r'src="(?:\./)?images/', f'src="{a.slug}/images/', body)
+        app_bodies[a.letter] = (body, sections)
+
+    # Reading order: published chapters, then published appendices.
+    reading = list(published) + list(published_apps)
+    for i, doc in enumerate(reading):
+        prev_doc = reading[i - 1] if i > 0 else None
+        next_doc = reading[i + 1] if i + 1 < len(reading) else None
+        if isinstance(doc, Appendix):
+            body, sections = app_bodies[doc.letter]
+            (out / "appendices" / f"{doc.slug}.html").write_text(
+                render_appendix(doc, body, sections, parts, appendices, published, prev_doc, next_doc), encoding="utf-8")
+        else:
+            (out / "chapters" / f"{doc.slug}.html").write_text(
+                render_chapter(doc, bodies[doc.number], sections_by[doc.number], parts, published, prev_doc, next_doc,
+                               appendices), encoding="utf-8")
 
     (out / "index.html").write_text(render_index(parts, appendices, published), encoding="utf-8")
-    (out / "outline.html").write_text(render_outline_page(published), encoding="utf-8")
+    (out / "outline.html").write_text(render_outline_page(published, appendices), encoding="utf-8")
     (out / "book.html").write_text(render_book(parts, published, bodies), encoding="utf-8")
     (out / "404.html").write_text(render_simple_page(
         "Page not found", '<h1>Page not found</h1><p><a href="index.html">Back to the book</a></p>', published), encoding="utf-8")
     report = {"chapters": len(chapters), "parts": len(parts), "published": [c.number for c in published],
+              "appendices": [a.letter for a in published_apps],
               "words": {c.number: c.words for c in published}, "out": str(out)}
     return report
 
@@ -663,7 +877,8 @@ def main() -> None:
     args = ap.parse_args()
     report = build(Path(args.out).resolve())
     print(f"Built {report['out']}: {report['chapters']} chapters in {report['parts']} parts; "
-          f"published: {', '.join(map(str, report['published'])) or 'none'}")
+          f"published: {', '.join(map(str, report['published'])) or 'none'}; "
+          f"appendices published: {', '.join(report['appendices']) or 'none'}")
 
 
 if __name__ == "__main__":

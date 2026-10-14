@@ -1,6 +1,6 @@
 name: Deploy book to GitHub Pages
 
-# Builds the electronic edition from the manuscript (outline/ and chapters/) with
+# Builds the electronic edition from the manuscript (outline/, chapters/ and appendices/) with
 # site/generate.py and publishes it to the gh-pages branch, which GitHub Pages serves
 # (branch source) at https://vibeprogrammer.github.io/webmcp-book/.
 # Same approach as webmaxru/github-agentic-workflows-book (.github/workflows/deploy-pages.yml).
@@ -11,6 +11,7 @@ on:
     branches: [main]
     paths:
       - "chapters/**"
+      - "appendices/**"
       - "outline/**"
       - "site/**"
       - ".github/workflows/deploy-pages.yml"
