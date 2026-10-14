@@ -1,0 +1,57 @@
+name: Deploy book to GitHub Pages
+
+# Builds the electronic edition from the manuscript (outline/ and chapters/) with
+# site/generate.py and publishes it to the gh-pages branch, which GitHub Pages serves
+# (branch source) at https://vibeprogrammer.github.io/webmcp-book/.
+# Same approach as webmaxru/github-agentic-workflows-book (.github/workflows/deploy-pages.yml).
+# The Markdown sources are only read, never changed.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "chapters/**"
+      - "outline/**"
+      - "site/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-gh-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: site/requirements.txt
+
+      - name: Install the generator's dependencies
+        run: python -m pip install -r site/requirements.txt
+
+      - name: Build the site
+        run: python site/generate.py --out _site
+
+      - name: Publish the site to gh-pages
+        run: |
+          cd _site
+          touch .nojekyll
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Deploy ${GITHUB_SHA} from ${GITHUB_REF_NAME}"
+          git push -q --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
