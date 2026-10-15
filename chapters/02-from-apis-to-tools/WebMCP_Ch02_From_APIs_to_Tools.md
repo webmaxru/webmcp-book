@@ -211,6 +211,6 @@ Three lessons from this short history shape the rest of the book.
 [^24]: A2A Protocol blog, “A New Chapter for A2A: Joining the Agentic AI Foundation” (27 August 2026). <https://a2a-protocol.org/latest/blog/2026/08/27/a-new-chapter-for-a2a-joining-the-agentic-ai-foundation/>
 [^25]: WebMCP explainer (README), “Backend Integrations vs. In-browser WebMCP Tools”, webmachinelearning/webmcp. <https://github.com/webmachinelearning/webmcp>
 [^26]: Chrome for Developers, “WebMCP and MCP compared” (published 11 March 2026, updated 19 May 2026). <https://developer.chrome.com/docs/ai/webmcp/compare-mcp>
-[^27]: GitHub REST API, repository metadata for webmachinelearning/webmcp (`created_at`: 2025-08-05T13:10:14Z), read 14 October 2026. <https://api.github.com/repos/webmachinelearning/webmcp>
+[^27]: GitHub REST API, repository metadata for webmachinelearning/webmcp (`created_at`: 2025-08-05T13:10:14Z), read 15 October 2026. <https://api.github.com/repos/webmachinelearning/webmcp>
 [^28]: WebMCP explainer, “Alternatives Considered” and “Prior Art”. <https://github.com/webmachinelearning/webmcp#alternatives-considered>
 [^29]: Chrome for Developers, “WebMCP” (published 18 May 2026, updated 7 October 2026), “Limitations”. <https://developer.chrome.com/docs/ai/webmcp>
