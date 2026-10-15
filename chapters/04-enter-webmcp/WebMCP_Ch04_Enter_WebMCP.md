@@ -28,7 +28,7 @@ Three ideas are packed into that description.
 
 In API terms the surface is small. Every document gets a `modelContext` object (`document.modelContext`), and a page calls `registerTool()` on it to offer a tool.[^3] The browser’s own agent, or an agent embedded in the page, can then discover the tool and call it. The page’s callback does the work and returns a result. That’s the core of it. Annotations, cancellation, cross-origin frames and the rest are refinements on that loop, and they get their own chapters.
 
-Formally, WebMCP is a Draft Community Group Report of the W3C Web Machine Learning Community Group. The version this chapter was checked against is dated 13 October 2026, and its status section is blunt: “It is not a W3C Standard nor is it on the W3C Standards Track.”[^2] Chrome and Edge are running time-limited origin trials. That status shapes how you should read everything that follows, and we come back to it near the end of the chapter.
+Formally, WebMCP is a Draft Community Group Report of the W3C Web Machine Learning Community Group. The version this chapter was checked against is dated 15 October 2026, and its status section is blunt: “It is not a W3C Standard nor is it on the W3C Standards Track.”[^2] Chrome and Edge are running time-limited origin trials. That status shapes how you should read everything that follows, and we come back to it near the end of the chapter.
 
 ## The problem: the actuation tax
 
@@ -92,7 +92,7 @@ There are two more things it is not, and it helps to say them early. WebMCP isn�
 
 ## A first taste of code
 
-Chapter 5 covers registration properly. Still, it is easier to reason about an API once you’ve seen it, so here is the smallest useful WebMCP tool for Fjord Table, written against the 13 October 2026 draft. It offers a read-only availability search that reuses the code behind the site’s date picker.
+Chapter 5 covers registration properly. Still, it is easier to reason about an API once you’ve seen it, so here is the smallest useful WebMCP tool for Fjord Table, written against the 15 October 2026 draft. It offers a read-only availability search that reuses the code behind the site’s date picker.
 
 **Listing 4.1 — Fjord Table’s first tool (agent-tools.js, loaded as a module)**
 
@@ -169,13 +169,15 @@ Chrome’s analogy is useful. MCP is a company’s customer-service call centre:
 | Discovery | Agent-specific registration and configuration | Tools registered by the page while the user visits it |
 | Feature set | Tools, resources, prompts, plus client features such as elicitation | Tools only, in a web-native API with origins and permissions policy |
 | User’s view | Headless, outside your UI | DOM-aware, inside your UI |
-| Governance | Versioned protocol (current version 2026-07-28) | W3C Community Group draft |
+| Governance | Versioned protocol (current version 2026-07-28, the stateless revision) | W3C Community Group draft |
 
 Sources for the table: Chrome’s comparison page, the WebMCP explainer and spec, and the MCP versioning page.[1,5,12] A few rows deserve a sentence each.
 
 *No JSON-RPC.* WebMCP borrows MCP’s vocabulary, not its wire format. Chrome’s guide describes it as “a set of ‘MCP-inspired’ APIs, rather than a direct JavaScript implementation of MCP,” and notes that it omits server-side concepts such as resources.[^1] A browser could translate your tools into MCP for its agent, or into something else entirely.
 
 *Tools only.* Chapter 3 spent time on MCP resources and prompts. Today’s WebMCP has neither. Its open questions include output schemas, progress reporting, streaming and a higher-level notion of “skills”, several of them explicitly modelled on MCP features.[^5] The two vocabularies may converge over time, but they haven’t yet.
+
+*Stateless protocol, stateful tab.* The two also differ in where state lives. Since its 2026-07-28 revision, MCP is stateless: the `initialize` handshake is gone, and every request carries its own protocol version and client capabilities, so a server keeps no per-connection session.[^12] A WebMCP tool works the other way round. It runs inside a tab whose signed-in session, application state and visible UI persist from one call to the next.
 
 *Different lifecycles, complementary jobs.* Google’s recommendation is to use both: “Manage core logic with MCP” as a platform-agnostic service layer that is always available, and “Build a contextual UI with WebMCP” for the moments when the user has your site open.[^1] For Fjord Table that split is natural. A backend MCP server, like the one built for Trailhead in Chapter 3, could let an assistant check opening hours or cancel a booking from anywhere. The WebMCP tools handle the rich, visual work of choosing a table with the user watching.
 
@@ -223,9 +225,9 @@ WebMCP has the usual messy origins of a web feature: independent tinkering, para
 
 Understanding WebMCP’s governance helps you predict how it will change, which matters if you’re building on it.
 
-*The venue.* WebMCP is incubated in the W3C Web Machine Learning Community Group.[^22] Community Groups are open: anyone can join after agreeing to the W3C Community Contributor License Agreement, and they can publish reports. A Community Group report isn’t a standard. To get on the standards track, the work would need to be taken up by a Working Group, which requires broader agreement, including from other browser vendors.
+*The venue.* WebMCP is incubated in the W3C Web Machine Learning Community Group.[^22] Community Groups are open: anyone can join after agreeing to the W3C Community Contributor License Agreement, and they can publish reports. A Community Group report isn’t a standard. To get on the standards track, the work would need to be taken up by a Working Group, which requires broader agreement, including from other browser vendors. The first attempt to do that stalled in October 2026, as the status section below describes.
 
-*The editors.* The 13 October 2026 draft lists three editors: Brandon Walderman (Microsoft), Khushal Sagar (Google) and Dominic Farolino (Google).[^2] In the W3C’s architecture review, the TAG review request names Google and Microsoft as the organizations driving the design.[^23]
+*The editors.* The 15 October 2026 draft lists three editors: Brandon Walderman (Microsoft), Khushal Sagar (Google) and Dominic Farolino (Google).[^2] In the W3C’s architecture review, the TAG review request names Google and Microsoft as the organizations driving the design.[^23]
 
 *The workflow.* Day to day, decisions happen in the open on GitHub. Issues collect use cases and objections, pull requests change the spec, and the group’s calls record resolutions in minutes. The removal of the declarative API on 8 October 2026 is a typical example: one pull request, merged after discussion, with the explainer updated to match.[^24] If you want to influence WebMCP, an issue with a concrete use case from a real product is the most effective tool you have, and origin-trial feedback is explicitly invited for that purpose.[^21]
 
@@ -233,25 +235,26 @@ Understanding WebMCP’s governance helps you predict how it will change, which 
 
 ## Status and standards politics, October 2026
 
-Everything in this section was checked on 14 October 2026, and much of it will have moved by the time you read it. Chapter 15 returns to it in depth. For now, here is the picture.
+Everything in this section was checked on 15 October 2026, and much of it will have moved by the time you read it. Chapter 15 returns to it in depth. For now, here is the picture.
 
 | Party | Position or state | Source |
 |---|---|---|
-| Specification | Draft Community Group Report, 13 Oct 2026; not on the W3C standards track | Spec[^2] |
+| Specification | Draft Community Group Report, 15 Oct 2026; not on the W3C standards track | Spec[^2] |
 | Chrome | Origin trial from Chrome 149, originally through 156, extended through Chrome 162 | chromestatus[^18] |
-| Microsoft Edge | Origin trial in Edge 150; expires 30 March 2027 | Edge origin trials[^25] |
+| Microsoft Edge | Origin trial from Edge 150 (released 2 July 2026); expires 30 March 2027 | Edge origin trials and Edge 150 release notes[^25] |
 | Mozilla (Firefox) | Position recorded as “neutral” | standards-positions #1412[^9] |
 | Apple (WebKit) | Position recorded as “oppose” | standards-positions #670[^14] |
 | W3C TAG | Early review open; labelled “Missing: Multi-stakeholder support” | design-reviews #1238[^23] |
-| Agents | Brave Leo (experimental), ChatGPT Desktop, Meta Ray-Ban Display (“coming soon”) | Project status page only[^26] |
+| W3C chartering | Plan to add WebMCP to the WebML Working Group closed unmerged on 13 Oct 2026; draft Agentic Web WG charter naming WebMCP in refinement until about 10 Nov 2026 | charter-drafts #829, Agentic Web WG charter draft[26,27] |
+| Agents | Brave Leo (experimental), ChatGPT Desktop, Meta Ray-Ban Display (“coming soon”) | Project status page only[^28] |
 
 ### The Chromium side
 
-Google’s chromestatus entry records the origin trial as running from Chrome 149 to 156, with an extension through Chrome 162 added in late September 2026. Its stated reason: “OT feedback has suggested improvements to the API, which we are implementing.”[^18] Microsoft runs its own origin trial in Edge 150, which expires on 30 March 2027.[^25] For developers, local testing is a flag (`chrome://flags/#enable-webmcp-testing`), and Chrome publishes inspector and example-agent extensions for trying tools out.[^4]
+Google’s chromestatus entry records the origin trial as running from Chrome 149 to 156, with an extension through Chrome 162 added in late September 2026. Its stated reason: “OT feedback has suggested improvements to the API, which we are implementing.”[^18] Microsoft runs its own origin trial, first listed in the release notes for Edge 150 (released 2 July 2026), and its trial page gives an expiry date of 30 March 2027.[^25] For developers, local testing is a flag (`chrome://flags/#enable-webmcp-testing`), and Chrome publishes inspector and example-agent extensions for trying tools out.[^4]
 
 ### Mozilla: neutral, with conditions
 
-Mozilla’s position is neutral. Its reviewer, Benjamin VanderSloot, framed WebMCP as a way for websites to declare dedicated “lanes” for automated interaction. With honest participants, he wrote, that helps both agents and developers. But “in an adversarial setting there is a risk that sites will provide tools that do not match the experience of a user on the page,” whether to trap agents, to hide prompt injection from users or to harvest data from tool inputs.[^9] Later in the thread, Mozilla engineers said their position was not driven by the declarative variant, and pointed to issue #236, which proposes repositioning WebMCP more generally as a way to call functions between environments (windows, workers and origins), with agents as one consumer among several.[9,27]
+Mozilla’s position is neutral. Its reviewer, Benjamin VanderSloot, framed WebMCP as a way for websites to declare dedicated “lanes” for automated interaction. With honest participants, he wrote, that helps both agents and developers. But “in an adversarial setting there is a risk that sites will provide tools that do not match the experience of a user on the page,” whether to trap agents, to hide prompt injection from users or to harvest data from tool inputs.[^9] Later in the thread, Mozilla engineers said their position was not driven by the declarative variant, and pointed to issue #236, which proposes repositioning WebMCP more generally as a way to call functions between environments (windows, workers and origins), with agents as one consumer among several.[9,29]
 
 ### WebKit: opposed, from first principles
 
@@ -261,13 +264,20 @@ WebKit’s opposition is the most substantial critique on record and deserves to
 
 The W3C’s Technical Architecture Group opened an early review of the Community Group work in June 2026. As of mid-October it is still in progress, with pending focus areas covering API design, web architecture, security, privacy, accessibility and internationalization, and a label that sums up the political situation: “Missing: Multi-stakeholder support.”[^23] With two Chromium-based browsers in favour, Firefox neutral and WebKit opposed, WebMCP lacks the cross-engine agreement a standard normally needs.
 
+### The venue question
+
+The status table’s second-to-last row records the newest move, and it is the one that most directly decides whether WebMCP gets onto the standards track. In June 2026 W3C staff opened a pull request adding WebMCP to the scope of the Web Machine Learning *Working Group* charter. On 13 August Marcos Cáceres of Apple replied on that pull request: “Just recording that Apple is opposed to this going working group. Expect a formal objection if this is merged.” He added that Apple would be open to “a different venue at the W3C and doing this properly from first principles (i.e., some new agentic web CG/WG).” On 28 September Philippe le Hégaret, who had opened the pull request, wrote that “the latest thinking is to have a working group dedicated to develop specifications that facilitate web pages and applications to be leveraged by LLMs and AI agents.” On 13 October 2026 he closed the pull request without merging it.[^26]
+
+The replacement is a draft charter for a new Agentic Web Working Group. It lists WebMCP as its one named normative deliverable, “Adopted from the Web Machine Learning Community Group.” The W3C opened charter refinement on 1 October 2026 and estimated that refinement would last “until approximately 10 November 2026.”[^27] A draft charter is not an approved one. The group has no chairs or dates yet, and whether Apple accepts this venue is not on the public record. Chapter 15 follows the chartering process and what each outcome would mean for your code.
+
 > **Still in flux: what may have changed by the time you read this**
 >
 > *The declarative API.* On 8 October 2026 the HTML-forms version of WebMCP was removed from the spec and moved to a separate explainer (pull request #338). Chrome’s documentation, updated a day earlier, still describes it as one of the “two APIs you can use”, and the trial ships it.[4,24] Chapter 8 treats it as an experimental extension, not part of the standard.
-> *User confirmation.* Chrome’s security guidance mentions a `requestUserInteraction()` method for asking the user for input during a tool call, but the current draft contains no such method. Issue #165 is still discussing elicitation, and issue #204 proposes replacing it with a `requestUserInput()` method modelled on MCP elicitation.[^28]
+> *User confirmation.* Chrome’s security guidance mentions a `requestUserInteraction()` method for asking the user for input during a tool call, but the current draft contains no such method. Issue #165 is still discussing elicitation, and pull request #204 proposes replacing it with a `requestUserInput()` method modelled on MCP elicitation.[^30]
 > *Who sees which tools.* An open question proposes a keyword that would let authors control whether the built-in browser agent can see a tool, with different defaults for top-level pages and iframes.[^5]
-> *What WebMCP is for.* Issue #236 asks whether WebMCP should become a general cross-environment function-calling API, a shift that Mozilla called “pretty significant”.[9,27]
-> *Agent support.* Support from ChatGPT Desktop, Brave and Meta is claimed only on the project’s implementation-status page, not in those vendors’ own documentation.[^26]
+> *What WebMCP is for.* Issue #236 asks whether WebMCP should become a general cross-environment function-calling API, a shift that Mozilla called “pretty significant”.[9,29]
+> *Agent support.* Support from ChatGPT Desktop, Brave and Meta is claimed only on the project’s implementation-status page, not in those vendors’ own documentation.[^28]
+> *The Working Group charter.* The Agentic Web Working Group charter is a draft in refinement. Its scope, its deliverables and even whether it is approved with WebMCP in it can still change.[^27]
 
 None of this means WebMCP is going away. It means the honest description of WebMCP in late 2026 is a well-resourced, actively developed proposal with two shipping trials and a serious, unresolved debate about whether the web needs it in this form. The way to build on it is the way you build on any experimental web feature: as a progressive enhancement over a site that works without it, with your tools kept close to logic you already have, so that if the API shape changes the cost of following it is small.
 
@@ -293,12 +303,12 @@ We now have the idea, the history and the politics. Part II turns to the API in 
 - WebMCP borrows MCP’s vocabulary but not its protocol: there is no JSON-RPC, it offers tools only, and the format for agents is left to the browser. Google frames them as complementary, with MCP as the call centre and WebMCP as the in-store expert.
 - The design rejected adopting MCP directly, static manifests and a pure `toolcall` event. WebKit argues for a different alternative altogether: better HTML and ARIA.
 - Its roots include community prototypes by Jason McGhee and Alex Nahas (MCP-B), Google’s script-tools work and a joint Microsoft–Google explainer published in August 2025, now incubated in the W3C Web Machine Learning Community Group.
-- As of 14 October 2026 it is a Community Group draft in origin trials in Chrome (149 to 162) and Edge 150, with Mozilla neutral, WebKit opposed and a TAG review noting missing multi-stakeholder support. Build on it as a progressive enhancement.
+- As of 15 October 2026 it is a Community Group draft in origin trials in Chrome (149 to 162) and Edge (from 150, until 30 March 2027), with Mozilla neutral, WebKit opposed and a TAG review noting missing multi-stakeholder support. A plan to move it into the WebML Working Group was dropped on 13 October 2026 after Apple warned of a formal objection; a draft Agentic Web Working Group charter that names it is in refinement. Build on it as a progressive enhancement.
 
 ## Notes
 
 [^1]: Chrome for Developers, “WebMCP and MCP compared” (published 11 March 2026, updated 19 May 2026). <https://developer.chrome.com/docs/ai/webmcp/compare-mcp>
-[^2]: WebMCP specification, Draft Community Group Report, 13 October 2026, Abstract, Status of this document, §1 Introduction and §8 Acknowledgements. <https://webmachinelearning.github.io/webmcp/>
+[^2]: WebMCP specification, Draft Community Group Report, 15 October 2026, Abstract, Status of this document, §1 Introduction and §8 Acknowledgements. <https://webmachinelearning.github.io/webmcp/>
 [^3]: WebMCP specification, §4.1–4.2 (Document extension, ModelContext interface, registerTool(), getTools(), executeTool() and the IDL index). <https://webmachinelearning.github.io/webmcp/#api>
 [^4]: Chrome for Developers, “WebMCP” (published 18 May 2026, updated 7 October 2026), including “Limitations”. <https://developer.chrome.com/docs/ai/webmcp>
 [^5]: WebMCP explainer (README), “Background and Motivation” and “Existing web actuation techniques”, webmachinelearning/webmcp. <https://github.com/webmachinelearning/webmcp>
@@ -308,12 +318,12 @@ We now have the idea, the history and the politics. Part II turns to the API in 
 [^9]: Mozilla standards-positions issue #1412, “WebMCP” (position: neutral; comments June–August 2026). <https://github.com/mozilla/standards-positions/issues/1412>
 [^10]: WebMCP specification, §6.3.2 Misrepresentation of Intent. <https://webmachinelearning.github.io/webmcp/#security-privacy>
 [^11]: webmachinelearning/webmcp pull requests #132 (removed provideContext() and clearContext(), merged 5 March 2026), #177 (merged 19 May 2026) and #184 (moved the modelContext getter to Document, merged 27 May 2026). <https://github.com/webmachinelearning/webmcp/pull/184>
-[^12]: Model Context Protocol, “Versioning” (current protocol version 2026-07-28). <https://modelcontextprotocol.io/specification/versioning>
+[^12]: Model Context Protocol, “Versioning” (current protocol version 2026-07-28) <https://modelcontextprotocol.io/specification/versioning>; MCP specification 2026-07-28, Overview (“Stateless, self-contained requests”) and Key Changes (“Make MCP stateless: remove the initialize / notifications/initialized handshake”). <https://modelcontextprotocol.io/specification/2026-07-28/changelog>
 [^13]: WebMCP explainer, “Alternatives Considered”. <https://github.com/webmachinelearning/webmcp#alternatives-considered>
 [^14]: WebKit standards-positions issue #670, “WebMCP” (position: oppose; WebKit comments of 3 June and 17 June 2026). <https://github.com/WebKit/standards-positions/issues/670>
 [^15]: Jason McGhee, jasonjmcghee/WebMCP (repository created March 2025; README note added 12 February 2026). <https://github.com/jasonjmcghee/WebMCP>
 [^16]: Alex Nahas, MiguelsPizza/WebMCP (MCP-B; repository created June 2025; README status notes). See also mcp-b.ai. <https://github.com/MiguelsPizza/WebMCP>
-[^17]: R. Nabors, “WebMCP: The Web Standard That Makes Every Website a Tool for Agents”, Arcade.dev, 11 February 2026 (secondary source; interview with Alex Nahas). <https://www.arcade.dev/blog/web-mcp-alex-nahas-interview/>
+[^17]: RL Nabors, “WebMCP: The Web Standard That Makes Every Website a Tool for Agents”, Arcade.dev, 11 February 2026 (secondary source; interview with Alex Nahas). <https://www.arcade.dev/blog/web-mcp-alex-nahas-interview/>
 [^18]: Chrome Platform Status, “WebMCP” (feature 5117755740913664): owners, developer trial from M146, origin trial M149–M156, extension to M162 recorded 28 September 2026. <https://chromestatus.com/feature/5117755740913664>
 [^19]: Google, explainers-by-googlers/script-tools (repository created July 2025), listed by chromestatus as the initial public proposal. <https://github.com/explainers-by-googlers/script-tools>
 [^20]: WebMCP explainer, “Acknowledgments” (first published 13 August 2025; authors and credits) and “Prior Art”. <https://github.com/webmachinelearning/webmcp#acknowledgments>
@@ -321,7 +331,9 @@ We now have the idea, the history and the politics. Part II turns to the API in 
 [^22]: W3C Web Machine Learning Community Group. <https://www.w3.org/community/webmachinelearning/>
 [^23]: W3C TAG design review #1238, “Incubation: WebMCP” (opened 11 June 2026; open as of 14 October 2026). <https://github.com/w3ctag/design-reviews/issues/1238>
 [^24]: webmachinelearning/webmcp pull request #338, “Remove declarative API from spec” (merged 8 October 2026), and the Declarative API Explainer. <https://github.com/webmachinelearning/webmcp/pull/338>
-[^25]: Microsoft Edge Origin Trials, “WebMCP” (trial expiration date 30 March 2027). <https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a>
-[^26]: WebMCP, “Browser and Agent Implementation Status” (the project’s own page; vendor claims not independently confirmed). <https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md>
-[^27]: webmachinelearning/webmcp issue #236, “Reposition feature as a generic communication tool?” (opened 3 August 2026). <https://github.com/webmachinelearning/webmcp/issues/236>
-[^28]: Chrome for Developers, “WebMCP tool security” (updated 1 September 2026); webmachinelearning/webmcp issues #165 and #204. <https://github.com/webmachinelearning/webmcp/issues/165>
+[^25]: Microsoft Edge Origin Trials, “WebMCP” (trial expiration date 30 March 2027) <https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a>; Microsoft Edge 150 web platform release notes (2 July 2026), “Origin trials”, which list WebMCP (the Edge 149 notes do not). <https://learn.microsoft.com/en-us/microsoft-edge/web-platform/release-notes/150>
+[^26]: w3c/charter-drafts pull request #829, “[wg/webmachinelearning] Adds WebMCP in scope”, including Marcos Cáceres’s comment of 13 August 2026 and Philippe le Hégaret’s comment of 28 September 2026 (closed without merging, 13 October 2026). <https://github.com/w3c/charter-drafts/pull/829>
+[^27]: W3C, “Agentic Web Working Group Charter” (draft), Mission and Deliverables <https://w3c.github.io/charter-drafts/2026/agenticweb-wg.html>; Xueyuan Jia, “Start of refinement for a draft Agentic Web Working Group charter”, public-new-work, 1 October 2026 <https://lists.w3.org/Archives/Public/public-new-work/2026Oct/0002.html>; w3c/strategy issue #576 (label “In Charter Refinement”). <https://github.com/w3c/strategy/issues/576>
+[^28]: WebMCP, “Browser and Agent Implementation Status” (the project’s own page; vendor claims not independently confirmed). <https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md>
+[^29]: webmachinelearning/webmcp issue #236, “Reposition feature as a generic communication tool?” (opened 3 August 2026). <https://github.com/webmachinelearning/webmcp/issues/236>
+[^30]: Chrome for Developers, “WebMCP tool security” (updated 1 September 2026) <https://developer.chrome.com/docs/ai/webmcp/secure-tools>; webmachinelearning/webmcp issue #165, “WebMCP elicitation via requestUserInteraction()”, and pull request #204, “Replace requestUserInteraction with requestUserInput” (open). <https://github.com/webmachinelearning/webmcp/issues/165>
