@@ -193,7 +193,7 @@ Runs a tool on the document that registered it and resolves with the result as a
 | `undefined` | Rejects: “unserializable result”, `OperationError` | Resolves with `'undefined'` |
 | A `BigInt`, `10n` | Rejects: “unserializable result”, `OperationError` | Resolves with `'10'` |
 
-The draft’s column follows its execution steps, which serialize whatever the tool’s promise fulfils with to a JSON string and treat a failure to do so (`JSON.stringify` throws or yields `undefined`) as the “unserializable result” error.[^6][^1] Chapter 6 recommends returning objects, which behave the same everywhere.
+The draft’s column follows its execution steps, which serialize whatever the tool’s promise fulfils with to a JSON string and treat a failure to do so (`JSON.stringify` throws or yields `undefined`) as the “unserializable result” error.[^6][^1] Chapter 5 recommends returning a small, flat object, which behaves the same everywhere.
 
 ## A.5 Events
 
