@@ -8,7 +8,7 @@
 
 This appendix is the page to keep open while you write tool code. It collects the whole WebMCP surface in one place: the WebIDL, every dictionary member, the three events, the Permissions Policy feature, and the exceptions each method can reject with. It doesn’t teach; the chapters do that, and each section points back to the chapter that explains the idea.
 
-Everything here was checked against the WebMCP Draft Community Group Report dated 15 October 2026, read on 15 October 2026; its IDL is unchanged from the 14 October draft.[^2] Every behaviour marked “tested” was observed in Chromium 156.0.8078.4 with the `WebMCPTesting` feature switched on, which is what `chrome://flags/#enable-webmcp-testing` turns on in Chrome.[^3] The probes behind the tables are in the book’s demos repository, in `appendices/a-api-reference/`, and all 24 checks pass. Where Chromium and the draft disagree, the tables show both.
+Everything here was checked against the WebMCP Draft Community Group Report dated 15 October 2026, read on 15 October 2026; its IDL is unchanged from the 14 October draft.[^2] Every behaviour marked “tested” was observed in Chromium 156.0.8078.4 with the `WebMCPTesting` feature switched on, which is what `chrome://flags/#enable-webmcp-testing` turns on in Chrome.[^3] The probes behind the tables are in the book’s demos repository, in `appendices/a-api-reference/`, and all 25 checks pass. Where Chromium and the draft disagree, the tables show both.
 
 ## A.1 The interface at a glance
 
@@ -124,7 +124,7 @@ Registers one tool on the current document. It returns a `Promise<undefined>`; t
 | `name` | `DOMString` | yes | 1–128 characters, only ASCII letters and digits, `_`, `-` and `.`; unique per document. Otherwise `InvalidStateError`. |
 | `title` | `USVString` | no | Display name for the browser’s UI. |
 | `description` | `DOMString` | yes | Must not be empty, or `InvalidStateError`. |
-| `inputSchema` | `object` | no | Serialized with `JSON.stringify` at registration. A `toJSON()` that returns `undefined` rejects with a `TypeError`; an error `JSON.stringify` throws (a circular object, for example) is rethrown. Because serializing can run script, the name and fully-active checks run again afterwards. |
+| `inputSchema` | `object` | no | Serialized with `JSON.stringify` at registration. A `toJSON()` that returns `undefined` rejects with a `TypeError`; an error `JSON.stringify` throws (a circular object, for example) is rethrown. Because serializing can run script, the name and fully-active checks run again afterwards. (Tested: when `toJSON()` registers another tool with the same name, Chromium 156’s renderer crashes; see Table A.7.) |
 | `execute` | `ToolExecuteCallback` | yes | `(inputObject, { signal }) => any`, may return a promise. |
 | `annotations` | `ToolAnnotations` | no | See Table A.2. |
 
@@ -231,6 +231,7 @@ The draft names five platform failures for a tool execution and maps each to an 
 | `tools` feature not allowed (header or missing `allow`) | all three | `NotAllowedError` | `NotAllowedError` ✓ |
 | Bad name, empty description, duplicate name | `registerTool()` | `InvalidStateError` | `InvalidStateError` ✓ |
 | `inputSchema` can’t be serialized; `execute` missing | `registerTool()` | `TypeError` (rethrown) | `TypeError` ✓ |
+| Another tool with the same name registered while `inputSchema` is serialized | `registerTool()` | `InvalidStateError` (added 15 October 2026) | **The page’s renderer crashes** |
 | Already-aborted `signal` | `registerTool()`, `executeTool()` | The signal’s abort reason | The abort reason ✓ (`AbortError`, or your own reason) |
 | Insecure or unparsable origin in `exposedTo` / `fromOrigins` | `registerTool()`, `getTools()` | `SecurityError` | `SecurityError` ✓ |
 | `tool.origin` is opaque (`"null"`) or unparsable | `executeTool()` | `NotSupportedError` | `NotSupportedError` ✓ |
