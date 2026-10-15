@@ -8,13 +8,13 @@
 
 This appendix is the page to keep open while you write tool code. It collects the whole WebMCP surface in one place: the WebIDL, every dictionary member, the three events, the Permissions Policy feature, and the exceptions each method can reject with. It doesn’t teach; the chapters do that, and each section points back to the chapter that explains the idea.
 
-Everything here was checked against the WebMCP Draft Community Group Report dated 14 October 2026, read on 14 October 2026.[^2] Every behaviour marked “tested” was observed in Chromium 156.0.8078.4 with the `WebMCPTesting` feature switched on, which is what `chrome://flags/#enable-webmcp-testing` turns on in Chrome.[^3] The probes behind the tables are in the book’s demos repository, in `appendices/a-api-reference/`, and all 23 checks pass. Where Chromium and the draft disagree, the tables show both.
+Everything here was checked against the WebMCP Draft Community Group Report dated 15 October 2026, read on 15 October 2026; its IDL is unchanged from the 14 October draft.[^2] Every behaviour marked “tested” was observed in Chromium 156.0.8078.4 with the `WebMCPTesting` feature switched on, which is what `chrome://flags/#enable-webmcp-testing` turns on in Chrome.[^3] The probes behind the tables are in the book’s demos repository, in `appendices/a-api-reference/`, and all 24 checks pass. Where Chromium and the draft disagree, the tables show both.
 
 ## A.1 The interface at a glance
 
 Listing A.1 is the specification’s IDL index, unabridged. It’s short, which tells you something: the whole imperative API is three methods, three events and seven dictionaries.
 
-**Listing A.1 — The WebMCP IDL, from the specification’s IDL index (14 October 2026) (webmcp.idl)**
+**Listing A.1 — The WebMCP IDL, from the specification’s IDL index (15 October 2026) (webmcp.idl)**
 
 ```webidl
 partial interface Document {
@@ -124,11 +124,11 @@ Registers one tool on the current document. It returns a `Promise<undefined>`; t
 | `name` | `DOMString` | yes | 1–128 characters, only ASCII letters and digits, `_`, `-` and `.`; unique per document. Otherwise `InvalidStateError`. |
 | `title` | `USVString` | no | Display name for the browser’s UI. |
 | `description` | `DOMString` | yes | Must not be empty, or `InvalidStateError`. |
-| `inputSchema` | `object` | no | Serialized with `JSON.stringify` at registration; a value that can’t be serialized (a circular object, a `toJSON()` that returns `undefined`) rethrows that error. |
+| `inputSchema` | `object` | no | Serialized with `JSON.stringify` at registration. A `toJSON()` that returns `undefined` rejects with a `TypeError`; an error `JSON.stringify` throws (a circular object, for example) is rethrown. Because serializing can run script, the name and fully-active checks run again afterwards. |
 | `execute` | `ToolExecuteCallback` | yes | `(inputObject, { signal }) => any`, may return a promise. |
 | `annotations` | `ToolAnnotations` | no | See Table A.2. |
 
-The rules in Table A.1 are the draft’s registration steps.[^5] All of them were tested in Chromium 156 and agree: a name with a space, a 129-character name, an empty description and a duplicate name each reject with `InvalidStateError`; a missing `execute` and a circular `inputSchema` each throw `TypeError`.
+The rules in Table A.1 are the draft’s registration steps.[^5] All of them were tested in Chromium 156 and agree: a name with a space, a 129-character name, an empty description and a duplicate name each reject with `InvalidStateError`; a missing `execute`, a circular `inputSchema` and a `toJSON()` that returns `undefined` each reject with `TypeError`.
 
 **Table A.2 — `ToolAnnotations` members (all `boolean`, default `false`)**
 
@@ -174,7 +174,7 @@ Returns the tools an in-page agent may see: the tools of every document in the t
 
 > **Still in flux: what an empty title looks like**
 >
-> The draft fills a missing `title` with the empty string, and an inline issue in the `getTools()` steps asks whether to leave the member out instead.[^9] Issue #224, “Tool `title` and `inputSchema`: what to expose when not provided?”, opened on 21 July 2026, was still open on 14 October 2026.[^11] Test for a falsy title, not for `undefined` or `""` specifically.
+> The draft fills a missing `title` with the empty string, and an inline issue in the `getTools()` steps asks whether to leave the member out instead.[^9] Issue #224, “Tool `title` and `inputSchema`: what to expose when not provided?”, opened on 21 July 2026, was still open on 15 October 2026.[^11] Test for a falsy title, not for `undefined` or `""` specifically.
 
 ## A.4 `executeTool(tool, inputObject, options)`
 
@@ -223,7 +223,7 @@ Tested in Chromium 156: with `Permissions-Policy: tools=()`, `document.featurePo
 
 The draft names five platform failures for a tool execution and maps each to an exception name. Callers only ever see the exception name.[^1] Other exceptions come from the method steps themselves.[^5][^6][^9] Table A.7 puts all of them next to what Chromium 156 actually does.
 
-**Table A.7 — Exception names: the 14 October 2026 draft vs Chromium 156 with WebMCPTesting (tested)**
+**Table A.7 — Exception names: the 15 October 2026 draft vs Chromium 156 with WebMCPTesting (tested)**
 
 | Situation | Method | Draft | Chromium 156 |
 |---|---|---|---|
@@ -234,7 +234,8 @@ The draft names five platform failures for a tool execution and maps each to an 
 | Already-aborted `signal` | `registerTool()`, `executeTool()` | The signal’s abort reason | The abort reason ✓ (`AbortError`, or your own reason) |
 | Insecure or unparsable origin in `exposedTo` / `fromOrigins` | `registerTool()`, `getTools()` | `SecurityError` | `SecurityError` ✓ |
 | `tool.origin` is opaque (`"null"`) or unparsable | `executeTool()` | `NotSupportedError` | `NotSupportedError` ✓ |
-| Target document is in another tab | `executeTool()` | `InvalidStateError` | not tested |
+| `inputObject` can’t be serialized to JSON (a circular object) | `executeTool()` | The `JSON.stringify` error (rethrown) | `TypeError` ✓ |
+| Target document has no navigable (detached), or is in another tab | `executeTool()` | `InvalidStateError` | not tested |
 | Tool not registered (unregistered, or a forged `name`) | `executeTool()` | `NotFoundError` | **`UnknownError`** |
 | `tool.origin` doesn’t match the target document | `executeTool()` | `NotFoundError` | **`UnknownError`** |
 | Tool not exposed to the caller’s origin | `executeTool()` | `NotFoundError` | not tested directly; the tool isn’t in `getTools()` |
@@ -252,7 +253,7 @@ Chapter 7 observed the same `UnknownError` for forged names and origins and for 
 
 ```js
 // Listing A.2: classify an executeTool() rejection in a way that works with both
-// the 14 October 2026 draft's exception names and Chromium 156's.
+// the draft's exception names (since 8 October 2026) and Chromium 156's.
 export function classifyToolError(err) {
   const name = err && err.name;
   switch (name) {
@@ -280,7 +281,7 @@ export function classifyToolError(err) {
 
 > **Still in flux: what `registerTool()` resolves with**
 >
-> Issue #234, “registerTool should return registered tool instead of undefined”, opened on 29 July 2026, was open on 14 October 2026.[^18] Code that ignores the resolved value, as every listing in this book does, won’t break either way.
+> Issue #234, “registerTool should return registered tool instead of undefined”, opened on 29 July 2026, was open on 15 October 2026.[^18] Code that ignores the resolved value, as every listing in this book does, won’t break either way.
 
 ## A.8 The declarative attributes (removed from the specification)
 
@@ -313,24 +314,24 @@ The rows in Table A.8 are from Chrome’s declarative API page (published 18 May
 - Chromium 156 reports most execution failures as `UnknownError` where the draft says `NotFoundError`, `OperationError` or `AbortError`, and it resolves results the draft would reject. Handle errors by family.
 - The declarative form attributes left the specification on 8 October 2026 but still work in Chrome’s trial.
 
-[^1]: WebMCP specification, Draft Community Group Report, 14 October 2026, §3 Supporting concepts: the tool execution error table (“tool not found” → `NotFoundError`, “invalid input” → `DataError`, “tool rejected” and “unserializable result” → `OperationError`, “target document unloaded” → `AbortError`) and the note that tool execution errors are not exposed to the web. Read 14 October 2026. <https://webmachinelearning.github.io/webmcp/#tool-execution-error>
-[^2]: WebMCP specification, Draft Community Group Report dated 14 October 2026, editors Brandon Walderman (Microsoft), Khushal Sagar and Dominic Farolino (Google), published by the W3C Web Machine Learning Community Group. Read 14 October 2026. <https://webmachinelearning.github.io/webmcp/>
-[^3]: Chrome for Developers, “WebMCP” overview (published 18 May 2026, last updated 7 October 2026), section “Local WebMCP”: the `chrome://flags/#enable-webmcp-testing` flag. Read 14 October 2026. <https://developer.chrome.com/docs/ai/webmcp>
+[^1]: WebMCP specification, Draft Community Group Report, 15 October 2026, §3 Supporting concepts: the tool execution error table (“tool not found” → `NotFoundError`, “invalid input” → `DataError`, “tool rejected” and “unserializable result” → `OperationError`, “target document unloaded” → `AbortError`) and the note that tool execution errors are not exposed to the web. Read 15 October 2026. <https://webmachinelearning.github.io/webmcp/#tool-execution-error>
+[^2]: WebMCP specification, Draft Community Group Report dated 15 October 2026, editors Brandon Walderman (Microsoft), Khushal Sagar and Dominic Farolino (Google), published by the W3C Web Machine Learning Community Group. Read 15 October 2026. The changes since the 14 October draft are commits 1636b33 (#345) and 3279798 (#347); neither touches the IDL or the exception names. <https://webmachinelearning.github.io/webmcp/>
+[^3]: Chrome for Developers, “WebMCP” overview (published 18 May 2026, last updated 7 October 2026), section “Local WebMCP”: the `chrome://flags/#enable-webmcp-testing` flag. Read 15 October 2026. <https://developer.chrome.com/docs/ai/webmcp>
 [^4]: WebMCP specification, §4.1 Extensions to Document and the IDL index: `partial interface Document { [SecureContext, SameObject] readonly attribute ModelContext modelContext; }`. <https://webmachinelearning.github.io/webmcp/#idl-index>
-[^5]: WebMCP specification, §4.2, the `registerTool(tool, options)` method steps: the “tools” check, the name, description and duplicate checks, `inputSchema` serialization, the already-aborted signal, `exposedTo` parsing, and the abort steps that unregister the tool. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool>
-[^6]: WebMCP specification, §4.2, the non-normative description of `executeTool()` (resolves to the stringified result; an omitted argument becomes an empty object) and the `executeTool(tool, inputObject, options)` method steps. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-executetool>
+[^5]: WebMCP specification, §4.2, the `registerTool(tool, options)` method steps: the “tools” check, the name, description and duplicate checks, `inputSchema` serialization and the checks repeated after it, the already-aborted signal, `exposedTo` parsing, and the abort steps that unregister the tool. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool>
+[^6]: WebMCP specification, §4.2, the non-normative description of `executeTool()` (resolves to the stringified result; an omitted argument becomes an empty object) and the `executeTool(tool, inputObject, options)` method steps (including the rethrown error when `inputObject` can’t be serialized, and `InvalidStateError` when the target document has no navigable). <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-executetool>
 [^7]: WebMCP specification, §4.2.1, the `ToolAnnotations` dictionary descriptions. <https://webmachinelearning.github.io/webmcp/#dictdef-toolannotations>
 [^8]: WebMCP specification, §4.2.3 ModelContextRegisterToolOptions Dictionary: `exposedTo` is “an array of origins that control which documents this tool is exposed to, in the current document’s tree”; `signal` “unregisters the tool when aborted”. <https://webmachinelearning.github.io/webmcp/#dictdef-modelcontextregistertooloptions>
 [^9]: WebMCP specification, §4.2, the `getTools(options)` method steps: traversal of the inclusive descendant navigables, the “tools” check per document, the same-origin-or-`fromOrigins` check, the exposure check, the empty-string `title` with its inline reference to issue #224, and sorting by name. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-gettools>
 [^10]: WebMCP specification, §4.2.4 ModelContextGetToolOptions Dictionary and the `getTools()` steps (`SecurityError` for an origin that fails to parse or is not potentially trustworthy). <https://webmachinelearning.github.io/webmcp/#dom-modelcontextgettooloptions-fromorigins>
-[^11]: “Tool `title` and `inputSchema`: what to expose when not provided?”, webmachinelearning/webmcp issue #224, opened 21 July 2026, open on 14 October 2026. <https://github.com/webmachinelearning/webmcp/issues/224>
+[^11]: “Tool `title` and `inputSchema`: what to expose when not provided?”, webmachinelearning/webmcp issue #224, opened 21 July 2026, open on 15 October 2026. <https://github.com/webmachinelearning/webmcp/issues/224>
 [^12]: WebMCP specification, §4.3 Events, §4.3.1 ToolActivatedEvent Interface and §4.3.2 ToolCancelEvent Interface. <https://webmachinelearning.github.io/webmcp/#events>
 [^13]: WebMCP specification: the steps that notify documents of a tool change (including the note on `toolchange` timing), the execute-callback steps that fire `toolactivated`, and the steps that cancel a pending tool execution and fire `toolcancel`. <https://webmachinelearning.github.io/webmcp/#eventdef-modelcontext-toolcancel>
-[^14]: webmachinelearning/webmcp commit f5645e9, “Add `ToolActivatedEvent` and `ToolCancelEvent` event interfaces (#245)”, committed 17 September 2026; repository history read 14 October 2026. <https://github.com/webmachinelearning/webmcp/commit/f5645e9aea51eb589599f181d104a2f49430608e>
+[^14]: webmachinelearning/webmcp commit f5645e9, “Add `ToolActivatedEvent` and `ToolCancelEvent` event interfaces (#245)”, committed 17 September 2026; repository history read 15 October 2026. <https://github.com/webmachinelearning/webmcp/commit/f5645e9aea51eb589599f181d104a2f49430608e>
 [^15]: WebMCP specification, §4.4 Permissions policy integration: the policy-controlled feature “tools” with a default allowlist of `'self'`. <https://webmachinelearning.github.io/webmcp/#permissions-policy>
 [^16]: WebMCP specification, §6.4.1 Disabling WebMCP with Permissions Policy. <https://webmachinelearning.github.io/webmcp/#mitigation-disable-permissions-policy>
 [^17]: webmachinelearning/webmcp commit b206dae, “Replace UnknownError with specific DOMException types. (#339)”, by Mark Foltz, committed 8 October 2026: it removes the `UnknownError` rejections and their “Support more granular errors” issue notes from `index.bs` and adds the `NotFoundError` / `DataError` / `OperationError` / `AbortError` table. Repository history and diff read 14 October 2026. <https://github.com/webmachinelearning/webmcp/commit/b206dae8bad34ea8e6ff7213b417b50b14a37e9a>
-[^18]: “registerTool should return registered tool instead of undefined”, webmachinelearning/webmcp issue #234, opened 29 July 2026, last updated 3 October 2026, open on 14 October 2026. <https://github.com/webmachinelearning/webmcp/issues/234>
+[^18]: “registerTool should return registered tool instead of undefined”, webmachinelearning/webmcp issue #234, opened 29 July 2026, last updated 3 October 2026, open on 15 October 2026. <https://github.com/webmachinelearning/webmcp/issues/234>
 [^19]: webmachinelearning/webmcp commit 14ae813, “Remove declarative API from the spec for now (#338)”, by François Beaufort, committed 8 October 2026; it changed `index.bs` and `README.md`. Repository history read 14 October 2026. <https://github.com/webmachinelearning/webmcp/commit/14ae813cc4e9fe0d39313f4b1ee5b231746731ad>
-[^20]: webmachinelearning/webmcp README, section “Future Exploration: Declarative API”, and the Declarative API Explainer, both read 14 October 2026. <https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md>
-[^21]: Chrome for Developers, “Declarative API” (published 18 May 2026, last updated 25 September 2026): `toolname`, `tooldescription`, `toolparamdescription`, `toolautosubmit`, `SubmitEvent.agentInvoked`, `SubmitEvent.respondWith()`, `:tool-form-active` and `:tool-submit-active`. Read 14 October 2026. <https://developer.chrome.com/docs/ai/webmcp/declarative-api>
+[^20]: webmachinelearning/webmcp README, section “Future Exploration: Declarative API”, and the Declarative API Explainer, both read 15 October 2026. <https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md>
+[^21]: Chrome for Developers, “Declarative API” (published 18 May 2026, last updated 25 September 2026): `toolname`, `tooldescription`, `toolparamdescription`, `toolautosubmit`, `SubmitEvent.agentInvoked`, `SubmitEvent.respondWith()`, `:tool-form-active` and `:tool-submit-active`. Read 15 October 2026. <https://developer.chrome.com/docs/ai/webmcp/declarative-api>
