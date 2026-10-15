@@ -141,7 +141,7 @@ export async function registerCheckoutTools({ cart, account, orders, signal }) {
     annotations: { consequentialHint: true },
     async execute(_input, { signal: call }) {
       if (cart.lines().length === 0) {
-        return { status: 'error', code: 'EMPTY_CART',
+        return { status: 'error', code: 'CART_EMPTY',
                  message: 'The cart is empty. Add items with add_to_cart first.' };
       }
       // Stop waiting if the agent cancels OR the user signs out: unregistering a tool
@@ -172,7 +172,7 @@ export async function registerCheckoutTools({ cart, account, orders, signal }) {
 }
 ```
 
-`checkout` does not return until the person decides. Its `execute` awaits the sheet, which can take as long as the user needs, and Chapter 6 covered how a long-running call stays well-behaved by honouring its signal. When the person confirms, it places the order and returns `{ status: 'placed', orderId, total }`. When they decline, it returns `{ status: 'cancelled_by_user', message }`, Chapter 11's status for a person who said no in the page's own UI: a normal result that the agent can report, not an exception. An empty cart is `status: 'error'` with code `EMPTY_CART`, because the agent can fix it with another tool first. And its description tells the agent up front that the user places the order on the page, so a well-behaved agent will say “I've opened the order for you to confirm” instead of “Done”.
+`checkout` does not return until the person decides. Its `execute` awaits the sheet, which can take as long as the user needs, and Chapter 6 covered how a long-running call stays well-behaved by honouring its signal. When the person confirms, it places the order and returns `{ status: 'placed', orderId, total }`. When they decline, it returns `{ status: 'cancelled_by_user', message }`, Chapter 11's status for a person who said no in the page's own UI: a normal result that the agent can report, not an exception. An empty cart is `status: 'error'` with code `CART_EMPTY`, because the agent can fix it with another tool first. And its description tells the agent up front that the user places the order on the page, so a well-behaved agent will say “I've opened the order for you to confirm” instead of “Done”.
 
 There is one subtle line. The tool combines two signals with `AbortSignal.any()`: the call's own signal, and the signal the tool was registered with. That second signal is aborted when the user signs out (Listing 13.4). The reason is a rule from the specification that Chapter 5 met: unregistering a tool does not cancel executions that are already running.[^9] Without the combined signal, a user who signs out while the sheet is open would leave a pending call waiting for a confirmation that now belongs to nobody. With it, the sheet closes and the call returns `{ status: 'refused', code: 'SESSION_ENDED', message }`: a rule (no order without a signed-in user) says no, and only the user can change that by signing in again. If the abort came from the caller instead, the tool rethrows it so the caller sees its own cancellation.
 
