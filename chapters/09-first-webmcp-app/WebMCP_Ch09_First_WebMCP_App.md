@@ -14,7 +14,7 @@ This chapter puts the pieces back together and takes one small app all the way: 
 
 The app is Fjord Table again, deliberately small: one page, one search form, one booking dialog and two tools. That leaves room for the parts of the job that have nothing to do with the API itself, which is most of what goes wrong in practice. The page has to work for every visitor whether or not their browser has WebMCP. It has to fail quietly when a policy, an insecure origin or a missing script takes the tools away. And it needs a way to be driven by something other than a person, so that you can test it on every commit.
 
-Everything here was run, not just written. The companion repository’s folder `chapters/09-first-webmcp-app/` holds the app, every listing in this chapter as a file, and a test suite of 20 checks. The suite runs the page in Chromium 156.0.8078.4 three ways: with no WebMCP at all, with the `WebMCPTesting` feature enabled (the switch behind the flag), and with a dev-only mock. Where this chapter says *observed*, it means a test in that suite, run on 14 October 2026.[^2]
+Everything here was run, not just written. The companion repository’s folder `chapters/09-first-webmcp-app/` holds the app, every listing in this chapter as a file, and a test suite of 21 checks. The suite runs the page in Chromium 156.0.8078.4 four ways: with no WebMCP at all, with the `WebMCPTesting` feature enabled (the switch behind the flag), with the polyfill, and with a dev-only mock. Where this chapter says *observed*, it means a test in that suite, run on 14 October 2026.[^2]
 
 ## Local setup
 
@@ -34,7 +34,7 @@ The companion tests launch Playwright’s Chromium exactly that way. It is also 
 
 ### A secure context
 
-`document.modelContext` exists only in secure contexts. The draft of 14 October 2026 marks both the `modelContext` attribute on `Document` and the `ModelContext` interface itself `[SecureContext]`.[^5] In practice that means HTTPS, or `http://localhost` while you develop, because browsers treat localhost as potentially trustworthy.
+`document.modelContext` exists only in secure contexts. The current draft, dated 15 October 2026, marks both the `modelContext` attribute on `Document` and the `ModelContext` interface itself `[SecureContext]`.[^5] In practice that means HTTPS, or `http://localhost` while you develop, because browsers treat localhost as potentially trustworthy.
 
 It is worth seeing this fail once, because it fails silently. The companion tests map the made-up host name `fjord.test` to the local machine and load the same page from `http://fjord.test:<port>/`, in Chromium with `WebMCPTesting` enabled. There, `window.isSecureContext` is `false` and `'modelContext' in document` is `false`.[^2] Nothing throws and nothing is logged; the API simply isn’t there. If your tools work on `localhost` and disappear on a staging host served over plain HTTP, this is the first thing to check.
 
@@ -194,15 +194,16 @@ const bookTable = {
   async execute(input, { signal }) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date ?? '') || !/^\d{2}:\d{2}$/.test(input.time ?? '')
         || !Number.isInteger(input.partySize) || input.partySize < 1 || input.partySize > 12) {
-      return { status: 'invalid_input',
+      return { status: 'error', code: 'INVALID_INPUT',
                message: 'Use date YYYY-MM-DD, time HH:MM and a partySize from 1 to 12.' };
     }
     const slot = await availability.find(input, { signal });
-    if (!slot) return { status: 'slot_unavailable', message: 'Call search_availability again.' };
+    if (!slot) return { status: 'refused', code: 'SLOT_UNAVAILABLE',
+                        message: 'That slot is gone. Call search_availability and ask the guest.' };
     const outcome = await bookingPanel.confirmWithUser({ ...input, slot }, { signal });
     return outcome.confirmed
       ? { status: 'booked', reference: outcome.reference, date: input.date, time: slot.time }
-      : { status: 'not_confirmed_by_user' };
+      : { status: 'cancelled_by_user', message: 'The guest closed the booking form without confirming. Nothing was booked.' };
   }
 };
 
@@ -285,7 +286,7 @@ The last column is the point of the whole design. In every row a person could se
 
 > **Still in flux: errors in Chromium versus the draft**
 >
-> Earlier chapters found Chromium 156 returning `UnknownError` in several places where the draft now names a specific exception. This chapter’s start-up code relies on only one error name, `NotAllowedError` from a blocking policy, where Chromium and the draft agree. For every other failure it catches the error, reports `err.name`, and moves on. That is a reasonable stance for start-up code while the error table is still settling.
+> Earlier chapters found Chromium 156 returning `UnknownError` in several places where the draft has named a specific exception since 8 October 2026. That is the browser lagging the draft, not a bug. This chapter’s start-up code relies on only one error name, `NotAllowedError` from a blocking policy, where Chromium and the draft agree. For every other failure it catches the error, reports `err.name`, and moves on. That is a reasonable stance for start-up code while the error table is still settling.
 
 ## Seeing what the agent sees
 
@@ -398,7 +399,7 @@ Listing 9.4 loads the harness only when the page is opened with `?test-agent`, a
 await testAgent.call('search_availability', { date: '2026-11-20', partySize: 4 });
 ```
 
-The tests drive the same object through Playwright. One test calls `search_availability`, starts a `book_table` call without waiting for it, checks that the call is still pending after the dialog has opened, then clicks “Confirm booking” as the guest would and reads `{ status: 'booked', reference: 'FT-…' }`. A second test clicks Cancel and gets `{ status: 'not_confirmed_by_user' }`. A third sends a malformed time and gets `invalid_input` back as a value.[^2] Those three tests cover the property this book cares about most: an agent can’t book a table at Fjord Table without the guest.
+The tests drive the same object through Playwright. One test calls `search_availability`, starts a `book_table` call without waiting for it, checks that the call is still pending after the dialog has opened, then clicks “Confirm booking” as the guest would and reads `{ status: 'booked', reference: 'FT-…' }`. A second test clicks Cancel and gets `{ status: 'cancelled_by_user', message: … }`. A third sends a malformed time and gets `{ status: 'error', code: 'INVALID_INPUT', … }` back as a value. These are the result shapes Chapter 11 defines.[^2] Those three tests cover the property this book cares about most: an agent can’t book a table at Fjord Table without the guest.
 
 ### A planner on the device: the Prompt API
 
@@ -592,7 +593,7 @@ Fjord Table is now a complete, if small, agent-ready app. The companion folder `
 - the Test Agent (Listings 9.5 and 9.6), with a scripted planner for CI and a Prompt API planner for trying real requests on the device;
 - `server.js` (Listing 9.9), which serves the page with an explicit tools policy and, when configured, an origin-trial token.
 
-Its 20 tests pass against Chromium 156 without WebMCP, with WebMCP, with the polyfill and with the mock. The folder’s README maps every file to its listing and records what was observed. Chapter 10 moves to the bigger project, the Trailhead store, and to the questions a component framework raises: tools that come and go with views, shared state, and routing.
+Its 21 tests pass against Chromium 156 without WebMCP, with WebMCP, with the polyfill and with the mock. The folder’s README maps every file to its listing and records what was observed. Chapter 10 moves to the bigger project, the Trailhead store, and to the questions a component framework raises: tools that come and go with views, shared state, and routing.
 
 ## Chapter summary
 
@@ -611,7 +612,7 @@ Its 20 tests pass against Chromium 156 without WebMCP, with WebMCP, with the pol
 [^2]: Observed in Chromium 156.0.8078.4 (Playwright 1.64 build) with and without `--enable-features=WebMCPTesting`, 14 October 2026. The tests are in the companion repository, `chapters/09-first-webmcp-app/tests/run-tests.mjs`; the folder’s README lists every observation. <https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/09-first-webmcp-app>
 [^3]: Chrome Platform Status, “WebMCP” feature entry 5117755740913664 (last updated 28 September 2026): developer trial from Chrome 146; origin trial from Chrome 149 to 156 with third-party support; extension to Chrome 162 and its stated reason; Chrome status “Proposed”; standards maturity “Specification being incubated in a Community Group” (read through the site’s JSON API, 14 October 2026). <https://chromestatus.com/feature/5117755740913664>
 [^4]: beaufortfrancois/model-context-tool-inspector, “WebMCP - Model Context Tool Inspector,” README, sections “Prerequisites,” “Installation” and “Usage” (read 14 October 2026). <https://github.com/beaufortfrancois/model-context-tool-inspector>
-[^5]: WebMCP specification, Draft Community Group Report, 14 October 2026, §4.1 “Extensions to Document” (`[SecureContext]`), §4.2 “ModelContext Interface” (`registerTool()`, `getTools()`, `executeTool()`), §4.4 “Permissions policy integration” and §6.4.1 “Disabling WebMCP with Permissions Policy.” <https://webmachinelearning.github.io/webmcp/>
+[^5]: WebMCP specification, Draft Community Group Report, 15 October 2026, §4.1 “Extensions to Document” (`[SecureContext]`), §4.2 “ModelContext Interface” (`registerTool()`, `getTools()`, `executeTool()`), §4.4 “Permissions policy integration” and §6.4.1 “Disabling WebMCP with Permissions Policy.” <https://webmachinelearning.github.io/webmcp/>
 [^6]: Chrome for Developers blog, “Join the WebMCP origin trial” (published 9 June 2026; read 14 October 2026). <https://developer.chrome.com/blog/ai-webmcp-origin-trial>
 [^7]: Microsoft Edge Origin Trials, “WebMCP” trial page: trial expiration date 30 March 2027; registration options for subdomains and third-party matching (read 14 October 2026). <https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a>
 [^8]: Chrome for Developers, “Get started with origin trials” (last updated 7 November 2024), sections “Take part in an origin trial,” “Provide a token programmatically,” “Tokens and iframes,” “Tokens and extensions,” “Renew origin trial enrollment” and “View origin trial information” (read 14 October 2026). <https://developer.chrome.com/docs/web-platform/origin-trials>
