@@ -12,25 +12,25 @@ Suppose the Trailhead team asks the question every web team asks before adopting
 
 The engineering answer fits in a sentence. Chromium-based browsers run WebMCP behind origin trials, so Chrome and Edge will expose `document.modelContext` on any page that carries a valid trial token. Every other engine doesn’t expose it at all. Chapter 5 showed the feature check that covers this, and this chapter extends it into a small module that tells you exactly which surface you are standing on.
 
-The standards answer takes the rest of the chapter. WebMCP is a Community Group draft whose editors come from Microsoft and Google.[^2] Mozilla recorded a neutral position and Apple’s WebKit team an opposed one.[3,4] The W3C Technical Architecture Group (TAG) has been reviewing it since June and has labelled it “Missing: Multi-stakeholder support”.[^5] An attempt to move the specification into an existing W3C Working Group ran into a threatened formal objection over the summer and was closed on 13 October. Its replacement, a new Agentic Web Working Group, is a draft charter in review as this chapter is written.[6,7]
+The standards answer takes the rest of the chapter. WebMCP is a Community Group draft whose editors come from Microsoft and Google.[^2] Mozilla recorded a neutral position and Apple’s WebKit team an opposed one.[^3][^4] The W3C Technical Architecture Group (TAG) has been reviewing it since June and has labelled it “Missing: Multi-stakeholder support”.[^5] An attempt to move the specification into an existing W3C Working Group ran into a threatened formal objection over the summer and was closed on 13 October. Its replacement, a new Agentic Web Working Group, is a draft charter in review as this chapter is written.[^6][^7]
 
 Chapter 4 sketched this landscape in one table and promised to come back to it. This chapter does so in depth. It explains how to read each signal (a spec’s status line, a chromestatus entry, an origin trial page, a standards-position label, a TAG review), what each party has actually said, which agents and libraries consume WebMCP today, and what the possible routes from Community Group to standard would mean for a team that ships tools now. It closes with a script that re-checks all of it for you, because every fact in the following pages has a date on it.
 
-Everything here was checked on 14 October 2026.
+Everything here was checked on 15 October 2026.
 
 ## Reading the signals
 
 Web standards news arrives through a handful of documents, each with its own vocabulary. Before going vendor by vendor, it helps to know what each one can and cannot tell you.
 
-*The specification’s status line.* The top of the WebMCP draft reads “Draft Community Group Report, 14 October 2026”, and its status section says plainly that it “is not a W3C Standard nor is it on the W3C Standards Track.”[^2] The date changes whenever the editors publish, which during 2026 has meant every few days. A *Community Group* is an open forum anyone can join for free, and the W3C’s own FAQ asks members not to call its output “standards work” or “draft standards”. CG reports exist to make a later move to a Working Group easier: the contributor licence agreement is designed so that patent commitments carry over.[^1]
+*The specification’s status line.* The top of the WebMCP draft reads “Draft Community Group Report, 15 October 2026”, and its status section says plainly that it “is not a W3C Standard nor is it on the W3C Standards Track.”[^2] The date changes whenever the editors publish, which during 2026 has meant every few days. A *Community Group* is an open forum anyone can join for free, and the W3C’s own FAQ asks members not to call its output “standards work” or “draft standards”. CG reports exist to make a later move to a Working Group easier: the contributor licence agreement is designed so that patent commitments carry over.[^1]
 
 *The commit history.* The status line tells you that the draft changed; the repository tells you what changed. For WebMCP, the history of `webmachinelearning/webmcp` is the most precise record there is of when an API was renamed, added or removed, and it is the source for every date in Table 15.1.[^8]
 
-*chromestatus.* Each Chromium feature has an entry listing its owners, the blink-dev “intent” threads, and its trial stages with milestone numbers. It also has a “browser signals” block for other engines and a standards-maturity field.[^9] Read the stages and milestones as authoritative, since Chromium engineers maintain them. Read the signals block with care: on 14 October 2026 it still said “No signal” for both Firefox and Safari, months after both had published positions. The entry was last edited on 28 September.[^9] The lesson generalises: a status page is only as current as its last edit, so go to the primary record whenever one exists.
+*chromestatus.* Each Chromium feature has an entry listing its owners, the blink-dev “intent” threads, and its trial stages with milestone numbers. It also has a “browser signals” block for other engines and a standards-maturity field.[^9] Read the stages and milestones as authoritative, since Chromium engineers maintain them. Read the signals block with care: on 15 October 2026 it still said “No signal” for both Firefox and Safari, months after both had published positions. The entry was last edited on 28 September.[^9] The lesson generalises: a status page is only as current as its last edit, so go to the primary record whenever one exists.
 
-*Origin trial pages.* Chrome and Edge each have a registration page per trial, with the trial’s description, its expiry and its terms.[10,11]
+*Origin trial pages.* Chrome and Edge each have a registration page per trial, with the trial’s description, its expiry and its terms.[^10][^11]
 
-*Standards positions.* Mozilla and WebKit both run public GitHub repositories where anyone can ask for an engine’s view of a proposal. The outcome is a label: `position: neutral`, `position: oppose` and so on. The discussion in the issue is where the reasons live.[3,4]
+*Standards positions.* Mozilla and WebKit both run public GitHub repositories where anyone can ask for an engine’s view of a proposal. The outcome is a label: `position: neutral`, `position: oppose` and so on. The discussion in the issue is where the reasons live.[^3][^4]
 
 *TAG design reviews.* The TAG reviews proposals for architectural fit. Its labels track progress (“Progress: in progress”), the review type and the focus areas still pending, and, sometimes, a missing prerequisite.[^5]
 
@@ -46,7 +46,7 @@ Figure 15.1 puts the main events from all of these sources on one timeline.
 
 WebMCP reached Chromium in stages. chromestatus records a developer trial (the API behind a flag, for local testing) starting in Chrome 146, followed by an origin trial running from Chrome 149 through Chrome 156.[^9] Google announced the trial on 9 June 2026 with the words “In Chrome 149, you can sign up for the WebMCP origin trial.”[^12] On 28 September 2026 the trial gained an extension through Chrome 162. The reason chromestatus gives is unusually candid: “OT feedback has suggested improvements to the API, which we are implementing. The OT extension would enable us to get data on those improvements as well as to continue getting data on the rest of the feature.”[^9]
 
-Microsoft runs its own trial. The project’s implementation-status page says it is live in Edge 150, and the Edge registration page gives a trial expiration date of 30 March 2027.[13,11] Note that the two trials are measured differently: Chrome counts in milestones and Edge in calendar dates.
+Microsoft runs its own trial. The project’s implementation-status page says it is live in Edge 150, and the Edge registration page gives a trial expiration date of 30 March 2027.[^13][^11] Note that the two trials are measured differently: Chrome counts in milestones and Edge in calendar dates.
 
 For local development no token is needed. Chrome’s documentation tells you to enable `chrome://flags/#enable-webmcp-testing` and relaunch; that flag corresponds to the `WebMCPTesting` feature this book’s demos pass to Chromium on the command line.[^14]
 
@@ -74,7 +74,7 @@ A page can carry several tokens, and Chrome ignores tokens that are invalid or e
 
 Three details of the token model matter in practice.
 
-- *Third-party tokens.* Both trials accept them: chromestatus records third-party support for the Chrome trial, and the Edge trial record has `supportsThirdParty` set to `true`.[9,11] A third-party token lets a provider of embedded content, such as Supportly’s Helpdesk Widget from Chapter 7, enable the feature in its own script across every customer site. Chrome’s documentation adds a caution: a third-party token works only when injected by an external script, not in a meta tag, inline script or header.[^10]
+- *Third-party tokens.* Both trials accept them: chromestatus records third-party support for the Chrome trial, and the Edge trial record has `supportsThirdParty` set to `true`.[^9][^11] A third-party token lets a provider of embedded content, such as Supportly’s Helpdesk Widget from Chapter 7, enable the feature in its own script across every customer site. Chrome’s documentation adds a caution: a third-party token works only when injected by an external script, not in a meta tag, inline script or header.[^10]
 - *Extensions mean renewal.* When a trial is extended, Chrome emails registrants, and each origin has to renew and deploy a new token.[^10] Anyone who shipped a Chrome 149 token and expects it to work through Chrome 162 should check the registration console now.
 - *Measurement.* The trial measures adoption with a Chromium use counter named `kModelContextRegisterTool`.[^9] Google’s stated goal for the experiment is “understanding the API ergonomics for agentic workflows across various verticals such as web commerce and productivity”, along with “metrics for tool usage and latency.”[^9]
 
@@ -95,17 +95,17 @@ Origin trials exist to change an API. Chrome’s announcement calls trials “ti
 | 8 Oct 2026 | Declarative (HTML forms) API removed from the spec “for now” | #338 |
 | 8 Oct 2026 | `UnknownError` replaced with specific `DOMException` types | #339 |
 
-The browser and the draft don’t always move together. Chrome’s WebMCP documentation, updated on 7 October 2026, still says “There are two APIs you can use” and describes the declarative one; the spec removed that API the next day.[14,8] Chapter 8 covers what the trial still ships, and Appendix D walks through migrating code written before the May rename.
+The browser and the draft don’t always move together. Chrome’s WebMCP documentation, updated on 7 October 2026, still says “There are two APIs you can use” and describes the declarative one; the spec removed that API the next day.[^14][^8] Chapter 8 covers what the trial still ships, and Appendix D walks through migrating code written before the May move.
 
 > **Still in flux: the trial and the draft**
 >
 > *Error types.* Pull request #339 replaced `UnknownError` with specific exception types on 8 October 2026.[^8] Chromium 156 still returns `UnknownError` in the cases Chapters 6 and 7 measured, so code that branches on `err.name` should treat both as possible for now.
-> *The declarative API.* It is in Chrome’s trial and documentation, and out of the spec.[14,8]
+> *The declarative API.* It is in Chrome’s trial and documentation, and out of the spec.[^14][^8]
 > *Which improvements the extension tests.* chromestatus says the extension exists to gather data on API improvements suggested by trial feedback, but doesn’t list them.[^9]
 
 ### Detecting what you are running on
 
-With two trials, a flag, a renamed attribute and a policy that can switch the whole API off, a single `'modelContext' in document` check answers only part of the question. Listing 15.2 is a small module that answers all of it and registers tools only where that is safe.
+With two trials, a flag, a moved attribute and a policy that can switch the whole API off, a single `'modelContext' in document` check answers only part of the question. Listing 15.2 is a small module that answers all of it and registers tools only where that is safe.
 
 **Listing 15.2 — Feature detection across WebMCP builds (webmcp-support.js)**
 
@@ -191,24 +191,24 @@ For an adopter, the practical reading is simple. No WebKit implementation is com
 
 The TAG’s early review of the Community Group work was filed on 11 June 2026. Marcos Cáceres suggested expediting it, since a proposal to add WebMCP to a Working Group charter was already on the table, and W3C staff agreed.[^5] On 10 July the TAG labelled it “Progress: in progress” and set six focus areas as pending: API design, web architecture, security, privacy, accessibility and internationalisation. It also added the label that sums up the politics: “Missing: Multi-stakeholder support.”[^5]
 
-The public thread shows where the argument has settled. After a TAG breakout meeting in August, Farolino reported that the question that “keeps coming up over and over” was why WebMCP is shaped as an explicit capability layer rather than “more HTML semantics”. He asked that any negative resolution on those grounds come with evidence that semantics would be a sufficient alternative.[^5] Two adopters weighed in. Yoav Weiss, writing “as someone deploying WebMCP (under an Origin Trial in various Chromium browsers) to a large number of storefronts”, listed the Shopify storefront tools in use (browsing collections, managing orders, searching the catalogue, showing product variants, searching store policies) and said he didn’t “see a feasible declarative alternative to the imperative tools that agents can call.”[^5] A second commenter cited his company’s public benchmark, which reports UI actuation using about 5–10 times the tokens and cost per task, and running 4–5 times slower, than WebMCP. That figure is the vendor’s own; nobody else has reproduced it.[^5] TAG members asked people not to read too much into draft notes. Marcos Cáceres reminded participants that notes shared privately “do not represent the consensus of the TAG in any way, shape, or form.”[^5]
+The public thread shows where the argument has settled. After a TAG breakout meeting in August, Farolino reported that the question that “keeps coming up over and over” was why WebMCP is shaped as an explicit capability layer rather than “more HTML semantics”. He asked that any negative resolution on those grounds come with evidence that semantics would be a sufficient alternative.[^5] Two adopters weighed in. Yoav Weiss, writing “as someone deploying WebMCP (under an Origin Trial in various Chromium browsers) to a large number of storefronts”, listed the Shopify storefront tools in use (browsing collections, managing orders, searching the catalogue, showing product variants, searching store policies) and said he didn’t “see a feasible declarative alternative to the imperative tools that agents can call.”[^5] A second commenter cited his company’s public benchmark, which reports UI actuation using about 5–10 times the tokens and cost per task, and running 4–5 times slower, than WebMCP. That figure is the vendor’s own claim, and this book has not reproduced it.[^5] TAG members asked people not to read too much into draft notes. Marcos Cáceres reminded participants that notes shared privately “do not represent the consensus of the TAG in any way, shape, or form.”[^5]
 
 The latest public word from the TAG, on 6 October, is that the review is “taking a bit longer than usual.” On 9 October the editors asked the TAG to hold its position until after Mozilla’s refreshed position and after TPAC.[^5]
 
 > **Still in flux: the review outcomes**
 >
-> *The TAG’s conclusion.* No position had been published as of 14 October 2026, and the editors have asked for it to wait until after TPAC.[^5]
-> *Mozilla’s position.* It is being renegotiated around issue #236, and it could change the TAG’s “Missing: Multi-stakeholder support” label.[18,5]
+> *The TAG’s conclusion.* No position had been published as of 15 October 2026, and the editors have asked for it to wait until after TPAC.[^5]
+> *Mozilla’s position.* It is being renegotiated around issue #236, and it could change the TAG’s “Missing: Multi-stakeholder support” label.[^18][^5]
 > *WebKit’s position.* It is `oppose`, and the issue is closed.[^4]
 
 ## Who consumes WebMCP today
 
-Exposing tools is only half of the system. Something has to call them. The project’s implementation-status page is the only list of consumers in one place, and it is the project’s own claim rather than each vendor’s.[^13] As of 14 October 2026 it lists:
+Exposing tools is only half of the system. Something has to call them. The project’s implementation-status page is the only list of consumers in one place, and it is the project’s own claim rather than each vendor’s.[^13] As of 15 October 2026 it lists:
 
-- *Chrome:* the origin trial, live from Chrome 149. The trial describes itself as letting websites “register tools for use by agents hosted by the site or in Chrome.”[13,9]
+- *Chrome:* the origin trial, live from Chrome 149. The trial describes itself as letting websites “register tools for use by agents hosted by the site or in Chrome.”[^13][^9]
 - *Edge:* the origin trial, live in Edge 150.[^13]
-- *Brave:* “Experimental support is added to Leo AI chat.”[^13] The Brave issue behind it was closed as completed in July 2026. Its test plan turns on `brave://flags/#enable-webmcp-testing` and expects a “tools pill” in Leo’s sidebar when a page offers tools.[^19]
-- *ChatGPT Desktop:* “WebMCP is supported in ChatGPT Desktop.”[^13] OpenAI’s earlier agentic browser, ChatGPT Atlas, is gone: OpenAI announced its retirement in July 2026, alongside a desktop app with its own built-in browser.[^20]
+- *Brave:* “Experimental support is added to Leo AI chat.”[^13] The Brave issue behind it was first closed on 7 July 2026 but has been reopened twice since, most recently on 7 October, and it is open as of 15 October 2026. On 1 October a Brave engineer wrote that the feature is “flagged on in Nightly at the moment”. The issue’s test plan turns on `brave://flags/#enable-webmcp-testing` and expects a “tools pill” in Leo’s sidebar when a page offers tools.[^19]
+- *ChatGPT Desktop:* “WebMCP is supported in ChatGPT Desktop.”[^13] OpenAI’s earlier agentic browser, ChatGPT Atlas, is gone. OpenAI announced its retirement on 9 July 2026, alongside a desktop app with its own built-in browser, and its help centre now says that “ChatGPT Atlas has been retired and no longer receives updates.”[^20]
 - *Meta Ray-Ban Display:* support for web apps is “coming soon”, letting Meta AI on the glasses call tools registered with `document.modelContext.registerTool()`. It is off by default and enabled per device.[^13]
 - *Firefox and Safari:* links to their positions, plus Mozilla’s Bugzilla meta bug.[^13]
 
@@ -218,7 +218,7 @@ For planning, the order of confidence is: Chromium browsers with the trial (veri
 
 ## Community libraries
 
-Long before the browsers, the community had built WebMCP-shaped libraries. Chapter 4 described MCP-B’s role in the API’s history. Today its packages are the most widely used way to try WebMCP outside a Chromium trial. Each of the three main packages was at version 6.0.3 on 14 October 2026, published that same day, under the MIT licence:[^22]
+Long before the browsers, the community had built WebMCP-shaped libraries. Chapter 4 described MCP-B’s role in the API’s history. Today its packages are the most widely used way to try WebMCP outside a Chromium trial. Each of the three main packages was at version 6.0.3 on 15 October 2026, published the day before, under the MIT licence:[^22]
 
 | Package | Description (from the npm registry) |
 |---|---|
@@ -230,8 +230,8 @@ The documentation site registers a live tool with `document.modelContext.registe
 
 Three cautions apply to any library that tracks a moving draft:
 
-1. *A polyfill is a second implementation with its own schedule.* When the spec dropped the declarative API on 8 October, the polyfill kept “temporary declarative tools”.[8,22] That is a reasonable choice for users, but it means the polyfill and the draft can disagree.
-2. *Version numbers move as fast as the spec.* All three packages were republished on the day this chapter was checked. Pin exact versions, and read the changelog before upgrading.
+1. *A polyfill is a second implementation with its own schedule.* When the spec dropped the declarative API on 8 October, the polyfill kept “temporary declarative tools”.[^8][^22] That is a reasonable choice for users, but it means the polyfill and the draft can disagree.
+2. *Version numbers move as fast as the spec.* All three packages were republished on 14 October 2026, the day before this chapter was checked. Pin exact versions, and read the changelog before upgrading.
 3. *A polyfill cannot create consumers.* It gives your page a `document.modelContext` to register on. Calls still need an agent that knows how to reach it, such as a matching extension. The detection code in Listing 15.2 can’t tell native support from a polyfill, and for registration purposes it doesn’t need to.
 
 ## From Community Group to Working Group
@@ -248,25 +248,25 @@ The last point is the political core of this chapter. Two Chromium-based browser
 
 ### What happened in 2026
 
-The question of a WG came up within a day of the positions being requested. On 28 May 2026, the WebKit engineer who would post WebKit’s position a week later opened issue #192, noting that “Community Groups do not create W3C standards” and asking whether WebMCP should move to the WG.[^25] W3C staff supported an early rechartering of the Web Machine Learning WG to take it in, and on 9 June a pull request proposed adding WebMCP to that group’s charter “as a tentative deliverable.”[6,25] The WebML WG is chartered until 30 April 2027.[^26]
+The question of a WG came up within a day of the positions being requested. On 28 May 2026, the WebKit engineer who would post WebKit’s position a week later opened issue #192, noting that “Community Groups do not create W3C standards” and asking whether WebMCP should move to the WG.[^25] W3C staff supported an early rechartering of the Web Machine Learning WG to take it in, and on 9 June a pull request proposed adding WebMCP to that group’s charter “as a tentative deliverable.”[^6][^25] The WebML WG is chartered until 30 April 2027.[^26]
 
 That route ran into trouble almost immediately. WebKit’s position, published the same month, called the machine-learning venue wrong for the work.[^4] On 18 June the author of #192 clarified that they had proposed discussing the move, not supporting it: “We think WebML WG is the incorrect working group, but WebMCP should be part of some working group.”[^25] On 13 August the WG recorded a resolution that it “has reviewed the charter proposal and approves the direction. WebKit position duly noted.” Marcos Cáceres replied that it was “baffling how you can record a resolution when a member of the working group has objected,” and Apple disputed the minutes the next day.[^25] The same day, on the charter pull request, Cáceres recorded “that Apple is opposed to this going working group. Expect a formal objection if this is merged.” He added: “We'd be open to discussing a different venue at the W3C and doing this properly from first principles (i.e., some new agentic web CG/WG).”[^6]
 
 A formal objection is not just a strong comment. Under the W3C Process, Formal Objections “receive formal consideration and a formal response”. If the Team cannot resolve one through investigation and mediation, it goes to the W3C Council.[^27] Any charter that names WebMCP and draws an objection from Apple faces that procedure.
 
-On 28 September W3C staff changed course. The “latest thinking,” wrote Philippe le Hégaret, the W3C’s chartering facilitator, on the charter pull request, “is to have a working group dedicated to develop specifications that facilitate web pages and applications to be leveraged by LLMs and AI agents,” while the WebML WG would “stay focused on developing APIs for enabling efficient machine learning inference in the browser.”[^6] The same day a charter proposal for an Agentic Web Working Group appeared, stated to “replace the previous thinking”, and on 13 October the WebML pull request was closed.[7,6]
+On 28 September W3C staff changed course. The “latest thinking,” wrote Philippe le Hégaret, the W3C’s Chartering Facilitator,[^28] on the charter pull request, “is to have a working group dedicated to develop specifications that facilitate web pages and applications to be leveraged by LLMs and AI agents,” while the WebML WG would “stay focused on developing APIs for enabling efficient machine learning inference in the browser.”[^6] The same day a charter proposal for an Agentic Web Working Group appeared, stated to “replace the previous thinking”, and on 13 October the WebML pull request was closed.[^7][^6]
 
 ### The Agentic Web Working Group charter
 
 The draft charter’s mission is “to develop specifications that facilitate web pages and applications to be leveraged by LLMs and AI agents.” Its scope covers describing site capabilities and context for agents, representing agent identity and delegation, transparency about agent interactions, “expressing permissions, policies, and constraints on agent actions”, and guidance for authors. It explicitly excludes model APIs, crawler controls, bot detection and agent-to-server communications, among others.[^24] Its one named normative deliverable is WebMCP, “adopted from the Web Machine Learning Community Group”.[^24]
 
-It is still very much a draft. On 14 October 2026 the chairs, dates, team contact and timeline were template placeholders, and the deliverables section still carried both template options: whether the group intends to stop at Candidate Recommendation or go on to Recommendation.[^24] The W3C announced the start of charter refinement on 1 October and estimated that it “will last until approximately 10 November 2026.”[^28] The Process Document requires that phase to last at least 28 days, and an Advisory Committee review follows it.[^27] The strategy issue lists the TAG review, the accessibility considerations and a threat model among its “known or potential areas of concern”.[^7]
+It is still very much a draft. On 15 October 2026 the chairs, dates, team contact and timeline were template placeholders, and the deliverables section still carried both template options: whether the group intends to stop at Candidate Recommendation or go on to Recommendation.[^24] The W3C announced the start of charter refinement on 1 October and estimated that it “will last until approximately 10 November 2026.”[^28] The Process Document requires that phase to last at least 28 days, and an Advisory Committee review follows it.[^27] The strategy issue lists the TAG review, the accessibility considerations and a threat model among its “known or potential areas of concern”.[^7]
 
-The draft’s scope is broader than WebMCP, and in places it echoes the critics. Agent transparency and “permissions, policies, and constraints on agent actions” are close to the consent and control questions WebKit raised.[24,4] Whether WebKit would accept this group as the “new agentic web CG/WG” Apple said it was open to, and whether it would accept WebMCP as a starting deliverable rather than a proposal to set aside, is not on the public record. Farolino’s answer to WebKit’s call for a new group was: “I have no objection to moving WebMCP exactly as-is to such a WG.”[^25]
+The draft’s scope is broader than WebMCP, and in places it echoes the critics. Agent transparency and “permissions, policies, and constraints on agent actions” are close to the consent and control questions WebKit raised.[^24][^4] Whether WebKit would accept this group as the “new agentic web CG/WG” Apple said it was open to, and whether it would accept WebMCP as a starting deliverable rather than a proposal to set aside, is not on the public record. Farolino’s answer to WebKit’s call for a new group was: “I have no objection to moving WebMCP exactly as-is to such a WG.”[^25]
 
 ### The paths, and what each means for you
 
-Figure 15.2 lays out the routes visible on 14 October 2026.
+Figure 15.2 lays out the routes visible on 15 October 2026.
 
 ![Figure 15.2 — From Community Group draft to standard: the WebML WG route (closed), the proposed Agentic Web WG (in charter refinement) and continued incubation, with what each means for adopters.](images/figure-15-2.png)
 
@@ -274,14 +274,14 @@ Figure 15.2 lays out the routes visible on 14 October 2026.
 
 - *The Agentic Web WG charters with WebMCP in scope.* The specification moves to the Recommendation Track with patent commitments and horizontal review. Expect a stream of changes from TAG and accessibility review, and expect the interoperability bar to keep the specification at Candidate Recommendation, or below it, until a second engine implements it. For your code, nothing changes on charter day. Changes come later, through review.
 - *The charter is delayed or WebMCP is taken out of it.* WebMCP stays a CG report. Chromium-based browsers can keep running trials or ship it, but it would remain a Chromium-only feature with no standards-track commitments.
-- *The API is reshaped before either happens.* If #236 succeeds, the core becomes a general cross-environment function-call mechanism, and agents become one consumer.[^18] Mozilla might move off neutral; WebKit’s objection to a separate agent-facing layer would remain.[3,4] Your tools would survive as functions with names, descriptions and schemas, but registration and invocation code would change.
+- *The API is reshaped before either happens.* If #236 succeeds, the core becomes a general cross-environment function-call mechanism, and agents become one consumer.[^18] Mozilla might move off neutral; WebKit’s objection to a separate agent-facing layer would remain.[^3][^4] Your tools would survive as functions with names, descriptions and schemas, but registration and invocation code would change.
 
 None of these paths removes the advice from Chapter 4. Build tools as thin wrappers over logic your interface already uses, feature-detect at run time, and treat WebMCP as a progressive enhancement. The cost of following a breaking change is then a few lines in one module.
 
 > **Still in flux: the venue**
 >
-> *Charter refinement.* It is expected to end around 10 November 2026; extensions are announced on the strategy issue.[28,7]
-> *Apple’s response to the new charter.* Apple threatened a formal objection to the WebML route. Its view of the Agentic Web WG draft is not on the public record as of 14 October 2026.[6,7]
+> *Charter refinement.* It is expected to end around 10 November 2026; extensions are announced on the strategy issue.[^28][^7]
+> *Apple’s response to the new charter.* Apple threatened a formal objection to the WebML route. Its view of the Agentic Web WG draft is not on the public record as of 15 October 2026.[^6][^7]
 > *Recommendation or not.* The draft charter has not yet chosen whether the group will aim for full Recommendation.[^24]
 
 ## Keeping this chapter current yourself
@@ -376,13 +376,13 @@ A few design choices are worth explaining. The script reads GitHub issue pages r
 
 Here is the snapshot it produced when this chapter was checked:
 
-**Listing 15.4 — The watcher’s snapshot on 14 October 2026 (snapshots/2026-10-14.json)**
+**Listing 15.4 — The watcher’s snapshot on 15 October 2026 (snapshots/2026-10-15.json)**
 
 ```json
 {
-  "checkedAt": "2026-10-14T22:51:34.750Z",
-  "spec": "Draft Community Group Report, 14 October 2026",
-  "commits": "2026-10-14T22:00:40Z Fix inactive document unregistration's notification algorithm (#345)",
+  "checkedAt": "2026-10-15T09:10:15.852Z",
+  "spec": "Draft Community Group Report, 15 October 2026",
+  "commits": "2026-10-15T00:00:42Z Handle re-registration during input serialization (#347)",
   "chromestatus": {
     "trialFrom": 149,
     "trialThrough": 162
@@ -396,8 +396,7 @@ Here is the snapshot it produced when this chapter was checked:
   ],
   "tag": [
     "Missing: Multi-stakeholder support",
-    "Progress: in progress",
-    "Progress: untriaged"
+    "Progress: in progress"
   ]
 }
 ```
@@ -410,11 +409,11 @@ Run it weekly. The fields that matter most for planning are `chromestatus.trialT
 - *Put the trial on someone’s calendar.* Chrome’s trial runs through Chrome 162, Edge’s through 30 March 2027, and an extension means new tokens. Assign an owner for registration, renewal and the token in your deployment configuration.
 - *Budget for churn.* Eight behaviour-changing spec changes in 2026 is the baseline (Table 15.1). Keep WebMCP code in one module, pin library versions, and run the Chapter 14 tests against each new Chromium release.
 - *Treat standards politics as a risk, not a verdict.* Neutral can become positive if the API is reshaped, and a Working Group would add review and stability. Opposition from WebKit means no Safari support for this design. Neither changes whether well-designed tools help your users in browsers that have them.
-- *Feed the process.* Google’s trial asks for feedback on the API shape, and the TAG thread shows that deployment data carries weight: Shopify storefront tools were cited as an argument.[12,5] Real usage from your product is the most persuasive input you can give.
+- *Feed the process.* Google’s trial asks for feedback on the API shape, and the TAG thread shows that deployment data carries weight: Shopify storefront tools were cited as an argument.[^12][^5] Real usage from your product is the most persuasive input you can give.
 
 ## Chapter summary
 
-- WebMCP is a Draft Community Group Report (14 October 2026) of the W3C Web Machine Learning CG. It is not a W3C standard and not on the Standards Track. Community Groups incubate; only a Working Group can standardise.
+- WebMCP is a Draft Community Group Report (15 October 2026) of the W3C Web Machine Learning CG. It is not a W3C standard and not on the Standards Track. Community Groups incubate; only a Working Group can standardise.
 - Chrome’s origin trial runs from Chrome 149, originally through 156 and since 28 September 2026 extended through 162. Edge’s trial runs in Edge 150 until 30 March 2027. Both accept third-party tokens. Tokens go in a meta tag, an HTTP header or, for third parties, an external script, and an extension means renewing them.
 - Trials exist to change APIs. In 2026 the spec removed `provideContext()`, moved `modelContext` to `Document`, made `registerTool()` return a promise, removed the declarative API and changed its error types. The trial and the documentation don’t always match the draft.
 - Feature detection should cover the secure context, the methods and events, the `"tools"` permissions policy and the old `navigator` surface. In Chromium 156, a page under `Permissions-Policy: tools=()` still sees the API, but calls are rejected with `NotAllowedError`.
@@ -430,27 +429,27 @@ Chapter 16 turns from the platform to the business: which journeys to expose fir
 ## Notes
 
 [^1]: W3C, “Community and Business Groups: Frequently Asked Questions”, including “Are Community and Business Group reports W3C standards?”. <https://www.w3.org/community/about/faq/>
-[^2]: WebMCP specification, Draft Community Group Report, 14 October 2026, header, “Status of this document” and editors. <https://webmachinelearning.github.io/webmcp/>
-[^3]: mozilla/standards-positions issue #1412, “WebMCP”: request (28 May 2026), Benjamin VanderSloot’s assessment (1 June 2026), label “position: neutral” (5 August 2026), and the exchange of 24–26 August 2026. <https://github.com/mozilla/standards-positions/issues/1412>
+[^2]: WebMCP specification, Draft Community Group Report, 15 October 2026, header, “Status of this document” and editors. <https://webmachinelearning.github.io/webmcp/>
+[^3]: mozilla/standards-positions issue #1412, “WebMCP”: request (28 May 2026), Benjamin VanderSloot’s assessment (1 June 2026; GitHub account `bvandersloot-mozilla`, which GitHub links to commits authored as “Benjamin VanderSloot <bvandersloot@mozilla.com>”), label “position: neutral” (5 August 2026), and the exchange of 24–26 August 2026. <https://github.com/mozilla/standards-positions/issues/1412>
 [^4]: WebKit/standards-positions issue #670, “WebMCP”: WebKit’s position comment (3 June 2026), label “position: oppose” (11 June 2026), concern and topic labels, and the follow-up of 17 June 2026. <https://github.com/WebKit/standards-positions/issues/670>
 [^5]: w3ctag/design-reviews issue #1238, “Incubation: WebMCP”: filed 11 June 2026; labels applied 10 July 2026; comments of 6, 18, 19 and 20 August and 6 and 9 October 2026. <https://github.com/w3ctag/design-reviews/issues/1238>
 [^6]: w3c/charter-drafts pull request #829, “[wg/webmachinelearning] Adds WebMCP in scope” (opened 9 June 2026; Apple’s comment of 13 August 2026; closed 13 October 2026). <https://github.com/w3c/charter-drafts/pull/829>
 [^7]: w3c/strategy issue #576, “[wg/agenticweb] Agentic Web Group Charter” (opened 28 September 2026; label “In Charter Refinement”, 1 October 2026). <https://github.com/w3c/strategy/issues/576>
-[^8]: Commit history of webmachinelearning/webmcp, branch `main`, read from a clone on 14 October 2026; the commits named are fe84c67 (#132, 5 March 2026), c7b5c70 (#184, 27 May 2026), ec37ec4 (#200, 8 June 2026), d29b8d7 (#225, 21 July 2026), a724ab1 (#246, 17 August 2026), d61d0e6 (#330, 30 September 2026), 14ae813 (#338, 8 October 2026), b206dae (#339, 8 October 2026) and 1636b33 (#345, 14 October 2026). <https://github.com/webmachinelearning/webmcp/commits/main>
+[^8]: Commit history of webmachinelearning/webmcp, branch `main`, read from a clone on 15 October 2026; the commits named are fe84c67 (#132, 5 March 2026), c7b5c70 (#184, 27 May 2026), ec37ec4 (#200, 8 June 2026), d29b8d7 (#225, 21 July 2026), a724ab1 (#246, 17 August 2026), d61d0e6 (#330, 30 September 2026), 14ae813 (#338, 8 October 2026), b206dae (#339, 8 October 2026) and the newest, 3279798 (#347, “Handle re-registration during input serialization”, committed 14 October 2026 at 21:00 UTC−3, which is 15 October in UTC). <https://github.com/webmachinelearning/webmcp/commits/main>
 [^9]: chromestatus.com, “WebMCP” (feature 5117755740913664), read through its JSON API: origin-trial stage (Chrome 149 to 156, third-party support, use counter `kModelContextRegisterTool`), extension stage created 28 September 2026 (through Chrome 162, with the stated reason), developer-trial stage (Chrome 146), standards maturity “Incubation”, and browser signals; entry last updated 28 September 2026. <https://chromestatus.com/feature/5117755740913664>
 [^10]: Chrome for Developers, “Get started with origin trials” (last updated 7 November 2024): tokens in a meta tag, an HTTP header or script; third-party tokens; multiple tokens per page; renewal when a trial is extended; “Chrome ignores invalid or expired tokens.” <https://developer.chrome.com/docs/web-platform/origin-trials>
 [^11]: Microsoft Edge Origin Trials, “WebMCP” trial page: description, “Trial Expiration Date: March 30, 2027”, registration, and the trial record (`supportsThirdParty: true`, `edgeOnly: false`). <https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a>
 [^12]: Chrome for Developers, “Join the WebMCP origin trial” (published 9 June 2026). <https://developer.chrome.com/blog/ai-webmcp-origin-trial>
 [^13]: webmachinelearning/webmcp, “Browser and Agent Implementation Status” (implementation-status.md). <https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md>
 [^14]: Chrome for Developers, “WebMCP” (published 18 May 2026, updated 7 October 2026): “Get started”, “Local WebMCP” and “Use WebMCP APIs”. <https://developer.chrome.com/docs/ai/webmcp>
-[^15]: WebMCP specification, Draft Community Group Report, 14 October 2026, §4.1 (the `[SecureContext]` `modelContext` attribute on `Document`), §4.2 (`ModelContext` IDL) and §4.4 “Permissions policy integration”. <https://webmachinelearning.github.io/webmcp/#api>
-[^16]: WebMCP specification, Draft Community Group Report, 14 October 2026, security and privacy considerations: the `Permissions-Policy: tools=()` mitigation. <https://webmachinelearning.github.io/webmcp/>
+[^15]: WebMCP specification, Draft Community Group Report, 15 October 2026, §4.1 (the `[SecureContext]` `modelContext` attribute on `Document`), §4.2 (`ModelContext` IDL) and §4.4 “Permissions policy integration”. <https://webmachinelearning.github.io/webmcp/#api>
+[^16]: WebMCP specification, Draft Community Group Report, 15 October 2026, security and privacy considerations: the `Permissions-Policy: tools=()` mitigation. <https://webmachinelearning.github.io/webmcp/>
 [^17]: Bugzilla bug 2018306, “[meta] Implement a prototype WebMCP API” (Core :: Machine Learning: General; filed 20 February 2026; status NEW), read through the Bugzilla REST API. <https://bugzilla.mozilla.org/show_bug.cgi?id=2018306>
 [^18]: webmachinelearning/webmcp issue #236, “Reposition feature as a generic communication tool?” (opened 3 August 2026 by Jake Archibald), including comments of 26–27 August and 22–24 September 2026. <https://github.com/webmachinelearning/webmcp/issues/236>
-[^19]: brave/brave-browser issue #55232, “[AI Chat]: Add support for the WebMCP protocol to Leo” (opened 5 May 2026; closed as completed in brave-core#37660 on 7 July 2026), including its test plan. <https://github.com/brave/brave-browser/issues/55232>
-[^20]: Michael Kan, “OpenAI to Retire ChatGPT Atlas Browser Less Than a Year After Launch”, PCMag, 9 July 2026. OpenAI’s own help article, “ChatGPT Atlas retirement”, refused automated fetches on 14 October 2026; its search-result summary reads “ChatGPT Atlas has been retired and no longer receives updates.” <https://www.pcmag.com/news/openai-to-retire-chatgpt-atlas-browser-less-than-a-year-after-launch> and <https://help.openai.com/en/articles/20001371-chatgpt-atlas-retirement>
+[^19]: brave/brave-browser issue #55232, “[AI Chat]: Add support for the WebMCP protocol to Leo” (opened 5 May 2026; closed 7 July 2026, reopened 27 August, closed 1 October, reopened 7 October; open on 15 October 2026), including its test plan and the comment of 1 October 2026. Event dates read through the GitHub REST API. <https://github.com/brave/brave-browser/issues/55232>
+[^20]: OpenAI Help Center, “ChatGPT Atlas retirement”, read on 15 October 2026 (the page refuses direct automated requests, so it was read through a text-rendering proxy): “ChatGPT Atlas has been retired and no longer receives updates.” Michael Kan, “OpenAI to Retire ChatGPT Atlas Browser Less Than a Year After Launch”, PCMag, 9 July 2026, for the announcement and the targeted deprecation date of 9 August 2026. <https://help.openai.com/en/articles/20001371-chatgpt-atlas-retirement> and <https://www.pcmag.com/news/openai-to-retire-chatgpt-atlas-browser-less-than-a-year-after-launch>
 [^21]: MCP-B, “WebMCP documentation and developer tools” (docs.mcp-b.ai home page, with its live `registerTool()` example and the Rook extension). <https://docs.mcp-b.ai>
-[^22]: npm registry records for `@mcp-b/global`, `@mcp-b/webmcp-polyfill` and `usewebmcp` (each at version 6.0.3, published 14 October 2026; MIT licence; package descriptions as quoted). <https://registry.npmjs.org/@mcp-b/global>, <https://registry.npmjs.org/@mcp-b/webmcp-polyfill>, <https://registry.npmjs.org/usewebmcp>
+[^22]: npm registry records for `@mcp-b/global`, `@mcp-b/webmcp-polyfill` and `usewebmcp` (each at version 6.0.3 on 15 October 2026, published 14 October 2026; MIT licence; package descriptions as quoted). <https://registry.npmjs.org/@mcp-b/global>, <https://registry.npmjs.org/@mcp-b/webmcp-polyfill>, <https://registry.npmjs.org/usewebmcp>
 [^23]: WebMCP-org/npm-packages repository, “NPM packages for MCP-B: Transport layers, React hooks, and browser tools for the Model Context Protocol”. <https://github.com/WebMCP-org/npm-packages>
 [^24]: W3C, “Agentic Web Working Group Charter” (DRAFT), including Scope, Out of Scope, Deliverables and Success Criteria. <https://w3c.github.io/charter-drafts/2026/agenticweb-wg.html>
 [^25]: webmachinelearning/webmcp issue #192, “Transitioning WebMCP to the working group” (opened 28 May 2026), including the comments of 18 June and 13–14 August 2026. <https://github.com/webmachinelearning/webmcp/issues/192>
