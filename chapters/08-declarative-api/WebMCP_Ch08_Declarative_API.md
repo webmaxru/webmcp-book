@@ -12,11 +12,11 @@ Look at Fjord Table’s booking page as an agent would. Long before anyone wrote
 
 In Chrome’s implementation you can. Add `toolname` and `tooldescription` to a `<form>`, and the browser builds a tool definition from the form’s controls. When an agent calls the tool, the browser fills in the fields in front of the user and either waits for the user to press Submit or submits the form itself. Your page sees an ordinary `submit` event with one new property, `agentInvoked`, and can answer the agent through `respondWith()`. There are also two events for the start and end of a call and two CSS pseudo-classes for highlighting the form the agent is working on.[^2]
 
-This chapter covers all of that, using Fjord Table’s two forms. It also covers something unusual for a book chapter. On 8 October 2026, the WebMCP specification removed the declarative API, six days before this chapter was written.[^3] The API still ships in Chrome, Chrome’s documentation still describes it, and the Chrome team has said it plans to ship it “shortly after” the imperative API.[^3] But no specification describes it now. That makes the browser’s behaviour the only reference, so I tested it. Everything marked *observed* in this chapter comes from Chromium 156.0.8078.4 with the `WebMCPTesting` feature enabled (the switch behind `chrome://flags/#enable-webmcp-testing`), run on 14 October 2026. Each observation is a test in the book’s companion repository, so you can check it against whatever Chrome you are running.[^4]
+This chapter covers all of that, using Fjord Table’s two forms. It also covers something unusual for a book chapter. On 8 October 2026, the WebMCP specification removed the declarative API, six days before this chapter was written.[^3] The API still ships in Chrome, in the WebMCP origin trial and behind the testing flag, Chrome’s documentation still describes it and links the trial, and the Chrome team has said it plans to ship it “shortly after” the imperative API.[^3] But no specification describes it now. That makes the browser’s behaviour the only reference, so I tested it. Everything marked *observed* in this chapter comes from Chromium 156.0.8078.4 with the `WebMCPTesting` feature enabled (the switch behind `chrome://flags/#enable-webmcp-testing`), run on 14 October 2026. Each observation is a test in the book’s companion repository, so you can check it against whatever Chrome you are running.[^4]
 
 > **Still in flux: out of the spec, still in Chrome**
 >
-> *The spec.* Pull request #338, “Remove declarative API from spec,” was opened on 7 October 2026 and merged on 8 October. It deleted the specification’s placeholder section on declarative WebMCP, which had been “entirely a TODO,” along with its two placeholder algorithms. It also rewrote the explainer’s README to say the API “is being explored separately” and “is not part of the specification at this time.”[^3] The draft of 14 October 2026 defines only `registerTool()`, `getTools()`, `executeTool()` and the tool events.[^5]
+> *The spec.* Pull request #338, “Remove declarative API from spec,” was opened on 7 October 2026 and merged on 8 October. It deleted the specification’s placeholder section on declarative WebMCP, which had been “entirely a TODO,” along with its two placeholder algorithms. It also rewrote the explainer’s README to say the API “is being explored separately” and “is not part of the specification at this time.”[^3] The current draft, dated 15 October 2026, defines only `registerTool()`, `getTools()`, `executeTool()` and the tool events.[^5]
 >
 > *Chrome.* Chrome’s “Declarative API” page (last updated 25 September 2026) still documents every attribute, event and pseudo-class in this chapter, and Chrome’s WebMCP overview still lists a declarative demo.[^2][^6] On 13 October 2026 the author of the removal PR, who also co-authors Chrome’s WebMCP documentation, added: “The Chrome team plans to ship the imperative API **first**, with the declarative API following shortly after.”[^3]
 >
@@ -339,16 +339,17 @@ form.addEventListener('submit', (event) => {
 
   const outcome = availability.find(request).then(async (slot) => {
     if (!slot) {
-      // Recoverable: say what went wrong and what to try next.
+      // A refusal (Chapter 11): another time is the guest's choice to make.
       const reason =
         `No table for ${request.partySize} at ${request.time} on ${request.date}.`;
       showProblem(reason);
-      return { booked: false, reason,
-               next: 'Call search_availability and offer the guest another time.' };
+      return { status: 'refused', code: 'SLOT_UNAVAILABLE',
+               message: `${reason} Call search_availability and ask the guest ` +
+                        'which other time they want.' };
     }
     const { reference, seating } = await availability.book(request);
     showConfirmation(reference, request);
-    return { booked: true, reference, date: request.date, time: request.time,
+    return { status: 'booked', reference, date: request.date, time: request.time,
              partySize: request.partySize, seating };
   });
 
@@ -357,14 +358,14 @@ form.addEventListener('submit', (event) => {
   // Clear the form only after the agent has its answer: resetting a form
   // while its tool call is still open cancels the call (Chromium 156).
   outcome.then((result) => {
-    if (result.booked) setTimeout(() => form.reset());
+    if (result.status === 'booked') setTimeout(() => form.reset());
   });
 });
 ```
 
 `agentInvoked` stays true for the whole call, including when the person presses the button after the agent has filled in the form. In Chromium 156, a person’s click on the submit button of an agent-filled form produced a `submit` event with `agentInvoked === true` (observed).[^4] That is what lets Listing 8.6 send the reference number back to the agent that started the booking. A booking the person starts on their own takes the same path without the `respondWith()` call.
 
-As in Chapter 5, a recoverable failure is a value, not an exception. If the sitting is gone, the agent receives `{ booked: false, reason, next }` and can search again. If the promise passed to `respondWith()` rejects instead, the agent gets an error with the generic text “respondWith promise was rejected” (observed). Your error message is not passed on, so the agent learns nothing it can act on.[^4]
+As in Chapter 5, a failure the agent should hear about is a value, not an exception. If the sitting is gone, the agent receives `{ status: 'refused', code: 'SLOT_UNAVAILABLE', message }`. That is Chapter 11’s status for “a rule says no”: another time would work, but choosing it is the guest’s decision, so the message tells the agent to search again and ask. If the promise passed to `respondWith()` rejects instead, the agent gets an error with the generic text “respondWith promise was rejected” (observed). Your error message is not passed on, so the agent learns nothing it can act on.[^4]
 
 The last lines of Listing 8.6 come from a bug the tests found. The first version reset the booking form inside `showConfirmation()`, before the promise passed to `respondWith()` had resolved. In Chromium 156, resetting a form while its tool call is open cancels the call. The agent got `Canceled: Tool execution cancelled by a form reset`, even though the booking had gone through (observed).[^4] Waiting for the promise wasn’t enough either: a reset in the promise’s own `.then()` still canceled the call. The browser handles the response asynchronously, so the reset has to wait one more task, which is what the `setTimeout()` does. Don’t reset, remove or rename a tool’s form until the agent has its answer.
 
@@ -385,7 +386,7 @@ Table 8.2 collects what the agent receives in each case.
 
 Source: this chapter’s tests and probes.[^4]
 
-Every failure in my tests reached an in-page agent as an `UnknownError`, except a cancellation the agent asked for itself, which was an `AbortError` (observed).[^4] For imperative tools, the spec replaced `UnknownError` with more specific `DOMException` types on 8 October 2026, but that change covers only what the spec defines, and declarative tools are not part of it.[^16]
+Every failure in my tests reached an in-page agent as an `UnknownError`, except a cancellation the agent asked for itself, which was an `AbortError` (observed).[^4] For imperative tools, the spec replaced `UnknownError` with more specific `DOMException` types on 8 October 2026, but that change covers only what the spec defines, and declarative tools are not part of it.[^16] Chromium 156 still returns `UnknownError` for the imperative cases too; that is the browser lagging the draft, not a bug (Chapter 5).
 
 ## Answering across a navigation: JSON-LD
 
@@ -585,17 +586,17 @@ The tests also check the static parts. Each HTML listing in this chapter is a fi
 Fjord Table now has two ways to be agent-ready. Chapters 4 and 5 built the imperative version: `search_availability` and `book_table` registered from JavaScript, with a confirmation dialog in the site’s own UI. This chapter rebuilt the same two tools from the forms the page already had:
 
 - `search_availability` is the search form with three attributes and `toolautosubmit`. Its submit handler (Listing 8.5) answers people and agents with the same results, and a custom validity rule tells both that the restaurant is closed on Mondays. If the script doesn’t load, the form navigates to `results.html`, whose JSON-LD answers the agent (Listing 8.7).
-- `book_table` is the booking form without `toolautosubmit`. The agent fills it in, the page highlights it and explains what happened (Listings 8.8 and 8.9), and only the guest’s click books the table. The handler then returns the reference, or a recoverable failure (Listing 8.6).
+- `book_table` is the booking form without `toolautosubmit`. The agent fills it in, the page highlights it and explains what happened (Listings 8.8 and 8.9), and only the guest’s click books the table. The handler then returns the reference, or a `refused` result when the sitting is gone (Listing 8.6).
 
 The complete demo is in the companion repository, in `chapters/08-declarative-api/`. Its README maps each file to its listing. Chapter 9 brings the pieces together into one app and walks through it end to end with Chrome’s own tools.
 
 ## Chapter summary
 
-- The declarative API turns an HTML `<form>` into a WebMCP tool with `toolname` and `tooldescription`, plus `toolparamdescription` on controls whose label doesn’t say enough. It was removed from the WebMCP specification on 8 October 2026 (PR #338) and now lives only in an explainer and in Chrome. The Chrome team says it plans to ship it after the imperative API. Treat it as a progressive enhancement and its details as Chromium 156 behaviour.
+- The declarative API turns an HTML `<form>` into a WebMCP tool with `toolname` and `tooldescription`, plus `toolparamdescription` on controls whose label doesn’t say enough. It was removed from the WebMCP specification on 8 October 2026 (PR #338) but still ships in Chrome’s origin trial, so it now lives only in an explainer and in Chrome. The Chrome team says it plans to ship it after the imperative API. Treat it as a progressive enhancement and its details as Chromium 156 behaviour.
 - The browser synthesizes the input schema from the form. In Chromium 156: labels become descriptions, `required`, `min`, `max` and options carry over, dates get a format hint, times get a regular expression in the wrong keyword, and length limits are dropped. Check what agents see with `getTools()` and keep a copy in your tests.
 - Unlike imperative calls, Chromium checks declarative arguments against the form: unknown parameters and impossible values are rejected before anything is filled in.
 - A call fills the form (with trusted `input` and `change` events), fires `toolactivated`, highlights the form and its submit button, and waits. Without `toolautosubmit`, the person’s click on Submit completes the call, which is a built-in confirmation step. Use `toolautosubmit` only for forms that read.
-- In the `submit` handler, `event.agentInvoked` tells you an agent is waiting. Call `preventDefault()`, then `respondWith()` with a promise for the result. Return recoverable failures as values, because rejected promises reach the agent as a generic error. Don’t reset or remove the form until the agent has its answer: either cancels the call.
+- In the `submit` handler, `event.agentInvoked` tells you an agent is waiting. Call `preventDefault()`, then `respondWith()` with a promise for the result. Return failures as values in Chapter 11’s shapes, because rejected promises reach the agent as a generic error. Don’t reset or remove the form until the agent has its answer: either cancels the call.
 - If the form navigates instead, Chromium returns the next page’s JSON-LD as an array, read when parsing finishes. Render it on the server. How cross-document responses should work is still open (issue #135).
 - `toolactivated` and `toolcancel` fire at `document.modelContext` and are now in the spec for all tools. `toolcancel` fired when the agent canceled, but not when the page reset or removed the form. Chrome’s guide says otherwise.
 - `:tool-form-active` and `:tool-submit-active` style the form in use. Wrap them in `@supports selector(…)`, because in other browsers the selector is invalid.
@@ -608,19 +609,19 @@ The complete demo is in the companion repository, in `chapters/08-declarative-ap
 [^2]: Chrome for Developers, “Declarative API” (published 18 May 2026, last updated 25 September 2026), sections “Tool registration,” “Submit the form” and “Modify focus indicator.” <https://developer.chrome.com/docs/ai/webmcp/declarative-api>
 [^3]: webmachinelearning/webmcp pull request #338, “Remove declarative API from spec” (opened 7 October 2026, merged 8 October 2026), its changes to `index.bs` and `README.md`, and the PR author’s comment of 13 October 2026. <https://github.com/webmachinelearning/webmcp/pull/338>
 [^4]: Observed in Chromium 156.0.8078.4 (Playwright 1.64 build) with `--enable-features=WebMCPTesting`, 14 October 2026. The tests are in the companion repository, `chapters/08-declarative-api/tests/run-tests.mjs`; the one-off probes behind Table 8.1 are summarized in that folder’s README. <https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/08-declarative-api>
-[^5]: WebMCP specification, Draft Community Group Report, 14 October 2026, §4.2 ModelContext interface, §4.3 Events (ToolActivatedEvent, ToolCancelEvent). <https://webmachinelearning.github.io/webmcp/>
+[^5]: WebMCP specification, Draft Community Group Report, 15 October 2026, §4.2 ModelContext interface, §4.3 Events (ToolActivatedEvent, ToolCancelEvent). <https://webmachinelearning.github.io/webmcp/>
 [^6]: Chrome for Developers, “WebMCP” overview (published 18 May 2026, last updated 7 October 2026), sections “Use WebMCP APIs” and “Demo.” <https://developer.chrome.com/docs/ai/webmcp>
 [^7]: webmachinelearning/webmcp issue #22, “Declarative API Equivalent” (opened 5 September 2025, closed 10 March 2026). <https://github.com/webmachinelearning/webmcp/issues/22>
 [^8]: webmachinelearning/webmcp pull request #26, “Declarative proposal to expose tools via HTML” (opened 17 September 2025, closed unmerged 12 February 2026, superseded by #76). <https://github.com/webmachinelearning/webmcp/pull/26>
 [^9]: webmachinelearning/webmcp pull request #76, “Declarative API Explainer” (opened 5 February 2026, merged 9 March 2026). <https://github.com/webmachinelearning/webmcp/pull/76>
-[^10]: webmachinelearning/webmcp issue #182, “How to expose failed declarative tool registration” (opened 22 May 2026, open on 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/182>
+[^10]: webmachinelearning/webmcp issue #182, “How to expose failed declarative tool registration” (opened 22 May 2026, open on 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/182>
 [^11]: Chrome for Developers, “WebMCP best practices” (published 18 May 2026), sections “Manage tool registration” and “Prioritize reliability.” <https://developer.chrome.com/docs/ai/webmcp/best-practices>
 [^12]: JSON Schema Validation, draft 2020-12, §6.3.3 “pattern” and §7.3.1 “Dates, Times, and Duration.” <https://json-schema.org/draft/2020-12/json-schema-validation>
 [^13]: HTML Living Standard, §4.10.20 “Constraints” (custom validity error message and `setCustomValidity()`). <https://html.spec.whatwg.org/multipage/form-control-infrastructure.html>
 [^14]: Chrome DevTools Protocol, experimental `WebMCP` domain (`enable`, `invokeTool`, `cancelInvocation`; events `toolsAdded`, `toolsRemoved`, `toolInvoked`, `toolResponded`; types `Annotation` and `Tool`), in `json/browser_protocol.json` of the ChromeDevTools/devtools-protocol repository (read 14 October 2026). <https://github.com/ChromeDevTools/devtools-protocol/blob/master/json/browser_protocol.json>
 [^15]: GoogleChromeLabs/webmcp-tools, “Le Petit Bistro | WebMCP Declarative Demo,” README (read 14 October 2026). <https://github.com/GoogleChromeLabs/webmcp-tools/tree/main/demos/french-bistro>
 [^16]: webmachinelearning/webmcp commit b206dae, “Replace UnknownError with specific DOMException types. (#339)” (8 October 2026). <https://github.com/webmachinelearning/webmcp/commit/b206dae8ba>
-[^17]: webmachinelearning/webmcp issue #135, “Cross-document tool response mechanism” (opened 9 March 2026, open on 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/135>
+[^17]: webmachinelearning/webmcp issue #135, “Cross-document tool response mechanism” (opened 9 March 2026, open on 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/135>
 [^18]: webmachinelearning/webmcp issue #126, “Where to fire `toolactivated` and `toolcanceled` events?” (opened 4 March 2026, closed 24 September 2026), and pull request #245, “Add ToolActivatedEvent and ToolCancelEvent interfaces” (merged 17 September 2026). <https://github.com/webmachinelearning/webmcp/issues/126>
 [^19]: Selectors Level 4, §3.10 “Invalid Selectors and Error Handling” (Editor’s Draft, read 14 October 2026). <https://drafts.csswg.org/selectors-4/#invalid>
 [^20]: CSS Conditional Rules Module Level 4, “Extensions to the `@supports` rule” (the `selector()` function). <https://drafts.csswg.org/css-conditional-4/>
