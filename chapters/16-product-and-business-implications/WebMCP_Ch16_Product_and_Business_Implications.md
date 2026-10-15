@@ -182,18 +182,23 @@ The declarative API, which Chapter 8 covers and which was removed from the speci
 
 ### Recording outcomes
 
-The most useful single metric is the outcome of each call. Chapter 5 established the rule of returning recoverable failures as values. At Trailhead that means `{ error: { code, message } }` for things the agent can fix, like an unknown SKU or an out-of-stock item, and exceptions only for real faults. That convention makes outcomes easy to classify. Listing 16.2 wraps any tool and reports one record per call, without changing what the agent receives.
+The most useful single metric is the outcome of each call. Chapter 5 established the rule of returning recoverable failures as values, and Chapter 11 settled their shape for the whole book: `{ status, code, message }`. The `status` says who acts next: `'error'` for something the agent can fix, like an unknown SKU; `'needs_input'` when only the user knows the answer; `'refused'` when a rule says no, as with an out-of-stock item (code `OUT_OF_STOCK`); and `'cancelled_by_user'` when the person declined in the page’s own UI. Exceptions are only for real faults. That convention makes outcomes easy to classify. Listing 16.2 wraps any tool and reports one record per call, without changing what the agent receives.
 
 **Listing 16.2 — Measuring every call without touching the tool (measure.ts)**
 
 ```ts
-// measure.ts: one wrapper, four outcomes, no change to the tool itself.
-export type Outcome = 'ok' | 'recoverable' | 'error' | 'cancelled';
+// measure.ts: one wrapper, every outcome, no change to the tool itself.
+// Chapter 11's four statuses for a call that fell short, plus two for a call that never returned.
+export type Outcome =
+  | 'ok' | 'error' | 'needs_input' | 'refused' | 'cancelled_by_user'
+  | 'threw' | 'cancelled';
+
+const FELL_SHORT = new Set(['error', 'needs_input', 'refused', 'cancelled_by_user']);
 
 export interface ToolCallRecord {
   tool: string;
   outcome: Outcome;
-  code?: string;   // the recoverable error's code, e.g. 'out_of_stock'
+  code?: string;   // the result's stable code, e.g. 'OUT_OF_STOCK'
   ms: number;
 }
 
@@ -209,14 +214,14 @@ export function withMeasurement(
         report({ tool: tool.name, outcome, code, ms: Math.round(performance.now() - started) });
       try {
         const result = await tool.execute(input, options);
-        // Trailhead's convention: recoverable failures come back as { error: { code } }.
-        const error = (result as { error?: { code?: string } } | null)?.error;
+        // Chapter 11's convention: a call that falls short says so in `status`, with a `code`.
+        const { status, code } = (result ?? {}) as { status?: string; code?: string };
         if (options.signal.aborted) done('cancelled');
-        else if (error) done('recoverable', error.code);
+        else if (status && FELL_SHORT.has(status)) done(status as Outcome, code);
         else done('ok');
         return result;
       } catch (err) {
-        done(options.signal.aborted ? 'cancelled' : 'error');
+        done(options.signal.aborted ? 'cancelled' : 'threw');
         throw err;
       }
     },
@@ -224,9 +229,9 @@ export function withMeasurement(
 }
 ```
 
-The four outcomes map to four different conversations. A falling *ok* rate after a release means a description or schema regressed, and your eval suite should have caught it. A rising *recoverable* rate with one dominant code (`out_of_stock`, say) is a merchandising problem, not an engineering one. *Error* is a bug. *Cancelled* means the user or the agent stopped the call, and Chapter 6 covers what that does to your code. Durations tell you where agents wait, and Chrome’s best practices remind you that the interface should be updated once the function completes, because “agents may rely on the interface to plan next steps”.[^3]
+Each outcome starts a different conversation. A falling *ok* rate after a release means a description or schema regressed, and your eval suite should have caught it. A rising *error* rate points the same way: agents are calling the tool with arguments it can’t use. A rising *refused* rate with one dominant code (`OUT_OF_STOCK`, say) is a merchandising problem, not an engineering one. *needs_input* and *cancelled_by_user* show how often the person had to step in. *Threw* is a bug. *Cancelled* means the user or the agent stopped the call, and Chapter 6 covers what that does to your code. Durations tell you where agents wait, and Chrome’s best practices remind you that the interface should be updated once the function completes, because “agents may rely on the interface to plan next steps”.[^3]
 
-Note what the record leaves out: the input. The tool name, outcome, error code and duration are enough for every metric in this chapter. Logging arguments means logging whatever the agent drew from the user’s context, and that is exactly the data the over-parameterization warning is about.[^13] If you need inputs for debugging, sample them, strip them of personal data and keep them out of your marketing warehouse.
+Note what the record leaves out: the input. The tool name, outcome, code and duration are enough for every metric in this chapter. Logging arguments means logging whatever the agent drew from the user’s context, and that is exactly the data the over-parameterization warning is about.[^13] If you need inputs for debugging, sample them, strip them of personal data and keep them out of your marketing warehouse.
 
 ### From calls to conversions
 
@@ -300,8 +305,8 @@ Figure 16.2 shows the resulting funnel, and Table 16.3 lists the metrics Trailhe
 | Metric | From | Question it answers |
 |---|---|---|
 | Calls per tool, per day | Listing 16.2 | Is anyone using it? Which tools do agents reach for? |
-| Outcome mix (ok / recoverable / error / cancelled) | Listing 16.2 | Does the tool work? Did a release regress it? |
-| Top recoverable codes | Listing 16.2 | What blocks agents: stock, input, policy? |
+| Outcome mix (ok, Chapter 11’s four statuses, threw, cancelled) | Listing 16.2 | Does the tool work? Did a release regress it? |
+| Top `refused`, `error` and `needs_input` codes | Listing 16.2 | What blocks agents: stock, input, policy? |
 | Median and slow-tail duration | Listing 16.2 | Where do agents and customers wait? |
 | Assisted order rate and value | Listing 16.3 | Do sessions with agent help end in orders? |
 | Checkout opened → order placed | Listings 16.2–16.3 | Do customers confirm what agents prepare? |
@@ -416,7 +421,7 @@ None of this needs WebMCP to win the standards debate. The tools wrap code Trail
 - WebMCP converts visits you already have. Tools are discovered only during the user’s visit, and there is no central registry. Static manifests were set aside as the primary mechanism, and discovery for sites that aren’t open is an open proposal. Agent-readiness resembles SEO in its need for good machine-facing copy, not in its acquisition power.
 - Choose first journeys by actuation pain, value per completion, code reuse, the cost of a wrong action and the number of tools needed. Search and comparison come first, then reversible cart steps, then a checkout that stops at your confirmation screen. Keep the tool count small.
 - WebMCP keeps the agent a guest on your site: tools run in your tab, update your UI and disappear when the tab closes. It doesn’t stop agents comparing your structured results with competitors’. Show results on the page, return the facts that make you the right choice, keep consequential steps on your page and never over-ask.
-- Every call runs your code, so tools are easy to measure. The page can’t tell which agent is calling: `execute` receives only the input and a signal, and `toolactivated` and `toolcancel` carry only a tool name. Record outcomes (ok, recoverable, error, cancelled), codes and durations, not inputs. Attribute orders to agent help by tab session, and treat assisted as different from caused.
+- Every call runs your code, so tools are easy to measure. The page can’t tell which agent is calling: `execute` receives only the input and a signal, and `toolactivated` and `toolcancel` carry only a tool name. Record outcomes (ok, Chapter 11’s four statuses, threw, cancelled), codes and durations, not inputs. Attribute orders to agent help by tab session, and treat assisted as different from caused.
 - Pricing and policy decisions surface early: same prices for agents and people, rate limits that allow comparison, terms of service that match the tools you register, human-in-the-loop as policy, evidence for disputes, and `untrustedContentHint` for user-generated content.
 - Use WebMCP and backend MCP together: one implementation behind two adapters, the same names and schemas where they overlap, and different boundaries where the context differs.
 - Tools are product surface. Copy, schema, evals and security annotations have different owners. Description changes need re-registration and an eval run. Enforce Chrome’s provisional budgets in CI, and give one person the job of tracking the spec and reporting back.
@@ -436,7 +441,7 @@ Chapter 17 turns from today’s plan to the open questions (output schemas, stre
 [^9]: Chrome for Developers, “WebMCP use cases” (published 18 May 2026): critical user journeys, “Help users make purchases”, “Support repeat purchases” and the warranty-claim example. <https://developer.chrome.com/docs/ai/webmcp/use-cases>
 [^10]: WebMCP explainer, “Use Cases”, “E-Commerce & Tailored Shopping”. <https://github.com/webmachinelearning/webmcp#use-cases>
 [^11]: WebMCP explainer, “Goals & Non-Goals”. <https://github.com/webmachinelearning/webmcp#goals--non-goals>
-[^12]: WebMCP specification, Draft Community Group Report, 13 October 2026, §6.4.5 Consequential Annotation for Tool Executions. <https://webmachinelearning.github.io/webmcp/#security-privacy>
+[^12]: WebMCP specification, Draft Community Group Report, 15 October 2026, §6.4.5 Consequential Annotation for Tool Executions. <https://webmachinelearning.github.io/webmcp/#security-privacy>
 [^13]: WebMCP specification, §6.3.3 Privacy Leakage Through Over-Parameterization. <https://webmachinelearning.github.io/webmcp/#security-privacy>
 [^14]: WebMCP specification, §6.3.2 Misrepresentation of Intent (including §6.3.2.2 Misalignment Types). <https://webmachinelearning.github.io/webmcp/#security-privacy>
 [^15]: WebMCP specification, §4.2 ModelContext interface, §4.2.2 ToolExecuteCallbackOptions dictionary and the IDL index. <https://webmachinelearning.github.io/webmcp/#api>
