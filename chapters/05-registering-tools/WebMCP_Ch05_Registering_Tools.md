@@ -50,7 +50,7 @@ if ('modelContext' in document) {                                   // ①
 
 The markers are ① feature detection and secure contexts, ② the shape of `registerTool()` and the dictionary it takes, ③ names, titles and descriptions, ④ the input schema, ⑤ the `execute` callback and what happens to its return value, and ⑥ unregistration with an `AbortSignal`. Along the way Fjord Table gets its second tool, `book_table`, which is the one that actually changes something. The annotation line and the `signal` inside `execute` get a brief mention here and a full treatment in Chapter 6.
 
-Everything below was checked against the WebMCP Draft Community Group Report dated 13 October 2026. No newer draft had been published when this chapter was written on 14 October. Chrome’s developer documentation and the open issues in the `webmachinelearning/webmcp` repository were checked on the same day. Where Chrome and the draft disagree, the text says so.
+Everything below was checked against the WebMCP Draft Community Group Report dated 15 October 2026, the newest draft when this chapter was reviewed on 15 October 2026. Where the chapter says what Chrome does, that was observed in Chromium 156 with the `WebMCPTesting` feature switched on. Chrome’s developer documentation and the open issues in the `webmachinelearning/webmcp` repository were checked on the same day. Where Chrome and the draft disagree, the text says so.
 
 ![Figure 5.1 — The life of a WebMCP tool, from registration through discovery to a call and its result. Everything that crosses between the page and an agent crosses as a JSON string.](images/figure-5-1.png)
 
@@ -64,7 +64,7 @@ Figure 5.1 is a map of the whole chapter. Notice where the boundaries are. Your 
 
 The specification adds a single attribute to `Document`:
 
-**Listing 5.2 — The registration surface, from the specification’s IDL (13 October 2026)**
+**Listing 5.2 — The registration surface, from the specification’s IDL (15 October 2026)**
 
 ```webidl
 partial interface Document {
@@ -227,7 +227,7 @@ The name is the only member the browser checks closely. The rule in the registra
 
 The character set isn’t arbitrary. MCP’s current tools specification recommends the same set and the same 1–128 length, but only as SHOULD-level advice.[^14] WebMCP enforces it. If your site also runs a backend MCP server (Chapter 3), you can give a tool the same name in both places.
 
-Uniqueness is per document, not per tab. Issue #234 records a developer finding that a top-level page and a same-origin iframe can each register `search`, and an in-page agent’s `getTools()` then returns two tools with the same name and origin, distinguished only by their `window`.[^15] Chapter 7 deals with that. For a single page, the duplicate check also has a security purpose: it is what stops a later script from silently replacing a tool you registered first, which was the problem `provideContext()` had (see “Why `document`” above).
+Uniqueness is per document, not per tab. Issue #234 records a developer finding that a top-level page and a same-origin iframe can each register `search`, and an in-page agent’s `getTools()` then returns two tools with the same name and origin, distinguished only by their `window`.[^15] Chapter 7 deals with that. For a single page, the duplicate check also has a security purpose: it is what stops a later script from silently replacing a tool you registered first, which was the problem `provideContext()` had (see “Why `document`” above). The 15 October 2026 draft makes the check twice: once on entry, and again after the schema has been serialized, because a `toJSON()` method inside the schema can run script that registers another tool under the same name in between (pull request #347).[^44] That is an edge case, but not a harmless one: in Chromium 156 the same sequence crashed the page’s renderer.[^41]
 
 The rules say what the browser will accept. Chrome’s guidance covers what agents handle well. Name tools with verbs that say exactly what happens, and separate doing something from starting something: `create-event` should create the event, while `start-event-creation-process` should only open the form.[^1] Chrome’s security guide also suggests keeping tool and parameter names to about 30 characters (Table 5.4).[^16] Fjord Table uses `snake_case` verbs: `search_availability` searches, `book_table` books.
 
@@ -266,9 +266,9 @@ Two more consequences follow from the stringification. The schema is a snapshot,
 
 > **Still in flux: is the schema optional, and who validates?**
 >
-> *Required or optional.* The draft makes `inputSchema` optional.[^13] Chrome’s Imperative API guide says that tool registration “requires a name, description, and input schema.”[^7] I couldn’t confirm whether Chrome actually rejects a tool without one, so include a schema in every tool, even if it is only `{ type: 'object', properties: {} }`. The question is open in the working group too: on 13 October 2026 a participant argued in issue #92 that both `inputSchema` and a future `outputSchema` should be required, and on 14 October François Beaufort, a co-author of Chrome’s WebMCP documentation, replied that they should stay optional, with spec-defined defaults.[^23]
+> *Required or optional.* The draft makes `inputSchema` optional.[^13] Chrome’s Imperative API guide says that tool registration “requires a name, description, and input schema.”[^7] Chromium 156 doesn’t enforce that: it registers a tool with no `inputSchema`, and `getTools()` then lists the tool with no `inputSchema` member at all.[^41] Other agents may not be so forgiving, so include a schema in every tool, even if it is only `{ type: 'object', properties: {} }`. The question is open in the working group too: on 13 October 2026 a participant argued in issue #92 that both `inputSchema` and a future `outputSchema` should be required, and on 14 October François Beaufort, a co-author of Chrome’s WebMCP documentation, replied that they should stay optional, with spec-defined defaults.[^23]
 >
-> *Validation.* The same issue, “Who owns the validation layer?”, led to a working group resolution on 5 March 2026 that the browser should be responsible for schema validation and that the spec should codify a subset of JSON Schema. A pull request implementing that (#289) was closed unmerged on 1 October.[^23] As of this draft, validating input is your job.
+> *Validation.* The same issue, “Who owns the validation layer?”, led to a working group resolution on 5 March 2026 that the browser should be responsible for schema validation and that the spec should codify a subset of JSON Schema. A pull request implementing that (#289) was closed unmerged on 1 October.[^23] As of this draft, validating input is your job, and Chromium 156 confirms it: called with `{ partySize: 'forty', extra: true }` against a schema that requires an integer, or with `{}` against a schema with a `required` list, it passed the arguments to `execute` exactly as given.[^41]
 >
 > *Dialect.* The draft cites JSON Schema without naming a draft or a subset. MCP’s tools specification assumes the 2020-12 dialect when `$schema` is absent.[^14] Until WebMCP decides, stick to the core keywords every validator agrees on: `type`, `properties`, `required`, `enum`, `description`, `minimum` and `maximum`, `items`. This is my recommendation, not a rule from the spec.
 
@@ -318,12 +318,12 @@ export const bookTable = {
   annotations: { consequentialHint: true },          // a real-world action: Chapter 6
   async execute(input, { signal }) {
     const problem = checkBookingInput(input);         // validate strictly in code
-    if (problem) return { status: 'invalid_input', message: problem };
+    if (problem) return { status: 'error', code: 'INVALID_INPUT', message: problem };
 
     const slot = await availability.find(input, { signal });
     if (!slot) {
       return {
-        status: 'slot_unavailable',
+        status: 'refused', code: 'SLOT_UNAVAILABLE',    // the guest picks another time
         message: `No table for ${input.partySize} at ${input.time} on ${input.date}. ` +
                  'Call search_availability for current slots.'
       };
@@ -332,7 +332,7 @@ export const bookTable = {
     // Fjord Table's own UI: the booking form, pre-filled, on screen.
     // The guest's name and contact details come from their signed-in account.
     const outcome = await bookingPanel.confirmWithUser({ ...input, slot }, { signal });
-    if (!outcome.confirmed) return { status: 'not_confirmed_by_user' };
+    if (!outcome.confirmed) return { status: 'cancelled_by_user', message: 'The guest closed the booking form without confirming. Nothing was booked.' };
 
     return { status: 'booked', reference: outcome.reference,
              date: input.date, time: slot.time, partySize: input.partySize };
@@ -353,7 +353,7 @@ function checkBookingInput({ date, time, partySize }) {
 
 Look at what the schema leaves out. There is no name, phone or email, for the privacy reasons just described, and no `additionalProperties: false`, in line with “loosely in schema.” The `time` description tells the agent where valid values come from (“from search_availability”), which links the two tools without a scripted sequence. Chrome’s guide calls that “trust the agent”.[^1]
 
-Look also at what `execute` does when something goes wrong. It doesn’t throw. It returns a result with a `status` and a sentence telling the agent what to do next. The reason is in the next section.
+Look also at what `execute` does when something goes wrong. It doesn’t throw. It returns a result with a `status`, a `code` and a sentence telling the agent what to do next, using the result vocabulary Chapter 11 sets out in full. The reason is in the next section.
 
 Finally, note the confirmation step. `bookingPanel.confirmWithUser()` isn’t a WebMCP API. It is Fjord Table’s ordinary booking form, filled in and shown to the user, who presses Confirm the same way they would without an agent. The draft has no standard API for asking the user something in the middle of a call. Chapter 4 described the `requestUserInteraction()` debate, and Part IV returns to it. Until that is settled, the site’s own UI is the most dependable way to keep the user in the loop for a consequential tool.
 
@@ -364,7 +364,7 @@ Finally, note the confirmation step. `bookingPanel.confirmWithUser()` isn’t a 
 The callback type in Listing 5.2 is short: `Promise<any> (object inputObject, ToolExecuteCallbackOptions options)`. The algorithm that calls it explains what each part means.[^22]
 
 1. The browser receives the agent’s arguments as a JSON string and parses it. If parsing fails, or the result isn’t an object, the call fails with the platform error *invalid input* and your callback never runs.
-2. It fires `toolactivated` at your `ModelContext`, with the tool’s name.
+2. It fires `toolactivated` at your `ModelContext`, with the tool’s name. (Chromium 156 fires it just after `execute` has started; Chapter 6 shows the order.)
 3. It creates a fresh `AbortController` for this one call.
 4. It calls `execute(inputObject, { signal })`.
 
@@ -380,29 +380,31 @@ When your promise fulfils with a value `v`, the browser serializes `v` with the 
 
 Because the serializer is `JSON.stringify()`, its edge cases are WebMCP’s edge cases.
 
-**Table 5.5 — What different return values become (per the 13 October 2026 draft)**
+**Table 5.5 — What different return values become, per the 15 October 2026 draft and in Chromium 156**
 
-| Your callback returns | The caller receives |
-|---|---|
-| `{ status: 'booked', reference: 'FT-1042' }` | The string `{"status":"booked","reference":"FT-1042"}` |
-| `'Booked for 19:00'` | A JSON string literal: `"Booked for 19:00"` (with the quotes) |
-| `42`, `true`, `null` | `42`, `true`, `null` |
-| An object containing a `Date` | The date as an ISO string (via `Date.prototype.toJSON`) |
-| An object containing a `Map`, `Set` or class instance | Only own enumerable properties, so a `Map` becomes `{}` |
-| `NaN` or `Infinity` | `null` |
-| `undefined` (including a callback with no `return`) | Failure: *unserializable result*, surfaced as `OperationError` |
-| A value containing a `BigInt` or a circular reference | Failure: *unserializable result*, surfaced as `OperationError` |
-| A rejected promise or a thrown error | Failure: *tool rejected*, surfaced as `OperationError` |
+| Your callback returns | The caller receives (draft) | What Chromium 156 returned |
+|---|---|---|
+| `{ status: 'booked', reference: 'FT-1042' }` | The string `{"status":"booked","reference":"FT-1042"}` | The same |
+| `'Booked for 19:00'` | A JSON string literal: `"Booked for 19:00"` (with the quotes) | `Booked for 19:00` (no quotes) |
+| `42`, `true`, `null` | `42`, `true`, `null` | The same |
+| An object containing a `Date` | The date as an ISO string (via `Date.prototype.toJSON`) | The same |
+| An object containing a `Map`, `Set` or class instance | Only own enumerable properties, so a `Map` becomes `{}` | The same |
+| `NaN` or `Infinity` | `null` | `NaN` |
+| `undefined` (including a callback with no `return`) | Failure: *unserializable result*, surfaced as `OperationError` | The string `undefined`, as a success |
+| A value containing a `BigInt` or a circular reference | Failure: *unserializable result*, surfaced as `OperationError` | Rejected with `UnknownError` |
+| A rejected promise or a thrown error | Failure: *tool rejected*, surfaced as `OperationError` | Rejected with `UnknownError` |
+
+Sources: the specification’s “invoke the execute callback” steps and tool execution error table; the Infra standard; the Chromium column was observed in Chromium 156.0.8078.4 with `--enable-features=WebMCPTesting` on 15 October 2026.[^22][^3][^21][^41]
 
 Sources: the specification’s “invoke the execute callback” steps and tool execution error table; the Infra standard.[^22][^3][^21]
 
 Two rows deserve emphasis.
 
-*A callback that returns nothing fails.* Under the draft, a tool that does its job and falls off the end of the function produces an error for the caller, not an empty success, because `JSON.stringify(undefined)` is `undefined`. Always return something, even if it is only `{ status: 'done' }`. (I didn’t test whether Chrome’s current build follows the draft on this point. Returning a value avoids the question.)
+*A callback that returns nothing fails.* Under the draft, a tool that does its job and falls off the end of the function produces an error for the caller, not an empty success, because `JSON.stringify(undefined)` is `undefined`. Always return something, even if it is only `{ status: 'ok' }`. Chromium 156 doesn’t follow the draft here: it resolves the call with the four-character string `undefined`, which an agent will read as a strange success.[^41] Returning a value avoids the question in both.
 
-*Throwing tells the agent almost nothing.* When your callback rejects, the caller gets a `DOMException` named `OperationError`, and that is all. The spec passes only the name of the failure across, “rather than any internal JavaScript exception object or message,” so that implementation details and stack traces don’t leak across origins.[^26] Your carefully worded error message never reaches the agent, and an agent that can’t see why a call failed can’t fix it. That is why Listing 5.4 *returns* its failures. Chrome’s tool-design guide gives the same advice: a response to a bad call “should act as a guide rather than a dead end”, with messages such as “Invalid date format. Provide the date in YYYY-MM-DD format.”[^29] Keep `throw` for real bugs. Anything the agent can recover from should be a return value.
+*Throwing tells the agent almost nothing.* When your callback rejects, the caller gets a `DOMException` named `OperationError` (in Chromium 156, `UnknownError`; see the box below), and that is all. The spec passes only the name of the failure across, “rather than any internal JavaScript exception object or message,” so that implementation details and stack traces don’t leak across origins.[^26] Your carefully worded error message never reaches the agent, and an agent that can’t see why a call failed can’t fix it. That is why Listing 5.4 *returns* its failures. Chrome’s tool-design guide gives the same advice: a response to a bad call “should act as a guide rather than a dead end”, with messages such as “Invalid date format. Provide the date in YYYY-MM-DD format.”[^29] Keep `throw` for real bugs. Anything the agent can recover from should be a return value.
 
-The platform-defined failures, which you don’t control, form a short list in the spec: *tool not found* (`NotFoundError`), *invalid input* (`DataError`), *tool rejected* and *unserializable result* (both `OperationError`), and *target document unloaded* (`AbortError`). Everything else is up to you to report in the result itself.[^3] Chapter 6 covers how agents and in-page callers handle these errors.
+The platform-defined failures, which you don’t control, form a short list in the spec: *tool not found* (`NotFoundError`), *invalid input* (`DataError`), *tool rejected* and *unserializable result* (both `OperationError`), and *target document unloaded* (`AbortError`). The draft has used these specific names only since 8 October 2026, when pull request #339 replaced a single `UnknownError` with them.[^42] Everything else is up to you to report in the result itself.[^3] Chapter 6 covers how agents and in-page callers handle these errors.
 
 ### Strings, objects or MCP content?
 
@@ -412,11 +414,15 @@ My advice for now: return a small, flat object with a `status` field and short, 
 
 > **Still in flux: results**
 >
-> *Output schemas.* MCP tools can declare an `outputSchema` and return `structuredContent`.[^14] WebMCP has neither. Issue #9 has asked for one since August 2025, and pull request #254 (opened 21 August 2026, still open) would add `outputSchema` to both `ModelContextTool` and `RegisteredTool`.[^31] Until it lands, a dictionary member named `outputSchema` is silently ignored (see ②). A developer’s September 2026 issue described having to invent a size budget and a `RESULT_TOO_LARGE` error for 18 tools because results are untyped.[^32]
+> *Output schemas.* MCP tools can declare an `outputSchema` and return `structuredContent`.[^14] WebMCP has neither. Issue #9 has asked for one since August 2025, and pull request #254 (opened 21 August 2026, still open on 15 October) would add `outputSchema` to both `ModelContextTool` and `RegisteredTool`.[^31] Until it lands, a dictionary member named `outputSchema` is silently ignored (see ②). Chromium 156 behaves exactly that way: a tool registered with an `outputSchema` registers without complaint, and the `RegisteredTool` an in-page agent gets back has no trace of it.[^41] A developer’s September 2026 issue described having to invent a size budget and a `RESULT_TOO_LARGE` error for 18 tools because results are untyped.[^32]
+>
+> *No continuation tokens.* A tool call is one document and one promise, so a tool can’t hand the agent a second page of results or finish its work after a navigation. On 2 October 2026 the editors merged an explainer for *tool continuations*, which proposes a `ModelContextToolInvocation` object passed to `execute` through its options.[^43] It is a proposal only: the draft’s `ToolExecuteCallbackOptions` still has just `signal`, and in Chromium 156 the options object `execute` receives has only `signal` too.[^13][^41] For now, keep each result small and let the agent ask again with narrower input, the way `search_availability` takes one date and returns at most five slots.
+>
+> *Errors are spec lag.* Since 8 October 2026 the draft names each platform failure (`NotFoundError`, `DataError`, `OperationError`, `AbortError`); before that it used `UnknownError` for all of them.[^42] Chromium 156 still follows the old text: a thrown error, an unserializable result and a call to an unregistered tool all reject with `UnknownError`, while a call the caller aborts rejects with `AbortError`.[^41] That is the browser lagging the spec, not a bug in your page. Code that catches these should check for both names until Chrome catches up, or better, not depend on the name at all.
 >
 > *Null after navigation.* The draft types `executeTool()` as `Promise<DOMString>` and reports a call interrupted by its document unloading as `AbortError`.[^26][^3] Chrome’s guide says that `executeTool()` returns “the result of the tool execution, or null when a navigation is triggered,” and the discussion on pull request #336 confirmed that Blink’s IDL is `Promise<DOMString?>`, because the declarative API returns `null` on cross-document navigation.[^7][^33] The editors closed that pull request on 7 October, saying the spec can revisit it when the declarative API is specified again. If you write an in-page agent, handle `null`.
 >
-> *Plain strings.* Chrome’s guide shows `executeTool()` resolving to `'Added to-do: Buy milk'` for a tool that returned that string.[^7] By the draft’s algorithm, the caller should receive the JSON-encoded string, with quotes. I couldn’t verify which one Chrome actually returns. Objects avoid the ambiguity.
+> *Plain strings.* Chrome’s guide shows `executeTool()` resolving to `'Added to-do: Buy milk'` for a tool that returned that string.[^7] By the draft’s algorithm, the caller should receive the JSON-encoded string, with quotes. Chromium 156 does what the guide shows: it returns the string as is, without quotes, so `JSON.parse()` on it throws. It also turns `undefined` and `NaN` into the strings `undefined` and `NaN` (Table 5.5).[^41] Objects avoid the ambiguity.
 
 ### The registration promise
 
@@ -541,7 +547,7 @@ The inference depends on the schema keeping its literal types: write it inline, 
 
 ## Seeing your tools
 
-Before you hand your tools to an agent, look at them yourself. Chrome DevTools has a WebMCP pane in the Application panel. It lists the tools registered on the current tab with their names and descriptions as agents see them, logs every call with its input, output and status, and lets you run a tool by hand with parameters you enter.[^40] Running `book_table` with `partySize: 40` and confirming that you get back a helpful `invalid_input` result, not an `OperationError`, takes a minute and tests what this chapter has been about. Chapter 14 covers testing and evals properly.
+Before you hand your tools to an agent, look at them yourself. Chrome DevTools has a WebMCP pane in the Application panel. It lists the tools registered on the current tab with their names and descriptions as agents see them, logs every call with its input, output and status, and lets you run a tool by hand with parameters you enter.[^40] Running `book_table` with `partySize: 40` and confirming that you get back a helpful `{ status: 'error', code: 'INVALID_INPUT' }` result, not a rejected call, takes a minute and tests what this chapter has been about. Chapter 14 covers testing and evals properly.
 
 ## Fjord Table so far
 
@@ -550,7 +556,7 @@ Before you hand your tools to an agent, look at them yourself. Chrome DevTools h
 | Tool | Registered | Inputs | Returns | Annotation |
 |---|---|---|---|---|
 | `search_availability` | At startup, for the life of the page | `date`, `partySize` (required), `time` | `{ date, partySize, slots }` | `readOnlyHint` |
-| `book_table` | While the booking view is open | `date`, `time`, `partySize` (required), `seating`, `notes` | `{ status, … }`, including recoverable failures | `consequentialHint` |
+| `book_table` | While the booking view is open | `date`, `time`, `partySize` (required), `seating`, `notes` | `{ status: 'booked', reference, … }`, or `{ status, code, message }` for a recoverable failure (Chapter 11’s vocabulary) | `consequentialHint` |
 
 Both tools wrap code Fjord Table already had, both put their results on screen, and neither asks the agent for anything the site already knows. Both return values for anything the agent can fix and keep exceptions for bugs. Both are registered through one helper that treats WebMCP as optional.
 
@@ -561,16 +567,16 @@ Both tools wrap code Fjord Table already had, both put their results on screen, 
 - `registerTool(tool, options)` takes a `ModelContextTool` (`name`, `description` and `execute` required; `title`, `inputSchema` and `annotations` optional) and options (`signal`, `exposedTo`). It resolves to `undefined` once the tool is registered. Unknown dictionary members are silently ignored.
 - Names must be 1–128 characters of ASCII letters, digits, `_`, `-` and `.`, unique within the document. These are MCP’s recommended rules, enforced. Descriptions can’t be empty and are the most important text you write. Chrome suggests keeping descriptions under 500 characters and outputs under 1,500.
 - The schema is stringified at registration and isn’t validated, and neither are calls against it. Validate strictly in code, keep schemas simple and descriptive, and ask only for what the tool needs.
-- `execute(input, { signal })` receives a fresh object parsed from JSON. Its return value is serialized with `JSON.stringify()`: `undefined`, `BigInt` and circular values fail, and thrown errors reach the caller only as `OperationError`. Return recoverable failures as values the agent can act on.
+- `execute(input, { signal })` receives a fresh object parsed from JSON. Its return value is serialized with `JSON.stringify()`: under the draft, `undefined`, `BigInt` and circular values fail, and thrown errors reach the caller only as `OperationError` (Chromium 156 still says `UnknownError`, which is spec lag, and returns `undefined` as the string `undefined`). Chromium 156 also drops an `outputSchema` member silently. Return recoverable failures as values the agent can act on.
 - Unregister by aborting the `AbortSignal` passed at registration. One controller can remove many tools; unregistering doesn’t cancel a call that is already running; and changing what the model reads means unregistering and registering again.
-- Still open: whether `inputSchema` becomes required and who validates it, `outputSchema`, `null` results in Chrome, and small naming questions (`registerTool()`’s return value, empty titles, `execute` versus `run`).
+- Still open: whether `inputSchema` becomes required and who validates it, `outputSchema`, continuation tokens (an explainer, not yet in the draft or in Chrome), `null` results and the old `UnknownError` in Chrome, and small naming questions (`registerTool()`’s return value, empty titles, `execute` versus `run`).
 
 Chapter 6 picks up where this one stops: the four annotation hints Fjord Table has been setting without explanation, the step-by-step lifecycle of a call with its `toolactivated` and `toolcancel` events, cancellation through the per-call signal, and how the platform errors in Table 5.5 reach the caller.
 
 ## Notes
 
 [^1]: Chrome for Developers, “WebMCP best practices” (published 18 May 2026). <https://developer.chrome.com/docs/ai/webmcp/best-practices>
-[^2]: WebMCP specification, Draft Community Group Report, 13 October 2026, §4.1 Extensions to Document, §4.2 ModelContext interface, §4.3 Events and the IDL index. <https://webmachinelearning.github.io/webmcp/#dom-document-modelcontext>
+[^2]: WebMCP specification, Draft Community Group Report, 15 October 2026 (fetched 15 October 2026), §4.1 Extensions to Document, §4.2 ModelContext interface, §4.3 Events and the IDL index. <https://webmachinelearning.github.io/webmcp/#dom-document-modelcontext>
 [^3]: WebMCP specification, §3 Supporting concepts (model context, tool map, tool definition, tool execution error table). <https://webmachinelearning.github.io/webmcp/#supporting-concepts>
 [^4]: webmachinelearning/webmcp issue #101, “`navigator.modelContext.provideContext` allows overwriting of previously registered tools in the same environment” (opened 20 February 2026), including the editor’s comment of 3 March 2026; and pull request #132, “Remove `provideContext()` and `clearContext()`” (merged 5 March 2026). <https://github.com/webmachinelearning/webmcp/issues/101>
 [^5]: webmachinelearning/webmcp issue #130, “Tool unregistration design” (opened 5 March 2026, closed 26 March 2026), and pull request #147, “Spec `registerTool()` takes an optional `AbortSignal`” (merged 26 March 2026). <https://github.com/webmachinelearning/webmcp/issues/130>
@@ -599,7 +605,7 @@ Chapter 6 picks up where this one stops: the four annotation hints Fjord Table h
 [^28]: WebMCP specification, §5 Interaction with agents, §5.2 Page observations. <https://webmachinelearning.github.io/webmcp/#interaction-with-agents>
 [^29]: Chrome for Developers, “Build your user’s agentic workflows with WebMCP tools” (published 26 August 2026), section “Fail gracefully and enable recovery”. <https://developer.chrome.com/docs/ai/webmcp/build-tools>
 [^30]: WebMCP explainer (README), “Imperative Tool Registration: `document.modelContext`”. <https://github.com/webmachinelearning/webmcp>
-[^31]: webmachinelearning/webmcp issue #9, “Introduce `outputSchema`” (opened 12 August 2025), and pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`” (opened 21 August 2026; open as of 14 October 2026). <https://github.com/webmachinelearning/webmcp/pull/254>
+[^31]: webmachinelearning/webmcp issue #9, “Introduce `outputSchema`” (opened 12 August 2025), and pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`” (opened 21 August 2026; still open on 15 October 2026). <https://github.com/webmachinelearning/webmcp/pull/254>
 [^32]: webmachinelearning/webmcp issue #292, “Tool results are untyped, so every page invents its own truncation contract” (opened and closed 4 September 2026). <https://github.com/webmachinelearning/webmcp/issues/292>
 [^33]: webmachinelearning/webmcp pull request #336, “Allow executeTool() to return null.” (closed without merging, 7 October 2026), including comments by Chrome and spec editors on Blink’s `Promise<DOMString?>`. <https://github.com/webmachinelearning/webmcp/pull/336>
 [^34]: WebMCP specification, §3, “notify documents of a tool change”, including the note and example on task ordering. <https://webmachinelearning.github.io/webmcp/#notify-documents-of-a-tool-change>
@@ -609,3 +615,7 @@ Chapter 6 picks up where this one stops: the four annotation hints Fjord Table h
 [^38]: webmachinelearning/webmcp issue #158, “Rename `execute` to `run`” (opened 1 April 2026). <https://github.com/webmachinelearning/webmcp/issues/158>
 [^39]: webmcp-types on npm (version 0.1.10, published 28 September 2026; source at github.com/webmachinelearning/webmcp-types). <https://www.npmjs.com/package/webmcp-types>
 [^40]: Chrome for Developers, “WebMCP” pane in Chrome DevTools (Application panel). <https://developer.chrome.com/docs/devtools/application/webmcp>
+[^41]: Observed by the author in Chromium 156.0.8078.4 (Playwright 1.64.1, headless) with `--enable-features=WebMCPTesting`, on a localhost page, 15 October 2026. The probe script, `fjord-table/tests/chromium-probe.mjs`, is in the book’s demos repository; run it with `npm run probe:chrome`. <https://github.com/vibeprogrammer/webmcp-book-demos/blob/main/fjord-table/tests/chromium-probe.mjs>
+[^42]: webmachinelearning/webmcp pull request #339, “Replace UnknownError with specific DOMException types.” (merged 8 October 2026 as commit b206dae). <https://github.com/webmachinelearning/webmcp/pull/339>
+[^43]: webmachinelearning/webmcp, “Continuation Tokens” explainer by Mark Foltz (pull request #327, merged 2 October 2026). <https://github.com/webmachinelearning/webmcp/blob/main/continuations-explainer.md>
+[^44]: webmachinelearning/webmcp pull request #347, “Handle re-registration during input serialization” (merged 15 October 2026 as commit 3279798). <https://github.com/webmachinelearning/webmcp/pull/347>
