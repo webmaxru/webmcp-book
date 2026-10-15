@@ -8,7 +8,7 @@
 
 If you wrote WebMCP code in the first half of 2026, or you’re reading a tutorial from then, it probably starts with `navigator.modelContext.provideContext({ tools: [...] })`. None of that runs in a current browser. This appendix shows what changed, when, and how to port the code, with the same Fjord Table tools in both shapes. Chapter 5 tells the story behind the two big changes; this appendix is the practical checklist.
 
-The dates come from the commit history of the specification repository, `webmachinelearning/webmcp`, read on 14 October 2026; the merge times of the key pull requests were checked against GitHub’s own records the same day.[^2] The specification has no changelog section of its own, so the commit log is the record. The “after” code was tested in Chromium 156.0.8078.4 with `--enable-features=WebMCPTesting`; the listings and their tests are in the book’s demos repository, in `appendices/d-migration/`, and all 20 checks pass.
+The dates come from the commit history of the specification repository, `webmachinelearning/webmcp`, read on 14 October 2026 and re-checked on 15 October 2026; the merge times of the key pull requests were checked against GitHub’s own records.[^2] The specification has no changelog section of its own, so the commit log is the record. The “after” code was tested in Chromium 156.0.8078.4 with `--enable-features=WebMCPTesting`; the listings and their tests are in the book’s demos repository, in `appendices/d-migration/`, and all 20 checks pass.
 
 ## D.1 What changed, and when
 
@@ -30,7 +30,7 @@ Two of these rows break old code outright: 5 March and 27 May. The others change
 
 ![Figure D.1 — The WebMCP API shape, February to October 2026: from navigator.modelContext with provideContext() to document.modelContext with registerTool(tool, { signal }).](images/figure-d-1.png)
 
-*Figure D.1 — The API’s shape over 2026, from the commit history. The two breaking changes are 5 March (`provideContext()` and `clearContext()` removed) and 27 May (`navigator.modelContext` became `document.modelContext`).*
+*Figure D.1 — The API’s shape over 2026, from the commit history. The two breaking changes are 5 March (`provideContext()` and `clearContext()` removed) and 27 May (the `modelContext` getter moved from `navigator` to `document`).*
 
 ## D.2 Before: the early-2026 shape
 
@@ -113,12 +113,12 @@ In Chromium 156 neither listing works (tested). `'modelContext' in navigator` is
 
 ## D.3 After: the current shape
 
-Listing D.3 is the same two tools for the 14 October 2026 draft.[^13] It is close to chapter 5’s Listing 5.1, wrapped in a function so the test can call it.
+Listing D.3 is the same two tools for the 15 October 2026 draft.[^13] It is close to chapter 5’s Listing 5.1, wrapped in a function so the test can call it, and its results follow chapter 11’s convention: a booking returns `status: 'booked'`, and a guest who says no in the page’s dialog gives `status: 'cancelled_by_user'`.
 
 **Listing D.3 — After: Fjord Table’s tools on `document.modelContext` (after/fjord-tools.js)**
 
 ```js
-// AFTER (document.modelContext, 14 October 2026 draft; Chromium 156).
+// AFTER (document.modelContext, 15 October 2026 draft; Chromium 156).
 // One registerTool() call per tool, one AbortController per view.
 export async function registerFjordTools({ availability, bookings, confirmBooking }) {
   if (!('modelContext' in document)) return null;   // progressive enhancement
@@ -161,8 +161,8 @@ export async function registerFjordTools({ availability, bookings, confirmBookin
     // The second argument is now { signal }. Confirmation is the page's own UI.
     async execute(booking, { signal }) {
       const ok = await confirmBooking(booking, { signal });
-      if (!ok) return { booked: false, reason: 'The user declined.' };
-      return { booked: true, reference: await bookings.create(booking) };
+      if (!ok) return { status: 'cancelled_by_user', message: 'The guest declined in the booking dialog.' };
+      return { status: 'booked', reference: await bookings.create(booking) };
     }
   }, options);
 
@@ -174,7 +174,7 @@ export async function registerFjordTools({ availability, bookings, confirmBookin
 
 Table D.2 lists the changes one by one.
 
-**Table D.2 — Porting map: early-2026 shape to the 14 October 2026 draft**
+**Table D.2 — Porting map: early-2026 shape to the 15 October 2026 draft**
 
 | Before | After | Notes |
 |---|---|---|
@@ -185,7 +185,7 @@ Table D.2 lists the changes one by one.
 | `registerTool(tool)` returns `undefined` | `await registerTool(tool, options)` | Errors arrive as a rejected promise, not a throw. |
 | `execute(input, client)` | `execute(input, { signal })` | The second argument is now options with an `AbortSignal`. |
 | `client.requestUserInteraction(cb)` | The page’s own confirmation UI, plus `annotations: { consequentialHint: true }` | See the callout below. |
-| Results: any value | Return an object | The browser serializes it to a JSON string; Chromium 156 passes plain strings through unquoted (Appendix A, Table A.5). |
+| Results: any value | Return an object | The browser serializes it to a JSON string; Chromium 156 passes plain strings through unquoted (Appendix A, Table A.5). Use chapter 11’s statuses, such as `cancelled_by_user` when the person declines. |
 | `executeTool(tool, '{"date":"…"}')` (string input) | `executeTool(tool, { date: '…' })` | Chrome deprecated JSON-string input from Chrome 155.[^14] |
 
 Tested in Chromium 156: both tools register, `getTools()` returns them with their annotations, `search_availability` returns its slots through `executeTool()`, `book_table` goes through the page’s confirmation (both the yes and the no path), and `view.abort()` removes both tools and fires `toolchange`.
@@ -258,18 +258,18 @@ In Chromium 156 with `WebMCPTesting`, `webmcpStatus()` returns `'current'` (test
 - Register one tool per call and unregister by aborting the signal you passed. A small tool-set helper (Listing D.4) keeps the view-switching convenience of `provideContext()` without its risk.
 - The execute callback’s second argument is `{ signal }`; `requestUserInteraction()` is gone until a new design lands, so confirmation belongs in your page.
 
-[^1]: webmachinelearning/webmcp README, section “Future Exploration: Declarative API”, as changed on 8 October 2026 and read 14 October 2026. <https://github.com/webmachinelearning/webmcp#future-exploration-declarative-api>
-[^2]: webmachinelearning/webmcp commit history (`git log` of `main` and `index.bs`), read 14 October 2026; head at that time was commit 1636b33 of 14 October 2026. Merge times for pull requests #132, #184 and #205 were read from the GitHub API the same day. <https://github.com/webmachinelearning/webmcp/commits/main/index.bs>
-[^3]: webmachinelearning/webmcp pull request #132, “Remove `provideContext()` and `clearContext()`”, by Dominic Farolino, merged 5 March 2026 at 19:47 UTC (commit fe84c67). Its description says it closes issue #101 and follows the proposal made there, with tool unregistration to be designed in issue #130. Read 14 October 2026. <https://github.com/webmachinelearning/webmcp/pull/132>
+[^1]: webmachinelearning/webmcp README, section “Future Exploration: Declarative API”, as changed on 8 October 2026 and read 15 October 2026. <https://github.com/webmachinelearning/webmcp#future-exploration-declarative-api>
+[^2]: webmachinelearning/webmcp commit history (`git log` of `main` and `index.bs`), read 14 October 2026 (head 1636b33) and again on 15 October 2026 (head 3279798, 15 October 2026); every date in Table D.1 was re-checked against the commits that day. Merge times for pull requests #132, #184 and #205 were read from the GitHub API the same day. <https://github.com/webmachinelearning/webmcp/commits/main/index.bs>
+[^3]: webmachinelearning/webmcp pull request #132, “Remove `provideContext()` and `clearContext()`”, by Dominic Farolino, merged 5 March 2026 at 19:47 UTC (commit fe84c67). Its description says it closes issue #101, “`navigator.modelContext.provideContext` allows overwriting of previously registered tools in the same environment” (opened by François Beaufort, 20 February 2026), and follows the proposal made there, with tool unregistration to be designed in issue #130. Read 15 October 2026. Issue: <https://github.com/webmachinelearning/webmcp/issues/101>. Pull request: <https://github.com/webmachinelearning/webmcp/pull/132>
 [^4]: webmachinelearning/webmcp commit 6708e33, “`registerTool()` takes an optional `AbortSignal` (#147)”, 26 March 2026: adds `ModelContextRegisterToolOptions.signal` and removes `unregisterTool(DOMString name)` from the IDL. Read 14 October 2026. <https://github.com/webmachinelearning/webmcp/commit/6708e3399871458c07ed4cddc04057dec2549955>
 [^5]: webmachinelearning/webmcp commit 986f461, “Scope `ModelContext` to `Document`, and handle detached documents (#177)”, committed 18 May 2026 at 22:19 −04:00 (19 May UTC). Read 14 October 2026. <https://github.com/webmachinelearning/webmcp/commit/986f4611d6696843c4ba86c96b7623a5cf2e5413>
-[^6]: webmachinelearning/webmcp pull request #184, “Move the `modelContext` getter to `Document`”, by Dominic Farolino, merged 27 May 2026 at 15:04 UTC (commit c7b5c70); it closes issue #173 and replaces `partial interface Navigator` with `partial interface Document`. Read 14 October 2026. <https://github.com/webmachinelearning/webmcp/pull/184>
+[^6]: webmachinelearning/webmcp pull request #184, “Move the `modelContext` getter to `Document`”, by Dominic Farolino, merged 27 May 2026 at 15:04 UTC (commit c7b5c70); it closes issue #173 and replaces `partial interface Navigator` with `partial interface Document`. Read 15 October 2026. <https://github.com/webmachinelearning/webmcp/pull/184>
 [^7]: webmachinelearning/webmcp commit ec37ec4, “Make `registerTool()` return a promise (#200)”, 8 June 2026: `undefined registerTool(…)` becomes `Promise<undefined> registerTool(…)`. Read 14 October 2026. <https://github.com/webmachinelearning/webmcp/commit/ec37ec4878e08a166f1460ac40b1ca4ab8096d14>
-[^8]: webmachinelearning/webmcp pull request #205, “Remove `ModelContextClient` for now”, merged 11 June 2026 (commit 067a1c9): the callback changes from `(object input, ModelContextClient client)` to `(object input)`. Quoted from its description, read 14 October 2026. <https://github.com/webmachinelearning/webmcp/pull/205>
+[^8]: webmachinelearning/webmcp pull request #205, “Remove `ModelContextClient` for now”, merged 11 June 2026 (commit 067a1c9): the callback changes from `(object input, ModelContextClient client)` to `(object input)`. Quoted from its description, read 15 October 2026. <https://github.com/webmachinelearning/webmcp/pull/205>
 [^9]: webmachinelearning/webmcp commit 83e893a, “Spec `AbortSignal` integration with tool execution (#247)”, 19 August 2026: introduces `ToolExecuteCallbackOptions` with `signal`. Read 14 October 2026. <https://github.com/webmachinelearning/webmcp/commit/83e893ac3eaa8d72610062933c33a79494bf4fb5>
 [^10]: webmachinelearning/webmcp commit 14ae813, “Remove declarative API from the spec for now (#338)”, by François Beaufort, committed 8 October 2026. Read 14 October 2026. <https://github.com/webmachinelearning/webmcp/commit/14ae813cc4e9fe0d39313f4b1ee5b231746731ad>
 [^11]: webmachinelearning/webmcp commit b206dae, “Replace UnknownError with specific DOMException types. (#339)”, by Mark Foltz, committed 8 October 2026. Read 14 October 2026. <https://github.com/webmachinelearning/webmcp/commit/b206dae8bad34ea8e6ff7213b417b50b14a37e9a>
 [^12]: webmachinelearning/webmcp `docs/proposal.md` as of commit adbc2c5, “Fix provideContext API example”, 17 November 2025: the `window.navigator.modelContext.provideContext({ tools: [...] })` example, `execute({ text }, agent)`, and `registerTool` / `unregisterTool("add-todo")`. Read 14 October 2026. <https://github.com/webmachinelearning/webmcp/blob/adbc2c5374ec898d54bc312a871f9de62e582671/docs/proposal.md>
-[^13]: WebMCP specification, Draft Community Group Report, 14 October 2026, §4.1 Extensions to Document, §4.2 ModelContext interface and the IDL index. Read 14 October 2026. <https://webmachinelearning.github.io/webmcp/#idl-index>
-[^14]: Chrome for Developers, “Imperative API” (published 18 May 2026, last updated 21 September 2026): “JSON stringified input arguments are deprecated from Chrome 155.” Read 14 October 2026. <https://developer.chrome.com/docs/ai/webmcp/imperative-api>
-[^15]: Chrome for Developers, “WebMCP” overview (published 18 May 2026, last updated 7 October 2026), section “Local WebMCP”. Read 14 October 2026. <https://developer.chrome.com/docs/ai/webmcp>
+[^13]: WebMCP specification, Draft Community Group Report, 15 October 2026, §4.1 Extensions to Document, §4.2 ModelContext interface and the IDL index. Read 15 October 2026. <https://webmachinelearning.github.io/webmcp/#idl-index>
+[^14]: Chrome for Developers, “Imperative API” (published 18 May 2026, last updated 21 September 2026): “JSON stringified input arguments are deprecated from Chrome 155.” Read 15 October 2026. <https://developer.chrome.com/docs/ai/webmcp/imperative-api>
+[^15]: Chrome for Developers, “WebMCP” overview (published 18 May 2026, last updated 7 October 2026), section “Local WebMCP”. Read 15 October 2026. <https://developer.chrome.com/docs/ai/webmcp>
