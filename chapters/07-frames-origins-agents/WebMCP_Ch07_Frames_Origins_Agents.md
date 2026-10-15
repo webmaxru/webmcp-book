@@ -18,7 +18,7 @@ This chapter is about what happens to tools in that tree of documents. It answer
 
 The running example is the book’s third project, the **Helpdesk Widget**. Supportly, a fictional support-software vendor, serves an embeddable help widget from `https://widget.supportly.example`. Ledgerly, a fictional invoicing dashboard at `https://app.ledgerly.example`, embeds it. The widget registers three tools: `search_articles` and `get_ticket_status`, which only read, and `create_ticket`, which opens a ticket with Supportly’s staff. Ledgerly has an assistant of its own, a small in-page agent that should be able to use Supportly’s tools as well as Ledgerly’s. Nobody else on the page should be able to.
 
-Everything below was checked against the WebMCP Draft Community Group Report dated 14 October 2026, Chrome’s developer documentation and the open issues and pull requests in the `webmachinelearning/webmcp` repository, all read on 14 October 2026.[^3] Every behaviour marked “tested” was observed in Chromium 156.0.8078.4 with the `WebMCPTesting` feature switched on (the switch behind `chrome://flags/#enable-webmcp-testing`[^4]), with Ledgerly and Supportly served from two different local origins. The tests are in the book’s demos repository, in `chapters/07-frames-origins-agents/`, and all 29 of them pass. Where Chromium and the draft disagree, the text says so.
+Everything below was checked against the WebMCP Draft Community Group Report dated 15 October 2026, Chrome’s developer documentation and the open issues and pull requests in the `webmachinelearning/webmcp` repository, all read on 14 October 2026 and re-checked on 15 October 2026.[^3] Every behaviour marked “tested” was observed in Chromium 156.0.8078.4 with the `WebMCPTesting` feature switched on (the switch behind `chrome://flags/#enable-webmcp-testing`[^4]), with Ledgerly and Supportly served from two different local origins. The tests are in the book’s demos repository, in `chapters/07-frames-origins-agents/`, and all 29 of them pass. Where Chromium and the draft disagree, the text says so.
 
 ![Figure 7.1 — Ledgerly’s frame tree. The top-level document and Supportly’s widget frame each have their own ModelContext. Three independent opt-ins stand between the widget’s tools and Ledgerly’s agent.](images/figure-7-1.png)
 
@@ -120,7 +120,7 @@ One result in those tests deserves its own paragraph. In every blocked case, `'m
 
 > **Still in flux: one switch or two?**
 >
-> Today one feature, `tools`, covers both providing tools and consuming them. On 23 September 2026 issue #317 described a host that composes several cross-origin apps and one agent in iframes, and wants the apps to provide tools but not use each other’s. It asked whether the policy should be split into two independently delegatable features, “conceptually” `allow="tools-provide"` and `allow="tools-consume"`.[^12] The issue was open on 14 October 2026. If it lands, Listing 7.1’s single `allow="tools"` may need to become something more specific.
+> Today one feature, `tools`, covers both providing tools and consuming them. On 23 September 2026 issue #317 described a host that composes several cross-origin apps and one agent in iframes, and wants the apps to provide tools but not use each other’s. It asked whether the policy should be split into two independently delegatable features, “conceptually” `allow="tools-provide"` and `allow="tools-consume"`.[^12] The issue was still open on 15 October 2026. If it lands, Listing 7.1’s single `allow="tools"` may need to become something more specific.
 
 ## Gates 2 and 3: `exposedTo` and `fromOrigins`
 
@@ -165,7 +165,8 @@ export async function registerWidgetTools(signal) {
       annotations: { readOnlyHint: true },
       async execute({ query }) {
         if (typeof query !== 'string' || !query.trim()) {
-          return { error: 'query must be a non-empty string' };
+          return { status: 'error', code: 'INVALID_INPUT',
+                   message: 'Provide "query" as a non-empty string.' };
         }
         return { articles: await helpdesk.search(query.slice(0, 200)) };
       },
@@ -189,14 +190,19 @@ export async function registerWidgetTools(signal) {
       annotations: { consequentialHint: true },
       async execute({ subject, body, priority }, { signal }) {
         if (!subject?.trim() || !body?.trim()) {
-          return { error: 'subject and body are required' };
+          return { status: 'error', code: 'INVALID_INPUT',
+                   message: 'Provide a non-empty "subject" and "body".' };
         }
         if (!['low', 'normal', 'high'].includes(priority)) {
-          return { error: 'priority must be low, normal or high' };
+          return { status: 'error', code: 'INVALID_INPUT',
+                   message: '"priority" must be low, normal or high.' };
         }
         const draft = { subject: subject.slice(0, 120), body: body.slice(0, 4000), priority };
         const sent = await confirmTicket(draft, signal);          // ③
-        if (!sent) return { status: 'cancelled_by_user' };
+        if (!sent) {
+          return { status: 'cancelled_by_user',
+                   message: 'The user closed the ticket form without sending it.' };
+        }
         const ticket = await helpdesk.createTicket(draft);
         return { status: 'created', ticketId: ticket.id };
       },
@@ -216,11 +222,16 @@ export async function registerWidgetTools(signal) {
       annotations: { readOnlyHint: true, untrustedContentHint: true },  // ④
       async execute({ ticketId }) {
         if (!/^SUP-[0-9]+$/.test(ticketId ?? '')) {
-          return { error: 'ticketId looks like SUP-1042' };
+          return { status: 'error', code: 'INVALID_INPUT',
+                   message: '"ticketId" looks like SUP-1042.' };
         }
         const ticket = await helpdesk.getTicket(ticketId);
-        if (!ticket) return { error: `no ticket ${ticketId}` };
-        return { ticketId, status: ticket.status, latestReply: ticket.latestReply };
+        if (!ticket) {
+          return { status: 'error', code: 'TICKET_NOT_FOUND',
+                   message: `No ticket ${ticketId} on this account.` };
+        }
+        // The ticket's own state is ticketState, so status stays free for outcomes.
+        return { ticketId, ticketState: ticket.status, latestReply: ticket.latestReply };
       },
     }, { signal, exposedTo });
 
@@ -270,13 +281,13 @@ Both directions work. Exposure is about origins, not about who embeds whom. In t
 
 > **Still in flux: the security section is still a TODO**
 >
-> In the 14 October 2026 draft, §6.3.4, “Violation of Same-Origin Boundaries,” reads in full: “TODO: Document risks and implications of agents carrying state from one origin to another,” followed by a note that the section “should probably talk about the WebMCP permissions policy and other cross-origin opt in mechanisms.”[^19] Pull request #326, opened on 28 September 2026, would fill it in with the two-sided opt-in model described here and with the residual risk that an agent itself may carry state from one origin to another. A reviewer has asked for the section to be retitled “Cross-origin tool exposure.”[^17] The pull request was still open on 14 October. The mechanism is in the normative algorithms already; the rationale and the threat discussion are what is pending.
+> In the 15 October 2026 draft, §6.3.4, “Violation of Same-Origin Boundaries,” reads in full: “TODO: Document risks and implications of agents carrying state from one origin to another,” followed by a note that the section “should probably talk about the WebMCP permissions policy and other cross-origin opt in mechanisms.”[^19] Pull request #326, opened on 28 September 2026, would fill it in with the two-sided opt-in model described here and with the residual risk that an agent itself may carry state from one origin to another. A reviewer has asked for the section to be retitled “Cross-origin tool exposure.”[^17] The pull request was still open on 15 October. The mechanism is in the normative algorithms already; the rationale and the threat discussion are what is pending.
 
 ## `getTools()` and `executeTool()`: building an in-page agent
 
 With the gates open, Ledgerly can build its assistant. The two methods are small. Listing 7.4 shows their shape from the specification’s IDL.
 
-**Listing 7.4 — Discovery and execution, from the specification’s IDL (14 October 2026, abridged)**
+**Listing 7.4 — Discovery and execution, from the specification’s IDL (15 October 2026, abridged)**
 
 ```webidl
 partial interface ModelContext {
@@ -352,11 +363,11 @@ export function watchTools(onChange, signal) {
 
 **It takes a dictionary, not a handle.** The first argument is a `RegisteredTool` dictionary. Because it’s a dictionary, any object with the right members will do. In Chromium a shallow copy of a tool from `getTools()` executed normally (tested). What the browser checks is that `window` is a real `Window` in the same tab, that the target document’s origin matches `origin`, that a tool with that `name` exists there, and that it is exposed to the caller.[^23] You can only get a cross-origin `Window` reference from the frame tree, so in practice the dictionary comes from `getTools()`.
 
-**It doesn’t let you probe.** If any of those last three checks fails, the draft rejects with the same `NotFoundError`, on purpose. A note explains that this “prevents a cross-origin caller from using fabricated `RegisteredTool` dictionaries to probe” the target’s current origin or to “enumerate private tools not exposed” to the caller.[^23] Chromium 156 gives the same answer for all of them too, but the name is different: a copy with a made-up `name`, and a copy with a forged `origin`, both rejected with `UnknownError` and the same message, “The operation failed for an unknown transient reason” (tested). The spirit of the rule holds; the exception name doesn’t match the draft yet.
+**It doesn’t let you probe.** If any of those last three checks fails, the draft rejects with the same `NotFoundError`, on purpose. A note explains that this “prevents a cross-origin caller from using fabricated `RegisteredTool` dictionaries to probe” the target’s current origin or to “enumerate private tools not exposed” to the caller.[^23] Chromium 156 gives the same answer for all of them too, but the name is different: a copy with a made-up `name`, and a copy with a forged `origin`, both rejected with `UnknownError` and the same message, “The operation failed for an unknown transient reason” (tested). The spirit of the rule holds; the exception name doesn’t match the draft yet. That is spec lag, not a different design: the draft itself used `UnknownError` for these cases until 8 October 2026, when pull request #339 (commit b206dae) replaced it with `NotFoundError` and the other specific names, and Chromium 156 still implements the older text.[^30]
 
-**Only a name crosses back.** When a tool fails, the caller sees a `DOMException` whose name comes from a small table of platform failures. The draft says that passing only the error’s name, rather than “any internal JavaScript exception object or message thrown in targetDocument,” prevents “leaking provider implementation details or stack traces across origins.”[^23] The tests checked this from the attacker’s side: the widget registered a tool that threw `new Error('db password is hunter2')`, and Ledgerly’s agent got `UnknownError: Tool was executed but the invocation failed…` with no trace of the message. Recoverable failures still belong in the return value, as Listing 7.3 does with `{ error: 'priority must be low, normal or high' }`.
+**Only a name crosses back.** When a tool fails, the caller sees a `DOMException` whose name comes from a small table of platform failures. The draft says that passing only the error’s name, rather than “any internal JavaScript exception object or message thrown in targetDocument,” prevents “leaking provider implementation details or stack traces across origins.”[^23] The tests checked this from the attacker’s side: the widget registered a tool that threw `new Error('db password is hunter2')`, and Ledgerly’s agent got `UnknownError: Tool was executed but the invocation failed…` with no trace of the message. Recoverable failures still belong in the return value, as Listing 7.3 does with `{ status: 'error', code: 'INVALID_INPUT', message: '"priority" must be low, normal or high.' }`, using the result vocabulary Chapter 11 sets out.
 
-**Cancellation crosses origins.** The caller’s `signal` is wired to the target. In the tests, aborting Ledgerly’s controller rejected `executeTool()` with an `AbortError` in Ledgerly, aborted the `signal` that Supportly’s `execute` callback received, and fired `toolcancel` at the widget’s `ModelContext`. The widget’s confirmation card disappeared, as Listing 7.3 intended. This matches the draft’s cancellation steps exactly.[^24]
+**Cancellation crosses origins.** The caller’s `signal` is wired to the target. In the tests, aborting Ledgerly’s controller rejected `executeTool()` with an `AbortError` in Ledgerly, aborted the `signal` that Supportly’s `execute` callback received, and fired `toolcancel` at the widget’s `ModelContext`. The widget’s confirmation card disappeared, as Listing 7.3 intended. This matches the draft’s cancellation steps exactly.[^24] Chapter 6 covers cancellation in full, including why a cancelled tool may still finish its work.
 
 Listing 7.6 wraps all of that into one function the agent loop can call.
 
@@ -399,7 +410,7 @@ export async function runTool(tool, input, { stop, timeoutMs = 15000 } = {}) {
 
 Table 7.3 collects what the tests observed when cross-origin calls went wrong, next to what the draft specifies.
 
-**Table 7.3 — Cross-origin call failures: the 14 October draft and Chromium 156 (tested)**
+**Table 7.3 — Cross-origin call failures: the 15 October draft and Chromium 156 (tested)**
 
 | Situation | Draft | Chromium 156 |
 |---|---|---|
@@ -411,7 +422,7 @@ Table 7.3 collects what the tests observed when cross-origin calls went wrong, n
 | Non-secure origin in `exposedTo` / `fromOrigins` | `SecurityError` | `SecurityError` |
 | Calling document blocked by policy | `NotAllowedError` | `NotAllowedError` |
 
-Sources: the draft’s tool execution error table and method steps;[^25] Chromium results from this chapter’s tests.
+Sources: the draft’s tool execution error table and method steps;[^25] Chromium results from this chapter’s tests, re-run on 15 October 2026. Every `UnknownError` in the Chromium column is a case the draft named `UnknownError` until 8 October 2026.[^30]
 
 Chrome’s guide adds one more case: `executeTool()` returns “null when a navigation is triggered.”[^9] In this chapter’s test, where the *widget’s* tool navigated the widget’s own frame, the caller got `UnknownError`, not `null`. Treat both as “the call didn’t complete; check the page,” and design consequential tools so that a lost answer can be checked afterwards: `create_ticket` returns a ticket ID, and `get_ticket_status` can confirm it.
 
@@ -565,17 +576,17 @@ This isn’t a hole in WebMCP. Chrome’s security guide points out that extensi
 
 ### A WebExtensions API, maybe
 
-Issue #74, opened on 3 February 2026, suggests that the specification’s authors work with the WebExtensions Community Group on “an API exposed to browser extensions that allows them to enumerate and invoke tools defined with WebMCP.” A later comment asks whether such an API is still needed, given that an extension can already run script that calls `executeTool()` in the page.[^29] The issue was open on 14 October 2026. Listing 7.9 is the answer to that comment in practice: it works, but every extension has to reinvent per-frame bookkeeping and cross-world messaging, and the browser can’t tell an extension’s calls apart from the page’s own.
+Issue #74, opened on 3 February 2026, suggests that the specification’s authors work with the WebExtensions Community Group on “an API exposed to browser extensions that allows them to enumerate and invoke tools defined with WebMCP.” A later comment asks whether such an API is still needed, given that an extension can already run script that calls `executeTool()` in the page.[^29] The issue was still open on 15 October 2026. Listing 7.9 is the answer to that comment in practice: it works, but every extension has to reinvent per-frame bookkeeping and cross-world messaging, and the browser can’t tell an extension’s calls apart from the page’s own.
 
 > **Still in flux: extension agents**
 >
-> Nothing in the 14 October 2026 draft mentions extensions. Whether content scripts keep their access, whether extension calls will be labelled or permission-gated, and whether a dedicated `chrome.*` or `browser.*` API appears are all open (issue #74).[^29] The behaviour described above was observed in Chromium 156 only.
+> Nothing in the 15 October 2026 draft mentions extensions. Whether content scripts keep their access, whether extension calls will be labelled or permission-gated, and whether a dedicated `chrome.*` or `browser.*` API appears are all open (issue #74).[^29] The behaviour described above was observed in Chromium 156 only.
 
 ## Design note: is this really a general communication primitive?
 
 Strip away the language-model vocabulary and look at what this chapter built. One document registers named functions with JSON-described inputs. Another document, in a different origin, lists them, calls one with a JSON object, can cancel the call, and gets a string back. Both sides opt in by origin, and the embedder holds a veto. That is a cross-origin remote procedure call mechanism, with better access control than most hand-written `postMessage` protocols.
 
-Jake Archibald made that observation in issue #236 on 3 August 2026. Calling functions across windows and workers is “a pain,” he wrote, which is why libraries such as Comlink exist; WebMCP’s registration plus per-origin exposure is most of a built-in Comlink, and the language-model use could “just fall out of the other capabilities.” He went further: service workers could register tools without any window open, and tools could be exposed “to the browser,” and through it to WebDriver and other tooling.[^1] The issue was still open on 14 October 2026, last updated on 24 September.
+Jake Archibald made that observation in issue #236 on 3 August 2026. Calling functions across windows and workers is “a pain,” he wrote, which is why libraries such as Comlink exist; WebMCP’s registration plus per-origin exposure is most of a built-in Comlink, and the language-model use could “just fall out of the other capabilities.” He went further: service workers could register tools without any window open, and tools could be exposed “to the browser,” and through it to WebDriver and other tooling.[^1] The issue was still open on 15 October 2026, last updated on 24 September.
 
 There are good arguments both ways. In favour: a general primitive would get more scrutiny and more users, the same cross-origin rules would serve the Helpdesk Widget whether or not a model is involved, and Ledgerly’s widget-to-host context tool from earlier in this chapter is already a non-agent use. Against: everything about WebMCP’s design is shaped by the fact that a probabilistic model is choosing the calls. Natural-language descriptions, annotations such as `untrustedContentHint` and `consequentialHint`, and the security section’s long discussion of prompt injection make little sense for a plain RPC library, and a general primitive would invite developers to expose functions that were never written with an agent in mind.
 
@@ -583,13 +594,13 @@ My view, for what it’s worth to a reader in 2026: build your tools as if the g
 
 > **Still in flux: the scope of discovery and exposure**
 >
-> Three open issues could change this chapter’s API surface: #236 (reposition WebMCP as a general cross-environment call mechanism),[^1] #227 (discover tools across the whole browsing context group, not just one tab’s frame tree)[^22] and #317 (let the host, rather than providers and consumers, decide which frames may expose and use tools).[^12] All three were open on 14 October 2026.
+> Three open issues could change this chapter’s API surface: #236 (reposition WebMCP as a general cross-environment call mechanism),[^1] #227 (discover tools across the whole browsing context group, not just one tab’s frame tree)[^22] and #317 (let the host, rather than providers and consumers, decide which frames may expose and use tools).[^12] All three were still open on 15 October 2026.
 
 ## The Helpdesk Widget so far
 
 The demos repository folder `chapters/07-frames-origins-agents/` contains everything in this chapter as runnable code. `npm start` serves Ledgerly on `http://localhost:47101` and Supportly on `http://127.0.0.1:47102`, two different origins that are both potentially trustworthy, and rewrites the production origins in the listings to those local ones as it serves them. The files themselves are byte-for-byte the listings. A few small files that the book doesn’t print fill the gaps: the widget’s page and its in-memory helpdesk backend, the confirmation card, Ledgerly’s assistant wiring and its rule-based planner, and a dev-only `document.modelContext` mock. The folder’s README maps every file to its listing.
 
-`npm test` runs 29 checks: syntax checks for every script, a unit test of the agent loop against the mock, 16 behavioural tests in Chromium 156 with WebMCP enabled across the two origins (Tables 7.1 and 7.3 come from them), and one test that loads Listings 7.8 to 7.10 as an unpacked extension in full Chromium.
+`npm test` runs 30 checks: syntax checks for every script, a unit test of the agent loop against the mock, 17 behavioural tests in Chromium 156 with WebMCP enabled across the two origins (Tables 7.1 and 7.3 come from them), and one test that loads Listings 7.8 to 7.10 as an unpacked extension in full Chromium.
 
 Chapter 11 returns to the widget to ask how its tools should be designed and described, Chapter 12 uses it to model cross-origin threats, and Chapter 14 tests it.
 
@@ -600,7 +611,7 @@ Chapter 11 returns to the widget to ask how its tools should be designed and des
 - **Gate 2, exposure.** `registerTool(tool, { exposedTo })` lists the origins that may see and call a tool. Same-origin callers always can. Non-secure origins reject with `SecurityError`.
 - **Gate 3, request.** `getTools({ fromOrigins })` lists the origins the caller wants tools from. Gates 2 and 3 fail silently: a missing tool just isn’t in the list.
 - `getTools()` covers the whole top-level frame tree, sorted by name, and each `RegisteredTool` carries `window` and `origin`. Key tools by origin and name, because names are unique only per document. `toolchange` tells you to re-read the list, not what changed.
-- `executeTool()` returns a string, passes cancellation through to the target (`toolcancel`), and lets only an exception name cross origins. The draft uses one `NotFoundError` for forged names, forged origins and unexposed tools; Chromium 156 uses `UnknownError` for those and for thrown errors, navigations and removed frames.
+- `executeTool()` returns a string, passes cancellation through to the target (`toolcancel`), and lets only an exception name cross origins. The draft uses one `NotFoundError` for forged names, forged origins and unexposed tools; Chromium 156 uses `UnknownError` for those and for thrown errors, navigations and removed frames, because it still follows the draft as it was before 8 October 2026.
 - Extensions can use the page API from content scripts, in every frame. A content script counts as same-origin with its frame, so it sees tools whatever their `exposedTo`. `exposedTo` limits web origins, not installed software.
 - Still open: a dedicated WebExtensions API (#74), discovery beyond one tab (#227), splitting the policy into provide and consume (#317), the security section on cross-origin exposure (PR #326), and whether WebMCP becomes a general cross-environment call mechanism (#236).
 
@@ -608,9 +619,9 @@ Chapter 8 turns from JavaScript to HTML: the declarative API, which lets a form 
 
 ## Notes
 
-[^1]: Jake Archibald, “Reposition feature as a generic communication tool?”, webmachinelearning/webmcp issue #236, opened 3 August 2026, open and last updated 24 September 2026 (read 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/236>
-[^2]: WebMCP specification, Draft Community Group Report, 14 October 2026, §4.1 Extensions to Document and §4.2 ModelContext interface (including the non-normative descriptions of `getTools()` and `executeTool()`). <https://webmachinelearning.github.io/webmcp/#model-context-container>
-[^3]: WebMCP specification, Draft Community Group Report dated 14 October 2026, editors Brandon Walderman (Microsoft), Khushal Sagar and Dominic Farolino (Google), published by the W3C Web Machine Learning Community Group. Read 14 October 2026. <https://webmachinelearning.github.io/webmcp/>
+[^1]: Jake Archibald, “Reposition feature as a generic communication tool?”, webmachinelearning/webmcp issue #236, opened 3 August 2026, open and last updated 24 September 2026 (read 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/236>
+[^2]: WebMCP specification, Draft Community Group Report, 15 October 2026, §4.1 Extensions to Document and §4.2 ModelContext interface (including the non-normative descriptions of `getTools()` and `executeTool()`). <https://webmachinelearning.github.io/webmcp/#model-context-container>
+[^3]: WebMCP specification, Draft Community Group Report dated 15 October 2026, editors Brandon Walderman (Microsoft), Khushal Sagar and Dominic Farolino (Google), published by the W3C Web Machine Learning Community Group. Read 14 October 2026; re-checked 15 October 2026. <https://webmachinelearning.github.io/webmcp/>
 [^4]: Chrome for Developers, “WebMCP” overview (published 18 May 2026, last updated 7 October 2026), section “Local WebMCP”: the `chrome://flags/#enable-webmcp-testing` flag. <https://developer.chrome.com/docs/ai/webmcp>
 [^5]: WebMCP specification, §5.2 Page observations (non-normative): the browser agent “does not run JavaScript on the page”, the observation walks the inclusive descendant navigables, and each observed tool collection carries an origin. <https://webmachinelearning.github.io/webmcp/#observations>
 [^6]: WebMCP specification, §4.4 Permissions policy integration. <https://webmachinelearning.github.io/webmcp/#permissions-policy>
@@ -619,21 +630,22 @@ Chapter 8 turns from JavaScript to HTML: the declarative API, which lets a form 
 [^9]: Chrome for Developers, “WebMCP Imperative API” (published 18 May 2026, last updated 21 September 2026), sections “Discover tools”, “Execute tool” and “Cross-origin iframes”. <https://developer.chrome.com/docs/ai/webmcp/imperative-api>
 [^10]: MDN Web Docs, “Permissions-Policy header”: syntax, allowlist values (`*`, `()`, `self`, `src`, quoted origins), and `src` as the default allowlist in an `<iframe>` `allow` attribute. Read 14 October 2026. <https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy>
 [^11]: WebMCP specification, §6.4.1 Disabling WebMCP with Permissions Policy. <https://webmachinelearning.github.io/webmcp/#mitigation-disable-permissions-policy>
-[^12]: “Host-controlled WebMCP access between iframes”, webmachinelearning/webmcp issue #317, opened 23 September 2026, open on 14 October 2026. <https://github.com/webmachinelearning/webmcp/issues/317>
+[^12]: “Host-controlled WebMCP access between iframes”, webmachinelearning/webmcp issue #317, opened 23 September 2026, open on 15 October 2026. <https://github.com/webmachinelearning/webmcp/issues/317>
 [^13]: Chrome for Developers, “Secure your WebMCP tools” (published 9 June 2026, last updated 1 September 2026), section “Expose your tools carefully” and its note on Chrome Extensions. <https://developer.chrome.com/docs/ai/webmcp/secure-tools>
 [^14]: WebMCP specification, §4.2.3 ModelContextRegisterToolOptions Dictionary. <https://webmachinelearning.github.io/webmcp/#model-context-register-tool-options>
 [^15]: WebMCP specification, §4.2.4 ModelContextGetToolOptions Dictionary. <https://webmachinelearning.github.io/webmcp/#model-context-get-tool-options>
 [^16]: WebMCP specification, §4.2, “determine if a tool is exposed to an origin”. <https://webmachinelearning.github.io/webmcp/#tool-is-exposed-to-an-origin>
-[^17]: Julia Pagnucco, “Document cross-origin tool exposure and two-sided opt-in in Section 6.3.4”, webmachinelearning/webmcp pull request #326, opened 28 September 2026, open on 14 October 2026, with review comments. <https://github.com/webmachinelearning/webmcp/pull/326>
+[^17]: Julia Pagnucco, “Document cross-origin tool exposure and two-sided opt-in in Section 6.3.4”, webmachinelearning/webmcp pull request #326, opened 28 September 2026, open on 15 October 2026, with review comments. <https://github.com/webmachinelearning/webmcp/pull/326>
 [^18]: WebMCP specification, §4.2, “notify documents of a tool change”, including the note on `toolchange` timing. <https://webmachinelearning.github.io/webmcp/#notify-documents-of-a-tool-change>
-[^19]: WebMCP specification, §6.3.4 Violation of Same-Origin Boundaries (14 October 2026 draft). <https://webmachinelearning.github.io/webmcp/#violation-same-origin-boundaries>
+[^19]: WebMCP specification, §6.3.4 Violation of Same-Origin Boundaries (15 October 2026 draft). <https://webmachinelearning.github.io/webmcp/#violation-same-origin-boundaries>
 [^20]: WebMCP specification, §4.2 ModelContext Interface (IDL) and §4.2.4–§4.2.6. <https://webmachinelearning.github.io/webmcp/#model-context-container>
 [^21]: WebMCP specification, §4.2.6 RegisteredTool Dictionary. <https://webmachinelearning.github.io/webmcp/#registered-tool>
-[^22]: “Tool discovery should not be limited to a single traversable navigable”, webmachinelearning/webmcp issue #227, opened 21 July 2026, open on 14 October 2026. <https://github.com/webmachinelearning/webmcp/issues/227>
+[^22]: “Tool discovery should not be limited to a single traversable navigable”, webmachinelearning/webmcp issue #227, opened 21 July 2026, open on 15 October 2026. <https://github.com/webmachinelearning/webmcp/issues/227>
 [^23]: WebMCP specification, §4.2, `executeTool()` method steps and their notes on fabricated `RegisteredTool` dictionaries and on passing only a tool execution error across origins. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-executetool>
 [^24]: WebMCP specification, §3.1 Pending tool executions (“cancel a pending tool execution”) and §4.3.2 ToolCancelEvent Interface. <https://webmachinelearning.github.io/webmcp/#pending-tool-executions>
 [^25]: WebMCP specification, §3 Supporting concepts, the tool execution error table, and §3.1 unloading document cleanup steps. <https://webmachinelearning.github.io/webmcp/#supporting-concepts>
 [^26]: GoogleChromeLabs, “Example Agentic Chrome Extension to test WebMCP”, README (read 14 October 2026), including the on-device backend’s `chrome://flags/#prompt-api-tool-use` requirement. <https://github.com/GoogleChromeLabs/webmcp-extension>
 [^27]: WebMCP explainer, README of webmachinelearning/webmcp (read 14 October 2026). <https://github.com/webmachinelearning/webmcp>
 [^28]: Chrome for Developers, “Content scripts” (Chrome Extensions documentation), sections “Work in isolated worlds” and “Specify frames” (`all_frames`). Read 14 October 2026. <https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts>
-[^29]: “WebExtensions API to enumerate and invoke tools”, webmachinelearning/webmcp issue #74, opened 3 February 2026, open on 14 October 2026, with comments. <https://github.com/webmachinelearning/webmcp/issues/74>
+[^29]: “WebExtensions API to enumerate and invoke tools”, webmachinelearning/webmcp issue #74, opened 3 February 2026, open on 15 October 2026, with comments. <https://github.com/webmachinelearning/webmcp/issues/74>
+[^30]: webmachinelearning/webmcp pull request #339, “Replace UnknownError with specific DOMException types.” (merged 8 October 2026 as commit b206dae). <https://github.com/webmachinelearning/webmcp/pull/339>
