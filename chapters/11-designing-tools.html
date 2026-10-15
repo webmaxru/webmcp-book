@@ -1,0 +1,935 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chapter 11: Designing Tools Agents Can Actually Use — Tools, Not Clicks</title>
+  <meta name="description" content="Tool design as product design: how many tools, how coarse, how to name and describe them, and what to return so an LLM picks the right one and uses it correctly.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Chapter 11: Designing Tools Agents Can Actually Use — Tools, Not Clicks">
+  <meta property="og:description" content="Tool design as product design: how many tools, how coarse, how to name and describe them, and what to return so an LLM picks the right one and uses it correctly.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a class="is-current" aria-current="page" href="11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="../appendices/a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="../appendices/b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="../appendices/c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="../appendices/d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / Chapter 11 <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">chapter:</span> <span class="fm-v">11</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">III — Building Agent-Ready Apps</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">49 min</span></p>
+        <h1>Chapter 11: Designing Tools Agents Can Actually Use</h1>
+        <p class="lead">Tool design as product design: how many tools, how coarse, how to name and describe them, and what to return so an LLM picks the right one and uses it correctly.</p>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#the-reader-who-cant-ask-questions">The reader who can’t ask questions</a></li><li><a href="#tool-strategy-and-budget">Tool strategy and budget</a></li><li><a href="#naming-descriptions-and-character-budgets">Naming, descriptions and character budgets</a></li><li><a href="#schemas-that-reduce-ambiguity">Schemas that reduce ambiguity</a></li><li><a href="#returning-useful-results-and-errors">Returning useful results and errors</a></li><li><a href="#keeping-agent-facing-text-in-step-with-the-ui">Keeping agent-facing text in step with the UI</a></li><li><a href="#the-helpdesk-widget-redesigned">The Helpdesk Widget, redesigned</a></li><li><a href="#trailhead-and-the-widget-so-far">Trailhead and the widget so far</a></li><li><a href="#chapter-summary">Chapter summary</a></li><li><a href="#notes">Notes</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“More tools don’t always lead to better outcomes.”</em></p>
+<p>— Anthropic, “Writing effective tools for agents — with agents”<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<h2 id="the-reader-who-cant-ask-questions"><a class="anchor-link" href="#the-reader-who-cant-ask-questions">The reader who can’t ask questions</a></h2>
+<p>Every tool you register has two readers. One is the browser, which checks the name, stores the schema as a string and calls <code>execute</code> when it is told to (Chapter 5). The other is a language model that has never seen your site before, is in the middle of someone else’s errand, and will decide in a fraction of a second whether your tool is the one it needs. The browser reads your definition literally. The model reads it the way a new colleague reads a note left on their desk: it fills the gaps with guesses.</p>
+<p>Everything the model knows about a tool comes from four places. The name and the description are read before any call. The input schema tells it what to send. The result, including any error, tells it what happened and what to do next. Nothing else reaches it: not your code, not your intentions, not the comment above the function. The specification describes the description member as “a natural language description of the tool’s functionality” that “helps agents understand when and how to use the tool,”<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup> and that is about all the help the platform gives. Making the text good is your job.</p>
+<p>Chapters 5 and 6 gave Trailhead and Fjord Table working tools and a set of rules that were enough to get started. Chapter 10 ended with a sharper question: Trailhead’s tools work, but are they the right tools? This chapter treats tool design as product design. It covers how many tools to offer and how coarse to make them, how to name and describe them within a character budget, how to write schemas that leave little room for misreading, how to word results and errors so that a model does the right thing next, and how to keep all of that agent-facing text in step with the interface people see.</p>
+<p>The chapter uses two projects. Trailhead gets a redesigned catalogue and cart. The Helpdesk Widget from Chapter 7, which Supportly embeds in Ledgerly, gets its three tools rewritten from the model’s side. Every rule comes with a check you can run. The demos folder for this chapter contains a small lint for tool definitions and a validator that reads the same schema the agent sees, and its test suite runs every tool in Chromium 156 with WebMCP enabled.<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup></p>
+<h2 id="tool-strategy-and-budget"><a class="anchor-link" href="#tool-strategy-and-budget">Tool strategy and budget</a></h2>
+<h3 id="every-tool-costs-something-before-it-is-called"><a class="anchor-link" href="#every-tool-costs-something-before-it-is-called">Every tool costs something before it is called</a></h3>
+<p>A tool that is never called still costs the agent something. The explainer is blunt about it: “Every registered tool (its name, description, and input schema) consumes tokens in the model prompt, adds to inference latency, and increases the potential for tool confusion or hallucination.” It warns that “dozens or hundreds” of tools can “severely degrade agent performance or lead agent browsers to drop tools or fail to process them.”<sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup> Chrome’s best-practices guide says the same thing more gently. There is no maximum, but “each tool takes up part of the context window and adds to the time for completion,” and “the more tools you provide and the more the tools have overlap, the harder it is for the agent to pick correctly.”<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup></p>
+<p>Nobody has published a number for WebMCP. The closest figure I found comes from a different platform: OpenAI’s function-calling guide suggests aiming “for fewer than 20 functions available at the start of a turn at any one time,” and calls that “just a soft suggestion.”<sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup> Treat it as a sanity check, not a target. A page also isn’t the only thing in the agent’s context: the agent may have tools from other tabs, its own built-in tools and tools from MCP servers. Your page’s tools compete with all of them.</p>
+<p>You can measure your own share. The lint in Listing 11.1, later in this chapter, includes a <code>measureTools()</code> function that adds up the characters of each definition as <code>getTools()</code> returns it. Characters aren’t tokens, because every model tokenizes differently, but they are a stable proxy you can track in CI. Trailhead’s three catalogue and cart tools in this chapter come to 1,798 characters; the widget’s three come to 1,850 (<em>measured in Chromium 156</em>).<sup class="footnote-ref"><a href="#fn3" id="fnref3:1">3:1</a></sup></p>
+<h3 id="start-from-tasks-not-endpoints"><a class="anchor-link" href="#start-from-tasks-not-endpoints">Start from tasks, not endpoints</a></h3>
+<p>The most common way to end up with too many tools is to wrap your API. Trailhead’s backend has endpoints for listing products, getting one product, getting a price, getting stock, filtering by category, adding a cart line, updating a cart line and so on. Exposing each one as a tool feels thorough. Anthropic’s engineering team describes it as the error they see most: “tools that merely wrap existing software functionality or API endpoints—whether or not the tools are appropriate for agents.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:1">1:1</a></sup> Their suggested fix is to design for the task: instead of <code>list_users</code>, <code>list_events</code> and <code>create_event</code>, a single <code>schedule_event</code> that “finds availability and schedules an event.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:2">1:2</a></sup> OpenAI’s guide makes the same point from the other side: “Combine functions that are always called in sequence.”<sup class="footnote-ref"><a href="#fn6" id="fnref6:1">6:1</a></sup></p>
+<p>Figure 11.1 shows what that looks like for Trailhead. On the left are the backend operations. On the right are the five tools the store actually registers. The mapping isn’t one to one. <code>search_products</code> absorbs three filter endpoints as optional parameters. <code>compare_products</code> replaces “get one product” called four times. <code>add_to_cart</code> covers both “add a line” and “increase a quantity,” because a person never thinks of those as different things.</p>
+<figure class="book-figure"><img decoding="async" src="11-designing-tools/images/figure-11-1.png" alt="Figure 11.1 — From endpoints to tasks. Eleven backend operations become five Trailhead tools. Filters become parameters, repeated lookups become one comparison, and operations that are always chained become one call." /></figure>
+<p>A useful way to find the right tools is to write down what a person actually comes to do and what they would say to a shop assistant. Table 11.1 does that for Trailhead.</p>
+<p><strong>Table 11.1 — Trailhead’s user tasks and the tools that serve them</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>What the person says</th>
+<th>Tool</th>
+<th>Why this shape</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“Find me a light two-person tent under 4,000 kroner.”</td>
+<td><code>search_products</code></td>
+<td>One search with optional filters, not one tool per filter</td>
+</tr>
+<tr>
+<td>“Which of these two is lighter?”</td>
+<td><code>compare_products</code></td>
+<td>One call returns every attribute for 2–4 products</td>
+</tr>
+<tr>
+<td>“Put the boots in my basket, size 42.”</td>
+<td><code>add_to_cart</code></td>
+<td>Adding and increasing are the same act for a person</td>
+</tr>
+<tr>
+<td>“What’s in my cart?”</td>
+<td><code>get_cart</code></td>
+<td>Read-only, so it can run without asking</td>
+</tr>
+<tr>
+<td>“Go ahead and order it.”</td>
+<td><code>checkout</code></td>
+<td>Separate because it has consequences (Chapter 6)</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="coarse-or-fine"><a class="anchor-link" href="#coarse-or-fine">Coarse or fine?</a></h3>
+<p>“Fewer tools” isn’t a rule to apply blindly. Chrome asks for tools that each “consist of a single function” and warns against overlap,<sup class="footnote-ref"><a href="#fn5" id="fnref5:1">5:1</a></sup> and the explainer asks that “each tool should represent a single, well-defined function.”<sup class="footnote-ref"><a href="#fn4" id="fnref4:1">4:1</a></sup> The way to reconcile “consolidate” with “single function” is to ask where a person would see one decision.</p>
+<p>Three tests work well in practice.</p>
+<ul>
+<li><strong>Merge what is always chained.</strong> If the agent will call A and then B every time, make one tool. A search that needs a separate “apply filter” call is two tools pretending to be one.</li>
+<li><strong>Split where consequences differ.</strong> Annotations belong to the whole tool (Chapter 6). A tool that both reads and buys can’t be <code>readOnlyHint</code>, so the agent has to treat every call as risky. <code>get_cart</code> and <code>checkout</code> stay separate for that reason, even though both are about the cart.</li>
+<li><strong>Split where the person would want to be asked.</strong> If one branch of a tool needs confirmation and another doesn’t, the agent can’t tell from the definition which call it is about to make. Make two tools.</li>
+</ul>
+<p>The Helpdesk Widget passes all three tests with three tools: searching articles reads, opening a ticket writes and is confirmed in the widget, and checking a ticket reads text written by people. Folding “search, and if nothing helps, open a ticket” into one tool would save a call and lose the confirmation boundary.</p>
+<h3 id="collections-skills-and-other-ways-to-scale"><a class="anchor-link" href="#collections-skills-and-other-ways-to-scale">Collections, skills and other ways to scale</a></h3>
+<p>What should an application with a hundred tools do? WebMCP has no answer yet, but the question is open in the Community Group. Issue #255, “Tool collections: coarse-grained grouping with progressive disclosure,” opened on 22 August 2026, observes that “a moderately complex app can easily surface 100+ tools” and that <code>getTools()</code> “hands the agent one flat list.” It proposes groups that an agent could read first and drill into later.<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup> Issue #161, opened on 3 April 2026, proposes “skills”: a <code>registerSkill()</code> call that bundles tool names with workflow instructions and context, because “Tools can tell agents what a site can do, but Skills tell agents how to do it well.”<sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup> Issue #167 proposed lazy schemas, a <code>disabled</code> flag and an <code>updateTool()</code> method; it is now closed.<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup> The explainer sums up where things stand: “WebMCP does not currently define an in-place <code>updateTool()</code> method, lazy schemas, or disabled and grouped tool states.”<sup class="footnote-ref"><a href="#fn4" id="fnref4:2">4:2</a></sup></p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: grouping tools</p>
+<p>Neither tool collections (#255) nor skills (#161) is in the 15 October 2026 draft, and both issues are open.<sup class="footnote-ref"><a href="#fn7" id="fnref7:1">7:1</a></sup><sup class="footnote-ref"><a href="#fn8" id="fnref8:1">8:1</a></sup> Until something lands, the tools you have for scaling are the ones Chapter 10 used: register by page state, keep the default set small, and remove tools that don’t apply. Notice also that the skills strawman’s sample instructions include lines such as “Always mention 30-day return policy before checkout.” Chapter 12 treats exactly that kind of text, an instruction to the agent placed in tool metadata, as a risk. Whatever form grouping takes, expect agents to read it with the same suspicion they bring to descriptions.</p></aside>
+<h2 id="naming-descriptions-and-character-budgets"><a class="anchor-link" href="#naming-descriptions-and-character-budgets">Naming, descriptions and character budgets</a></h2>
+<h3 id="names-that-sort-themselves-out"><a class="anchor-link" href="#names-that-sort-themselves-out">Names that sort themselves out</a></h3>
+<p>Chapter 5 covered what the browser accepts in a name: 1 to 128 ASCII letters, digits, underscores, hyphens and full stops. What agents handle well is narrower. Chrome recommends verbs “that describe exactly what happens” and separating “execution from initiation”: <code>create-event</code> creates, <code>start-event-creation-process</code> opens a form.<sup class="footnote-ref"><a href="#fn5" id="fnref5:2">5:2</a></sup> Its security guide recommends keeping names to about 30 characters.<sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup></p>
+<p>Two more habits pay off once a tab has tools from more than one source. First, keep one naming style per site. Trailhead and Supportly both use <code>snake_case</code> with a verb and an object: <code>search_products</code>, <code>add_to_cart</code>, <code>search_articles</code>, <code>get_ticket_status</code>. Second, put the object in the name, even when it seems obvious. Ledgerly’s page can hold Ledgerly’s own tools and Supportly’s widget tools at the same time (Chapter 7). A bare <code>search</code> from each would leave the agent guessing. Anthropic reports that grouping related tools under shared prefixes or suffixes helps agents “select the right tools at the right time,” and that the choice between prefixes and suffixes had “non-trivial effects” in their evaluations, varying by model.<sup class="footnote-ref"><a href="#fn1" id="fnref1:3">1:3</a></sup> <code>search_articles</code> and <code>search_products</code> are distinguishable without any extra machinery.</p>
+<p>Parameter names deserve the same care. Anthropic’s example is to name a parameter <code>user_id</code> rather than <code>user</code>.<sup class="footnote-ref"><a href="#fn1" id="fnref1:4">1:4</a></sup> The widget uses <code>ticketId</code>, not <code>id</code> or <code>ticket</code>: an agent that reads <code>ticketId</code> with the example <code>SUP-1042</code> in its description doesn’t have to guess whether it should send a number, a URL or a ticket object.</p>
+<h3 id="what-a-description-has-to-say"><a class="anchor-link" href="#what-a-description-has-to-say">What a description has to say</a></h3>
+<p>The description is read every time the agent considers your tool, so every sentence has to earn its place. I use a four-part template and drop any part that the name already makes obvious:</p>
+<ol>
+<li><strong>What it does, as a verb and an object.</strong> “Search Supportly’s help articles…”</li>
+<li><strong>When it is the right tool</strong>, especially compared with its neighbours. “…for how-to answers about Ledgerly.”</li>
+<li><strong>What comes back</strong>, in enough detail that the agent knows what it can do with the result. “Returns up to 5 articles, best match first, each with title, link and a short excerpt.”</li>
+<li><strong>Side effects and who confirms them</strong>, stated as facts. “The user reviews and sends it in the help widget.”</li>
+</ol>
+<p>Chrome’s guide asks for the same core: “what the tool does and when to use it,” with “positive language” rather than limitations. Its example: “This tool can create a calendar event, scheduled for a specific date and time,” instead of “Don’t use this tool for weather.”<sup class="footnote-ref"><a href="#fn5" id="fnref5:3">5:3</a></sup> The reason is practical. A prohibition names a task the tool doesn’t do, which puts that task in the model’s mind, and it never ends: there is always another thing the tool doesn’t do.</p>
+<p>Anthropic suggests imagining how you “would describe your tool to a new hire on your team,” and making explicit the context you would otherwise bring implicitly: “specialized query formats, definitions of niche terminology, relationships between underlying resources.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:5">1:5</a></sup> OpenAI calls the same idea “the intern test”: “Can an intern/human correctly use the function given nothing but what you gave the model?”<sup class="footnote-ref"><a href="#fn6" id="fnref6:2">6:2</a></sup> For a web page, the implicit context is usually the product’s vocabulary. Ledgerly users say “export”, Supportly calls a ticket’s state <code>waiting_on_user</code>, Trailhead writes prices in NOK. Say so.</p>
+<p>Three things don’t belong in a description:</p>
+<ul>
+<li><strong>Live state.</strong> “The cart has 3 items” is wrong as soon as someone adds a fourth, and agents may cache the definition. Chapter 10 moved that kind of information into results and read-only tools.</li>
+<li><strong>Instructions to the agent about its own behaviour.</strong> “Always call this tool first” or “Prefer this tool over other searches” is steering, not description. Chapter 12 explains why a careful agent should read it as an injection attempt, which makes it counterproductive as well as rude.</li>
+<li><strong>Vague verbs for consequential acts.</strong> The specification’s own warning example is a tool named <code>finalizeCart</code> described as “Finalizes the current shopping cart,” which actually places an order. An agent that thinks the user wants to view a final cart calls it, “and it actually triggers a purchase.”<sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup> The draft lists “poorly written descriptions, outdated documentation, or inherent imprecision in natural language” and “side effects not mentioned in the description” as forms of accidental misalignment.<sup class="footnote-ref"><a href="#fn11" id="fnref11:1">11:1</a></sup> If a tool spends money, sends a message or deletes something, its description says so in the first sentence.</li>
+</ul>
+<h3 id="parameter-descriptions"><a class="anchor-link" href="#parameter-descriptions">Parameter descriptions</a></h3>
+<p>Every parameter needs a description, and the most useful ones are short and concrete. A good parameter description says what the value means, gives its format or unit, shows one realistic example and, where it matters, says where the value comes from. Compare Trailhead’s two versions of <code>sku</code>:</p>
+<ul>
+<li>Chapter 6: “Product SKU from search_products.”</li>
+<li>This chapter: “SKU from search_products. Footwear SKUs end in the EU size, e.g. TH-BOOT-FJELL-42.”</li>
+</ul>
+<p>The second adds the one piece of local knowledge that the agent couldn’t have guessed. As the next sections show, that same sentence also appears in the error the agent receives when it gets the SKU wrong, so it is written once and used twice.</p>
+<h3 id="character-budgets-enforced-by-a-test"><a class="anchor-link" href="#character-budgets-enforced-by-a-test">Character budgets, enforced by a test</a></h3>
+<p>Chrome’s security guide recommends 500 characters per tool description, 150 per parameter description, 30 per tool or parameter name and 1,500 per tool output, and notes that “there is some variation across agents” and that the figures may change or move into the specification.<sup class="footnote-ref"><a href="#fn10" id="fnref10:1">10:1</a></sup> The draft itself limits only the name, to 128 characters. Its security section suggests restricting other lengths because shorter text “helps shrink the possible universe of attacks,” and says that “further work is needed to evaluate the right size limits for titles, names, and other inputs,” pointing to issue #73.<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup> That issue, opened on 30 January 2026 and still open, also mentions quality: “there is also a cutoff at which long elaborate prompts tend to confuse models more than help them.”<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup></p>
+<p>Budgets that live in a style guide get forgotten. Budgets that live in a test don’t. Listing 11.1 is a small lint that runs over <code>getTools()</code> output in the demos’ test suite. It checks the budgets, the naming style, that the description says what the tool returns, that every parameter is described, and three of the habits from this section: no steering words, no prohibitions as framing, and no empty or numeric enum values.</p>
+<figure class="code"><figcaption>Listing 11.1 — Measuring and linting agent-facing text (shared/tool-lint.js)</figcaption>
+<pre><code class="language-js">// Measures and lints the agent-facing text of tools, as getTools() returns them.
+// A development check for tests and CI; nothing here runs in production.
+
+// Chrome's recommended budgets (guidance, not enforced by the browser).
+export const BUDGET = { name: 30, description: 500, paramName: 30, paramDescription: 150 };
+
+// Phrases that instruct the agent instead of describing the tool (Chapter 12).
+const STEERING = /\b(always|never|you must|ignore|instead of any other|prefer this tool)\b/i;
+const PROHIBITION = /(^|\.\s+)(do not|don't|never) /i;
+
+// What a tool costs the agent before anyone calls it: the characters of the
+// definition it reads. Characters, not tokens; tokenizers differ by model.
+export function measureTools(tools) {
+  const rows = tools.map((t) =&gt; ({
+    name: t.name,
+    chars: JSON.stringify({ name: t.name, description: t.description, inputSchema: t.inputSchema }).length,
+  }));
+  return { rows, total: rows.reduce((sum, r) =&gt; sum + r.chars, 0) };
+}
+
+export function lintTool(tool) {
+  const problems = [];
+  const add = (where, rule, detail) =&gt; problems.push({ tool: tool.name, where, rule, detail });
+
+  if (tool.name.length &gt; BUDGET.name) add('name', 'budget', `${tool.name.length} characters`);
+  if (!/^[a-z]+(_[a-z]+)+$/.test(tool.name)) add('name', 'verb_object', 'use snake_case verb_object');
+
+  const d = tool.description ?? '';
+  if (d.length &gt; BUDGET.description) add('description', 'budget', `${d.length} characters`);
+  if (!/\breturns?\b/i.test(d)) add('description', 'says_what_it_returns', 'say what comes back');
+  if (STEERING.test(d)) add('description', 'no_steering', d.match(STEERING)[0]);
+  if (PROHIBITION.test(d)) add('description', 'positive_framing', 'state what it does, not what not to do');
+
+  const schema = typeof tool.inputSchema === 'string' ? JSON.parse(tool.inputSchema) : tool.inputSchema;
+  for (const [name, p] of Object.entries(schema?.properties ?? {})) {
+    const where = `inputSchema.${name}`;
+    if (name.length &gt; BUDGET.paramName) add(where, 'budget', `${name.length} characters`);
+    if (!p.description) add(where, 'described', 'every parameter needs a description');
+    else if (p.description.length &gt; BUDGET.paramDescription) add(where, 'budget', `${p.description.length} characters`);
+    const values = p.enum ?? p.oneOf?.map((o) =&gt; o.const) ?? [];
+    if (values.includes('')) add(where, 'no_empty_enum', 'make the parameter optional instead');
+    if (values.some((v) =&gt; /^\d+$/.test(String(v)))) add(where, 'readable_enum', 'use words, not IDs');
+  }
+  return problems;
+}
+</code></pre></figure>
+<p>A lint like this can’t tell whether a description is <em>good</em>. It catches the mechanical mistakes, so that review time goes on the words. It is also deliberately conservative: “must” in a description isn’t always steering, and you may decide to allow it. The point is that every exception is a decision someone made, not an accident.</p>
+<p>Running it over the earlier versions of the tools in this book is instructive. Table 11.2 shows what it found in the definitions from Chapters 6 and 7.</p>
+<p><strong>Table 11.2 — Lint findings for the earlier tool definitions</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Tool (source)</th>
+<th>Findings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>search_products</code> (Listing 6.2)</td>
+<td><code>category</code> has no description</td>
+</tr>
+<tr>
+<td><code>add_to_cart</code> (Listing 6.7)</td>
+<td><code>quantity</code> has no description</td>
+</tr>
+<tr>
+<td><code>search_articles</code> (Listing 7.3)</td>
+<td><code>query</code> has no description</td>
+</tr>
+<tr>
+<td><code>create_ticket</code> (Listing 7.3)</td>
+<td><code>subject</code>, <code>body</code> and <code>priority</code> have no descriptions</td>
+</tr>
+<tr>
+<td><code>get_ticket_status</code> (Listing 7.3)</td>
+<td>Description doesn’t say what it returns in those words; <code>ticketId</code> has no description</td>
+</tr>
+</tbody>
+</table></div>
+<p>Source: <code>tests/run-tests.mjs</code> in the demos folder, run on 14 October 2026.<sup class="footnote-ref"><a href="#fn3" id="fnref3:2">3:2</a></sup></p>
+<p>None of these is a bug in the sense Chapters 6 and 7 cared about: the tools worked, and the tests passed. They are exactly the gaps a model fills with guesses. An undescribed <code>priority</code> enum invites the agent to choose <code>high</code> for anything that sounds unpleasant. The next section shows how to say what each value means.</p>
+<h2 id="schemas-that-reduce-ambiguity"><a class="anchor-link" href="#schemas-that-reduce-ambiguity">Schemas that reduce ambiguity</a></h2>
+<h3 id="the-schema-is-advice-so-make-it-precise-advice"><a class="anchor-link" href="#the-schema-is-advice-so-make-it-precise-advice">The schema is advice, so make it precise advice</a></h3>
+<p>Chapter 5 established that the browser doesn’t validate arguments against <code>inputSchema</code>: it stores “the stringified representation of the inputSchema,” makes it available to the agent, and passes whatever object comes back to <code>execute</code>.<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup> That makes the schema a piece of writing aimed at the model, not a contract. It can still be very precise writing. JSON Schema has keywords that close off whole classes of misreading, and the ones that matter most for tools are few.</p>
+<p><strong>Enums with words.</strong> The <code>enum</code> keyword “is used to restrict a value to a fixed set of values.”<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup> Use values a person would say: <code>'tents'</code>, not <code>3</code>. Chrome and the explainer both make the point with shipping: <code>shipping=&quot;Express&quot;</code> instead of <code>shipping_id=1</code>.<sup class="footnote-ref"><a href="#fn5" id="fnref5:4">5:4</a></sup><sup class="footnote-ref"><a href="#fn4" id="fnref4:3">4:3</a></sup> Listing 11.1 flags numeric enum values for that reason.</p>
+<p><strong>No empty option.</strong> Chapter 8 noticed that a declarative form’s “No preference” option becomes the value <code>&quot;&quot;</code> in the schema, and suggested that a hand-written tool would make the parameter optional instead. That is the rule: absence is expressed by leaving a parameter out, never by a magic value. The lint flags <code>&quot;&quot;</code> in any enum.</p>
+<p><strong>Optional parameters say what happens when they are omitted.</strong> “Only search one category. Omit to search all of them.” “<code>true</code> hides products that are out of stock. Default false.” The agent shouldn’t have to infer a default.</p>
+<p><strong>Required means “can’t work without it.”</strong> Not “usually useful” and not “we’d like to know.” Over-requiring forces the agent to invent values. The specification’s privacy section adds a sharper reason to keep the list short. In its over-parameterization scenario, a dress-search tool adds optional parameters for age, pregnancy and location, and because “agents are designed to be helpful,” they fill them in from personal context, creating “a personalization-to-fingerprinting pipeline.”<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup> OpenAI’s guide has the everyday version: “Don’t make the model fill arguments you already know.”<sup class="footnote-ref"><a href="#fn6" id="fnref6:3">6:3</a></sup> Supportly already knows who is signed in to the widget, so <code>create_ticket</code> asks for the problem and nothing about the person.</p>
+<p><strong>Arrays with bounds.</strong> <code>compare_products</code> takes <code>skus</code> with <code>minItems: 2</code>, <code>maxItems: 4</code> and <code>uniqueItems: true</code>. The bounds say in schema terms what the description says in words, and they survive registration intact: <code>getTools()</code> in Chromium returned them unchanged (<em>observed</em>).<sup class="footnote-ref"><a href="#fn3" id="fnref3:3">3:3</a></sup></p>
+<p><strong>Structure that prevents impossible states.</strong> OpenAI’s example is <code>toggle_light(on: bool, off: bool)</code>, which “allows for invalid calls.”<sup class="footnote-ref"><a href="#fn6" id="fnref6:4">6:4</a></sup> One <code>state</code> enum with <code>'on'</code> and <code>'off'</code> can’t be both.</p>
+<h3 id="enums-that-explain-themselves-oneof-with-titles"><a class="anchor-link" href="#enums-that-explain-themselves-oneof-with-titles">Enums that explain themselves: <code>oneOf</code> with titles</a></h3>
+<p>A bare enum tells the agent which strings are allowed, not what they mean. For many parameters the meaning is obvious (<code>'tents'</code>). For others it isn’t, and the difference matters. The widget’s <code>priority</code> is the clearest case. To a model, <code>high</code> and <code>normal</code> are adjectives. To Supportly’s support team they are promises: a high-priority ticket gets a reply within four hours and pulls someone off other work.</p>
+<p>JSON Schema can say both things. <code>oneOf</code> means the value “must be valid against exactly one of the given subschemas,”<sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup> and a subschema can be a single <code>const</code> value, which “is used to restrict a value to a single value.”<sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup> Each subschema can also carry a <code>title</code>, which JSON Schema describes as preferably short text about the data.<sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup> Put together, a list of <code>{ const, title }</code> pairs is an enum in which every value has its own explanation. Chapter 8 observed that Chrome’s declarative implementation generates a similar structure for a <code>&lt;select&gt;</code>: an <code>anyOf</code> list that pairs each option value with its visible text as a <code>title</code>. That isn’t an accident. The visible label is exactly what a person reads to choose.</p>
+<p>Listing 11.2 defines the widget’s priorities once, in a module that both the widget’s form and its tools import. That second fact turns out to matter as much as the first, and it is the subject of the last part of this chapter.</p>
+<figure class="code"><figcaption>Listing 11.2 — One source for the widget’s words (helpdesk/copy.js)</figcaption>
+<pre><code class="language-js">// Supportly widget: every word that people and agents see, in one place.
+// The form (widget-form.js) and the tools (widget-tools.js) both import it.
+export const LIMITS = { query: 200, subject: 120, body: 4000 };
+
+export const PRIORITIES = [
+  { const: 'low', title: 'Low: a question; nothing is blocked. Reply within 2 business days.' },
+  { const: 'normal', title: 'Normal: something is broken, with a workaround. Reply within 1 business day.' },
+  { const: 'high', title: 'High: the user or their team cannot work. Reply within 4 hours.' },
+];
+
+export const COPY = {
+  searchArticles: { title: 'Search help articles' },
+  createTicket: { title: 'Open a support ticket', send: 'Send ticket', cancel: 'Cancel' },
+  getTicketStatus: { title: 'Check a support ticket' },
+  fields: {
+    subject: 'Subject',
+    body: 'What happened?',
+    priority: 'How urgent is it?',
+  },
+};
+</code></pre></figure>
+<p>The titles describe each level in terms the agent can match against what the user said (“nothing is blocked”, “cannot work”), and they state the consequence (“Reply within 4 hours”) so that the agent can tell the user what to expect. Chromium 156 passed the <code>oneOf</code> array through registration unchanged, and <code>getTools()</code> returned all three <code>{ const, title }</code> pairs exactly as written (<em>observed</em>).<sup class="footnote-ref"><a href="#fn3" id="fnref3:4">3:4</a></sup></p>
+<p>There is a cost. The widget’s <code>create_ticket</code> definition grew from 415 characters in Chapter 7 to 1,014 in this chapter, and most of the growth is the three titles and the parameter descriptions (<em>measured</em>).<sup class="footnote-ref"><a href="#fn3" id="fnref3:5">3:5</a></sup> It is still well inside Chrome’s budgets, because the budgets apply to individual descriptions, not to whole schemas, but it is real context the agent pays for on every turn. Spend it where a wrong choice is expensive. <code>priority</code> qualifies. Trailhead’s <code>category</code> doesn’t: the values say what they are.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: which JSON Schema, and does the agent see <code>title</code>?</p>
+<p>The draft cites JSON Schema without naming a dialect or subset. On 5 March 2026 the Community Group resolved that the browser should be responsible for schema validation and that the spec should “codify a subset”; pull request #289, which implemented that, was closed unmerged on 1 October 2026, and issue #92 is still open.<sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup> MCP’s tools specification defaults to the 2020-12 dialect when no <code>$schema</code> is present.<sup class="footnote-ref"><a href="#fn21" id="fnref21">21</a></sup> <code>oneOf</code>, <code>const</code> and <code>title</code> are all core keywords, and Chromium preserves them. Whether a particular agent shows subschema titles to its model is up to the agent; the schema is a string to the browser. If you depend on the titles, test with the agents you care about (Chapter 14 covers evals).</p></aside>
+<h3 id="one-schema-two-jobs-validate-with-the-schema-you-published"><a class="anchor-link" href="#one-schema-two-jobs-validate-with-the-schema-you-published">One schema, two jobs: validate with the schema you published</a></h3>
+<p>“Validate strictly in code, loosely in schema” is Chrome’s rule,<sup class="footnote-ref"><a href="#fn5" id="fnref5:5">5:5</a></sup> and Chapter 6 followed it with hand-written checks in every <code>execute</code>. That works, but it creates a drift risk: the schema says <code>maximum: 10</code>, the code checks <code>&gt; 12</code>, and nobody notices until an agent is told one thing and refused for another.</p>
+<p>Listing 11.3 removes the duplication. <code>checkArgs()</code> validates the arguments against the same schema object the tool registered, using only the core keywords this book recommends, and returns a Chapter 6 style failure whose message names the field and repeats that field’s own description.</p>
+<figure class="code"><figcaption>Listing 11.3 — Validating against the published schema (shared/validate.js)</figcaption>
+<pre><code class="language-js">import { fail } from './results.js';
+
+// Checks arguments against the same schema the agent was given, using only the
+// core keywords this book recommends. Returns null when the arguments are valid,
+// otherwise a fail() result that names the field and says what valid looks like.
+export function checkArgs(schema, args) {
+  if (args === null || typeof args !== 'object' || Array.isArray(args)) {
+    return fail('INVALID_INPUT', 'Send the arguments as one JSON object.');
+  }
+  const props = schema.properties ?? {};
+  for (const key of schema.required ?? []) {
+    if (args[key] === undefined || args[key] === '') {
+      return fail('MISSING_ARGUMENT', `Provide &quot;${key}&quot;. ${props[key]?.description ?? ''}`.trim(),
+        { field: key });
+    }
+  }
+  for (const [key, value] of Object.entries(args)) {
+    if (!(key in props)) {
+      return fail('UNKNOWN_ARGUMENT',
+        `&quot;${key}&quot; is not a parameter of this tool. Parameters: ${Object.keys(props).join(', ')}.`,
+        { field: key });
+    }
+    const problem = check(props[key], value);
+    if (problem) {
+      return fail('INVALID_ARGUMENT', `&quot;${key}&quot; ${problem} ${props[key].description ?? ''}`.trim(),
+        { field: key });
+    }
+  }
+  return null;
+}
+
+// enum, or oneOf made of { const, title } pairs (see Listing 11.4).
+const allowedValues = (p) =&gt;
+  p.enum ?? (p.oneOf?.every((o) =&gt; 'const' in o) ? p.oneOf.map((o) =&gt; o.const) : null);
+
+function check(p, v) {
+  const values = allowedValues(p);
+  if (values &amp;&amp; !values.includes(v)) {
+    return `must be one of ${values.map((x) =&gt; JSON.stringify(x)).join(', ')}.`;
+  }
+  if (p.type === 'string') {
+    if (typeof v !== 'string') return 'must be a string.';
+    if (p.maxLength !== undefined &amp;&amp; v.length &gt; p.maxLength) {
+      return `is ${v.length} characters; the limit is ${p.maxLength}.`;
+    }
+    if (p.pattern &amp;&amp; !new RegExp(p.pattern).test(v)) return 'is not in the expected format.';
+  }
+  if (p.type === 'number' || p.type === 'integer') {
+    if (typeof v !== 'number' || !Number.isFinite(v)) return 'must be a number.';
+    if (p.type === 'integer' &amp;&amp; !Number.isInteger(v)) return 'must be a whole number.';
+    if (p.minimum !== undefined &amp;&amp; v &lt; p.minimum) return `must be at least ${p.minimum}.`;
+    if (p.maximum !== undefined &amp;&amp; v &gt; p.maximum) return `must be at most ${p.maximum}.`;
+  }
+  if (p.type === 'boolean' &amp;&amp; typeof v !== 'boolean') return 'must be true or false.';
+  if (p.type === 'array') {
+    if (!Array.isArray(v)) return 'must be a list.';
+    if (p.minItems !== undefined &amp;&amp; v.length &lt; p.minItems) return `needs at least ${p.minItems} items.`;
+    if (p.maxItems !== undefined &amp;&amp; v.length &gt; p.maxItems) return `takes at most ${p.maxItems} items.`;
+    if (p.uniqueItems &amp;&amp; new Set(v).size !== v.length) return 'must not repeat an item.';
+    for (const item of v) {
+      const problem = p.items &amp;&amp; check(p.items, item);
+      if (problem) return `has an item that ${problem}`;
+    }
+  }
+  return null;
+}
+</code></pre></figure>
+<p>The trick is in the last argument of each message: <code>props[key].description</code>. Because every parameter description already says what a valid value looks like (“Highest price in NOK, e.g. 2500.”), the error can quote it. When an agent sent <code>maxPrice: '2500'</code> as a string, Chromium returned this to the caller (<em>observed</em>):<sup class="footnote-ref"><a href="#fn3" id="fnref3:6">3:6</a></sup></p>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;error&quot;,
+  &quot;code&quot;: &quot;INVALID_ARGUMENT&quot;,
+  &quot;message&quot;: &quot;\&quot;maxPrice\&quot; must be a number. Highest price in NOK, e.g. 2500.&quot;,
+  &quot;field&quot;: &quot;maxPrice&quot;
+}
+</code></pre>
+<p>This is not a full JSON Schema validator, and it isn’t meant to be one. It doesn’t resolve <code>$ref</code>, it ignores keywords it doesn’t know, and it stops at the first problem. If your schemas need more, use a real validator library. For tools written the way this chapter recommends, flat objects with a handful of described properties, forty lines are enough, and they guarantee that what you tell the agent and what you enforce are the same thing.</p>
+<h2 id="returning-useful-results-and-errors"><a class="anchor-link" href="#returning-useful-results-and-errors">Returning useful results and errors</a></h2>
+<h3 id="results-high-signal-the-right-identifiers-and-an-honest-count"><a class="anchor-link" href="#results-high-signal-the-right-identifiers-and-an-honest-count">Results: high signal, the right identifiers, and an honest count</a></h3>
+<p>A result has two jobs. It answers the question, and it gives the agent what it needs for the next step. Anthropic recommends returning “only high signal information,” avoiding “low-level technical identifiers” such as <code>uuid</code> or <code>mime_type</code>, and observes that agents “grapple with natural language names, terms, or identifiers significantly more successfully than they do with cryptic identifiers.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:6">1:6</a></sup> That doesn’t mean dropping identifiers. It means keeping the ones the next tool needs, next to a name a person would recognize. Trailhead’s search returns <code>sku</code> (which <code>compare_products</code> and <code>add_to_cart</code> take) and <code>name</code> (which the agent says to the user), and leaves out internal product IDs, warehouse codes and image URLs.</p>
+<p>Results also need a size limit. Chrome’s budget is 1,500 characters per tool output.<sup class="footnote-ref"><a href="#fn10" id="fnref10:2">10:2</a></sup> Anthropic recommends “pagination, range selection, filtering, and/or truncation with sensible default parameter values” for responses that could get large, and adds: “If you choose to truncate responses, be sure to steer agents with helpful instructions.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:7">1:7</a></sup> A list cut at ten items without saying so is a quiet lie. The agent will tell the user “here are the tents” when it has seen a tenth of them.</p>
+<p>Listing 11.4 applies all of this to Trailhead’s two read-only catalogue tools.</p>
+<figure class="code"><figcaption>Listing 11.4 — Catalogue tools that return what the next step needs (trailhead/catalog-tools.js)</figcaption>
+<pre><code class="language-js">import { catalog } from './store.js';
+import { checkArgs } from '../shared/validate.js';
+import { fail } from '../shared/results.js';
+
+const LIMIT = 10;
+
+const searchSchema = {
+  type: 'object',
+  properties: {
+    query: { type: 'string', maxLength: 100,
+      description: 'What the user wants, in their words, e.g. &quot;light 2 person tent&quot;.' },
+    category: { type: 'string', enum: ['tents', 'sleeping-bags', 'backpacks', 'footwear', 'clothing'],
+      description: 'Only search one category. Omit to search all of them.' },
+    maxPrice: { type: 'number', minimum: 0, description: 'Highest price in NOK, e.g. 2500.' },
+    inStockOnly: { type: 'boolean', description: 'true hides products that are out of stock. Default false.' },
+  },
+  required: ['query'],
+};
+
+const compareSchema = {
+  type: 'object',
+  properties: {
+    skus: { type: 'array', items: { type: 'string' }, minItems: 2, maxItems: 4, uniqueItems: true,
+      description: '2 to 4 different SKUs from search_products, e.g. [&quot;TH-TENT-2P&quot;, &quot;TH-TENT-3P&quot;].' },
+  },
+  required: ['skus'],
+};
+
+export async function registerCatalogTools(signal) {
+  await document.modelContext.registerTool({
+    name: 'search_products',
+    title: 'Search products',
+    description:
+      'Search the Trailhead outdoor-gear catalogue. Returns up to 10 products, best match ' +
+      'first, each with SKU, name, price in NOK, rating and whether it is in stock, plus the ' +
+      'total number of matches. Does not change the cart.',
+    inputSchema: searchSchema,
+    annotations: { readOnlyHint: true },
+    async execute(args) {
+      const invalid = checkArgs(searchSchema, args);
+      if (invalid) return invalid;
+      const matches = catalog.search(args);
+      const result = {
+        products: matches.slice(0, LIMIT).map((p) =&gt; ({                // ①
+          sku: p.sku, name: p.name, price: { amount: p.price, currency: 'NOK' },
+          rating: p.rating, inStock: p.stock &gt; 0,
+        })),
+        total: matches.length,
+      };
+      if (matches.length &gt; LIMIT) {                                    // ②
+        result.note = `Showing ${LIMIT} of ${matches.length}. Add category or maxPrice to narrow the search.`;
+      } else if (matches.length === 0) {
+        result.note = 'No products matched. Try fewer or more general words.';
+      }
+      return result;
+    },
+  }, { signal });
+
+  await document.modelContext.registerTool({
+    name: 'compare_products',
+    title: 'Compare products',
+    description:
+      'Compare 2 to 4 products side by side. Returns one row per attribute (price in NOK, ' +
+      'rating, stock, weight in grams and the specs of that category) with each product\'s value.',
+    inputSchema: compareSchema,
+    annotations: { readOnlyHint: true },
+    async execute(args) {
+      const invalid = checkArgs(compareSchema, args);
+      if (invalid) return invalid;
+      const unknownSkus = args.skus.filter((sku) =&gt; !catalog.get(sku));
+      if (unknownSkus.length) {                                        // ③
+        return fail('UNKNOWN_SKU',
+          `No product has SKU ${unknownSkus.join(', ')}. Use search_products to find SKUs.`,
+          { unknownSkus });
+      }
+      const products = args.skus.map((sku) =&gt; catalog.get(sku));
+      const row = (attribute, value) =&gt;
+        ({ attribute, values: Object.fromEntries(products.map((p) =&gt; [p.sku, value(p)])) });
+      const specKeys = [...new Set(products.flatMap((p) =&gt; Object.keys(p.specs)))];
+      return {
+        products: products.map((p) =&gt; ({ sku: p.sku, name: p.name })),
+        rows: [
+          row('price (NOK)', (p) =&gt; p.price),
+          row('rating', (p) =&gt; p.rating),
+          row('in stock', (p) =&gt; p.stock &gt; 0),
+          ...specKeys.map((k) =&gt; row(k, (p) =&gt; p.specs[k] ?? null)),     // ④
+        ],
+      };
+    },
+  }, { signal });
+}
+</code></pre></figure>
+<p>① Each product carries exactly the fields Trailhead’s canonical result shape defines: SKU, name, price with its currency, rating and a boolean for stock. The stock <em>count</em> stays private; the agent doesn’t need it, and competitors don’t either.</p>
+<p>② When there are more matches than fit, the result says how many, how many it is showing, and which parameters would narrow the search. A broad search for “tent” in the demo matched 16 products; the result listed 10, said <code>&quot;Showing 10 of 16. Add category or maxPrice to narrow the search.&quot;</code>, and came to 1,312 characters, inside the 1,500 budget (<em>observed in Chromium 156</em>).<sup class="footnote-ref"><a href="#fn3" id="fnref3:7">3:7</a></sup> An empty result isn’t an error either: it returns an empty list and a note suggesting broader words.</p>
+<p>③ An unknown SKU is a failure the agent can fix, so it says which SKU and which tool will find the right one, and lists the bad SKUs in a field a program can read.</p>
+<p>④ The comparison returns rows of attributes with one value per SKU, a shape an agent can turn into a sentence or a table without guessing which number belongs to which product.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: <code>outputSchema</code></p>
+<p>WebMCP results are strings: whatever your <code>execute</code> returns is serialized and handed to the caller (Chapter 5). There is no way yet to tell the agent the shape of a result in advance. Issue #9, “Introduce <code>outputSchema</code>,” has been open since 12 August 2025, and pull request #254, which adds <code>outputSchema</code> to the tool dictionary, was opened on 21 August 2026 and is still open.<sup class="footnote-ref"><a href="#fn22" id="fnref22">22</a></sup> MCP already has the feature: a tool may declare an <code>outputSchema</code> and return <code>structuredContent</code> that conforms to it.<sup class="footnote-ref"><a href="#fn21" id="fnref21:1">21:1</a></sup> Until WebMCP decides, describe the result in the description (“Returns up to 10 products … each with SKU, name, price in NOK…”) and keep result shapes stable.</p></aside>
+<h3 id="errors-the-model-can-act-on"><a class="anchor-link" href="#errors-the-model-can-act-on">Errors the model can act on</a></h3>
+<p>Chapter 6 set the convention: tool-level failures are results, not exceptions, shaped <code>{ status: 'error', code, message }</code>, with a stable code for programs and a sentence for the model. The specification allows exactly this: its error table “only tracks the list of platform-defined failures,” and “tool execution failures defined by tool authors can also be reported to the tool caller in the response JSON string.”<sup class="footnote-ref"><a href="#fn23" id="fnref23">23</a></sup> MCP takes the same position. Its tools specification says that tool execution errors “contain actionable feedback that language models can use to self-correct and retry with adjusted parameters,” that they are reported in results with <code>isError: true</code>, and that clients “SHOULD provide tool execution errors to language models to enable self-correction.”<sup class="footnote-ref"><a href="#fn21" id="fnref21:2">21:2</a></sup></p>
+<p>Chapter 6 promised a closer look at the wording. Here are the rules I apply to every <code>message</code>:</p>
+<ol>
+<li><strong>Name the thing that was wrong.</strong> <code>&quot;quantity&quot; must be a whole number.</code> beats <code>Invalid input.</code> If more than one argument could be at fault, say which.</li>
+<li><strong>Show what right looks like, with an example from the real data.</strong> “Ticket ID as the user sees it, e.g. SUP-1042.” Anthropic contrasts “opaque error codes or tracebacks” with messages that “clearly communicate specific and actionable improvements.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:8">1:8</a></sup></li>
+<li><strong>Point to the next step, by tool name if there is one.</strong> “Use search_products to find SKUs.”</li>
+<li><strong>Say who should act if it isn’t the agent.</strong> “Ask the user which size.” “Tell the user they can open another after 23:57 (UTC).”</li>
+<li><strong>Leave out internals.</strong> No stack traces, no database errors, no class names. The platform already strips your thrown exceptions to a name (Chapter 6); don’t smuggle them back in through the message.</li>
+<li><strong>Keep the code stable and the message free.</strong> Programs and tests branch on <code>code</code>. The message can be reworded whenever evals show a better phrasing works.</li>
+</ol>
+<p>Chrome adds one more for a specific case: “If a tool is rate limited, return a meaningful error or advise the user to manually take on the task.”<sup class="footnote-ref"><a href="#fn5" id="fnref5:6">5:6</a></sup></p>
+<h3 id="refusals-are-not-failures"><a class="anchor-link" href="#refusals-are-not-failures">Refusals are not failures</a></h3>
+<p>Rule 4 hides an important distinction. Some failures are the agent’s to fix: a malformed date, an unknown SKU, a missing argument. The agent should simply try again with better input. Other outcomes aren’t failures of the call at all. The arguments were fine, but a rule says no: a purchase limit, a sold-out item, a rate limit, an account that isn’t allowed to do this. Retrying with different arguments won’t help, and in most cases the agent <em>shouldn’t</em> try, because the obvious workaround changes what the person asked for. An agent told “only 2 per customer” that silently adds 2 instead of 3 has made a decision that belonged to the user.</p>
+<p>If both outcomes come back as <code>status: 'error'</code>, the agent has to work out from the prose which kind it got. It is better to say so in the status. Listing 11.5 puts Chapter 6’s <code>fail()</code> and three siblings in one module, giving four non-success statuses that each answer the question “who acts next?” The earlier chapters’ tools already return these shapes; this section explains the reasoning.</p>
+<figure class="code"><figcaption>Listing 11.5 — Four ways a call can fall short (shared/results.js)</figcaption>
+<pre><code class="language-js">// Result shapes shared by every tool on the page: Chapter 6's fail(), plus
+// three siblings. `status` is what the agent reads first; it says who acts next.
+
+// The agent can fix this itself: other arguments, or another tool first.
+export const fail = (code, message, details = {}) =&gt;
+  ({ status: 'error', code, message, ...details });
+
+// A rule says no. Other arguments won't help; the user has to decide.
+export const refuse = (code, message, details = {}) =&gt;
+  ({ status: 'refused', code, message, ...details });
+
+// Only the user knows the answer. Ask them, then call again.
+export const needsInput = (missing, message, details = {}) =&gt;
+  ({ status: 'needs_input', code: 'MISSING_INFORMATION', missing, message, ...details });
+
+// The user said no in the page's own UI. Don't retry unless they ask.
+export const cancelledByUser = (message) =&gt;
+  ({ status: 'cancelled_by_user', message });
+</code></pre></figure>
+<p>Table 11.3 sums up the vocabulary. Chapter 7’s widget returns <code>cancelled_by_user</code>, and Chapter 13 returns a <code>needs_input</code> result for a missing size; this listing gives them one home.</p>
+<p><strong>Table 11.3 — Result statuses and who acts next</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th><code>status</code></th>
+<th>Meaning</th>
+<th>Who acts next</th>
+<th>Retry?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a domain word (<code>added</code>, <code>created</code>), or none</td>
+<td>It worked</td>
+<td>The agent, with the result</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>error</code></td>
+<td>The call was wrong in a way the agent can fix</td>
+<td>The agent: new arguments, or another tool first</td>
+<td>Yes, after fixing</td>
+</tr>
+<tr>
+<td><code>needs_input</code></td>
+<td>Only the user knows something the call needs</td>
+<td>The user answers; then the agent calls again</td>
+<td>Yes, with the answer</td>
+</tr>
+<tr>
+<td><code>refused</code></td>
+<td>A rule says no; other arguments won’t help</td>
+<td>The user decides what to do</td>
+<td>Not without the user</td>
+</tr>
+<tr>
+<td><code>cancelled_by_user</code></td>
+<td>The person declined in the page’s own UI</td>
+<td>Nobody, unless the user asks again</td>
+<td>No</td>
+</tr>
+</tbody>
+</table></div>
+<p>Figure 11.2 shows the same thing as the decision an agent faces after each call.</p>
+<figure class="book-figure"><img decoding="async" src="11-designing-tools/images/figure-11-2.png" alt="Figure 11.2 — Who acts next. Each status tells the agent whether to continue, fix its call, ask the user, or stop." /></figure>
+<p>Reserving <code>status</code> for the outcome has a consequence for result design: don’t use the same field name for domain data. A ticket’s state returned as <code>status: 'open'</code> could be mistaken for an outcome by an agent applying Table 11.3, which is why Chapter 7’s <code>get_ticket_status</code> and this chapter’s both return it as <code>ticketState</code>.</p>
+<p>Listing 11.6 applies the vocabulary to Trailhead’s <code>add_to_cart</code>.</p>
+<figure class="code"><figcaption>Listing 11.6 — <code>add_to_cart</code> that tells the agent who decides (trailhead/cart-tools.js)</figcaption>
+<pre><code class="language-js">import { cart, catalog } from './store.js';
+import { checkArgs } from '../shared/validate.js';
+import { fail, refuse, needsInput } from '../shared/results.js';
+
+const addSchema = {
+  type: 'object',
+  properties: {
+    sku: { type: 'string',
+      description: 'SKU from search_products. Footwear SKUs end in the EU size, e.g. TH-BOOT-FJELL-42.' },
+    quantity: { type: 'integer', minimum: 1, maximum: 10, description: 'How many to add, 1 to 10.' },
+  },
+  required: ['sku', 'quantity'],
+};
+
+export async function registerCartTools(signal) {
+  await document.modelContext.registerTool({
+    name: 'add_to_cart',
+    title: 'Add to cart',
+    description:
+      'Add 1 to 10 units of one product to the cart, by SKU. Adding a SKU that is already ' +
+      'in the cart increases its quantity. Returns the cart line and the cart total in NOK.',
+    inputSchema: addSchema,
+    async execute(args) {
+      const invalid = checkArgs(addSchema, args);
+      if (invalid) return invalid;                                       // ①
+      const { sku, quantity } = args;
+
+      const sizes = catalog.sizesOf(sku);
+      if (sizes) {                                                       // ②
+        return needsInput(['size'],
+          `This product comes in EU sizes ${sizes.join(', ')}. Ask the user which size, then ` +
+          `call add_to_cart again with the sized SKU, e.g. ${sku}-${sizes[0]}.`,
+          { sizes });
+      }
+
+      const product = catalog.get(sku);
+      if (!product) {
+        return fail('UNKNOWN_SKU', `No product has SKU &quot;${sku}&quot;. Use search_products to find SKUs.`);
+      }
+
+      const inCart = cart.quantityOf(sku);
+      if (product.limitPerCustomer &amp;&amp; inCart + quantity &gt; product.limitPerCustomer) {
+        return refuse('PURCHASE_LIMIT',                                  // ③
+          `${product.name} is limited to ${product.limitPerCustomer} per customer and the cart ` +
+          `has ${inCart}. Ask the user before adding a smaller quantity.`,
+          { limit: product.limitPerCustomer, inCart });
+      }
+      if (product.stock &lt; inCart + quantity) {
+        return refuse('OUT_OF_STOCK',
+          `Only ${product.stock} of ${product.name} in stock and the cart has ${inCart}. ` +
+          'Ask the user before adding a smaller quantity.',
+          { available: product.stock, inCart });
+      }
+
+      const line = cart.add(sku, quantity);
+      return { status: 'added', line, total: { amount: cart.total(), currency: 'NOK' } };
+    },
+  }, { signal });
+}
+</code></pre></figure>
+<p>① Malformed arguments are the agent’s to fix, and Listing 11.3 produces the message.</p>
+<p>② The boots come in sizes, and the SKU without a size names the product family, not something you can buy. The agent can’t know the user’s shoe size, so this is <code>needs_input</code>, not <code>error</code>. The result lists the sizes and shows what a sized SKU looks like, so that after one question to the user the next call succeeds. In Chromium 156 the result was <code>{&quot;status&quot;:&quot;needs_input&quot;,&quot;code&quot;:&quot;MISSING_INFORMATION&quot;,&quot;missing&quot;:[&quot;size&quot;],…}</code> with the sizes 40 to 45 (<em>observed</em>).<sup class="footnote-ref"><a href="#fn3" id="fnref3:8">3:8</a></sup></p>
+<p>③ The limited-edition jacket allows two per customer. A request for three is <code>refused</code>, and the message says what the agent should do instead of “fixing” it: ask the user. The sold-out tent takes the same path, and so does Chapter 6’s <code>OUT_OF_STOCK</code>, a business-rule refusal (“only three left”) that uses <code>status: 'refused'</code> for exactly this reason.</p>
+<p>The distinction between <code>error</code> and <code>refused</code> is a judgment call at the edges. The test I use: <em>would a good human assistant make this change without checking with the person?</em> Reformatting a date, yes. Picking a shoe size, buying fewer jackets, or waiting an hour to open a ticket, no.</p>
+<h2 id="keeping-agent-facing-text-in-step-with-the-ui"><a class="anchor-link" href="#keeping-agent-facing-text-in-step-with-the-ui">Keeping agent-facing text in step with the UI</a></h2>
+<h3 id="two-descriptions-of-one-product"><a class="anchor-link" href="#two-descriptions-of-one-product">Two descriptions of one product</a></h3>
+<p>A WebMCP page describes itself twice: once to people, in labels, buttons, help text and validation messages, and once to agents, in names, titles, descriptions, schemas and results. Left alone, the two drift. Someone renames the “Urgent” priority to “High” in the form and forgets the tool. A designer raises the subject limit to 150 characters and the schema still says 120. Support changes its response times and the descriptions still promise the old ones.</p>
+<p>Drift hurts in both directions. An agent that uses words the page doesn’t show confuses the person watching (“I’ve set priority to urgent”—there is no urgent). A page whose tool accepts what its form rejects lets the agent do things a person can’t, which Chapter 13 identifies as a parity and accessibility problem. The explainer asks for synchronized state because “AI agents and human users collaborate in the same browser session,”<sup class="footnote-ref"><a href="#fn4" id="fnref4:4">4:4</a></sup> and Chrome asks you to “update the interface state after functions are completed,” because agents “may rely on the interface to plan next steps.”<sup class="footnote-ref"><a href="#fn5" id="fnref5:7">5:7</a></sup> Shared words are the static half of the same idea.</p>
+<p>Three practices keep the two descriptions together.</p>
+<p><strong>One source for the words.</strong> Listing 11.2 already put the widget’s titles, priority labels and limits in one module. The form and the tools both import it, so the agent’s <code>title</code> for <code>create_ticket</code> is the label on the button a person presses, and the <code>title</code> of each priority is the text of each option in the form. The specification says the tool’s <code>title</code> is used by the browser “to reference the tool in the user interface” and recommends that it be localized to the user’s language,<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">2:1</a></sup> so a shared string is also the natural place for its translations.</p>
+<p><strong>Build the human UI from the same data.</strong> Listing 11.7 renders the widget’s ticket form from that module, and its <code>confirmTicket()</code> shows the agent’s draft in the same form a person would fill in by hand.</p>
+<figure class="code"><figcaption>Listing 11.7 — The person’s form, built from the same copy (helpdesk/widget-form.js)</figcaption>
+<pre><code class="language-js">import { COPY, PRIORITIES, LIMITS } from './copy.js';
+
+// The person's ticket form, built from the same copy as the agent's tool.
+export function renderTicketForm(root) {
+  root.innerHTML = `
+    &lt;button type=&quot;button&quot; id=&quot;new-ticket&quot;&gt;${COPY.createTicket.title}&lt;/button&gt;
+    &lt;form id=&quot;ticket-form&quot; hidden&gt;
+      &lt;h2&gt;${COPY.createTicket.title}&lt;/h2&gt;
+      &lt;label&gt;${COPY.fields.subject}
+        &lt;input name=&quot;subject&quot; maxlength=&quot;${LIMITS.subject}&quot; required&gt;&lt;/label&gt;
+      &lt;label&gt;${COPY.fields.body}
+        &lt;textarea name=&quot;body&quot; maxlength=&quot;${LIMITS.body}&quot; required&gt;&lt;/textarea&gt;&lt;/label&gt;
+      &lt;label&gt;${COPY.fields.priority}
+        &lt;select name=&quot;priority&quot;&gt;${PRIORITIES.map((p) =&gt;
+          `&lt;option value=&quot;${p.const}&quot;&gt;${p.title}&lt;/option&gt;`).join('')}&lt;/select&gt;&lt;/label&gt;
+      &lt;button value=&quot;send&quot;&gt;${COPY.createTicket.send}&lt;/button&gt;
+      &lt;button value=&quot;cancel&quot; formnovalidate&gt;${COPY.createTicket.cancel}&lt;/button&gt;
+    &lt;/form&gt;`;
+}
+
+// Shows the agent's draft in the form and waits for the person to send or cancel.
+export function confirmTicket(draft, signal) {
+  const form = document.getElementById('ticket-form');
+  for (const [field, value] of Object.entries(draft)) form.elements[field].value = value;
+  form.hidden = false;
+  return new Promise((resolve) =&gt; {
+    const done = (sent) =&gt; { form.hidden = true; form.onsubmit = null; resolve(sent); };
+    form.onsubmit = (event) =&gt; {
+      event.preventDefault();
+      done(event.submitter?.value === 'send');
+    };
+    signal.addEventListener('abort', () =&gt; done(false), { once: true });
+  });
+}
+</code></pre></figure>
+<p><strong>Test the parity.</strong> The demo’s tests load the widget, read the button label, the form heading, the <code>&lt;option&gt;</code> elements and the <code>maxlength</code> attributes from the DOM, and compare them with what <code>getTools()</code> returns. In Chromium 156 the tool title, the button label and the form heading were the same string; the three options matched the three <code>{ const, title }</code> pairs exactly; and both <code>maxlength</code> values matched the schema’s <code>maxLength</code> (<em>observed</em>).<sup class="footnote-ref"><a href="#fn3" id="fnref3:9">3:9</a></sup> If someone edits one side, the test fails.</p>
+<h3 id="changing-the-words"><a class="anchor-link" href="#changing-the-words">Changing the words</a></h3>
+<p>Shared words don’t change one more thing: agents read your definition when they see it, not every time they call. The explainer’s guidance is explicit. A tool’s implementation can change freely, but “a tool’s name, description, and input schema are loaded into the model’s context statically,” so changing them means unregistering and registering again, which fires <code>toolchange</code>.<sup class="footnote-ref"><a href="#fn4" id="fnref4:5">4:5</a></sup> For a shared copy module that only changes on deploy, a page reload does that for you. For copy that changes while the page is open (a feature flag, a language switch), re-register the affected tools, as Chapter 10 did for view-scoped tools.</p>
+<p>The explainer also asks that <code>execute</code> “still validate current inputs, authorization, and preconditions before running,” because state can change between the moment the model read the schema and the moment it calls.<sup class="footnote-ref"><a href="#fn4" id="fnref4:6">4:6</a></sup> Listing 11.3 helps here too: since validation reads the schema at call time, the two can’t disagree.</p>
+<h2 id="the-helpdesk-widget-redesigned"><a class="anchor-link" href="#the-helpdesk-widget-redesigned">The Helpdesk Widget, redesigned</a></h2>
+<p>Listing 11.8 brings the chapter together for the widget. Compare it with Listing 7.3: the registration mechanics, <code>exposedTo</code> and the confirmation in the widget’s own frame are unchanged. What changed is everything the agent reads.</p>
+<figure class="code"><figcaption>Listing 11.8 — The widget’s tools, written for the model (helpdesk/widget-tools.js)</figcaption>
+<pre><code class="language-js">// Supportly help widget: the three tools, redesigned (compare Listing 7.3).
+import { helpdesk } from './helpdesk-api.js';
+import { confirmTicket } from './widget-form.js';
+import { COPY, LIMITS, PRIORITIES } from './copy.js';
+import { checkArgs } from '../shared/validate.js';
+import { fail, refuse, cancelledByUser } from '../shared/results.js';
+
+const searchSchema = {
+  type: 'object',
+  properties: {
+    query: { type: 'string', maxLength: LIMITS.query,
+      description: 'The user\'s question or the error text they see, e.g. &quot;export invoices to CSV&quot;.' },
+  },
+  required: ['query'],
+};
+
+const ticketSchema = {
+  type: 'object',
+  properties: {
+    subject: { type: 'string', maxLength: LIMITS.subject,
+      description: 'One-line summary, e.g. &quot;CSV export fails for March invoices&quot;.' },
+    body: { type: 'string', maxLength: LIMITS.body,
+      description: 'What happened, what the user expected, and the steps that led to it.' },
+    priority: { type: 'string', oneOf: PRIORITIES,                      // ①
+      description: 'How urgent the problem is for the user.' },
+  },
+  required: ['subject', 'body', 'priority'],
+};
+
+const statusSchema = {
+  type: 'object',
+  properties: {
+    ticketId: { type: 'string', pattern: '^SUP-[0-9]+$',
+      description: 'Ticket ID as the user sees it, e.g. SUP-1042.' },
+  },
+  required: ['ticketId'],
+};
+
+export async function registerWidgetTools({ signal, exposedTo = [] }) {
+  const mc = document.modelContext;
+  const options = { signal, exposedTo };
+
+  await mc.registerTool({
+    name: 'search_articles',
+    title: COPY.searchArticles.title,
+    description:
+      'Search Supportly\'s help articles for how-to answers about Ledgerly. Returns up to ' +
+      '5 articles, best match first, each with title, link and a short excerpt.',
+    inputSchema: searchSchema,
+    annotations: { readOnlyHint: true },
+    async execute(args) {
+      const invalid = checkArgs(searchSchema, args);
+      if (invalid) return invalid;
+      const articles = await helpdesk.search(args.query, 5);
+      if (articles.length === 0) {
+        return { articles, note: 'No articles matched. Try the exact words of the error message.' };
+      }
+      return { articles };
+    },
+  }, options);
+
+  await mc.registerTool({
+    name: 'create_ticket',
+    title: COPY.createTicket.title,                                       // ②
+    description:
+      'Open a support ticket with Supportly\'s team about a problem with Ledgerly. The user ' +
+      'reviews and sends it in the help widget; their account and contact details are added ' +
+      'automatically. Returns the ticket ID, e.g. SUP-1042, and when to expect a reply.',
+    inputSchema: ticketSchema,                                            // ③
+    annotations: { consequentialHint: true },
+    async execute(args, { signal }) {
+      const invalid = checkArgs(ticketSchema, args);
+      if (invalid) return invalid;
+      const quota = await helpdesk.ticketQuota();
+      if (quota.remaining === 0) {                                        // ④
+        return refuse('TICKET_LIMIT',
+          `This account has opened ${quota.used} tickets in the past hour, the most allowed. ` +
+          `Tell the user they can open another after ${quota.resetsAt} (UTC).`,
+          { resetsAt: quota.resetsAt });
+      }
+      const sent = await confirmTicket(args, signal);
+      if (!sent) return cancelledByUser('The user closed the ticket form without sending it.');
+      const ticket = await helpdesk.createTicket(args);
+      return { status: 'created', ticketId: ticket.id, expectedReply: ticket.expectedReply };
+    },
+  }, options);
+
+  await mc.registerTool({
+    name: 'get_ticket_status',
+    title: COPY.getTicketStatus.title,
+    description:
+      'Get the state of one of the user\'s Supportly tickets by its ID. Returns the ticket ' +
+      'state (open, waiting_on_user or resolved), when it last changed, and the latest reply, ' +
+      'quoted as its author wrote it.',
+    inputSchema: statusSchema,
+    annotations: { readOnlyHint: true, untrustedContentHint: true },
+    async execute(args) {
+      const invalid = checkArgs(statusSchema, args);
+      if (invalid) return invalid;
+      const ticket = await helpdesk.getTicket(args.ticketId);
+      if (!ticket) {                                                      // ⑤
+        return fail('TICKET_NOT_FOUND',
+          `No ticket ${args.ticketId} on this account. Check the ID with the user; it is in ` +
+          'the confirmation email.');
+      }
+      return {
+        ticketId: ticket.id,
+        ticketState: ticket.state,                                        // ⑥
+        updated: ticket.updated,
+        latestReply: ticket.latestReply,
+      };
+    },
+  }, options);
+}
+</code></pre></figure>
+<p>① <code>priority</code> uses the <code>oneOf</code> list from Listing 11.2, so the agent reads what each level promises. When an agent sent <code>priority: 'urgent'</code>, the call returned <code>&quot;\&quot;priority\&quot; must be one of \&quot;low\&quot;, \&quot;normal\&quot;, \&quot;high\&quot;. How urgent the problem is for the user.&quot;</code> (<em>observed</em>).<sup class="footnote-ref"><a href="#fn3" id="fnref3:10">3:10</a></sup></p>
+<p>② The tool’s title comes from the same copy as the widget’s button.</p>
+<p>③ The schema asks only for the problem. The description says that account and contact details “are added automatically,” which tells the agent not to go looking for them, without a prohibition.</p>
+<p>④ A rate limit is a refusal, checked <em>before</em> the form opens, so the person isn’t asked to review a ticket that can’t be sent. After three tickets in an hour the fourth call returned <code>status: 'refused'</code>, <code>code: 'TICKET_LIMIT'</code>, with the time the limit resets, and the form stayed hidden (<em>observed</em>).<sup class="footnote-ref"><a href="#fn3" id="fnref3:11">3:11</a></sup></p>
+<p>⑤ A ticket that belongs to another Supportly customer gets exactly the same answer as one that doesn’t exist. Saying “that ticket belongs to someone else” would confirm that it exists, which is information the caller has no right to. The tests compare the two messages and find them identical apart from the ID.</p>
+<p>⑥ The ticket’s own state is <code>ticketState</code>, so <code>status</code> stays free for outcomes (Table 11.3). The reply is returned as written, in its own field, under <code>untrustedContentHint</code> (Chapters 6 and 12).</p>
+<p>Figure 11.3 compares what the agent reads before any call, for the earlier and current versions of the five tools that appear in both.</p>
+<figure class="book-figure"><img decoding="async" src="11-designing-tools/images/figure-11-3.png" alt="Figure 11.3 — Characters the agent reads per tool definition, earlier versions (Listings 6.2, 6.7 and 7.3) and this chapter’s, measured with measureTools() on 14 October 2026. Every definition grew; most of the growth is parameter descriptions and priority titles." /></figure>
+<p>Every tool got longer, and the widget roughly doubled, from 955 to 1,850 characters. That is the honest trade-off of this chapter. Good design isn’t about making definitions as short as possible; it is about making every character change a decision. The additions are parameter descriptions with examples, one sentence about what each tool returns, and three priority titles. All five definitions still fit Chrome’s budgets, and the lint found nothing in any of them (<em>observed</em>).<sup class="footnote-ref"><a href="#fn3" id="fnref3:12">3:12</a></sup></p>
+<p>What the lint can’t tell you is whether a real model now picks the right tool and fills it correctly more often. That is a question for evaluation, not inspection. Chrome’s guide recommends “evaluation-driven development” with code-based checks for rule-based properties such as character limits and LLM-as-a-judge for the rest,<sup class="footnote-ref"><a href="#fn5" id="fnref5:8">5:8</a></sup> and Anthropic’s article reports that “even small refinements to tool descriptions can yield dramatic improvements.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:9">1:9</a></sup> Chapter 14 builds that eval loop for Trailhead and the widget.</p>
+<h2 id="trailhead-and-the-widget-so-far"><a class="anchor-link" href="#trailhead-and-the-widget-so-far">Trailhead and the widget so far</a></h2>
+<p>The demos folder <code>chapters/11-designing-tools/</code> contains every listing in this chapter as a file, byte for byte. A few files that the book doesn’t print fill the gaps: Trailhead’s in-memory catalogue and cart, Supportly’s in-memory help centre, the two demo pages, the metadata of the earlier tool versions used for Table 11.2 and Figure 11.3, and the dev-only <code>document.modelContext</code> mock from Chapter 6.</p>
+<p><code>npm test</code> runs 99 checks: syntax checks for all 16 scripts, ten unit tests of the validator, the lint and the result helpers in Node, and 36 behavioural checks that run twice, once against the mock and once in Chromium 156.0.8078.4 with <code>--enable-features=WebMCPTesting</code> (plus one check that WebMCP is available there). All 99 passed on 14 October 2026, and again from a fresh clone on 15 October 2026.<sup class="footnote-ref"><a href="#fn3" id="fnref3:13">3:13</a></sup> A separate script, <code>npm run check-listings</code>, confirms that the eight listings in this chapter match the files byte for byte. The widget runs on a single origin here; Chapter 7’s folder runs it across two origins inside Ledgerly.</p>
+<h2 id="chapter-summary"><a class="anchor-link" href="#chapter-summary">Chapter summary</a></h2>
+<ul>
+<li>A tool has two readers. The browser checks its syntax; the model decides from the name, description, schema and results alone. Tool design is writing for a reader who can’t ask questions.</li>
+<li>Every registered tool costs context before it is called. Design from user tasks, not endpoints: merge steps that are always chained, split where consequences differ or where the person would want to be asked. Measure your definitions and track the number.</li>
+<li>Tool collections (#255) and skills (#161) are open proposals, not part of the 15 October 2026 draft. Today’s tools for scale are page-state registration and a small default set.</li>
+<li>Name tools as verb and object, in one style per site, with the object in the name. Describe what the tool does, when to use it, what it returns and what it changes, in positive terms. Keep live state and instructions to the agent out of descriptions, and put consequential side effects in the first sentence.</li>
+<li>Chrome’s budgets (500 characters per description, 150 per parameter description, 30 per name, 1,500 per output) are guidance; enforce them with a lint in your tests rather than a style guide.</li>
+<li>Use enums with words, no empty options, required only for what the tool can’t work without, bounded arrays, and <code>oneOf</code> lists of <code>{ const, title }</code> where the meaning of a value matters. Don’t ask for what the page already knows.</li>
+<li>Validate against the schema you published, and reuse each parameter’s description in its error message.</li>
+<li>Return high-signal results with the identifiers the next tool needs, say when a list is truncated, and keep outputs under budget. <code>outputSchema</code> is still an open question in WebMCP.</li>
+<li>Word errors to name the problem, show a valid example, point to the next step and say who should act. Distinguish <code>error</code> (the agent can fix it), <code>needs_input</code> (ask the user), <code>refused</code> (a rule says no; the user decides) and <code>cancelled_by_user</code> (stop).</li>
+<li>Keep agent-facing text in step with the UI by sharing one source of words, building the form from it, and testing the parity in a real browser. Re-register when agent-facing metadata changes.</li>
+</ul>
+<h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>Anthropic, “Writing effective tools for agents — with agents” (Engineering at Anthropic, published 11 September 2025), sections “Choosing the right tools for agents”, “Namespacing your tools”, “Returning meaningful context from your tools”, “Optimizing tool responses for token efficiency” and “Prompt-engineering your tool descriptions”. <a href="https://www.anthropic.com/engineering/writing-tools-for-agents">https://www.anthropic.com/engineering/writing-tools-for-agents</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a> <a href="#fnref1:2" class="footnote-backref">↩︎</a> <a href="#fnref1:3" class="footnote-backref">↩︎</a> <a href="#fnref1:4" class="footnote-backref">↩︎</a> <a href="#fnref1:5" class="footnote-backref">↩︎</a> <a href="#fnref1:6" class="footnote-backref">↩︎</a> <a href="#fnref1:7" class="footnote-backref">↩︎</a> <a href="#fnref1:8" class="footnote-backref">↩︎</a> <a href="#fnref1:9" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, §4.2.1 the <code>ModelContextTool</code> dictionary: <code>title</code> (“used by the user agent to reference the tool in the user interface. It is recommended that this string be localized to the user’s language”) and <code>description</code> (“A natural language description of the tool’s functionality. This helps agents understand when and how to use the tool.”). <a href="https://webmachinelearning.github.io/webmcp/#dictdef-modelcontexttool">https://webmachinelearning.github.io/webmcp/#dictdef-modelcontexttool</a> <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>Tested by the author on 14 October 2026 in Chromium 156.0.8078.4 (Playwright 1.64’s Chromium build, launched with <code>--enable-features=WebMCPTesting</code>) and against the dev-only mock. Test suite and raw results: <code>chapters/11-designing-tools/tests/run-tests.mjs</code> and <code>tests/results/observations.json</code> in the book’s demos repository. <a href="https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/11-designing-tools">https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/11-designing-tools</a> <a href="#fnref3" class="footnote-backref">↩︎</a> <a href="#fnref3:1" class="footnote-backref">↩︎</a> <a href="#fnref3:2" class="footnote-backref">↩︎</a> <a href="#fnref3:3" class="footnote-backref">↩︎</a> <a href="#fnref3:4" class="footnote-backref">↩︎</a> <a href="#fnref3:5" class="footnote-backref">↩︎</a> <a href="#fnref3:6" class="footnote-backref">↩︎</a> <a href="#fnref3:7" class="footnote-backref">↩︎</a> <a href="#fnref3:8" class="footnote-backref">↩︎</a> <a href="#fnref3:9" class="footnote-backref">↩︎</a> <a href="#fnref3:10" class="footnote-backref">↩︎</a> <a href="#fnref3:11" class="footnote-backref">↩︎</a> <a href="#fnref3:12" class="footnote-backref">↩︎</a> <a href="#fnref3:13" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>WebMCP explainer (README), “Best Practices”: “Tool Strategy and Budget”, “Keeping agent-facing parts of a tool definition updated”, “Minimize Cognitive Computing for the Model” and “Reliability and Error Handling”, read 14 October 2026. <a href="https://github.com/webmachinelearning/webmcp#best-practices">https://github.com/webmachinelearning/webmcp#best-practices</a> <a href="#fnref4" class="footnote-backref">↩︎</a> <a href="#fnref4:1" class="footnote-backref">↩︎</a> <a href="#fnref4:2" class="footnote-backref">↩︎</a> <a href="#fnref4:3" class="footnote-backref">↩︎</a> <a href="#fnref4:4" class="footnote-backref">↩︎</a> <a href="#fnref4:5" class="footnote-backref">↩︎</a> <a href="#fnref4:6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>Chrome for Developers, “WebMCP best practices” (published 18 May 2026), sections “Create a tool strategy”, “Use clear language and semantic code”, “Minimize cognitive computing”, “Prioritize reliability” and “Eval testing and debugging”. <a href="https://developer.chrome.com/docs/ai/webmcp/best-practices">https://developer.chrome.com/docs/ai/webmcp/best-practices</a> <a href="#fnref5" class="footnote-backref">↩︎</a> <a href="#fnref5:1" class="footnote-backref">↩︎</a> <a href="#fnref5:2" class="footnote-backref">↩︎</a> <a href="#fnref5:3" class="footnote-backref">↩︎</a> <a href="#fnref5:4" class="footnote-backref">↩︎</a> <a href="#fnref5:5" class="footnote-backref">↩︎</a> <a href="#fnref5:6" class="footnote-backref">↩︎</a> <a href="#fnref5:7" class="footnote-backref">↩︎</a> <a href="#fnref5:8" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>OpenAI API documentation, “Function calling”, best-practices section (“Pass the intern test”, “Use enums and object structure to prevent invalid states”, “Don’t make the model fill arguments you already know”, “Combine functions that are always called in sequence”, “Aim for fewer than 20 functions available at the start of a turn”), read 14 October 2026. <a href="https://platform.openai.com/docs/guides/function-calling">https://platform.openai.com/docs/guides/function-calling</a> <a href="#fnref6" class="footnote-backref">↩︎</a> <a href="#fnref6:1" class="footnote-backref">↩︎</a> <a href="#fnref6:2" class="footnote-backref">↩︎</a> <a href="#fnref6:3" class="footnote-backref">↩︎</a> <a href="#fnref6:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>webmachinelearning/webmcp issue #255, “Tool collections: coarse-grained grouping with progressive disclosure” (opened 22 August 2026; open on 15 October 2026). <a href="https://github.com/webmachinelearning/webmcp/issues/255">https://github.com/webmachinelearning/webmcp/issues/255</a> <a href="#fnref7" class="footnote-backref">↩︎</a> <a href="#fnref7:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>webmachinelearning/webmcp issue #161, “Proposal: Skills — workflow-level context for tool composition” (opened 3 April 2026; open on 15 October 2026), section “Strawman API”. <a href="https://github.com/webmachinelearning/webmcp/issues/161">https://github.com/webmachinelearning/webmcp/issues/161</a> <a href="#fnref8" class="footnote-backref">↩︎</a> <a href="#fnref8:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p>webmachinelearning/webmcp issue #167, “Proposal: Dynamic Tool Definitions in WebMCP” (opened 17 April 2026; closed). <a href="https://github.com/webmachinelearning/webmcp/issues/167">https://github.com/webmachinelearning/webmcp/issues/167</a> <a href="#fnref9" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p>Chrome for Developers, “WebMCP tool security” (published 9 June 2026, last updated 1 September 2026), section “Set character budgets”. <a href="https://developer.chrome.com/docs/ai/webmcp/secure-tools">https://developer.chrome.com/docs/ai/webmcp/secure-tools</a> <a href="#fnref10" class="footnote-backref">↩︎</a> <a href="#fnref10:1" class="footnote-backref">↩︎</a> <a href="#fnref10:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, §6.3.2 “Misrepresentation of Intent”: §6.3.2.2 “Misalignment Types” and §6.3.2.3 “Scenario: Ambiguous Finalization”. <a href="https://webmachinelearning.github.io/webmcp/#security-privacy">https://webmachinelearning.github.io/webmcp/#security-privacy</a> <a href="#fnref11" class="footnote-backref">↩︎</a> <a href="#fnref11:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, §6.4.2 “Restricting maximum input lengths”. <a href="https://webmachinelearning.github.io/webmcp/#security-privacy">https://webmachinelearning.github.io/webmcp/#security-privacy</a> <a href="#fnref12" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>webmachinelearning/webmcp issue #73, “Consider restricting maximum input lengths” (opened 30 January 2026; open on 15 October 2026). <a href="https://github.com/webmachinelearning/webmcp/issues/73">https://github.com/webmachinelearning/webmcp/issues/73</a> <a href="#fnref13" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, §3 “Supporting concepts” (a tool definition’s <em>input schema</em> is “the stringified representation of the inputSchema passed to registerTool()”) and §4.2 the <code>registerTool()</code> and <code>executeTool()</code> steps. <a href="https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool">https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool</a> <a href="#fnref14" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>JSON Schema, “Understanding JSON Schema”, “Enumerated values”. <a href="https://json-schema.org/understanding-json-schema/reference/enum">https://json-schema.org/understanding-json-schema/reference/enum</a> <a href="#fnref15" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn16" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, §6.3.3 “Privacy Leakage Through Over-Parameterization” (§6.3.3.1 and the <code>search-dresses</code> example in §6.3.3.2). <a href="https://webmachinelearning.github.io/webmcp/#security-privacy">https://webmachinelearning.github.io/webmcp/#security-privacy</a> <a href="#fnref16" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn17" class="footnote-item"><p>JSON Schema, “Understanding JSON Schema”, “Schema Composition” (<code>allOf</code>, <code>anyOf</code>, <code>oneOf</code>, <code>not</code>). <a href="https://json-schema.org/understanding-json-schema/reference/combining">https://json-schema.org/understanding-json-schema/reference/combining</a> <a href="#fnref17" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn18" class="footnote-item"><p>JSON Schema, “Understanding JSON Schema”, “Constant values”. <a href="https://json-schema.org/understanding-json-schema/reference/const">https://json-schema.org/understanding-json-schema/reference/const</a> <a href="#fnref18" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn19" class="footnote-item"><p>JSON Schema, “Understanding JSON Schema”, “Annotations” (“A ‘title’ will preferably be short, whereas a ‘description’ will provide a more lengthy explanation”). <a href="https://json-schema.org/understanding-json-schema/reference/annotations">https://json-schema.org/understanding-json-schema/reference/annotations</a> <a href="#fnref19" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn20" class="footnote-item"><p>webmachinelearning/webmcp issue #92, “Who owns the validation layer?” (opened 17 February 2026; open on 15 October 2026), including the resolution recorded on 5 March 2026; pull request #289, “Input validation (Fixes #92)”, closed unmerged by its author on 1 October 2026. <a href="https://github.com/webmachinelearning/webmcp/issues/92">https://github.com/webmachinelearning/webmcp/issues/92</a> <a href="#fnref20" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn21" class="footnote-item"><p>Model Context Protocol specification, revision 2026-07-28, “Server Features: Tools”, sections “Tool” (<code>outputSchema</code> defaults to the 2020-12 dialect), “Structured Content”, “Output Schema” and “Error Handling” (“Tool Execution Errors contain actionable feedback…”; “Clients SHOULD provide tool execution errors to language models to enable self-correction”). <a href="https://modelcontextprotocol.io/specification/2026-07-28/server/tools">https://modelcontextprotocol.io/specification/2026-07-28/server/tools</a> <a href="#fnref21" class="footnote-backref">↩︎</a> <a href="#fnref21:1" class="footnote-backref">↩︎</a> <a href="#fnref21:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn22" class="footnote-item"><p>webmachinelearning/webmcp issue #9, “Introduce <code>outputSchema</code> (was: Should output also have a schema?)” (opened 12 August 2025; open), and pull request #254, “Add <code>outputSchema</code> to <code>ModelContextTool</code> and <code>RegisteredTool</code>” by François Beaufort (opened 21 August 2026; open on 15 October 2026). <a href="https://github.com/webmachinelearning/webmcp/issues/9">https://github.com/webmachinelearning/webmcp/issues/9</a> <a href="#fnref22" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn23" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, §3 the tool execution error table and the note beneath it. <a href="https://webmachinelearning.github.io/webmcp/#tool-execution-error">https://webmachinelearning.github.io/webmcp/#tool-execution-error</a> <a href="#fnref23" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="10-webmcp-in-frameworks.html">← Chapter 10: WebMCP in Frameworks</a>
+          <a class="pager-link" rel="next" href="12-threat-models.html">Chapter 12: Threat Models for Tool-Exposing Pages →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

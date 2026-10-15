@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tools, Not Clicks: Building Agent-Ready Websites with WebMCP — Maxim Salnikov</title>
+  <meta name="description" content="A book about WebMCP, the proposed web standard that lets websites hand AI agents real tools: named, described, schema-typed functions the browser&#x27;s agent calls directly, inside the user&#x27;s own session, with the human watching and in control.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Tools, Not Clicks: Building Agent-Ready Websites with WebMCP — Maxim Salnikov">
+  <meta property="og:description" content="A book about WebMCP, the proposed web standard that lets websites hand AI agents real tools: named, described, schema-typed functions the browser&#x27;s agent calls directly, inside the user&#x27;s own session, with the human watching and in control.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body class="home">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <header class="reader-bar" role="banner">
+    <div class="reader-bar-inner">
+      <a class="brand" href="index.html"><span class="brand-mark">W</span> WebMCP · the book</a>
+      <nav class="reader-nav" aria-label="Primary">
+        <a href="index.html#contents">Contents</a>
+        <a href="chapters/01-the-agentic-web-arrives.html">Start reading</a>
+        <a href="outline.html">Outline</a>
+        <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a>
+        <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers</a>
+      </nav>
+      <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content" tabindex="-1">
+    <section class="cover" aria-labelledby="cover-title">
+      <div class="cover-inner">
+        <p class="cover-series">Complete edition · updated for the WebMCP draft of 15 Oct 2026</p>
+        <h1 id="cover-title" class="cover-title">Tools, Not Clicks</h1>
+        <p class="cover-subtitle">Building Agent-Ready Websites with WebMCP</p>
+        <p class="cover-sub">A book about WebMCP, the proposed web standard that lets websites hand AI agents real tools: named, described, schema-typed functions the browser&#x27;s agent calls directly, inside the user&#x27;s own session, with the human watching and in control.</p>
+        <p class="cover-author">by <strong>Maxim Salnikov</strong></p>
+        <div class="cover-actions">
+          <a class="btn btn-primary" href="chapters/01-the-agentic-web-arrives.html">Start reading</a>
+          <a class="btn btn-quiet" href="#contents">Browse the contents</a>
+        </div>
+        <dl class="cover-meta">
+          <div class="cover-meta-item"><dt>Length</dt><dd>17 chapters across 6 parts</dd></div>
+          <div class="cover-meta-item"><dt>Appendices</dt><dd>4 (A–D)</dd></div>
+          <div class="cover-meta-item"><dt>Reading time</dt><dd>about 12 hours</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="cta-band" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="contents" class="contents" aria-labelledby="contents-title">
+      <div class="contents-inner">
+        <div class="contents-head">
+          <h2 id="contents-title">Contents</h2>
+          <p class="contents-note">17 chapters across 6 parts, plus 4 appendices · <a href="outline.html">detailed outline</a></p>
+        </div>
+        <section class="toc-part" aria-labelledby="part-I">
+          <header class="toc-part-head">
+            <span class="toc-part-kicker">Part I</span>
+            <h3 id="part-I" class="toc-part-title">Why the Web Needs an Agent Interface</h3>
+            <span class="toc-part-note">4 chapters</span>
+          </header>
+          <ol class="toc-list">
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/01-the-agentic-web-arrives.html">
+                <span class="toc-num">01</span>
+                <span class="toc-text">
+                  <span class="toc-title">The Agentic Web Arrives</span>
+                  <span class="toc-obj">Agents now act inside browsers on users’ behalf. This chapter shows why today’s approach, “actuation” through screenshots and DOM scraping, is slow, costly and fragile, and why sites have a stake in fixing it.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 30 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/02-from-apis-to-tools.html">
+                <span class="toc-num">02</span>
+                <span class="toc-text">
+                  <span class="toc-title">From APIs to Tools: A Short History</span>
+                  <span class="toc-obj">The path from REST and OpenAPI to LLM function calling, ChatGPT Actions and agent-to-agent protocols, which explains why “tools” became the unit of agent capability.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 26 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/03-mcp-in-practice.html">
+                <span class="toc-num">03</span>
+                <span class="toc-text">
+                  <span class="toc-title">MCP in Practice</span>
+                  <span class="toc-obj">A working understanding of Anthropic’s Model Context Protocol: hosts, clients and servers over JSON-RPC, and what servers and clients offer each other. This is the vocabulary WebMCP borrows.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 43 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/04-enter-webmcp.html">
+                <span class="toc-num">04</span>
+                <span class="toc-text">
+                  <span class="toc-title">Enter WebMCP</span>
+                  <span class="toc-obj">Where WebMCP came from: community experiments such as MCP-B, a joint Microsoft and Google explainer, and incubation in the W3C Web Machine Learning Community Group. Also what it deliberately is not.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 33 min</span>
+              </a>
+            </li>
+          </ol>
+        </section>
+        <section class="toc-part" aria-labelledby="part-II">
+          <header class="toc-part-head">
+            <span class="toc-part-kicker">Part II</span>
+            <h3 id="part-II" class="toc-part-title">The WebMCP API in Depth</h3>
+            <span class="toc-part-note">4 chapters</span>
+          </header>
+          <ol class="toc-list">
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/05-registering-tools.html">
+                <span class="toc-num">05</span>
+                <span class="toc-text">
+                  <span class="toc-title">Registering Tools with document.modelContext</span>
+                  <span class="toc-obj">The core imperative API: registering a tool with a name, title, description, JSON Schema input and an async execute callback, and removing it again.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 42 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/06-annotations-lifecycle-errors.html">
+                <span class="toc-num">06</span>
+                <span class="toc-text">
+                  <span class="toc-title">Annotations, Lifecycle and Errors</span>
+                  <span class="toc-obj">How the four annotation hints shape agent behaviour, what happens step by step when a tool is called, and how failures and cancellation reach the caller.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 45 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/07-frames-origins-agents.html">
+                <span class="toc-num">07</span>
+                <span class="toc-text">
+                  <span class="toc-title">Frames, Origins and Page-Embedded Agents</span>
+                  <span class="toc-obj">WebMCP beyond the top-level page: Permissions Policy gating, exposing tools to specific origins, and discovering and executing tools from an agent that lives in the page or in an extension.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 37 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/08-declarative-api.html">
+                <span class="toc-num">08</span>
+                <span class="toc-text">
+                  <span class="toc-title">The Declarative API: Forms as Tools</span>
+                  <span class="toc-obj">Turning existing HTML forms into tools with attributes, and the events, submit handling and CSS hooks that support it. The chapter is explicit that this part has been taken out of the spec and is being explored separately.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 41 min</span>
+              </a>
+            </li>
+          </ol>
+        </section>
+        <section class="toc-part" aria-labelledby="part-III">
+          <header class="toc-part-head">
+            <span class="toc-part-kicker">Part III</span>
+            <h3 id="part-III" class="toc-part-title">Building Agent-Ready Apps</h3>
+            <span class="toc-part-note">3 chapters</span>
+          </header>
+          <ol class="toc-list">
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/09-first-webmcp-app.html">
+                <span class="toc-num">09</span>
+                <span class="toc-text">
+                  <span class="toc-title">Your First WebMCP App, End to End</span>
+                  <span class="toc-obj">A full walkthrough: enable the flag or origin trial, add tools to a small app as a progressive enhancement, and drive it with Chrome’s inspector extension and a test agent.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 39 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/10-webmcp-in-frameworks.html">
+                <span class="toc-num">10</span>
+                <span class="toc-text">
+                  <span class="toc-title">WebMCP in Frameworks</span>
+                  <span class="toc-obj">Production patterns for component-based apps: tool registration tied to component and DI lifecycles, shared state, and routing.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 39 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/11-designing-tools.html">
+                <span class="toc-num">11</span>
+                <span class="toc-text">
+                  <span class="toc-title">Designing Tools Agents Can Actually Use</span>
+                  <span class="toc-obj">Tool design as product design: how many tools, how coarse, how to name and describe them, and what to return so an LLM picks the right one and uses it correctly.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 49 min</span>
+              </a>
+            </li>
+          </ol>
+        </section>
+        <section class="toc-part" aria-labelledby="part-IV">
+          <header class="toc-part-head">
+            <span class="toc-part-kicker">Part IV</span>
+            <h3 id="part-IV" class="toc-part-title">Trust: Security, Privacy and Consent</h3>
+            <span class="toc-part-note">2 chapters</span>
+          </header>
+          <ol class="toc-list">
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/12-threat-models.html">
+                <span class="toc-num">12</span>
+                <span class="toc-text">
+                  <span class="toc-title">Threat Models for Tool-Exposing Pages</span>
+                  <span class="toc-obj">The attack surface WebMCP creates for sites, agents and users, mapped to the spec’s own threat analysis and to concrete mitigations a team can apply today.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 34 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/13-privacy-consent-human-in-the-loop.html">
+                <span class="toc-num">13</span>
+                <span class="toc-text">
+                  <span class="toc-title">Privacy, Consent and the Human in the Loop</span>
+                  <span class="toc-obj">Who approves what, and when. This chapter covers confirmation for consequential actions, the unresolved elicitation design, authenticated sessions, accessibility, and how to build UX that keeps users in control.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 28 min</span>
+              </a>
+            </li>
+          </ol>
+        </section>
+        <section class="toc-part" aria-labelledby="part-V">
+          <header class="toc-part-head">
+            <span class="toc-part-kicker">Part V</span>
+            <h3 id="part-V" class="toc-part-title">Shipping and the Ecosystem</h3>
+            <span class="toc-part-note">2 chapters</span>
+          </header>
+          <ol class="toc-list">
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/14-testing-debugging-evals.html">
+                <span class="toc-num">14</span>
+                <span class="toc-text">
+                  <span class="toc-title">Testing, Debugging and Evals</span>
+                  <span class="toc-obj">How to know your tools work when the caller is probabilistic: DevTools support, protocol-level testing, eval suites and measurement in production.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 50 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/15-browser-support-and-standards.html">
+                <span class="toc-num">15</span>
+                <span class="toc-text">
+                  <span class="toc-title">Browser Support and the Standards Road</span>
+                  <span class="toc-obj">Who implements what, how a Community Group draft becomes (or doesn’t become) a standard, and how to read origin trials, standards positions and TAG reviews.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 36 min</span>
+              </a>
+            </li>
+          </ol>
+        </section>
+        <section class="toc-part" aria-labelledby="part-VI">
+          <header class="toc-part-head">
+            <span class="toc-part-kicker">Part VI</span>
+            <h3 id="part-VI" class="toc-part-title">Strategy and the Future</h3>
+            <span class="toc-part-note">2 chapters</span>
+          </header>
+          <ol class="toc-list">
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/16-product-and-business-implications.html">
+                <span class="toc-num">16</span>
+                <span class="toc-text">
+                  <span class="toc-title">Product and Business Implications</span>
+                  <span class="toc-obj">What agent-readiness means for product strategy: which journeys to expose first, brand control versus aggregation, conversion and attribution, and how WebMCP and backend MCP fit into one plan.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 34 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="chapters/17-the-road-ahead.html">
+                <span class="toc-num">17</span>
+                <span class="toc-text">
+                  <span class="toc-title">The Road Ahead</span>
+                  <span class="toc-obj">The open questions that will decide what WebMCP becomes, and how to build today so that your investment survives either outcome.</span>
+                </span>
+                <span class="toc-status toc-status--ready">Read · 32 min</span>
+              </a>
+            </li>
+          </ol>
+        </section>
+        <section class="toc-part" aria-labelledby="part-appendices">
+          <header class="toc-part-head">
+            <span class="toc-part-kicker">Back matter</span>
+            <h3 id="part-appendices" class="toc-part-title">Appendices</h3>
+            <span class="toc-part-note">4 appendices</span>
+          </header>
+          <ol class="toc-list">
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="appendices/a-api-reference.html">
+                <span class="toc-num">A</span>
+                <span class="toc-text"><span class="toc-title">API quick reference (IDL, attributes, events, errors)</span></span>
+                <span class="toc-status toc-status--ready">Read · 16 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="appendices/b-glossary.html">
+                <span class="toc-num">B</span>
+                <span class="toc-text"><span class="toc-title">Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></span>
+                <span class="toc-status toc-status--ready">Read · 31 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="appendices/c-resources.html">
+                <span class="toc-num">C</span>
+                <span class="toc-text"><span class="toc-title">Resource directory and how to track changes</span></span>
+                <span class="toc-status toc-status--ready">Read · 16 min</span>
+              </a>
+            </li>
+            <li class="toc-row toc-row--ready">
+              <a class="toc-link" href="appendices/d-migration.html">
+                <span class="toc-num">D</span>
+                <span class="toc-text"><span class="toc-title">Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></span>
+                <span class="toc-status toc-status--ready">Read · 11 min</span>
+              </a>
+            </li>
+          </ol>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="colophon">
+    <div class="colophon-inner">
+      <p class="colophon-author">By <strong>Maxim Salnikov</strong> · <em>Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</em> · Complete edition · updated for the WebMCP draft of 15 Oct 2026</p>
+      <p class="colophon-meta"><a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Appendix B: Glossary — Tools, Not Clicks</title>
+  <meta name="description" content="Appendix B of Tools, Not Clicks: Building Agent-Ready Websites with WebMCP by Maxim Salnikov.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Appendix B: Glossary — Tools, Not Clicks">
+  <meta property="og:description" content="Appendix B of Tools, Not Clicks: Building Agent-Ready Websites with WebMCP by Maxim Salnikov.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page appendix-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="../chapters/01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="../chapters/02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="../chapters/03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="../chapters/04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="../chapters/05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="../chapters/06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="../chapters/07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="../chapters/08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="../chapters/09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="../chapters/10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="../chapters/11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="../chapters/12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="../chapters/13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="../chapters/14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="../chapters/15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="../chapters/16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="../chapters/17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a class="is-current" aria-current="page" href="b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / <a href="../index.html#part-appendices">Appendices</a> / Appendix B <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">appendix:</span> <span class="fm-v">B</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">Back matter</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">31 min</span></p>
+        <h1>Appendix B: Glossary</h1>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#b1-terms-a-to-z">B.1 Terms, A to Z</a></li><li><a href="#b2-the-running-examples">B.2 The running examples</a></li><li><a href="#notes">Notes</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“An agent is an autonomous assistant that can understand a user’s goals and take actions on the user’s behalf to achieve them.”</em></p>
+<p>— WebMCP specification, §2 Terminology<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<p>This glossary collects the terms the book uses, defined the way the chapters use them. Each entry ends with a pointer to the chapter that introduces the term, and sometimes to the chapter that goes deepest. Where a definition comes from outside the book, from the WebMCP draft, the MCP specification, the W3C Process, MDN or Chrome’s documentation, a footnote names the page. Every one of those pages was read on 14 October 2026 and checked again on 15 October 2026.</p>
+<p>Code identifiers are in <code>code font</code> and sort as if they had no punctuation, so <code>document.modelContext</code> sits under D and <code>:tool-form-active</code> under T. Section B.2 covers the book’s running examples and the people in them.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: the vocabulary itself</p>
+<p>WebMCP is a Community Group draft, and its words move with it. During 2026 the entry point has changed objects, two methods have gone, the annotations have moved into their own dictionary and the declarative attributes have left the specification (Appendix D). Entries marked <em>removed</em> or <em>proposed</em> describe things you will meet in older code, in Chrome’s trial or in open issues, but not in the 15 October 2026 draft.</p></aside>
+<h2 id="b1-terms-a-to-z"><a class="anchor-link" href="#b1-terms-a-to-z">B.1 Terms, A to Z</a></h2>
+<h3 id="a"><a class="anchor-link" href="#a">A</a></h3>
+<p><strong>A2A (Agent2Agent protocol).</strong> A protocol, announced by Google in April 2025 and now under the Agentic AI Foundation, that connects opaque agents to each other. An A2A agent publishes an <em>Agent Card</em> describing what it can do, and other agents delegate whole tasks to it rather than calling individual tools. <em>Chapter 2.</em></p>
+<p><strong>AbortController, AbortSignal.</strong> The DOM’s standard way to cancel asynchronous work. A controller owns a signal; calling <code>abort()</code> on the controller sets the signal’s <code>aborted</code> flag and fires its <code>abort</code> event.<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup> WebMCP uses signals twice: the <code>signal</code> you pass to <code>registerTool()</code> unregisters the tool when aborted, and the <em>execution signal</em> your <code>execute</code> callback receives tells you a running call has been cancelled. <em>Chapter 5 (registration), Chapter 6 (execution).</em></p>
+<p><strong>AbortError.</strong> The <code>DOMException</code> the draft specifies when a tool call’s target document unloads. In the book’s tests Chromium 156 returned it only when the calling agent cancelled the call itself, and reported the other cases as <code>UnknownError</code>. <em>Chapter 5; Chapter 6; Chapter 8; Appendix A.</em></p>
+<p><strong>actuation.</strong> How most browser agents operate websites today. Chrome’s documentation defines it as “the act of an agent simulating manual mouse clicks and text input, as though it were the human user engaging with your website.”<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup> The agent observes the page through screenshots, DOM or accessibility-tree snapshots, then clicks and types, one model call per step. <em>Chapter 1.</em></p>
+<p><strong>actuation tax.</strong> The book’s name for what actuation costs: brittle, slow, ambiguous interaction with interfaces designed for people, paid in tokens, latency and failed tasks. <em>Chapter 4.</em></p>
+<p><strong>agent.</strong> An autonomous assistant that understands a user’s goals and acts on the user’s behalf, today usually built on a large language model.<sup class="footnote-ref"><a href="#fn1" id="fnref1:1">1:1</a></sup> <em>Chapter 1.</em></p>
+<p><strong>agent-driven conversion.</strong> A business outcome, such as an order, that an agent’s tool calls helped to bring about. Trailhead records which tools succeeded in the current tab session and attaches that list to the order. <em>Chapter 16; real-user measurement in Chapter 14.</em></p>
+<p><strong>agent identity.</strong> Whether, and how, a page can tell which agent is calling its tools. The draft gives the page no such signal today; open issues propose verification frameworks, allowlists and OAuth-style client identities. <em>Chapter 13; Chapter 16.</em></p>
+<p><strong>agent-readiness.</strong> Making a product work well for people who arrive through an agent, the way accessibility and mobile layouts make it work for other ways of arriving. In this book it mostly means offering good tools. <em>Chapter 1; Chapter 16.</em></p>
+<p><strong>Agentic AI Foundation.</strong> A directed fund under the Linux Foundation that has governed MCP since Anthropic donated it on 9 December 2025, and A2A since later in 2026. <em>Chapter 2.</em></p>
+<p><strong>Agentic Web Working Group.</strong> A proposed W3C Working Group whose draft charter names WebMCP as its one normative deliverable, with the draft state “Adopted from the Web Machine Learning Community Group”. The charter’s mission is “to develop specifications that facilitate web pages and applications to be leveraged by LLMs and AI agents.”<sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup> The W3C announced charter refinement on 1 October 2026 and expected it to last until about 10 November 2026.<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup> <em>Chapter 4; Chapter 15; Chapter 17.</em></p>
+<p><strong>agentInvoked.</strong> <em>Declarative API, removed from the spec.</em> A boolean on <code>SubmitEvent</code> that is true when an agent, not a person, submitted a declarative tool’s form. <em>Chapter 8.</em></p>
+<p><strong>annotations.</strong> The optional <code>annotations</code> member of a tool definition: a <code>ToolAnnotations</code> dictionary of boolean hints that tell agents how to treat the tool. In the 15 October draft the members are <code>readOnlyHint</code>, <code>untrustedContentHint</code>, <code>consequentialHint</code> and <code>debugging</code>, all defaulting to <code>false</code>.<sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup> They are hints, not enforcement. MCP has its own, different set (see <em>MCP tool annotations</em>). <em>Chapter 6.</em></p>
+<p><strong>attribution.</strong> In Chapter 16, linking an agent’s tool calls to the outcomes they led to, so that agent help shows up next to the orders it contributed to. <em>Chapter 16.</em></p>
+<h3 id="b"><a class="anchor-link" href="#b">B</a></h3>
+<p><strong>book_table.</strong> Fjord Table’s consequential tool. It books a table and is only completed after the person confirms in the site’s own dialog. <em>Chapter 4; in detail in Chapter 5.</em></p>
+<p><strong>browser agent.</strong> In the draft, “an agent provided by or through the browser,” built in or hosted through an extension or plug-in.<sup class="footnote-ref"><a href="#fn1" id="fnref1:2">1:2</a></sup> It doesn’t run JavaScript on the page; it sees tools through an <em>observation</em>. The book also uses the phrase loosely, as in Chapter 1, for any agent that acts on web pages: built-in assistants, extensions and page-embedded agents. <em>Chapter 1; precise sense in Chapter 7.</em></p>
+<h3 id="c"><a class="anchor-link" href="#c">C</a></h3>
+<p><strong><code>cancelled_by_user</code>.</strong> The result status a tool returns when the person declined in the page’s own UI, shaped <code>{ status: 'cancelled_by_user', message }</code>. The agent stops and doesn’t retry unless the user asks again. Not to be confused with <code>toolcancel</code>, which is a platform event, not a result. <em>Chapter 5 (Fjord Table’s <code>book_table</code>); Chapter 6; the convention in Chapter 11.</em></p>
+<p><strong>carrier.</strong> One of the three roles Chapter 12 gives a tool-exposing page in an attack: the page whose tool delivers somebody else’s text, such as a community answer, into an agent’s context. The other roles are <em>target</em> and <em>attacker</em>. <em>Chapter 12.</em></p>
+<p><strong>character budget.</strong> A cap on the length of agent-facing text. Chrome’s security guidance recommends about 500 characters per tool description and 150 per parameter description,<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup> and Chapter 11 enforces budgets in a test. <em>Chapter 11; Chapter 16.</em></p>
+<p><strong>charter.</strong> The document that creates a W3C Working Group and sets its scope, deliverables, duration and decision policy. A Community Group has a charter too, but only a Working Group’s charter goes through W3C-wide review. <em>Chapter 4; Chapter 15.</em></p>
+<p><strong>chromestatus.</strong> Chrome’s public feature tracker. The WebMCP entry records a developer trial from Chrome 146 and an origin trial from Chrome 149 through 156 (since extended to 162), with the feature’s status shown as “Proposed”.<sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup> <em>Chapter 4; Chapter 15.</em></p>
+<p><strong><code>clearContext()</code>.</strong> <em>Removed 5 March 2026.</em> An early method that unregistered every tool a page had provided. Today you abort each tool’s signal instead. <em>Chapter 4; Appendix D.</em></p>
+<p><strong>client (MCP).</strong> A connector inside an MCP host. Each client “communicates with exactly one server” and attaches the protocol version and capabilities to every request.<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup> <em>Chapter 3.</em></p>
+<p><strong>Community Group (CG).</strong> An open W3C forum, without fees, for incubating new technology. The W3C’s own FAQ is plain about the limit: “Community Groups do not create W3C standards.”<sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup> WebMCP is incubated in the Web Machine Learning Community Group. <em>Chapter 4; Chapter 15.</em></p>
+<p><strong>confirmation sheet.</strong> Trailhead’s own checkout dialog, which a person must click to complete a purchase an agent started. It accepts only a trusted click, after a short arming delay, and closes if the call is cancelled. <em>Chapter 13.</em></p>
+<p><strong>confused deputy.</strong> A program that holds someone’s authority and can be tricked into using it for someone else. Chapter 12 calls a WebMCP agent “a confused deputy waiting to happen”: it carries the user’s sessions and reads text from every site it touches. <em>Chapter 12.</em></p>
+<p><strong>consequential.</strong> The book’s word for an action with real-world effects that is hard or impossible to undo, such as booking, paying or sending. <em>Chapter 5; formalised as <code>consequentialHint</code> in Chapter 6.</em></p>
+<p><strong><code>consequentialHint</code>.</strong> An annotation that says executing the tool “will result in consequential actions that are significant, real-world, or non-reversible”.<sup class="footnote-ref"><a href="#fn6" id="fnref6:1">6:1</a></sup> Trailhead’s <code>checkout</code> and Fjord Table’s <code>book_table</code> set it. <em>Chapter 6.</em></p>
+<p><strong>continuation token.</strong> <em>Proposed.</em> A design, published as a supplementary explainer and merged into the WebMCP repository on 2 October 2026, for returning a tool’s result after the call causes a navigation. <em>Chapter 17.</em></p>
+<p><strong>cross-origin exposure.</strong> Chapter 12’s fifth threat: tools reaching, or being reached by, frames from other origins in ways the author didn’t intend. The mitigations are the <code>tools</code> Permissions Policy, <code>exposedTo</code> and <code>fromOrigins</code>. <em>Chapter 12; mechanisms in Chapter 7.</em></p>
+<h3 id="d"><a class="anchor-link" href="#d">D</a></h3>
+<p><strong>DataError.</strong> The <code>DOMException</code> the draft specifies when a tool call’s input is invalid, for example input that isn’t a JSON object. <em>Chapter 5; Chapter 6; Appendix A.</em></p>
+<p><strong><code>debugging</code>.</strong> An annotation that marks a tool as intended for developer tooling rather than for agents serving users. <em>Chapter 6; use in Chapter 14.</em></p>
+<p><strong>declarative API.</strong> <em>Removed from the spec on 8 October 2026; still in Chrome’s trial.</em> Turning an HTML <code>&lt;form&gt;</code> into a tool with attributes (<code>toolname</code>, <code>tooldescription</code>, <code>toolparamdescription</code>, <code>toolautosubmit</code>), with the browser synthesizing the input schema from the form’s controls. It now lives in a separate explainer. <em>Chapter 8; Appendix A.</em></p>
+<p><strong>developer trial.</strong> A feature available behind a browser flag, for local testing only. WebMCP’s Chromium developer trial began in Chrome 146.<sup class="footnote-ref"><a href="#fn8" id="fnref8:1">8:1</a></sup> <em>Chapter 4; Chapter 15.</em></p>
+<p><strong>DevTools WebMCP pane.</strong> A pane in the Application panel of Chrome DevTools. It lists a page’s tools as the agent sees them and logs every call with its status. <em>Chapter 9; Chapter 14.</em></p>
+<p><strong><code>document.modelContext</code>.</strong> The entry point of the WebMCP API: a <code>ModelContext</code> object on every <code>Document</code> in a secure context. The getter moved here from <code>Navigator</code> on 27 May 2026; before that the API was <code>navigator.modelContext</code>. <em>Chapter 4; in detail in Chapter 5.</em></p>
+<p><strong>dual-era server.</strong> An MCP server that serves both protocol eras: stateless <em>modern</em> requests (2026-07-28) and handshake-based <em>legacy</em> sessions (2025-11-25 and earlier). Trailhead’s backend server is one. <em>Chapter 3.</em></p>
+<h3 id="e"><a class="anchor-link" href="#e">E</a></h3>
+<p><strong>elicitation.</strong> In MCP, a server asking the user for more information through the client in the middle of an interaction, in a form mode or a URL mode.<sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup> WebMCP has no equivalent in the current draft; see <code>requestUserInteraction()</code>. <em>Chapter 3; for WebMCP, Chapter 13.</em></p>
+<p><strong>eval.</strong> A test that hands the choice of tool to a model. You give a model a user’s request and the page’s tools, run the calls it makes against the real page, and score the result for tool selection, parameter extraction and state management. <em>Chapter 14.</em></p>
+<p><strong>Example Agentic Chrome Extension.</strong> A small but complete sample agent from Chrome’s WebMCP tooling. It chats in the side panel, discovers tools with <code>getTools()</code>, follows <code>toolchange</code> and talks to a cloud model through a local server or to the on-device model through the Prompt API. <em>Chapter 9.</em></p>
+<p><strong>execute.</strong> The callback in a tool definition that does the work. The browser calls <code>execute(input, { signal })</code> on the page’s main thread with the parsed input and an execution signal; whatever it returns becomes the tool’s result. The browser doesn’t validate input against <code>inputSchema</code>, so <code>execute</code> must. <em>Chapter 5; lifecycle in Chapter 6.</em></p>
+<p><strong>execution signal.</strong> The <code>AbortSignal</code> in the second argument to <code>execute</code>. The browser creates a fresh one for each call and aborts it when the call is cancelled. Aborting the <em>registration</em> signal does not abort calls already running. <em>Chapter 6; Chapter 10.</em></p>
+<p><strong><code>executeTool()</code>.</strong> The <code>ModelContext</code> method an in-page agent uses to call a tool it got from <code>getTools()</code>. It resolves with the tool’s result as a string. <em>Chapter 7.</em></p>
+<p><strong>explainer.</strong> A non-normative document that sets out the problem a web feature solves, its use cases and the proposed shape, usually before or alongside a specification. WebMCP’s main explainer is its repository’s README; <em>supplementary explainers</em> cover the declarative API, service workers and continuations. <em>Chapter 4; reading explainers in Chapter 17.</em></p>
+<p><strong><code>exposedTo</code>.</strong> A <code>registerTool()</code> option: a list of origins whose documents in the same frame tree may see the tool through <code>getTools()</code>. Without it, a tool is visible only to same-origin documents. It does not affect the browser agent. <em>Chapter 7.</em></p>
+<p><strong>extended user context, cross-site context.</strong> Two of the draft’s assumptions about agents. Besides the user’s identity, an agent may hold personalisation data, history and payment information, and it may correlate what it learned on one site with what it does on another. <em>Chapter 12.</em></p>
+<h3 id="f"><a class="anchor-link" href="#f">F</a></h3>
+<p><strong>feature detection.</strong> Checking for an API before using it, here <code>if ('modelContext' in document)</code>. It tells you the API exists, not that a Permissions Policy allows you to use it. <em>Chapter 5; the policy gap in Chapter 7.</em></p>
+<p><strong>formal objection.</strong> A W3C member’s formal disagreement with a decision, such as a charter. Under the W3C Process it must receive formal consideration and a formal response, and one the Team cannot resolve goes to the W3C Council.<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup> Apple warned of one when a pull request proposed moving WebMCP into the Web Machine Learning Working Group; that pull request was closed unmerged on 13 October 2026. <em>Chapter 15.</em></p>
+<p><strong><code>fromOrigins</code>.</strong> A <code>getTools()</code> option: the other origins whose exposed tools the caller wants to see. A tool appears only if its owner listed the caller in <code>exposedTo</code> and the caller listed the owner in <code>fromOrigins</code>. <em>Chapter 7.</em></p>
+<p><strong>function calling.</strong> The model-API feature, introduced by OpenAI in June 2023 and adopted across vendors, in which an application describes functions with a name, a description and a JSON Schema, and the model returns structured calls to them. <em>Chapter 2.</em></p>
+<h3 id="g"><a class="anchor-link" href="#g">G</a></h3>
+<p><strong><code>getTools()</code>.</strong> The <code>ModelContext</code> method an in-page agent uses to list the tools it may call, from its own document and from frames that exposed tools to it. It resolves with <code>RegisteredTool</code> objects, sorted by name. <em>Chapter 7.</em></p>
+<h3 id="h"><a class="anchor-link" href="#h">H</a></h3>
+<p><strong>host (MCP).</strong> The AI application in MCP’s architecture: it creates one client per server connection and keeps the conversation history and the security boundaries between servers.<sup class="footnote-ref"><a href="#fn9" id="fnref9:1">9:1</a></sup> <em>Chapter 3.</em></p>
+<p><strong>human in the loop.</strong> Keeping the person present and in control while an agent acts. The WebMCP explainer puts cooperative, human-in-the-loop use ahead of full autonomy, which is why the site’s own confirmations matter. <em>Chapter 1; Chapter 13.</em></p>
+<h3 id="i"><a class="anchor-link" href="#i">I</a></h3>
+<p><strong>in-page agent.</strong> An agent written in JavaScript that runs inside a document, possibly in an iframe, and reaches tools through <code>getTools()</code> and <code>executeTool()</code>. Chapter 1 calls this kind a <em>page-embedded agent</em>. <em>Chapter 7.</em></p>
+<p><strong><code>inputSchema</code>.</strong> The JSON Schema object in a tool definition that describes the tool’s input. Optional in the draft. The agent treats it as guidance; the browser does not enforce it. <em>Chapter 5; schema design in Chapter 11.</em></p>
+<p><strong><code>instrumentTool()</code>.</strong> Chapter 14’s wrapper for real-user measurement. It wraps a tool’s <code>execute</code>, records how long each call took and how it ended, and reports no inputs or outputs. The outcome is one of seven words: <code>ok</code>, the four non-success result statuses (<code>error</code>, <code>needs_input</code>, <code>refused</code>, <code>cancelled_by_user</code>), <code>threw</code> for an exception, and <code>aborted</code> when the caller’s signal ended the call. A caller’s abort is never counted as <code>cancelled_by_user</code>. Chapter 16’s <code>measure.ts</code> uses the same seven words. <em>Chapter 14; Chapter 16.</em></p>
+<p><strong>InvalidStateError.</strong> The <code>DOMException</code> <code>registerTool()</code> rejects with for an empty or invalid name, an empty description or a duplicate name. Chromium 156 agrees with the draft here. <em>Chapter 5; Appendix A.</em></p>
+<p><strong><code>isTrusted</code>.</strong> A property of DOM events that is true only for events the browser generated from a real user action. Chapter 13’s confirmation sheet uses it to ignore synthetic clicks. <em>Chapter 13.</em></p>
+<h3 id="j"><a class="anchor-link" href="#j">J</a></h3>
+<p><strong>JSON-LD response.</strong> <em>Declarative API.</em> How Chrome’s trial answers an agent when a declarative tool’s form navigates without <code>respondWith()</code>: the agent receives the JSON-LD on the next page, as an array. <em>Chapter 8; successor designs in Chapter 17.</em></p>
+<p><strong>JSON-RPC 2.0.</strong> The message format MCP uses: requests, responses and notifications as JSON objects. Its specification calls it “a stateless, light-weight remote procedure call (RPC) protocol.”<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup> <em>Chapter 3.</em></p>
+<p><strong>JSON Schema.</strong> The vocabulary for describing the shape of JSON data that function calling, MCP and WebMCP all use for tool inputs. Its current version is 2020-12.<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup> <em>Chapter 2.</em></p>
+<h3 id="l"><a class="anchor-link" href="#l">L</a></h3>
+<p><strong>legacy and modern (MCP).</strong> The MCP specification’s names for the two protocol eras: <em>legacy</em> revisions (2025-11-25 and earlier) open a session with an <code>initialize</code> handshake; <em>modern</em> ones (2026-07-28 on) are stateless. <em>Chapter 3.</em></p>
+<p><strong>local relay.</strong> A bridge that connects a browser tab’s WebMCP tools to desktop MCP clients. The book uses <code>@mcp-b/webmcp-local-relay</code>, which talks to the page through a hidden iframe and a localhost WebSocket. <em>Chapter 9.</em></p>
+<h3 id="m"><a class="anchor-link" href="#m">M</a></h3>
+<p><strong>MCP (Model Context Protocol).</strong> An open protocol, open-sourced by Anthropic on 25 November 2024, for connecting AI applications to tools and data. Hosts run clients; clients talk to servers, which offer tools, resources and prompts. WebMCP borrows its vocabulary but is a separate specification. <em>Chapter 2; Chapter 3.</em></p>
+<p><strong>MCP 2026-07-28.</strong> The MCP revision current while this book was written. It made the protocol stateless. The changelog’s words are “Make MCP stateless: remove the initialize / notifications/initialized handshake”, and every request now carries its protocol version and client capabilities.<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup> <em>Chapter 3.</em></p>
+<p><strong>MCP Apps.</strong> An MCP extension that lets servers return interactive user interface for the host to render. <em>Chapter 3.</em></p>
+<p><strong>MCP-B.</strong> The community project that built WebMCP-shaped libraries before the browsers did, and that maintains the <code>@mcp-b/*</code> packages and <code>usewebmcp</code>. <em>Chapter 4 (history); Chapter 9.</em></p>
+<p><strong>MCP Inspector.</strong> The official developer tool for exercising MCP servers, available as a web UI and a CLI. Chapter 3 tests Trailhead’s server with version 2.11.0. <em>Chapter 3.</em></p>
+<p><strong>MCP tool annotations.</strong> MCP’s behaviour hints on a tool: <code>readOnlyHint</code> (default <code>false</code>), <code>destructiveHint</code> (default <code>true</code>), <code>idempotentHint</code> (default <code>false</code>) and <code>openWorldHint</code> (default <code>true</code>), plus a display <code>title</code>. <code>destructiveHint</code> and <code>idempotentHint</code> only mean something when <code>readOnlyHint</code> is <code>false</code>.<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup> The MCP specification requires clients to treat them as untrusted unless they come from trusted servers.<sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup> They are not the same set as WebMCP’s annotations: WebMCP has <code>consequentialHint</code> and <code>untrustedContentHint</code> and no destructive, idempotent or open-world hints. <em>Chapter 3.</em></p>
+<p><strong>misrepresentation of intent.</strong> Chapter 12’s fourth threat: a tool whose name or description says one thing while its code does another, whether by malice or by drift. <em>Chapter 12.</em></p>
+<p><strong>ModelContext.</strong> The interface of <code>document.modelContext</code>. It has three methods, <code>registerTool()</code>, <code>getTools()</code> and <code>executeTool()</code>, and three events, <code>toolchange</code>, <code>toolactivated</code> and <code>toolcancel</code>. <em>Chapter 5; Appendix A.</em></p>
+<p><strong>ModelContextTool.</strong> The dictionary you pass to <code>registerTool()</code>: <code>name</code>, <code>title</code>, <code>description</code>, <code>inputSchema</code>, <code>execute</code> and <code>annotations</code>. <em>Chapter 5.</em></p>
+<p><strong>Model Context Tool Inspector.</strong> A Chrome extension from the WebMCP tooling collection that lists a page’s tools in the side panel and lets you call them with JSON arguments, or hand a natural-language prompt to a model to see which tools it picks. <em>Chapter 9; Chapter 14.</em></p>
+<h3 id="n"><a class="anchor-link" href="#n">N</a></h3>
+<p><strong>N × M problem.</strong> The arithmetic behind MCP: N AI applications and M services need up to N × M bespoke integrations, but only N + M if both sides speak one protocol. <em>Chapter 2.</em></p>
+<p><strong><code>native-agent</code>.</strong> <em>Proposed.</em> A keyword the explainer’s authors are considering for <code>exposedTo</code>, to control whether the browser’s built-in agent sees a tool. <em>Chapter 17.</em></p>
+<p><strong><code>navigator.modelContext</code>.</strong> <em>Moved to <code>document.modelContext</code> on 27 May 2026.</em> The original location of the API. Chromium 156 doesn’t expose it. <em>Chapter 4; Appendix D.</em></p>
+<p><strong><code>needs_input</code>.</strong> The result status for a call that needs something only the user knows, shaped <code>{ status: 'needs_input', code: 'MISSING_INFORMATION', missing, message }</code>, where <code>missing</code> lists what to ask for (for example <code>missing: ['size']</code>). The agent asks the user, then calls again. <em>Chapter 11; used in Chapter 13.</em></p>
+<p><strong>NotAllowedError.</strong> The <code>DOMException</code> the WebMCP methods reject with when the <code>tools</code> Permissions Policy doesn’t allow the document to use them. <em>Chapter 7; Appendix A.</em></p>
+<p><strong>NotFoundError.</strong> The <code>DOMException</code> the draft specifies when a called tool doesn’t exist in the target document (for example after it was unregistered), when the target’s origin doesn’t match the tool’s <code>origin</code>, or when the tool isn’t exposed to the caller. Chromium 156 reports <code>UnknownError</code> instead, which is spec lag, not a bug. <em>Chapter 5; Chapter 6; Appendix A.</em></p>
+<h3 id="o"><a class="anchor-link" href="#o">O</a></h3>
+<p><strong>observation.</strong> In the draft, the implementation-defined snapshot a browser agent takes of a page, which includes at least a tool map: every document in the frame tree with its origin and tools. <em>Chapter 7.</em></p>
+<p><strong>OpenAPI.</strong> A standard way to describe HTTP APIs, which began as Swagger. ChatGPT plug-ins and GPT actions used it to give assistants tools. <em>Chapter 2.</em></p>
+<p><strong>OperationError.</strong> The <code>DOMException</code> the draft specifies when a tool’s callback rejects or its result can’t be serialized. Chromium 156 reports a thrown error as <code>UnknownError</code> (spec lag, not a bug) and resolves some unserializable results, such as <code>undefined</code>, instead of rejecting. <em>Chapter 5; Chapter 6; Appendix A.</em></p>
+<p><strong><code>orderState</code>.</strong> The field that carries a Trailhead order’s state (<code>'shipped'</code>, <code>'processing'</code>) in the backend MCP server’s <code>get_order_status</code> results. Like <code>ticketState</code>, it is named so that <code>status</code> stays reserved for the call’s outcome (see <em>result status</em>). <em>Chapter 3.</em></p>
+<p><strong>origin trial.</strong> A time-limited way for a site to turn on an experimental feature for real visitors by registering its origin and serving a token. Chrome’s documentation says origin trials give access to a feature “so that you can test this feature and offer it to your users, for a limited time.”<sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup> WebMCP has trials in Chrome (149 to 162) and Edge (until 30 March 2027).<sup class="footnote-ref"><a href="#fn8" id="fnref8:2">8:2</a></sup><sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup> <em>Chapter 4; tokens in Chapter 9; Chapter 15.</em></p>
+<p><strong>origin-trial token.</strong> The signed string that enables a trial feature on a registered origin, delivered in a <code>&lt;meta http-equiv=&quot;origin-trial&quot;&gt;</code> tag or an <code>Origin-Trial</code> response header. <em>Chapter 9; Chapter 15.</em></p>
+<p><strong><code>outputSchema</code>.</strong> A JSON Schema describing a tool’s result. MCP has one, paired with <code>structuredContent</code>. WebMCP doesn’t yet; adding it is open spec work. <em>Chapter 3 (MCP); Chapter 17 (WebMCP).</em></p>
+<p><strong>output injection.</strong> Prompt injection that rides out of your tool in its result, for example in user-generated content the tool returns. Mark such tools with <code>untrustedContentHint</code>. <em>Chapter 12.</em></p>
+<p><strong>over-parameterisation.</strong> Chapter 12’s third threat: a tool that asks for more input than its task needs, turning a personalisation feature into a way to collect data from the agent’s context. <em>Chapter 12; first mentioned in Chapter 5.</em></p>
+<h3 id="p"><a class="anchor-link" href="#p">P</a></h3>
+<p><strong>page-embedded agent.</strong> Chapter 1’s name for an agent that ships inside a website; Chapter 7 calls it an <em>in-page agent</em>. <em>Chapter 1.</em></p>
+<p><strong>Permissions Policy.</strong> The web platform mechanism, set by the <code>Permissions-Policy</code> header or an iframe’s <code>allow</code> attribute, “to allow and deny the use of browser features in a document or within any <code>&lt;iframe&gt;</code> elements”.<sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup> WebMCP defines a policy-controlled feature named <code>tools</code> whose default allowlist is <code>'self'</code>, so cross-origin frames can’t use the API unless the embedder delegates it with <code>allow=&quot;tools&quot;</code>. <em>Chapter 7; Chapter 12.</em></p>
+<p><strong>polyfill.</strong> A script that implements a missing web API in JavaScript. For WebMCP the book uses MCP-B’s <code>@mcp-b/global</code> and <code>@mcp-b/webmcp-polyfill</code> (both 6.0.3 on 15 October 2026), which are second implementations with their own schedules.<sup class="footnote-ref"><a href="#fn21" id="fnref21">21</a></sup> <em>Chapter 9; cautions in Chapter 15.</em></p>
+<p><strong>potentially trustworthy origin.</strong> An origin the web platform treats as secure, such as <code>https:</code> or <code>http://localhost</code>. <code>exposedTo</code> and <code>fromOrigins</code> accept only these and throw <code>SecurityError</code> for anything else. <em>Chapter 5; Chapter 7.</em></p>
+<p><strong>progressive enhancement.</strong> Building the page so it works without WebMCP and adds tools only where the API exists. Every project in the book follows it. <em>Chapter 9.</em></p>
+<p><strong>prompt injection.</strong> Text that an agent reads as instructions although it came from content, such as a product review, a web page or a tool result. <em>Chapter 12; first mentioned in Chapter 1.</em></p>
+<p><strong>Prompt API.</strong> Chrome’s built-in API for sending natural-language requests to an on-device model.<sup class="footnote-ref"><a href="#fn22" id="fnref22">22</a></sup> The Test Agent can use it as its planner. <em>Chapter 1; Chapter 9.</em></p>
+<p><strong>prompts (MCP).</strong> Templated messages a server offers, controlled by the user, such as Trailhead’s <code>packing_list</code>. <em>Chapter 3.</em></p>
+<p><strong><code>provideContext()</code>.</strong> <em>Removed 5 March 2026.</em> An early method that replaced a page’s whole tool set in one call. <em>Chapter 4; Appendix D.</em></p>
+<h3 id="r"><a class="anchor-link" href="#r">R</a></h3>
+<p><strong><code>readOnlyHint</code>.</strong> An annotation that says the tool “does not modify any state and only reads data.”<sup class="footnote-ref"><a href="#fn6" id="fnref6:2">6:2</a></sup> Trailhead’s <code>search_products</code>, <code>compare_products</code> and <code>get_cart</code> set it. <em>Chapter 6.</em></p>
+<p><strong>refusal.</strong> A tool outcome where the arguments were fine but a rule says no: a purchase limit, a sold-out item, a rate limit. It is returned as <code>{ status: 'refused', code, message }</code>, for example <code>code: 'OUT_OF_STOCK'</code> for a sold-out item or the Helpdesk Widget’s <code>TICKET_LIMIT</code> (see <em>result status</em>). Unlike an error, it isn’t the agent’s to fix by retrying, and Chapter 11 words it so the agent takes the decision back to the person. <em>Chapter 11; applied in Chapter 6.</em></p>
+<p><strong><code>registerTool()</code>.</strong> The method that adds a tool to a document: <code>document.modelContext.registerTool(tool, { signal, exposedTo })</code>. There is no <code>unregisterTool()</code>; aborting the signal unregisters. <em>Chapter 4; in detail in Chapter 5.</em></p>
+<p><strong>RegisteredTool.</strong> The dictionary <code>getTools()</code> returns for each visible tool: its name, title, description, input schema, annotations, and the window and origin it came from. You pass it back to <code>executeTool()</code>. <em>Chapter 7; Appendix A.</em></p>
+<p><strong><code>requestUserInteraction()</code>.</strong> <em>Not in the draft.</em> An early method for asking the user something during a tool call. It still appears on Chrome’s security page, and issues #165 and #204 discuss replacing it, for example with a <code>requestUserInput()</code> modelled on MCP elicitation. Until then, confirmation belongs in your page. <em>Chapter 4; Chapter 13; Appendix D.</em></p>
+<p><strong>resources (MCP).</strong> Context and data a server offers for the application or model to use, addressed by URI, such as Trailhead’s <code>trailhead://policies/returns</code>. <em>Chapter 3.</em></p>
+<p><strong><code>respondWith()</code>.</strong> <em>Declarative API, removed from the spec.</em> A <code>SubmitEvent</code> method that lets a page answer an agent’s form submission with a result, instead of navigating. <em>Chapter 8.</em></p>
+<p><strong>result status.</strong> The book’s convention for what a tool returns, set in Chapter 11 and followed by every chapter: the agent reads <code>status</code> first. Success uses a domain word (<code>added</code>, <code>created</code>, <code>booked</code>) or no status at all; the four non-success statuses are <code>error</code> (the agent can fix the call), <code>needs_input</code> (ask the user), <code>refused</code> (a rule says no) and <code>cancelled_by_user</code> (stop). Each non-success result carries a stable <code>code</code> for programs and a <code>message</code> for the model, except <code>cancelled_by_user</code>, which carries only a <code>message</code>. Because <code>status</code> is reserved for the outcome, domain data uses other names, such as <code>ticketState</code> and <code>orderState</code>. <em>Chapter 6 (<code>error</code>); Chapter 11 (the full set).</em></p>
+<h3 id="s"><a class="anchor-link" href="#s">S</a></h3>
+<p><strong>schema synthesis.</strong> <em>Declarative API.</em> The browser writing a JSON Schema from a form’s controls, their types, constraints and labels. The book documents Chromium’s current behaviour in Table 8.1. <em>Chapter 8.</em></p>
+<p><strong>secure context.</strong> An environment, such as a window or worker, that “meets a defined standard of authentication and confidentiality,” in practice HTTPS or localhost.<sup class="footnote-ref"><a href="#fn23" id="fnref23">23</a></sup> <code>document.modelContext</code> exists only in secure contexts. <em>Chapter 5; Chapter 9.</em></p>
+<p><strong>SecurityError.</strong> The <code>DOMException</code> you get when <code>exposedTo</code> or <code>fromOrigins</code> contains an origin that doesn’t parse or isn’t potentially trustworthy. <em>Chapter 5; Chapter 7.</em></p>
+<p><strong>server (MCP).</strong> A program that offers MCP features (tools, resources, prompts) to a client. It runs locally over stdio or remotely over Streamable HTTP. <em>Chapter 3.</em></p>
+<p><strong><code>server/discover</code>.</strong> The MCP 2026-07-28 method a client can call to learn what a server supports. Servers must implement it, but clients aren’t required to call it. <em>Chapter 3.</em></p>
+<p><strong>service-worker tools.</strong> <em>Proposed.</em> A supplementary explainer’s idea for letting a site’s service worker offer tools when none of its pages is open. <em>Chapter 17.</em></p>
+<p><strong>standards position.</strong> A browser engine’s public statement about a proposed web feature. On 15 October 2026 Mozilla’s position on WebMCP was labelled <em>neutral</em> and WebKit’s <em>oppose</em>.<sup class="footnote-ref"><a href="#fn24" id="fnref24">24</a></sup><sup class="footnote-ref"><a href="#fn25" id="fnref25">25</a></sup> <em>Chapter 4; Chapter 15.</em></p>
+<p><strong>stateless (MCP).</strong> The defining property of MCP 2026-07-28. There is no session and no handshake: each request carries its own version, client identity and capabilities in <code>_meta</code>, so any server instance can answer any request. The specification lists “Stateless, self-contained requests” among the protocol’s key details.<sup class="footnote-ref"><a href="#fn26" id="fnref26">26</a></sup> <em>Chapter 3.</em></p>
+<p><strong>stdio.</strong> MCP’s local transport: “newline-delimited messages over the standard streams of a client-launched subprocess.”<sup class="footnote-ref"><a href="#fn27" id="fnref27">27</a></sup> <em>Chapter 3.</em></p>
+<p><strong>Streamable HTTP.</strong> MCP’s remote transport: each message is an HTTP POST to one endpoint, and replies come back as JSON or a request-scoped server-sent events stream.<sup class="footnote-ref"><a href="#fn27" id="fnref27:1">27:1</a></sup> <em>Chapter 3.</em></p>
+<p><strong>structured interaction.</strong> The alternative to actuation: the page offers named, described, schema-typed tools and the agent calls them. <em>Chapter 1.</em></p>
+<p><strong><code>structuredContent</code>.</strong> An MCP tool result’s machine-readable payload, which an <code>outputSchema</code> describes. <em>Chapter 3.</em></p>
+<p><strong>Structured Outputs.</strong> OpenAI’s August 2024 feature that turned a function’s JSON Schema from guidance into a hard constraint on the model’s output. <em>Chapter 2.</em></p>
+<h3 id="t"><a class="anchor-link" href="#t">T</a></h3>
+<p><strong>TAG (Technical Architecture Group).</strong> An elected W3C group that “helps resolve Consortium-wide technical issues”<sup class="footnote-ref"><a href="#fn12" id="fnref12:1">12:1</a></sup> and reviews new designs. WebMCP’s early design review, opened in June 2026, was still open on 15 October 2026 and labelled “Missing: Multi-stakeholder support”.<sup class="footnote-ref"><a href="#fn28" id="fnref28">28</a></sup> <em>Chapter 4; Chapter 15.</em></p>
+<p><strong>target.</strong> In Chapter 12, the role of a page whose tools are called with unexpected arguments by a hijacked agent. <em>Chapter 12.</em></p>
+<p><strong>Test Agent.</strong> The book’s optional minimal agent harness, either an extension or an in-page agent using the Prompt API, for calling tools and running evals without depending on a commercial assistant. Its API is <code>createTestAgent()</code> with a <code>scripted()</code> planner or a <code>createPromptPlanner()</code> that uses the Prompt API. <em>Chapter 1; built in Chapter 9; reused in Chapter 14’s tests.</em></p>
+<p><strong>thin wrapper.</strong> The book’s rule for tool code: a tool should call the same functions the interface already uses, not re-implement them. <em>Chapter 4; Chapter 9; Chapter 10.</em></p>
+<p><strong><code>ticketState</code>.</strong> The field that carries a Helpdesk Widget ticket’s own state (for example <code>'open'</code>) in <code>get_ticket_status</code> results, named so that <code>status</code> stays reserved for the call’s outcome (see <em>result status</em>). <em>Chapter 7; Chapter 11.</em></p>
+<p><strong>title.</strong> An optional, human-readable label in a tool definition, for display in browser UI. <code>getTools()</code> returns an empty string when it’s missing (issue #224). <em>Chapter 5; Chapter 11.</em></p>
+<p><strong>tool.</strong> A capability offered to a model as a name, a description written for the model and a schema for its input, plus code that runs when called. In WebMCP a tool is registered by a page and runs in the user’s tab. <em>Chapter 1; history in Chapter 2.</em></p>
+<p><strong>tool poisoning.</strong> Prompt injection planted in your own tool descriptions, for example by a compromised dependency that registers or rewrites tools. <em>Chapter 12.</em></p>
+<p><strong><code>:tool-form-active</code>, <code>:tool-submit-active</code>.</strong> <em>Declarative API, still in Chrome’s trial.</em> CSS pseudo-classes that match a form, and its submit button, while an agent is filling or submitting it. <em>Chapter 8.</em></p>
+<p><strong><code>toolactivated</code>.</strong> The event fired at <code>document.modelContext</code> when a tool call begins, with the tool’s name. <em>Chapter 5; Chapter 6; Chapter 8.</em></p>
+<p><strong><code>toolautosubmit</code>.</strong> <em>Declarative API.</em> A boolean form attribute that lets the agent submit the form after filling it. Without it, the browser focuses the submit button and the person submits. <em>Chapter 8.</em></p>
+<p><strong><code>toolcancel</code>.</strong> The event fired when a running tool call is cancelled, with the tool’s name. It arrives alongside the abort of the call’s execution signal. <em>Chapter 6; Chapter 8.</em></p>
+<p><strong><code>toolchange</code>.</strong> The event fired at <code>document.modelContext</code> when the set of tools changes. Agents use it to know when to re-read the tool list. <em>Chapter 5; Chapter 6; Chapter 10.</em></p>
+<p><strong><code>tooldescription</code>, <code>toolname</code>, <code>toolparamdescription</code>.</strong> <em>Declarative API.</em> Form attributes that give a declarative tool its description and name, and give a form control its parameter description. <em>Chapter 8.</em></p>
+<p><strong>tool-level error.</strong> A failure the tool reports as a value rather than an exception: <code>{ status: 'error', code, message }</code>, with a stable code and a sentence that tells the model how to fix the call. The draft allows this explicitly; the browser passes the result through as JSON. It is distinct from a platform error, a <code>DOMException</code> such as <code>NotFoundError</code> that the browser raises and the caller sees only by name. <em>Chapter 6; wording in Chapter 11.</em></p>
+<p><strong>tools (Permissions Policy feature).</strong> See <em>Permissions Policy</em>. <em>Chapter 7.</em></p>
+<p><strong>TPAC.</strong> The W3C’s annual meeting week, where groups meet in person. TPAC 2026 runs from 26 to 30 October in Dublin, and WebKit’s proposed path for agent work includes a workshop around it. <em>Chapter 13; Chapter 15.</em></p>
+<p><strong>trusted click.</strong> A click that came from the person, shown by <code>event.isTrusted</code>. It proves that someone clicked, not that they read or understood what they agreed to. <em>Chapter 13.</em></p>
+<h3 id="u"><a class="anchor-link" href="#u">U</a></h3>
+<p><strong>UnknownError.</strong> The <code>DOMException</code> Chromium 156 returns for most tool-execution failures: a thrown error, a missing tool, a page that went away mid-call. The draft used it too until 8 October 2026, when it was replaced with specific error names (commit b206dae, pull request #339), so Chromium’s <code>UnknownError</code> is spec lag, not a bug. <em>Chapter 5; Chapter 6; Chapter 7; Appendix A.</em></p>
+<p><strong><code>untrustedContentHint</code>.</strong> An annotation that says the tool’s output “contains data that is untrusted, from the perspective of the author registering the tool”,<sup class="footnote-ref"><a href="#fn6" id="fnref6:3">6:3</a></sup> such as reviews or community answers. <em>Chapter 6; Chapter 12.</em></p>
+<p><strong><code>usewebmcp</code>.</strong> A React hook package from MCP-B (6.0.3 on 15 October 2026) that registers tools with <code>document.modelContext</code> inside components.<sup class="footnote-ref"><a href="#fn21" id="fnref21:1">21:1</a></sup> Trailhead’s React app uses it. <em>Chapter 10.</em></p>
+<p><strong>user activation.</strong> The browser’s record that a person recently interacted with the page, which gates APIs such as pop-ups and full-screen. A tool call is not a user gesture and doesn’t grant it. <em>Chapter 13.</em></p>
+<h3 id="w"><a class="anchor-link" href="#w">W</a></h3>
+<p><strong>W3C (World Wide Web Consortium).</strong> The standards body that hosts the Web Machine Learning Community Group and its WebMCP draft, and that would charter any Working Group to standardise it. <em>Chapter 4; Chapter 15.</em></p>
+<p><strong>W3C Council.</strong> The body that decides a formal objection the W3C Team can’t resolve. <em>Chapter 15.</em></p>
+<p><strong>web-platform-tests (WPT).</strong> The shared, cross-browser test suite for web standards. The draft links to its WebMCP tests, which in places follow Chromium where the draft says something else (issue #332). <em>Chapter 6; Chapter 14.</em></p>
+<p><strong>Web Machine Learning Community Group (WebML CG).</strong> The W3C Community Group that publishes the WebMCP draft. Its stated mission is about machine-learning inference in the browser, which is one reason WebKit called it the wrong venue.<sup class="footnote-ref"><a href="#fn29" id="fnref29">29</a></sup> <em>Chapter 4; Chapter 15.</em></p>
+<p><strong>Web Machine Learning Working Group (WebML WG).</strong> The W3C Working Group, chartered until 30 April 2027, that a June 2026 pull request proposed should take on WebMCP. That proposal was closed unmerged on 13 October 2026. <em>Chapter 15.</em></p>
+<p><strong>WebMCP.</strong> A proposed web API that lets a page register JavaScript tools with <code>document.modelContext.registerTool()</code>, so agents can call them instead of operating the interface. It is a Draft Community Group Report (15 October 2026), not a W3C Standard.<sup class="footnote-ref"><a href="#fn1" id="fnref1:3">1:3</a></sup> <em>Chapter 4.</em></p>
+<p><strong>WebMCP domain (CDP).</strong> The part of the Chrome DevTools Protocol that lets automation see and call a page’s tools. It has commands such as <code>WebMCP.enable</code> and <code>WebMCP.invokeTool</code>, and events such as <code>WebMCP.toolsAdded</code>.<sup class="footnote-ref"><a href="#fn30" id="fnref30">30</a></sup> <em>Chapter 14.</em></p>
+<p><strong><code>WebMCPTesting</code>.</strong> The Chromium feature that turns on WebMCP locally, as <code>--enable-features=WebMCPTesting</code> on the command line or <code>chrome://flags/#enable-webmcp-testing</code> in Chrome.<sup class="footnote-ref"><a href="#fn31" id="fnref31">31</a></sup> Every “observed” behaviour in this book was measured with it in Chromium 156. <em>Chapter 6; setup in Chapter 9.</em></p>
+<p><strong><code>webmcp-types</code>.</strong> A community package of TypeScript type definitions for WebMCP (0.1.10 on 15 October 2026).<sup class="footnote-ref"><a href="#fn21" id="fnref21:2">21:2</a></sup> <em>Chapter 5; Chapter 10.</em></p>
+<p><strong>Working Group (WG).</strong> A chartered W3C group. Working Groups “typically produce deliverables (e.g., Recommendation Track technical reports, software, test suites, and reviews of the deliverables of other groups)”.<sup class="footnote-ref"><a href="#fn12" id="fnref12:2">12:2</a></sup> Moving WebMCP from a Community Group into a Working Group would put it on the standards track. <em>Chapter 4; Chapter 15.</em></p>
+<h2 id="b2-the-running-examples"><a class="anchor-link" href="#b2-the-running-examples">B.2 The running examples</a></h2>
+<p><strong>Fjord Table.</strong> A small restaurant on the Oslo waterfront and its booking site, built in plain HTML, CSS and JavaScript modules. Its tools are <code>search_availability</code> (date, party size 1 to 12, optional time and seating) and the consequential <code>book_table</code>. <em>Introduced in Chapter 1; built in Chapters 4 and 5; declarative version in Chapter 8; end to end in Chapter 9; under test in Chapter 14.</em></p>
+<p><strong>Helpdesk Widget.</strong> A support widget made by the vendor Supportly and embedded in the Ledgerly dashboard. Its tools are <code>search_articles</code> (read-only), <code>create_ticket</code> (consequential) and <code>get_ticket_status</code>, with ticket IDs shaped like <code>SUP-1042</code>. It is the book’s case study for Permissions Policy, <code>exposedTo</code> and <code>fromOrigins</code>, in-page agents and cross-origin threats. <em>Introduced in Chapter 1; Chapter 7; redesigned in Chapter 11; threat model in Chapter 12.</em></p>
+<p><strong>Kari.</strong> Trailhead’s head of product, whose whiteboard questions frame the business chapter and the closing chapter. <em>Chapter 16; Chapter 17.</em></p>
+<p><strong>Lars.</strong> The Trailhead customer in Chapter 1 who asks his browser’s assistant to find him a tent for a trip to Jotunheimen. <em>Chapter 1.</em></p>
+<p><strong>Ledgerly.</strong> The fictional SaaS dashboard (<code>https://app.ledgerly.example</code>) that embeds the Helpdesk Widget: the host page, the embedder that sets the Permissions Policy. <em>Chapter 7.</em></p>
+<p><strong>Supportly.</strong> The fictional third-party vendor (<code>https://widget.supportly.example</code>) whose iframe provides the Helpdesk Widget’s tools. <em>Chapter 7.</em></p>
+<p><strong>Test Agent.</strong> See the entry in B.1. <em>Chapter 1; Chapter 9; Chapter 14.</em></p>
+<p><strong>Trailhead.</strong> A fictional Norwegian outdoor-gear store built with React 19, Vite and TypeScript, with prices in NOK. Its WebMCP tools are <code>search_products</code>, <code>compare_products</code>, <code>add_to_cart</code>, <code>get_cart</code> and a consequential <code>checkout</code> that never completes without the person’s click. A companion backend MCP server offers <code>search_products</code> and <code>get_order_status</code>. <em>Introduced in Chapter 1; backend server in Chapter 3; annotations and errors in Chapter 6; React and Angular in Chapter 10; tool design in Chapter 11; threat model and consent in Chapters 12 and 13; evals in Chapter 14; business plan in Chapter 16; Chapter 17.</em></p>
+<h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, §2 Terminology (definitions of <em>agent</em> and <em>browser agent</em>) and the document’s status section. Read 15 October 2026. <a href="https://webmachinelearning.github.io/webmcp/">https://webmachinelearning.github.io/webmcp/</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a> <a href="#fnref1:2" class="footnote-backref">↩︎</a> <a href="#fnref1:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>MDN Web Docs, “AbortSignal”: “The AbortSignal interface represents a signal object that allows you to communicate with an asynchronous operation (such as a fetch request) and abort it if required via an AbortController object.” Read 15 October 2026. <a href="https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal">https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>Chrome for Developers, “WebMCP” (published 18 May 2026, last updated 7 October 2026), Key Term: Actuation. Read 15 October 2026. <a href="https://developer.chrome.com/docs/ai/webmcp">https://developer.chrome.com/docs/ai/webmcp</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>W3C, “DRAFT Agentic Web Working Group Charter”, mission statement and deliverables. Read 15 October 2026. <a href="https://w3c.github.io/charter-drafts/2026/agenticweb-wg.html">https://w3c.github.io/charter-drafts/2026/agenticweb-wg.html</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>W3C, announcement of charter refinement for the proposed Agentic Web Working Group, public-new-work mailing list, October 2026. Read 15 October 2026. <a href="https://lists.w3.org/Archives/Public/public-new-work/2026Oct/0002.html">https://lists.w3.org/Archives/Public/public-new-work/2026Oct/0002.html</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>WebMCP specification, §4.2.1 ToolAnnotations Dictionary. Read 15 October 2026. <a href="https://webmachinelearning.github.io/webmcp/#dictdef-toolannotations">https://webmachinelearning.github.io/webmcp/#dictdef-toolannotations</a> <a href="#fnref6" class="footnote-backref">↩︎</a> <a href="#fnref6:1" class="footnote-backref">↩︎</a> <a href="#fnref6:2" class="footnote-backref">↩︎</a> <a href="#fnref6:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>Chrome for Developers, “WebMCP tool security” (published 9 June 2026, last updated 1 September 2026): recommended limits of 500 characters per tool description and 150 characters per parameter description. Read 15 October 2026. <a href="https://developer.chrome.com/docs/ai/webmcp/secure-tools">https://developer.chrome.com/docs/ai/webmcp/secure-tools</a> <a href="#fnref7" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>Chrome Platform Status, “WebMCP” (feature 5117755740913664), last updated 28 September 2026: status “Proposed”, developer trial from Chrome 146, origin trial stage from Chrome 149 to 156 with an extension through 162. Read 15 October 2026 through the page and its JSON API. <a href="https://chromestatus.com/feature/5117755740913664">https://chromestatus.com/feature/5117755740913664</a> <a href="#fnref8" class="footnote-backref">↩︎</a> <a href="#fnref8:1" class="footnote-backref">↩︎</a> <a href="#fnref8:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p>Model Context Protocol specification, version 2026-07-28, “Architecture”: hosts, clients (“Each client is created by the host and communicates with exactly one server”) and servers. Read 15 October 2026. <a href="https://modelcontextprotocol.io/specification/2026-07-28/architecture">https://modelcontextprotocol.io/specification/2026-07-28/architecture</a> <a href="#fnref9" class="footnote-backref">↩︎</a> <a href="#fnref9:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p>W3C, “Community and Business Groups: Frequently Asked Questions”: “A W3C Community Group is an open forum, without fees… Community Groups do not create W3C standards.” Read 15 October 2026. <a href="https://www.w3.org/community/about/faq/">https://www.w3.org/community/about/faq/</a> <a href="#fnref10" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>Model Context Protocol specification, version 2026-07-28, “Elicitation”: “a standardized way for servers to request additional information from users through the client during interactions.” Read 15 October 2026. <a href="https://modelcontextprotocol.io/specification/2026-07-28/client/elicitation">https://modelcontextprotocol.io/specification/2026-07-28/client/elicitation</a> <a href="#fnref11" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>W3C Process Document, 18 August 2025: the Technical Architecture Group, Working Groups and Interest Groups, and Formal Objections and the W3C Council. Read 15 October 2026. <a href="https://www.w3.org/policies/process/">https://www.w3.org/policies/process/</a> <a href="#fnref12" class="footnote-backref">↩︎</a> <a href="#fnref12:1" class="footnote-backref">↩︎</a> <a href="#fnref12:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>JSON-RPC 2.0 Specification. Read 15 October 2026. <a href="https://www.jsonrpc.org/specification">https://www.jsonrpc.org/specification</a> <a href="#fnref13" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>JSON Schema, “Specification”: “The current version is 2020-12!” Read 15 October 2026. <a href="https://json-schema.org/specification">https://json-schema.org/specification</a> <a href="#fnref14" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>Model Context Protocol specification, version 2026-07-28, “Key Changes” (changelog): “Make MCP stateless: remove the initialize / notifications/initialized handshake. Every request now carries its protocol version and client c[apabilities]…”. Read 15 October 2026. <a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog">https://modelcontextprotocol.io/specification/2026-07-28/changelog</a> <a href="#fnref15" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn16" class="footnote-item"><p>Model Context Protocol specification, version 2026-07-28, Schema Reference, <code>ToolAnnotations</code>: <code>title</code>, <code>readOnlyHint</code> (default false), <code>destructiveHint</code> (default true), <code>idempotentHint</code> (default false) and <code>openWorldHint</code> (default true), the second and third “meaningful only when <code>readOnlyHint == false</code>”. Read 15 October 2026. <a href="https://modelcontextprotocol.io/specification/2026-07-28/schema#toolannotations">https://modelcontextprotocol.io/specification/2026-07-28/schema#toolannotations</a> <a href="#fnref16" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn17" class="footnote-item"><p>Model Context Protocol specification, version 2026-07-28, “Tools”: “clients MUST consider tool annotations to be untrusted unless they come from trusted servers.” Read 15 October 2026. <a href="https://modelcontextprotocol.io/specification/2026-07-28/server/tools">https://modelcontextprotocol.io/specification/2026-07-28/server/tools</a> <a href="#fnref17" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn18" class="footnote-item"><p>Chrome for Developers, “Get started with origin trials”. Read 15 October 2026. <a href="https://developer.chrome.com/docs/web-platform/origin-trials">https://developer.chrome.com/docs/web-platform/origin-trials</a> <a href="#fnref18" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn19" class="footnote-item"><p>Microsoft Edge Origin Trials, “WebMCP”: Trial Expiration Date March 30, 2027. Read 15 October 2026. <a href="https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a">https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a</a> <a href="#fnref19" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn20" class="footnote-item"><p>MDN Web Docs, “Permissions-Policy header”. Read 15 October 2026. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy">https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy</a> <a href="#fnref20" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn21" class="footnote-item"><p>npm registry metadata for <code>@mcp-b/global</code> (6.0.3), <code>@mcp-b/webmcp-polyfill</code> (6.0.3), <code>usewebmcp</code> (6.0.3) and <code>webmcp-types</code> (0.1.10), read 15 October 2026. <a href="https://registry.npmjs.org/usewebmcp/latest">https://registry.npmjs.org/usewebmcp/latest</a> <a href="#fnref21" class="footnote-backref">↩︎</a> <a href="#fnref21:1" class="footnote-backref">↩︎</a> <a href="#fnref21:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn22" class="footnote-item"><p>Chrome for Developers, “The Prompt API” (published 20 May 2025): “With the Prompt API, you can send natural language requests to the foundation model in Chrome.” Read 15 October 2026. <a href="https://developer.chrome.com/docs/ai/prompt-api">https://developer.chrome.com/docs/ai/prompt-api</a> <a href="#fnref22" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn23" class="footnote-item"><p>MDN Web Docs, “Secure contexts”: “A secure context is an environment such as a Window or Worker which meets a defined standard of authentication and confidentiality.” Read 15 October 2026. <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Secure_Contexts">https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Secure_Contexts</a> <a href="#fnref23" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn24" class="footnote-item"><p>mozilla/standards-positions issue #1412, “WebMCP”, labelled “position: neutral”. Read 15 October 2026. <a href="https://github.com/mozilla/standards-positions/issues/1412">https://github.com/mozilla/standards-positions/issues/1412</a> <a href="#fnref24" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn25" class="footnote-item"><p>WebKit/standards-positions issue #670, “WebMCP”, labelled “position: oppose”. Read 15 October 2026. <a href="https://github.com/WebKit/standards-positions/issues/670">https://github.com/WebKit/standards-positions/issues/670</a> <a href="#fnref25" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn26" class="footnote-item"><p>Model Context Protocol specification, version 2026-07-28, overview, “Key Details”. Read 15 October 2026. <a href="https://modelcontextprotocol.io/specification/2026-07-28">https://modelcontextprotocol.io/specification/2026-07-28</a> <a href="#fnref26" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn27" class="footnote-item"><p>Model Context Protocol specification, version 2026-07-28, “Transports”. Read 15 October 2026. <a href="https://modelcontextprotocol.io/specification/2026-07-28/basic/transports">https://modelcontextprotocol.io/specification/2026-07-28/basic/transports</a> <a href="#fnref27" class="footnote-backref">↩︎</a> <a href="#fnref27:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn28" class="footnote-item"><p>w3ctag/design-reviews issue #1238, “Incubation: WebMCP”, open, labelled “Missing: Multi-stakeholder support”. Read 15 October 2026. <a href="https://github.com/w3ctag/design-reviews/issues/1238">https://github.com/w3ctag/design-reviews/issues/1238</a> <a href="#fnref28" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn29" class="footnote-item"><p>W3C, “Web Machine Learning Community Group” home page: its mission statement. Read 15 October 2026. <a href="https://www.w3.org/community/webmachinelearning/">https://www.w3.org/community/webmachinelearning/</a> <a href="#fnref29" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn30" class="footnote-item"><p>Chrome DevTools Protocol, tip-of-tree, “WebMCP” domain: <code>WebMCP.enable</code>, <code>WebMCP.invokeTool</code>, <code>WebMCP.cancelInvocation</code>, <code>WebMCP.toolsAdded</code> and related types. Read 15 October 2026. <a href="https://chromedevtools.github.io/devtools-protocol/tot/WebMCP/">https://chromedevtools.github.io/devtools-protocol/tot/WebMCP/</a> <a href="#fnref30" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn31" class="footnote-item"><p>Chrome for Developers, “WebMCP”, section on local testing with <code>chrome://flags/#enable-webmcp-testing</code>. Read 15 October 2026. <a href="https://developer.chrome.com/docs/ai/webmcp">https://developer.chrome.com/docs/ai/webmcp</a> <a href="#fnref31" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="a-api-reference.html">← Appendix A: API Quick Reference (IDL, Attributes, Events, Errors)</a>
+          <a class="pager-link" rel="next" href="c-resources.html">Appendix C: Resources and Further Reading →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

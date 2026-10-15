@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chapter 10: WebMCP in Frameworks — Tools, Not Clicks</title>
+  <meta name="description" content="Production patterns for component-based apps: tool registration tied to component and DI lifecycles, shared state, and routing.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Chapter 10: WebMCP in Frameworks — Tools, Not Clicks">
+  <meta property="og:description" content="Production patterns for component-based apps: tool registration tied to component and DI lifecycles, shared state, and routing.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a class="is-current" aria-current="page" href="10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="../appendices/a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="../appendices/b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="../appendices/c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="../appendices/d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / Chapter 10 <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">chapter:</span> <span class="fm-v">10</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">III — Building Agent-Ready Apps</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">39 min</span></p>
+        <h1>Chapter 10: WebMCP in Frameworks</h1>
+        <p class="lead">Production patterns for component-based apps: tool registration tied to component and DI lifecycles, shared state, and routing.</p>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#from-a-page-to-an-app">From a page to an app</a></li><li><a href="#what-a-framework-integration-has-to-do">What a framework integration has to do</a></li><li><a href="#react-the-usewebmcp-hook">React: the usewebmcp hook</a></li><li><a href="#tools-as-thin-wrappers-not-a-second-app">Tools as thin wrappers, not a second app</a></li><li><a href="#routing-and-per-view-tool-sets">Routing and per-view tool sets</a></li><li><a href="#unregistering-without-breaking-in-flight-calls">Unregistering without breaking in-flight calls</a></li><li><a href="#state-sync-telling-the-agent-what-changed">State sync: telling the agent what changed</a></li><li><a href="#angular-tools-in-the-injector">Angular: tools in the injector</a></li><li><a href="#server-rendering-and-other-frameworks">Server rendering and other frameworks</a></li><li><a href="#trailhead-so-far">Trailhead so far</a></li><li><a href="#chapter-summary">Chapter summary</a></li><li><a href="#notes">Notes</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“Register tools when they’re useful in a certain page state, then unregister when the tool is no longer usable.”</em></p>
+<p>— Chrome for Developers, “WebMCP best practices”<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<h2 id="from-a-page-to-an-app"><a class="anchor-link" href="#from-a-page-to-an-app">From a page to an app</a></h2>
+<p>Fjord Table is a page. Its tools live in a few module scripts, its booking view opens and closes, and Listing 5.5 registered <code>book_table</code> only while that view was on screen. That is about as much lifecycle as a small site has.</p>
+<p>Most of the web you’ll make agent-ready doesn’t look like that. It looks like Trailhead: a single-page store written in React, where “the page” is a tree of components that mount and unmount as the person searches, compares and checks out, where state lives in stores that several components share, and where the URL changes without a document ever reloading. In that world <code>registerTool()</code> raises questions Fjord Table never had to answer. Which component owns a tool? What happens to it when that component unmounts? What does React’s development mode do to code that registers something in an effect? And when an agent is halfway through a checkout and the person presses Back, who is responsible for the dialog that is still waiting for an answer?</p>
+<p>The API itself doesn’t change in a framework. <code>document.modelContext</code> is still one object per document, tools are still registered with a dictionary and removed by aborting a signal, and calls still arrive with their own cancellation signal.<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup> What changes is who calls those methods and when. This chapter is about getting that right: tying registration to component and dependency-injection lifecycles, keeping tools thin over the app logic you already have, letting the set of tools follow the route, unregistering without breaking calls that are already running, and keeping the agent and the person in step about what changed.</p>
+<p>The main example is Trailhead, the outdoor-gear store that runs through Parts III to VI. Table 10.1 lists the tools it ends this chapter with and where each one lives.</p>
+<p><strong>Table 10.1 — Trailhead’s WebMCP tools at the end of Chapter 10</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Registered by</th>
+<th>Lifetime</th>
+<th>Annotations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>search_products</code></td>
+<td><code>&lt;AgentTools&gt;</code> in the layout</td>
+<td>whole app</td>
+<td><code>readOnlyHint</code></td>
+</tr>
+<tr>
+<td><code>compare_products</code></td>
+<td><code>&lt;AgentTools&gt;</code> in the layout</td>
+<td>whole app</td>
+<td><code>readOnlyHint</code></td>
+</tr>
+<tr>
+<td><code>add_to_cart</code></td>
+<td><code>&lt;AgentTools&gt;</code> in the layout</td>
+<td>whole app</td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>get_cart</code></td>
+<td><code>&lt;AgentTools&gt;</code> in the layout</td>
+<td>whole app</td>
+<td><code>readOnlyHint</code></td>
+</tr>
+<tr>
+<td><code>checkout</code></td>
+<td><code>&lt;CartPage&gt;</code></td>
+<td>while <code>/cart</code> is open and the cart isn’t empty</td>
+<td><code>consequentialHint</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>The React code builds with Vite 8.3.4 and TypeScript 7.0.2 against React 19.3.1, React Router 8.4.0 and <code>usewebmcp</code> 6.0.3, the versions current on npm on 14 October 2026.<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup> Every listing is in the book’s companion repository, together with Playwright tests that run the built app twice: once against a small mock of <code>document.modelContext</code>, and once against Chromium 156’s own implementation with the <code>WebMCPTesting</code> feature switched on.<sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup> Where this chapter says “in Chromium 156”, it means one of those tests.</p>
+<p>Later in the chapter we leave React for Angular, which ships its own experimental WebMCP support built on dependency injection and Signal Forms.</p>
+<h2 id="what-a-framework-integration-has-to-do"><a class="anchor-link" href="#what-a-framework-integration-has-to-do">What a framework integration has to do</a></h2>
+<p>Before reaching for a library, it helps to see the whole job. A component that offers a tool has to do five things:</p>
+<ol>
+<li><strong>Detect support.</strong> Do nothing where <code>document.modelContext</code> doesn’t exist, so the component still works as an ordinary UI.</li>
+<li><strong>Register on mount and unregister on unmount.</strong> The tool should exist exactly as long as the component that can honour it.</li>
+<li><strong>Re-register when what the agent reads changes.</strong> A tool’s name, description and schema are loaded into the model’s context when it’s observed. The explainer says that to change them you unregister the tool and register it again, and each step fires a <code>toolchange</code> event.<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup></li>
+<li><strong>Not re-register when nothing the agent reads has changed.</strong> Components re-render constantly. If every render produced a new registration, the agent would see a stream of <code>toolchange</code> events, and a call could land on a tool that had just been replaced.</li>
+<li><strong>Run calls against current state.</strong> When the agent calls the tool, the handler should see the props and state of the latest render, not the render in which the tool was first registered.</li>
+</ol>
+<p>Points 4 and 5 pull against each other. The <code>execute</code> function a component defines is a new closure on every render, and it closes over that render’s state. Register that closure once and calls will see stale state; register every new closure and you churn. The explainer points at the way out: the browser holds on to whatever function you passed, and as long as the name, description and schema stay accurate, that function can delegate to another one that the application changes over time.<sup class="footnote-ref"><a href="#fn5" id="fnref5:1">5:1</a></sup></p>
+<p>Listing 10.1 does all five in about thirty lines. You won’t ship it, since the packages in the next section do the same job and more, but it shows exactly what they do for you.</p>
+<figure class="code"><figcaption>Listing 10.1 — A minimal hook that ties a tool to a component (src/agent/use-agent-tool.ts)</figcaption>
+<pre><code class="language-ts">import { useEffect, useLayoutEffect, useRef } from 'react';
+
+export interface AgentTool {
+  name: string;
+  description: string;
+  inputSchema?: object;
+  annotations?: WebMCP.ToolAnnotations;
+  execute: (input: Record&lt;string, unknown&gt;, options: { signal: AbortSignal }) =&gt; unknown;
+}
+
+// What a WebMCP hook has to do, in about thirty lines.
+export function useAgentTool(tool: AgentTool, enabled = true): void {
+  // ① Keep the latest render's tool, so calls see current props and state.
+  const latest = useRef(tool);
+  useLayoutEffect(() =&gt; { latest.current = tool; });
+
+  // ② Re-register only when what the agent reads changes.
+  const metadata = JSON.stringify([tool.name, tool.description, tool.inputSchema, tool.annotations]);
+
+  useEffect(() =&gt; {
+    const modelContext = document.modelContext;
+    if (!enabled || !modelContext) return;          // ③ progressive enhancement
+    const { name, description, inputSchema, annotations } = latest.current;
+    const controller = new AbortController();
+    modelContext
+      .registerTool(
+        { name, description, inputSchema, annotations,
+          execute: (input, options) =&gt; latest.current.execute(input as Record&lt;string, unknown&gt;, options) },
+        { signal: controller.signal },
+      )
+      .catch((error: unknown) =&gt; {
+        if (!controller.signal.aborted) console.warn(`registerTool(&quot;${name}&quot;) failed`, error);
+      });
+    return () =&gt; controller.abort();                // ④ unmount or change: unregister
+  }, [metadata, enabled]);
+}
+</code></pre></figure>
+<p>① A ref holds the tool from the latest render, updated in a layout effect so it’s current before any passive effect or agent call can read it. The function registered with the browser never changes; it looks up <code>latest.current.execute</code> at call time, so every call runs against current state.</p>
+<p>② The effect’s dependency is a serialized copy of the agent-facing metadata. A re-render that changes only state leaves the string the same, so nothing is re-registered. A new description produces a new string, and React runs the cleanup (unregister) and then the effect again (register).</p>
+<p>③ Without the API the hook does nothing, and the component renders as it always did.</p>
+<p>④ The cleanup aborts the registration signal. That is the only way to unregister a tool: the specification has no <code>unregisterTool()</code>; aborting the signal passed in the options removes the tool and fires <code>toolchange</code>.<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">2:1</a></sup></p>
+<h3 id="what-strictmode-does-to-registration"><a class="anchor-link" href="#what-strictmode-does-to-registration">What StrictMode does to registration</a></h3>
+<p>In development, React’s <code>&lt;StrictMode&gt;</code> runs “one extra setup+cleanup cycle in development for every Effect”.<sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup> For Listing 10.1 that means register, abort, register, all in the same tick, with the same name. If unregistration were asynchronous, the second <code>registerTool()</code> would hit the first tool and reject because the name is taken.</p>
+<p>It doesn’t. The specification runs the abort steps synchronously when the signal fires, removing the tool from the document’s tool map before the next line runs.<sup class="footnote-ref"><a href="#fn2" id="fnref2:2">2:2</a></sup> In Chromium 156 the first registration promise rejects with an <code>AbortError</code> (“signal is aborted without reason”), the second resolves, and <code>getTools()</code> lists the tool once. That rejection is why the hook ignores errors from a registration whose own signal was aborted: it’s the expected result of cleaning up, not a failure. Trailhead mounts inside <code>&lt;StrictMode&gt;</code>, and its tests check that no tool is ever registered twice and nothing is logged.</p>
+<h3 id="the-bug-only-a-real-browser-caught"><a class="anchor-link" href="#the-bug-only-a-real-browser-caught">The bug only a real browser caught</a></h3>
+<p>The first version of Listing 10.1 copied the metadata out of the serialized string with <code>JSON.parse()</code>. It passed every test against the mock and failed against Chromium. The reason is a small one. <code>JSON.stringify()</code> turns a missing <code>inputSchema</code> into <code>null</code>, and Chromium 156 rejects <code>inputSchema: null</code> with a <code>TypeError</code>: “Failed to read the 'inputSchema' property from 'ModelContextTool': Failed to convert value to 'object'.” An <code>undefined</code> member is simply treated as absent, which is what Web IDL dictionaries do.<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup> The mock had been more forgiving than the browser. The fix was to read the metadata from the ref instead, and the mock now rejects <code>null</code> the way Chromium does. Run your tests against a real implementation as well as a mock; Chapter 14 comes back to this.</p>
+<h2 id="react-the-usewebmcp-hook"><a class="anchor-link" href="#react-the-usewebmcp-hook">React: the <code>usewebmcp</code> hook</a></h2>
+<p>Chrome’s documentation for the imperative API now has a “React support” section. It says React “has experimental support for WebMCP using the usewebmcp package”, with “standalone hooks tied to your component’s mount and unmount lifecycle”, schema-driven type inference and local execution state.<sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup> The package is published from the WebMCP-org <code>npm-packages</code> repository, the same community project behind the MCP-B polyfill and bridges you met in Chapter 9, under the MIT licence.<sup class="footnote-ref"><a href="#fn3" id="fnref3:1">3:1</a></sup></p>
+<p>Version numbers matter here, because the package moves fast. On 14 October 2026 the latest release was 6.0.3, published that afternoon. Version 6.0.0 had come out on 8 October, so this was the fourth release in a week.<sup class="footnote-ref"><a href="#fn3" id="fnref3:2">3:2</a></sup> Version 6 slimmed the package down: Zod and other Standard Schema validators, <code>outputSchema</code>, MCP-style result formatting, prompts and resources moved to a sibling package, <code>@mcp-b/react-webmcp</code>, and <code>usewebmcp</code> became a hook for the core browser contract only.<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup> Table 10.2 lists the React-related packages you’re likely to meet.</p>
+<p><strong>Table 10.2 — React packages for WebMCP, as published on npm on 14 October 2026</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Version</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>usewebmcp</code></td>
+<td>6.0.3</td>
+<td><code>useWebMCP()</code> hook for the core <code>document.modelContext</code> contract; JSON Schema input inference; no validation; depends on <code>webmcp-types</code></td>
+</tr>
+<tr>
+<td><code>@mcp-b/react-webmcp</code></td>
+<td>6.0.3</td>
+<td>Hook with Standard Schema (for example Zod) validation, <code>outputSchema</code>, MCP result formatting, prompts, resources and client hooks</td>
+</tr>
+<tr>
+<td><code>@mcp-b/webmcp-polyfill</code></td>
+<td>6.0.3</td>
+<td>A <code>document.modelContext</code> implementation for browsers without one; recommended for tests</td>
+</tr>
+<tr>
+<td><code>use-webmcp-tool</code></td>
+<td>0.3.0</td>
+<td>Chrome’s own hook (GoogleChromeLabs), which normalizes results to MCP <code>content</code> blocks</td>
+</tr>
+<tr>
+<td><code>webmcp-types</code></td>
+<td>0.1.10</td>
+<td>The Community Group’s TypeScript definitions (Chapter 5)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Sources: the npm registry entries for each package, read on 14 October 2026.<sup class="footnote-ref"><a href="#fn3" id="fnref3:3">3:3</a></sup> <sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup> <sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup></p>
+<p>The <code>usewebmcp</code> README names Chrome’s <code>use-webmcp-tool</code> as prior art.<sup class="footnote-ref"><a href="#fn9" id="fnref9:1">9:1</a></sup> The two take different positions on results. Chrome’s hook turns a returned string into an MCP <code>content</code> block, wraps thrown errors as <code>isError</code> results, and turns <code>undefined</code> into an empty <code>content</code> list.<sup class="footnote-ref"><a href="#fn11" id="fnref11:1">11:1</a></sup> <code>usewebmcp</code> hands your return value to the browser untouched, except that <code>undefined</code> becomes <code>null</code>, because the browser can’t serialize <code>undefined</code>.<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup> Trailhead uses <code>usewebmcp</code>, because Chrome’s documentation points to it and because its results are exactly what Chapter 5 described.</p>
+<h3 id="trailheads-app-wide-tools"><a class="anchor-link" href="#trailheads-app-wide-tools">Trailhead’s app-wide tools</a></h3>
+<p>Listing 10.2 is the component that gives Trailhead its four app-wide tools. It renders nothing. It is mounted once, in the layout route, so the tools live as long as the app does.</p>
+<figure class="code"><figcaption>Listing 10.2 — App-wide tools with <code>useWebMCP</code> (src/agent/AgentTools.tsx)</figcaption>
+<pre><code class="language-tsx">import { useNavigate } from 'react-router';
+import { useWebMCP } from 'usewebmcp';
+import { addToCartSchema, addToCartTool, getCartTool } from './cart-tools';
+import { compareProductsSchema, compareProductsTool } from './compare-products';
+import { searchProductsSchema, searchProductsTool } from './search-products';
+
+// App-wide tools. Mounted once in the layout, so they live as long as the app.
+export function AgentTools() {
+  const navigate = useNavigate();
+
+  useWebMCP({
+    name: 'search_products',
+    description: 'Search the Trailhead catalog of outdoor gear. Returns matching products with SKU, name, price in NOK, rating and stock status.',
+    inputSchema: searchProductsSchema,
+    annotations: { readOnlyHint: true },
+    execute: searchProductsTool,
+  });
+
+  useWebMCP({
+    name: 'compare_products',
+    description: 'Compare 2 to 4 products side by side by price, rating, weight and stock. Also shows the comparison to the user.',
+    inputSchema: compareProductsSchema,
+    annotations: { readOnlyHint: true },
+    execute: (input) =&gt; {
+      const result = compareProductsTool(input);
+      if (!('error' in result)) navigate(`/compare?skus=${input.skus.join(',')}`);
+      return result;
+    },
+  });
+
+  useWebMCP({
+    name: 'add_to_cart',
+    description: 'Add a product to the shopping cart by SKU. Returns the updated item count and total.',
+    inputSchema: addToCartSchema,
+    execute: addToCartTool,
+  });
+
+  useWebMCP({
+    name: 'get_cart',
+    description: 'Read the current shopping cart: lines, item count and total in NOK.',
+    annotations: { readOnlyHint: true },
+    execute: getCartTool,
+  });
+
+  return null;
+}
+</code></pre></figure>
+<p>Compare it with Listing 10.1 and you’ll see the same contract. The hook registers after React commits the component and aborts the registration when it unmounts, so you never manage an <code>AbortController</code> yourself.<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup> It re-registers when the serialized metadata (name, title, description, schema, annotations), <code>enabled</code> or <code>exposedTo</code> changes, and not otherwise. It publishes the latest committed callback with a layout effect, so <code>compare_products</code> always calls the current <code>navigate</code> function without a new registration.<sup class="footnote-ref"><a href="#fn12" id="fnref12:1">12:1</a></sup> When a registration is rejected, for example because another tool already has the name, it logs one <code>console.warn</code> naming the tool and exposes the error as <code>registrationError</code>.<sup class="footnote-ref"><a href="#fn12" id="fnref12:2">12:2</a></sup></p>
+<p>Two details in the listing deserve a closer look.</p>
+<p><strong>Schema-driven types.</strong> The schemas are imported from modules where they are declared <code>as const</code>. With a literal schema, <code>useWebMCP</code> infers the type of the handler’s <code>input</code> from it, using the <code>webmcp-types</code> definitions. That is why <code>input.skus.join(',')</code> in <code>compare_products</code> type-checks: TypeScript knows <code>skus</code> is an array of strings.<sup class="footnote-ref"><a href="#fn12" id="fnref12:3">12:3</a></sup> The inference is only a type. The package says plainly that the schema “is registered as metadata; the hook passes runtime input to the handler without validation or transformation”.<sup class="footnote-ref"><a href="#fn12" id="fnref12:4">12:4</a></sup> The browser doesn’t validate calls either (Chapter 5), so every handler in Trailhead still checks its input in code.</p>
+<p><strong>No <code>inputSchema</code> on <code>get_cart</code>.</strong> A tool that takes no input can leave the schema out. Chromium 156 accepts that, and the hook only passes the member when you set it.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: React packages</p>
+<p>All the React integrations are community or experimental code following a draft specification. <code>usewebmcp</code> moved a whole feature set to another package in its 6.0 release, and shipped four releases in the week before this was written. Chrome’s <code>use-webmcp-tool</code> describes itself as maintained by Chrome and updated with spec changes. Pin exact versions, read the changelog before upgrading, and keep your tool logic out of the hook call so that swapping one hook for another touches a single file.<sup class="footnote-ref"><a href="#fn3" id="fnref3:4">3:4</a></sup> <sup class="footnote-ref"><a href="#fn11" id="fnref11:2">11:2</a></sup></p></aside>
+<h2 id="tools-as-thin-wrappers-not-a-second-app"><a class="anchor-link" href="#tools-as-thin-wrappers-not-a-second-app">Tools as thin wrappers, not a second app</a></h2>
+<p>The easiest way to add tools to an existing app is also the worst: write each tool as a little program of its own. The tool handler fetches products its own way, keeps its own copy of the cart, or, worse, finds the “Add to cart” button and clicks it. You end up with two apps sharing a page. They disagree about rules, they drift apart with every release, and the agent sees a store that behaves differently from the one the person sees.</p>
+<p>The alternative is a strict division of labour. Everything the store does lives in plain modules that know nothing about React or WebMCP. The UI calls them from event handlers. Tools call the same functions from <code>execute</code>. The tool layer is allowed to do only three things: describe the input (the schema), check it (validation), and translate (map the input to a call, and the result to something compact for the model). Figure 10.2 shows the shape.</p>
+<figure class="book-figure"><img decoding="async" src="10-webmcp-in-frameworks/images/figure-10-2.png" alt="Figure 10.2 — One app, two callers. The UI and the agent reach the same functions and the same state; tool files only translate." /></figure>
+<p>Listing 10.3 is <code>search_products</code> written that way. It is the whole file.</p>
+<figure class="code"><figcaption>Listing 10.3 — <code>search_products</code> as a thin wrapper over the catalog (src/agent/search-products.ts)</figcaption>
+<pre><code class="language-ts">// Agent-facing wrapper: a schema, validation in code, one call into the store's own search, a compact result.
+import { CATEGORIES, searchProducts, type Category } from '../catalog';
+
+export const searchProductsSchema = {
+  type: 'object',
+  properties: {
+    query: { type: 'string', description: 'Keywords, for example &quot;down sleeping bag&quot;.' },
+    category: { type: 'string', enum: CATEGORIES, description: 'Optional product category.' },
+    maxPrice: { type: 'number', minimum: 0, description: 'Optional maximum price in NOK.' },
+    inStockOnly: { type: 'boolean', description: 'Only return products that are in stock.' },
+  },
+  required: ['query'],
+  additionalProperties: false,
+} as const;
+
+export function searchProductsTool({ query, category, maxPrice, inStockOnly }: Record&lt;string, unknown&gt;) {
+  if (typeof query !== 'string') return { status: 'error', code: 'INVALID_ARGUMENT', message: 'query must be a string.' };
+  if (category !== undefined &amp;&amp; !CATEGORIES.includes(category as Category)) {
+    return { status: 'error', code: 'INVALID_ARGUMENT', message: `category must be one of: ${CATEGORIES.join(', ')}.` };
+  }
+  if (maxPrice !== undefined &amp;&amp; (typeof maxPrice !== 'number' || maxPrice &lt; 0)) {
+    return { status: 'error', code: 'INVALID_ARGUMENT', message: 'maxPrice must be a non-negative number of NOK.' };
+  }
+  const products = searchProducts({
+    query,
+    category: category as Category | undefined,
+    maxPrice: maxPrice as number | undefined,
+    inStockOnly: inStockOnly === true,
+  });
+  return {
+    products: products.map(({ sku, name, price, rating, inStock }) =&gt; ({ sku, name, price, rating, inStock })),
+  };
+}
+</code></pre></figure>
+<p>The schema follows Chapter 5’s advice: plain types, an <code>enum</code> for the category, a description for every field, <code>additionalProperties: false</code>. The validation repeats the schema’s rules in code, because nothing else enforces them, and returns failures as values the model can act on, in the <code>{ status: 'error', code, message }</code> shape Chapter 6 introduced (Chapter 11 completes the set). The actual work is one call to <code>searchProducts()</code>, the function the search box on the shop page calls on every keystroke. The result is trimmed to what an agent needs to choose a product: no weights, no categories, no image URLs.</p>
+<p><code>compare_products</code> and <code>add_to_cart</code> follow the same pattern in their own files in the repository. <code>add_to_cart</code> rejects quantities outside 1–10 as an <code>error</code> and returns out-of-stock products as <code>refused</code> with the code <code>OUT_OF_STOCK</code> (Chapter 11 explains the difference), then calls <code>cartStore.add()</code>, the same method the “Add to cart” buttons call.</p>
+<h3 id="shared-state-with-an-external-store"><a class="anchor-link" href="#shared-state-with-an-external-store">Shared state with an external store</a></h3>
+<p>“The same method” only helps if there is one cart. In a component-based app, the place where the cart lives decides who can reach it. If it lived in <code>useState</code> inside <code>&lt;CartPage&gt;</code>, a tool registered in the layout couldn’t see it, and it would vanish when the person left the cart page. Trailhead keeps it in a small external store that React subscribes to with <code>useSyncExternalStore</code>, the hook React provides “to subscribe to an external store”.<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup></p>
+<figure class="code"><figcaption>Listing 10.4 — One cart for the buttons and the tools (src/cart-store.ts)</figcaption>
+<pre><code class="language-ts">import { useSyncExternalStore } from 'react';
+import { getProduct, type Price } from './catalog';
+
+export interface CartLine { sku: string; name: string; quantity: number; unitPrice: Price }
+export interface Cart { lines: readonly CartLine[]; itemCount: number; total: Price }
+export interface Order { orderId: string; total: Price; itemCount: number }
+
+let cart: Cart = { lines: [], itemCount: 0, total: { amount: 0, currency: 'NOK' } };
+let lastOrder: Order | null = null;
+let nextOrderNumber = 10001;
+const listeners = new Set&lt;() =&gt; void&gt;();
+
+function commit(lines: CartLine[]): void {
+  cart = {
+    lines,
+    itemCount: lines.reduce((n, l) =&gt; n + l.quantity, 0),
+    total: { amount: lines.reduce((s, l) =&gt; s + l.quantity * l.unitPrice.amount, 0), currency: 'NOK' },
+  };
+  listeners.forEach((notify) =&gt; notify());
+}
+
+// One store, two callers: the page's buttons and the agent's tools.
+export const cartStore = {
+  subscribe(listener: () =&gt; void): () =&gt; void {
+    listeners.add(listener);
+    return () =&gt; listeners.delete(listener);
+  },
+  getSnapshot: (): Cart =&gt; cart,
+  getLastOrder: (): Order | null =&gt; lastOrder,
+
+  add(sku: string, quantity: number): Cart {
+    const product = getProduct(sku);
+    if (!product) throw new Error(`Unknown SKU: ${sku}`);
+    const existing = cart.lines.find((l) =&gt; l.sku === sku);
+    commit(existing
+      ? cart.lines.map((l) =&gt; (l.sku === sku ? { ...l, quantity: l.quantity + quantity } : l))
+      : [...cart.lines, { sku, name: product.name, quantity, unitPrice: product.price }]);
+    return cart;
+  },
+
+  placeOrder(): Order {
+    if (cart.itemCount === 0) throw new Error('The cart is empty.');
+    lastOrder = { orderId: `TH-${nextOrderNumber++}`, total: cart.total, itemCount: cart.itemCount };
+    commit([]);
+    return lastOrder;
+  },
+};
+
+export function useCart(): Cart {
+  return useSyncExternalStore(cartStore.subscribe, cartStore.getSnapshot);
+}
+</code></pre></figure>
+<p>The store is ordinary TypeScript. <code>add()</code> and <code>placeOrder()</code> update a snapshot and notify subscribers. <code>useCart()</code> lets any component read the snapshot and re-render when it changes. Because the agent’s <code>add_to_cart</code> goes through <code>cartStore.add()</code>, the header’s “Cart (2)” updates the moment the tool runs, with no extra code. The tests check both directions: an agent’s <code>add_to_cart</code> updates the header, and an item the person adds with a click shows up in the agent’s next <code>get_cart</code>.</p>
+<p>You can use whatever state library your app already has. What matters is that the state a tool needs doesn’t belong to a component that might unmount.</p>
+<h2 id="routing-and-per-view-tool-sets"><a class="anchor-link" href="#routing-and-per-view-tool-sets">Routing and per-view tool sets</a></h2>
+<p>In a single-page app, a route change replaces components without replacing the document. Tools registered by those components come and go with them, and the browser fires <code>toolchange</code> each time. That gives you a natural way to offer view-specific tools: put the hook in the route’s component. Figure 10.1 shows how Trailhead does it, and what the agent sees as the person moves around.</p>
+<figure class="book-figure"><img decoding="async" src="10-webmcp-in-frameworks/images/figure-10-1.png" alt="Figure 10.1 — Tools follow the component tree. Mounting registers a tool, unmounting aborts its signal, and a call already running is not cancelled." /></figure>
+<p>Should you? Chrome’s best-practices page answers both ways in a few lines. It tells you to “manage tool registration”, registering tools “when they’re useful in a certain page state”, and then adds: “Reduce complexity: For most applications, static registration should be the default approach.” It also notes that while there is no maximum number of tools, “each tool takes up part of the context window”, and overlapping tools make it harder for the agent to choose.<sup class="footnote-ref"><a href="#fn1" id="fnref1:1">1:1</a></sup></p>
+<p>Trailhead follows that advice. Search, compare, add to cart and read the cart make sense on every page, so they are registered once. Only <code>checkout</code> is tied to a view, for a reason that has more to do with consent than with tool counts: an order should be placed from the page where the person can see what they’re buying. Listing 10.5 shows the cart page.</p>
+<figure class="code"><figcaption>Listing 10.5 — A view-scoped, consequential tool (src/pages/CartPage.tsx)</figcaption>
+<pre><code class="language-tsx">import { useSyncExternalStore } from 'react';
+import { useWebMCP } from 'usewebmcp';
+import { cartStore, useCart } from '../cart-store';
+import { checkout } from '../checkout';
+
+export function CartPage() {
+  const cart = useCart();
+  const lastOrder = useSyncExternalStore(cartStore.subscribe, cartStore.getLastOrder);
+
+  // A view-scoped, consequential tool: it exists only on this page, and only with items in the cart.
+  useWebMCP({
+    name: 'checkout',
+    description: 'Place the order for everything in the cart. The user must confirm in the page\'s own dialog; nothing is ordered until they click &quot;Place order&quot;. Returns the order ID, or status &quot;cancelled_by_user&quot; if the user declines.',
+    annotations: { consequentialHint: true },
+    enabled: cart.itemCount &gt; 0,
+    execute: (_input, { signal }) =&gt; checkout(signal),
+  });
+
+  return (
+    &lt;section&gt;
+      &lt;h1&gt;Your cart&lt;/h1&gt;
+      {lastOrder &amp;&amp; cart.itemCount === 0 &amp;&amp; (
+        &lt;p className=&quot;notice&quot; data-testid=&quot;order-placed&quot;&gt;Order {lastOrder.orderId} placed. Takk!&lt;/p&gt;
+      )}
+      {cart.itemCount === 0 ? &lt;p&gt;Your cart is empty.&lt;/p&gt; : (
+        &lt;&gt;
+          &lt;ul className=&quot;lines&quot;&gt;
+            {cart.lines.map((l) =&gt; (
+              &lt;li key={l.sku}&gt;{l.quantity} × {l.name} &lt;span&gt;{(l.quantity * l.unitPrice.amount).toLocaleString('nb-NO')} NOK&lt;/span&gt;&lt;/li&gt;
+            ))}
+          &lt;/ul&gt;
+          &lt;p className=&quot;total&quot;&gt;Total: {cart.total.amount.toLocaleString('nb-NO')} NOK&lt;/p&gt;
+          &lt;button type=&quot;button&quot; onClick={() =&gt; void checkout(new AbortController().signal)}&gt;Checkout&lt;/button&gt;
+        &lt;/&gt;
+      )}
+    &lt;/section&gt;
+  );
+}
+</code></pre></figure>
+<p>The tool exists only while <code>&lt;CartPage&gt;</code> is mounted, and <code>enabled: cart.itemCount &gt; 0</code> removes it whenever the cart is empty. The option unregisters the tool without unmounting anything, and re-registers it when the condition becomes true again.<sup class="footnote-ref"><a href="#fn12" id="fnref12:5">12:5</a></sup> So an agent can’t try to check out an empty cart: the tool simply isn’t there. The <code>consequentialHint</code> annotation tells the agent and the browser that calling it has effects in the world (Chapter 6).</p>
+<p>The tool and the “Checkout” button both call <code>checkout()</code>. The button passes a signal that never aborts; the tool passes the execution signal the browser gives every call. That one difference is the subject of the next section.</p>
+<p>The tests walk through Figure 10.1 step by step in Chromium 156: four tools on <code>/</code>, still four on an empty <code>/cart</code>, five once <code>add_to_cart</code> has run, and four again after the person goes back to the shop.</p>
+<h2 id="unregistering-without-breaking-in-flight-calls"><a class="anchor-link" href="#unregistering-without-breaking-in-flight-calls">Unregistering without breaking in-flight calls</a></h2>
+<p>Here is the case that makes framework code different from page scripts. An agent calls <code>checkout</code>. Trailhead opens its confirmation dialog and waits for the person. While the dialog is open, the person presses Back. React Router renders the shop, <code>&lt;CartPage&gt;</code> unmounts, and the hook aborts the registration. What happens to the call?</p>
+<p>The specification is explicit: “Unregistering a tool does not cancel an execution that has already invoked its ToolExecuteCallback, including when the callback itself performs the unregistration. The registration-time signal only controls tool availability, while the execution-time signal controls the lifetime of an specific invocation.”<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup> Chromium 156 behaves that way. In a probe, a tool unregistered 50 milliseconds into a 400-millisecond call disappeared from <code>getTools()</code> at once, and the call still resolved with its value; its execution signal was never aborted.</p>
+<p>So the browser won’t break the call. Your app can. If the pending confirmation lived in <code>&lt;CartPage&gt;</code>’s state, the dialog would unmount with the page, nobody could answer it, and the agent’s call would hang forever, or until the agent gave up. Table 10.3 separates the two signals that are easy to confuse.</p>
+<p><strong>Table 10.3 — The two signals a tool deals with</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Registration signal</th>
+<th>Execution signal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Who creates it</td>
+<td>Your code (the hook does it for you)</td>
+<td>The browser, one per call</td>
+</tr>
+<tr>
+<td>Where you get it</td>
+<td><code>registerTool(tool, { signal })</code></td>
+<td><code>execute(input, { signal })</code></td>
+</tr>
+<tr>
+<td>Aborting it means</td>
+<td>The tool is no longer available</td>
+<td>This call is cancelled</td>
+</tr>
+<tr>
+<td>Typical cause</td>
+<td>Component unmounts, route changes, <code>enabled</code> turns false</td>
+<td>The agent or the person cancels, the agent times out, the caller passes its own signal to <code>executeTool()</code></td>
+</tr>
+<tr>
+<td>What happens to running calls</td>
+<td>Nothing; they finish</td>
+<td>This call should stop and clean up</td>
+</tr>
+</tbody>
+</table></div>
+<p>Sources: WebMCP specification, Draft Community Group Report, 15 October 2026.<sup class="footnote-ref"><a href="#fn2" id="fnref2:3">2:3</a></sup> <sup class="footnote-ref"><a href="#fn15" id="fnref15:1">15:1</a></sup></p>
+<p>The rule that follows is simple: <strong>anything an in-flight call depends on must outlive the component that registered the tool.</strong> Trailhead puts the checkout flow in a module, not a component (Listing 10.6), and the pending question in a store rendered by the layout (Listing 10.7).</p>
+<figure class="code"><figcaption>Listing 10.6 — One checkout path for the button and the tool (src/checkout.ts)</figcaption>
+<pre><code class="language-ts">import { cartStore } from './cart-store';
+import { requestConfirmation } from './confirm-store';
+
+export type CheckoutResult =
+  | { status: 'placed'; orderId: string; total: { amount: number; currency: 'NOK' } }
+  | { status: 'cancelled_by_user'; message: string }
+  | { status: 'error'; code: 'CART_EMPTY'; message: string };
+
+// The one checkout path. The Checkout button and the checkout tool both call it.
+export async function checkout(signal: AbortSignal): Promise&lt;CheckoutResult&gt; {
+  const cart = cartStore.getSnapshot();
+  if (cart.itemCount === 0) {
+    return { status: 'error', code: 'CART_EMPTY', message: 'The cart is empty. Add products with add_to_cart first.' };
+  }
+  const confirmed = await requestConfirmation(
+    'Place this order?',
+    `${cart.itemCount} item(s), ${cart.total.amount.toLocaleString('nb-NO')} NOK in total.`,
+    signal,
+  );
+  if (!confirmed) {
+    return { status: 'cancelled_by_user', message: 'The user declined the order in the confirmation dialog.' };
+  }
+  const order = cartStore.placeOrder();
+  return { status: 'placed', orderId: order.orderId, total: order.total };
+}
+</code></pre></figure>
+<figure class="code"><figcaption>Listing 10.7 — A confirmation that survives navigation and honours cancellation (src/confirm-store.ts)</figcaption>
+<pre><code class="language-ts">import { useSyncExternalStore } from 'react';
+
+export interface PendingConfirmation {
+  id: number;
+  title: string;
+  detail: string;
+  answer: (confirmed: boolean) =&gt; void;
+}
+
+let pending: PendingConfirmation | null = null;
+let nextId = 1;
+const listeners = new Set&lt;() =&gt; void&gt;();
+const emit = () =&gt; listeners.forEach((notify) =&gt; notify());
+
+// Ask the person, in the page's own UI, and wait for their click.
+// The question lives here, not in a route component, so it survives navigation.
+export function requestConfirmation(title: string, detail: string, signal: AbortSignal): Promise&lt;boolean&gt; {
+  return new Promise((resolve, reject) =&gt; {
+    if (signal.aborted) return reject(signal.reason);
+    pending?.answer(false);                // only one question on screen at a time
+    const id = nextId++;
+    const close = () =&gt; {
+      signal.removeEventListener('abort', onAbort);
+      if (pending?.id === id) { pending = null; emit(); }
+    };
+    const onAbort = () =&gt; { close(); reject(signal.reason); };
+    signal.addEventListener('abort', onAbort, { once: true });
+    pending = { id, title, detail, answer: (confirmed) =&gt; { close(); resolve(confirmed); } };
+    emit();
+  });
+}
+
+export function usePendingConfirmation(): PendingConfirmation | null {
+  return useSyncExternalStore(
+    (listener) =&gt; { listeners.add(listener); return () =&gt; listeners.delete(listener); },
+    () =&gt; pending,
+  );
+}
+</code></pre></figure>
+<p><code>requestConfirmation()</code> stores the question in module state, and <code>&lt;ConfirmDialog&gt;</code>, which the layout renders on every route, shows it. The question is tied to the call, not to the page. If the person presses Back, the dialog stays on screen over the shop, and clicking “Place order” resolves the agent’s call with an order ID. The test for exactly that sequence passes in Chromium 156 and against the mock.</p>
+<p>The execution signal is handled the other way round. If it aborts, the dialog closes and the promise rejects with the signal’s reason, so the agent can’t leave a stale question on the person’s screen. In Chromium 156, aborting the signal passed to <code>executeTool()</code> rejects the caller’s promise with an <code>AbortError</code>, aborts the signal the tool received, and fires a <code>toolcancel</code> event at <code>document.modelContext</code>.<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup> The dialog disappears and nothing is ordered.</p>
+<p>Two smaller points complete the picture. First, the hook’s registration signal and the call’s execution signal are independent, so never use one in place of the other. A tool that aborted its work when its component unmounted would turn every navigation into a cancelled order. Second, don’t route a result through the state of the component that registered the tool. A handler that returns its result through the store or the promise, as Listing 10.6 does, works whether that component is still mounted or not.</p>
+<h2 id="state-sync-telling-the-agent-what-changed"><a class="anchor-link" href="#state-sync-telling-the-agent-what-changed">State sync: telling the agent what changed</a></h2>
+<p>An agent works from snapshots. The specification’s non-normative section on page observations describes the browser agent getting “an observation”, an implementation-defined structure containing at least a tool map, and notes that it “often includes screenshots of the page, not just a DOM serialization”.<sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup> Between observations, the agent knows only what it was told. In a component app the page changes constantly, so it’s worth being deliberate about how changes reach the agent. Trailhead uses four channels.</p>
+<p><strong>Return values describe the new state.</strong> <code>add_to_cart</code> doesn’t return <code>&quot;OK&quot;</code>. It returns what was added and the cart’s new item count and total, so the agent can plan its next step without another call. <code>checkout</code> returns a status the agent can act on: <code>placed</code> with an order ID, <code>cancelled_by_user</code> with an explanation, or <code>error</code> with the code <code>CART_EMPTY</code>. Failures use the <code>{ status, code, message }</code> shape that Chapter 11 sets out for the whole book.</p>
+<p><strong>A read-only tool answers “what is the state now?”.</strong> <code>get_cart</code> costs little, can be called at any time, and reflects changes the person made by hand. Chrome’s best practices add a related point: agents may rely on the interface to plan their next steps, so “update the interface state after functions are completed”.<sup class="footnote-ref"><a href="#fn1" id="fnref1:2">1:2</a></sup> Trailhead’s tools change the same store the UI renders, so by the time a tool returns, the screen already matches.</p>
+<p><strong>The tool set itself is information.</strong> When <code>checkout</code> appears or disappears, the browser fires <code>toolchange</code>, and agents and in-page tool consumers that listen for it refresh their list.<sup class="footnote-ref"><a href="#fn5" id="fnref5:2">5:2</a></sup> A tool’s availability tells the agent what is possible now; <code>enabled: cart.itemCount &gt; 0</code> says “there is something to check out” without a word of description.</p>
+<p><strong>Descriptions stay still.</strong> Don’t put live state, such as a cart total or a count of results, into a description. Every change would mean unregistering and registering again, with a <code>toolchange</code> each time, and the model would read the description only when it next observed the page anyway.<sup class="footnote-ref"><a href="#fn5" id="fnref5:3">5:3</a></sup> Put state in results and read tools; reserve re-registration for real changes to what a tool is or does, such as a language switch. The test page for Listing 10.1 shows the difference: three clicks that change state produce zero <code>toolchange</code> events, while switching the description to Norwegian produces an unregistration and a registration.</p>
+<h3 id="and-telling-the-person-what-the-agent-did"><a class="anchor-link" href="#and-telling-the-person-what-the-agent-did">And telling the person what the agent did</a></h3>
+<p>State sync runs the other way too. When an agent adds a sleeping bag to the cart, the person should be able to see that it happened and who did it. The specification now defines two events for this, dispatched at <code>document.modelContext</code>: <code>toolactivated</code>, “when the execution of a tool begins”, and <code>toolcancel</code>, “when the execution of a tool is cancelled”. Each carries the tool’s name in <code>toolName</code>.<sup class="footnote-ref"><a href="#fn16" id="fnref16:1">16:1</a></sup> Listing 10.8 turns them into a small status pill.</p>
+<figure class="code"><figcaption>Listing 10.8 — Showing the person what the agent is doing (src/agent/AgentActivity.tsx)</figcaption>
+<pre><code class="language-tsx">import { useEffect, useState } from 'react';
+
+// Shows the person what the agent just did, using the toolactivated and toolcancel events.
+export function AgentActivity() {
+  const [message, setMessage] = useState&lt;string | null&gt;(null);
+
+  useEffect(() =&gt; {
+    const modelContext = document.modelContext;
+    if (!modelContext) return;
+    let timer: ReturnType&lt;typeof setTimeout&gt; | undefined;
+    const show = (text: string) =&gt; {
+      setMessage(text);
+      clearTimeout(timer);
+      timer = setTimeout(() =&gt; setMessage(null), 4000);
+    };
+    const onActivated = (e: WebMCP.ToolActivatedEvent) =&gt; show(`Agent is using ${e.toolName}`);
+    const onCancel = (e: WebMCP.ToolCancelEvent) =&gt; show(`Agent cancelled ${e.toolName}`);
+    modelContext.addEventListener('toolactivated', onActivated);
+    modelContext.addEventListener('toolcancel', onCancel);
+    return () =&gt; {
+      clearTimeout(timer);
+      modelContext.removeEventListener('toolactivated', onActivated);
+      modelContext.removeEventListener('toolcancel', onCancel);
+    };
+  }, []);
+
+  return message ? &lt;p className=&quot;agent-activity&quot; role=&quot;status&quot;&gt;{message}&lt;/p&gt; : null;
+}
+</code></pre></figure>
+<p>Chromium 156 dispatches both events. <code>toolactivated</code> arrives as a <code>ToolActivatedEvent</code> when a call starts, and <code>toolcancel</code> as a <code>ToolCancelEvent</code> when the caller aborts. Figure 10.3 is a screenshot from the test run: an agent has added two products, the person has opened the cart, and the agent has called <code>checkout</code>. The pill names the tool, and the order waits for the person’s click.</p>
+<figure class="book-figure"><img decoding="async" src="10-webmcp-in-frameworks/images/figure-10-3.png" alt="Figure 10.3 — Trailhead in Chromium 156 with WebMCPTesting, after an agent called checkout. The page’s own dialog asks the person to confirm, and the status pill (bottom right) says which tool the agent is using." /></figure>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: tool events</p>
+<p><code>toolactivated</code> and <code>toolcancel</code> are in the 14 October 2026 draft, and Chromium 156 fires both. There is no matching “completed” event, so a pill like Listing 10.8’s has to fade on a timer, or your own <code>execute</code> wrappers have to report completion. Treat the events as a convenience for the UI, not as the source of truth for what happened.<sup class="footnote-ref"><a href="#fn16" id="fnref16:2">16:2</a></sup></p></aside>
+<h2 id="angular-tools-in-the-injector"><a class="anchor-link" href="#angular-tools-in-the-injector">Angular: tools in the injector</a></h2>
+<p>Angular took a different route to the same place. Its WebMCP support is part of the framework itself, in <code>@angular/core</code> and <code>@angular/forms</code>, rather than a community package. Angular’s guide describes it as experimental support that lets you “easily register tools tied to your application’s dependency injection lifecycle and automatically turn your Signal Forms into AI-ready tools”, and warns that the APIs “are subject to change even outside of major versions”.<sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup> Chrome’s imperative-API page links to the same guide.<sup class="footnote-ref"><a href="#fn8" id="fnref8:1">8:1</a></sup> The examples below were written and tested against Angular 22.2.2, the current release on 14 October 2026, in which every WebMCP function is marked <code>@experimental</code>.<sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup></p>
+<p>Where React ties a tool to a component, Angular ties it to an injector. Three APIs cover the cases:</p>
+<ul>
+<li><code>provideExperimentalWebMcpTools([...])</code> in the application’s providers registers tools for the whole life of the app. Each tool’s <code>execute</code> runs in the injection context of the associated injector, so it can call <code>inject()</code> directly.<sup class="footnote-ref"><a href="#fn18" id="fnref18:1">18:1</a></sup></li>
+<li>The same function in a route’s <code>providers</code> registers tools for that route. Angular’s guide recommends <code>withAutoCleanupInjectors()</code> on the router, because without it route tools “will remain accessible to AI agents even after the user has navigated to a different route”.<sup class="footnote-ref"><a href="#fn18" id="fnref18:2">18:2</a></sup></li>
+<li><code>declareExperimentalWebMcpTool()</code> registers a tool from inside any injection context, such as a service constructor, and unregisters it when that context is destroyed.<sup class="footnote-ref"><a href="#fn18" id="fnref18:3">18:3</a></sup></li>
+</ul>
+<p>Listing 10.9 is Trailhead’s <code>search_products</code> as an Angular app-wide tool. The catalog module is the same file the React app uses; only the wrapper changes.</p>
+<figure class="code"><figcaption>Listing 10.9 — An app-wide tool in the application config (angular/src/app.config.ts)</figcaption>
+<pre><code class="language-ts">import { type ApplicationConfig, inject, provideExperimentalWebMcpTools } from '@angular/core';
+import { provideExperimentalWebMcpForms } from '@angular/forms/signals';
+import { provideRouter, withAutoCleanupInjectors } from '@angular/router';
+import { CatalogService } from './catalog.service';
+import { CATEGORIES } from './catalog';
+import { routes } from './routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes, withAutoCleanupInjectors()),   // route tools go away with their route
+    provideExperimentalWebMcpForms(),                     // lets Signal Forms opt in as tools
+    provideExperimentalWebMcpTools([                      // app-wide: registered for the app's lifetime
+      {
+        name: 'search_products',
+        description: 'Search the Trailhead catalog of outdoor gear. Returns matching products with SKU, name, price in NOK, rating and stock status.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            query: { type: 'string', description: 'Keywords, for example &quot;down sleeping bag&quot;.' },
+            category: { type: 'string', enum: [...CATEGORIES] },
+            maxPrice: { type: 'number', description: 'Optional maximum price in NOK.' },
+          },
+          required: ['query'],
+          additionalProperties: false,
+        },
+        annotations: { readOnlyHint: true },
+        execute: ({ query, category, maxPrice }) =&gt; {
+          if (typeof query !== 'string') return { status: 'error', code: 'INVALID_ARGUMENT', message: 'query must be a string.' };
+          if (category !== undefined &amp;&amp; !CATEGORIES.includes(category)) {
+            return { status: 'error', code: 'INVALID_ARGUMENT', message: `category must be one of: ${CATEGORIES.join(', ')}.` };
+          }
+          return { products: inject(CatalogService).search({ query, category, maxPrice }) };
+        },
+      },
+    ]),
+  ],
+};
+</code></pre></figure>
+<p>The <code>execute</code> function asks the injector for <code>CatalogService</code> at call time. Like <code>usewebmcp</code>, Angular infers the argument types from the schema, which is why <code>category</code> arrives typed as one of the enum’s strings, and like <code>usewebmcp</code> it doesn’t check them. The guide is clear that inputs “may not be validated to match the schema”, and recommends validating arguments explicitly.<sup class="footnote-ref"><a href="#fn18" id="fnref18:4">18:4</a></sup> The handler also receives a second argument with the call’s <code>signal</code>, a change Angular made in August 2026 so that tools can handle cancellation.<sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup></p>
+<p>Listing 10.10 adds a route-scoped tool.</p>
+<figure class="code"><figcaption>Listing 10.10 — A tool that lives with its route (angular/src/routes.ts)</figcaption>
+<pre><code class="language-ts">import { inject, provideExperimentalWebMcpTools } from '@angular/core';
+import type { Routes } from '@angular/router';
+import { CartService } from './cart.service';
+import { CartPage, ShopPage } from './pages';
+import { StockAlertPage } from './stock-alert';
+
+export const routes: Routes = [
+  { path: '', component: ShopPage },
+  {
+    path: 'cart',
+    component: CartPage,
+    providers: [
+      provideExperimentalWebMcpTools([   // registered while /cart is active
+        {
+          name: 'get_cart',
+          description: 'Read the current shopping cart: lines and total in NOK.',
+          inputSchema: { type: 'object', properties: {} },
+          annotations: { readOnlyHint: true },
+          execute: () =&gt; inject(CartService).snapshot(),
+        },
+      ]),
+    ],
+  },
+  { path: 'stock-alert', component: StockAlertPage },
+];
+</code></pre></figure>
+<p>When the router activates <code>/cart</code>, it creates the route’s environment injector and the tool registers. With <code>withAutoCleanupInjectors()</code> (Listing 10.9), leaving the route destroys that injector and the tool unregisters. In Chromium 156 with WebMCPTesting, <code>get_cart</code> appears when the test clicks the Cart link and disappears again when it clicks Shop. Annotations such as <code>readOnlyHint</code> arrived in Angular’s API in September 2026, and <code>consequentialHint</code> a few days later.<sup class="footnote-ref"><a href="#fn20" id="fnref20:1">20:1</a></sup></p>
+<h3 id="signal-forms-as-tools"><a class="anchor-link" href="#signal-forms-as-tools">Signal Forms as tools</a></h3>
+<p>The most distinctive part of Angular’s support turns an existing form into a tool. Add <code>provideExperimentalWebMcpForms()</code> to the providers (Listing 10.9 already does), then pass <code>experimentalWebMcpTool</code> with a name and description when you create a Signal Form. Angular infers the JSON Schema from the form’s model, marks fields with a <code>required</code> validator as required, and connects the tool to the form’s validation and submission, so “the agent will observe any validation errors triggered by its inputs or any failures which happen during submission”.<sup class="footnote-ref"><a href="#fn18" id="fnref18:5">18:5</a></sup> Listing 10.11 gives Trailhead a back-in-stock alert this way.</p>
+<figure class="code"><figcaption>Listing 10.11 — A Signal Form that is also a tool (angular/src/stock-alert.ts)</figcaption>
+<pre><code class="language-ts">import { Component, inject, signal } from '@angular/core';
+import { email, form, FormField, min, required } from '@angular/forms/signals';
+import { StockAlertService } from './stock-alert.service';
+
+@Component({
+  selector: 'th-stock-alert',
+  imports: [FormField],
+  template: `
+    &lt;h1&gt;Tell me when it's back&lt;/h1&gt;
+    &lt;label&gt;Email &lt;input type=&quot;email&quot; [formField]=&quot;alertForm.email&quot; /&gt;&lt;/label&gt;
+    &lt;label&gt;SKU &lt;input [formField]=&quot;alertForm.sku&quot; /&gt;&lt;/label&gt;
+    &lt;label&gt;Quantity &lt;input type=&quot;number&quot; [formField]=&quot;alertForm.quantity&quot; /&gt;&lt;/label&gt;
+  `,
+})
+export class StockAlertPage {
+  private readonly alerts = inject(StockAlertService);
+  private readonly model = signal({ email: '', sku: '', quantity: 1 });   // concrete initial values
+
+  readonly alertForm = form(
+    this.model,
+    (f) =&gt; {
+      required(f.email, { message: 'An email address is required.' });
+      email(f.email, { message: 'Enter a valid email address.' });
+      required(f.sku, { message: 'Give the product SKU from search_products.' });
+      min(f.quantity, 1, { message: 'Quantity must be at least 1.' });
+    },
+    {
+      experimentalWebMcpTool: {
+        name: 'request_stock_alert',
+        description: 'Ask Trailhead to email the user when an out-of-stock product is back in stock.',
+      },
+      submission: {
+        action: async (field) =&gt; {
+          await this.alerts.subscribe(field().value());
+          return undefined;
+        },
+      },
+    },
+  );
+}
+</code></pre></figure>
+<p>This is what Chromium 156 reported for that form. <code>getTools()</code> listed <code>request_stock_alert</code> with this inferred schema:</p>
+<pre><code class="language-json">{&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;email&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;sku&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;quantity&quot;:{&quot;type&quot;:&quot;number&quot;}},&quot;required&quot;:[&quot;email&quot;,&quot;sku&quot;],&quot;additionalProperties&quot;:false}
+</code></pre>
+<p>A call with <code>email: &quot;not-an-email&quot;</code> came back as <code>{&quot;content&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;Form submission failed:\nemail: Enter a valid email address.&quot;}]}</code> and saved nothing. A valid call returned “Form submitted successfully.”, ran the submission action, and filled the visible form with the agent’s values, so the person could see what had been submitted for them.</p>
+<p>Three constraints come with the convenience, all from Angular’s guide. The schema is inferred from the model’s initial value, so every field needs a concrete starting value (<code>''</code>, <code>0</code>, <code>false</code>) and arrays need at least one element. Async validators don’t run for tool calls; handle those checks in the submission action.<sup class="footnote-ref"><a href="#fn18" id="fnref18:6">18:6</a></sup> And because WebMCP rejects duplicate names, a component that registers a tool, including a form-backed one, must never be on the page more than once at a time. Angular recommends putting tools in application providers, route providers or root services wherever possible.<sup class="footnote-ref"><a href="#fn18" id="fnref18:7">18:7</a></sup></p>
+<p>Notice also what the inferred schema lacks: descriptions. The field names are all the model gets. For a form that agents will use often, a hand-written schema (Listing 10.9’s style) with a description for every field may be worth the duplication; Chapter 11 looks at why.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: Angular’s WebMCP APIs</p>
+<p>Every function used in this section carries “Experimental” in its name and an <code>@experimental</code> tag, and the guide warns they may change outside major versions. Their history shows how quickly they move: registration became asynchronous in July 2026, tools gained a cancellation signal in August, and annotations arrived in September.<sup class="footnote-ref"><a href="#fn18" id="fnref18:8">18:8</a></sup> <sup class="footnote-ref"><a href="#fn20" id="fnref20:2">20:2</a></sup></p></aside>
+<h2 id="server-rendering-and-other-frameworks"><a class="anchor-link" href="#server-rendering-and-other-frameworks">Server rendering and other frameworks</a></h2>
+<p>Two more situations are worth a paragraph each.</p>
+<p><strong>Server rendering.</strong> <code>document.modelContext</code> exists only in a browser, and only in a secure context. The MCP-B framework guide’s advice holds for any server-rendered app: mount tool hooks only in client-rendered components, and run anything that touches <code>document</code>, <code>window</code> or page state on the client. <code>usewebmcp</code> keeps its <code>'use client'</code> directive and doesn’t register tools during a server render.<sup class="footnote-ref"><a href="#fn13" id="fnref13:1">13:1</a></sup></p>
+<p><strong>Other frameworks.</strong> This chapter covers the two frameworks that Chrome’s imperative-API page names.<sup class="footnote-ref"><a href="#fn8" id="fnref8:2">8:2</a></sup> The MCP-B guide suggests using the WebMCP API “with that framework’s native lifecycle guidance” for everything else.<sup class="footnote-ref"><a href="#fn13" id="fnref13:2">13:2</a></sup> The five jobs at the start of this chapter are that guidance in framework-neutral form: detect, register on mount, abort on unmount, re-register only on metadata changes, and call through to current state. Any framework with a mount hook and a cleanup hook can do all five, and Listing 10.1 shows the shape to copy.</p>
+<h2 id="trailhead-so-far"><a class="anchor-link" href="#trailhead-so-far">Trailhead so far</a></h2>
+<p>Trailhead now has five tools, organised the way Table 10.1 shows: four registered once for the whole app and one tied to the cart route and to the cart having items. Every tool is a thin wrapper over the same modules the UI uses. The cart lives in a store outside the component tree, and the checkout confirmation lives in another, so neither can be lost when a component unmounts. The layout shows the person which tool the agent is using. The Angular listings show the same tools expressed through Angular’s injector and Signal Forms.</p>
+<p>In the repository, 11 Playwright tests cover the React app and 5 cover the Angular listings. All of them passed against both the mock and Chromium 156 (156.0.8078.4) with WebMCPTesting on 14 October 2026.<sup class="footnote-ref"><a href="#fn4" id="fnref4:1">4:1</a></sup></p>
+<p>Chapter 11 steps back from mechanics to design. Trailhead’s tools work, but are they the right tools? How many should a store have, how coarse should they be, and what should they say and return so that a model picks the right one and uses it well?</p>
+<h2 id="chapter-summary"><a class="anchor-link" href="#chapter-summary">Chapter summary</a></h2>
+<ul>
+<li>In a framework, the WebMCP API is unchanged; what changes is who calls it and when. A component or injector that offers a tool must detect support, register on mount, unregister on unmount, re-register only when the agent-facing metadata changes, and run calls against current state.</li>
+<li>The trick behind every hook is a stable registered function that delegates to the latest render’s <code>execute</code>. Re-registering on every render churns <code>toolchange</code> events; registering once without delegation gives calls stale state.</li>
+<li>React’s StrictMode registers, aborts and registers again in one tick. That works because abort steps run synchronously: in Chromium 156 the first promise rejects with <code>AbortError</code> and the tool is listed once. Test against a real browser as well as a mock; Chromium rejects <code>inputSchema: null</code> with a <code>TypeError</code>, which a lenient mock missed.</li>
+<li><code>usewebmcp</code> 6.0.3 is the React hook Chrome’s documentation points to. It infers input types from <code>as const</code> schemas but doesn’t validate, passes results through (turning <code>undefined</code> into <code>null</code>), supports <code>enabled</code> and <code>exposedTo</code>, and moved Zod, <code>outputSchema</code> and MCP formatting to <code>@mcp-b/react-webmcp</code> in version 6. Pin versions.</li>
+<li>Keep tools thin: schema, validation and translation over the app logic the UI already uses. Keep shared state in stores outside the component tree, so tools registered anywhere see the same cart as the person.</li>
+<li>Let the route decide view-specific tools, but make static registration the default, as Chrome recommends. Trailhead ties only <code>checkout</code> to a view, and <code>enabled</code> hides it while the cart is empty.</li>
+<li>Unregistering never cancels a running call; only the execution signal does. Anything an in-flight call depends on, such as a pending confirmation, must outlive the component that registered the tool. Honour the execution signal by closing dialogs and rejecting.</li>
+<li>Tell the agent what changed through return values, read-only tools and the tool set itself, and keep descriptions free of live state. Tell the person what the agent did with <code>toolactivated</code> and <code>toolcancel</code>, which Chromium 156 fires.</li>
+<li>Angular 22.2.2 ships experimental WebMCP support: <code>provideExperimentalWebMcpTools()</code> for app-wide and route-scoped tools (with <code>withAutoCleanupInjectors()</code>), <code>declareExperimentalWebMcpTool()</code> for services, and Signal Forms that become tools with an inferred schema and validation errors returned to the agent.</li>
+</ul>
+<h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>Chrome for Developers, “WebMCP best practices” (published 18 May 2026), sections “Create a tool strategy” (“Manage tool registration”, “Reduce complexity”) and “Prioritize reliability” (“Update the interface state after functions are completed”). <a href="https://developer.chrome.com/docs/ai/webmcp/best-practices">https://developer.chrome.com/docs/ai/webmcp/best-practices</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a> <a href="#fnref1:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026: §4.2 the <code>ModelContext</code> interface (<code>registerTool()</code>, <code>getTools()</code>, <code>executeTool()</code>, <code>ontoolchange</code>, <code>ontoolactivated</code>, <code>ontoolcancel</code>), §4.2.3 <code>ModelContextRegisterToolOptions</code> (“An AbortSignal that unregisters the tool when aborted”) and the abort steps in <code>registerTool()</code>. <a href="https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool">https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool</a> <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a> <a href="#fnref2:2" class="footnote-backref">↩︎</a> <a href="#fnref2:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>npm registry entries read on 14 October 2026: <code>usewebmcp</code> 6.0.3 (published 14 October 2026; 6.0.0 published 8 October, 6.0.1 on 12 October, 6.0.2 on 13 October; repository WebMCP-org/npm-packages; MIT; peer dependency React ^18 || ^19), <code>@mcp-b/react-webmcp</code> 6.0.3, <code>@mcp-b/webmcp-polyfill</code> 6.0.3, <code>react</code> 19.3.1, <code>react-router</code> 8.4.0, <code>vite</code> 8.3.4, <code>@vitejs/plugin-react</code> 6.1.2, <code>typescript</code> 7.0.2. <a href="https://www.npmjs.com/package/usewebmcp">https://www.npmjs.com/package/usewebmcp</a> <a href="#fnref3" class="footnote-backref">↩︎</a> <a href="#fnref3:1" class="footnote-backref">↩︎</a> <a href="#fnref3:2" class="footnote-backref">↩︎</a> <a href="#fnref3:3" class="footnote-backref">↩︎</a> <a href="#fnref3:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>The book’s companion repository, folder <code>chapters/10-webmcp-in-frameworks/</code> (<code>trailhead-react/tests/run-tests.mjs</code> and <code>angular/tests/run-tests.mjs</code>; Playwright 1.64.1 with Chromium 156.0.8078.4). <a href="https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/10-webmcp-in-frameworks">https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/10-webmcp-in-frameworks</a> <a href="#fnref4" class="footnote-backref">↩︎</a> <a href="#fnref4:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>WebMCP explainer (README), “Best Practices”, “Keeping agent-facing parts of a tool definition updated” (“A tool’s implementation can by dynamic”, “Re-register changed agent-facing metadata”, “Validation at execution time”). <a href="https://github.com/webmachinelearning/webmcp#best-practices">https://github.com/webmachinelearning/webmcp#best-practices</a> <a href="#fnref5" class="footnote-backref">↩︎</a> <a href="#fnref5:1" class="footnote-backref">↩︎</a> <a href="#fnref5:2" class="footnote-backref">↩︎</a> <a href="#fnref5:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>React documentation, “&lt;StrictMode&gt;”: “React will also run one extra setup+cleanup cycle in development for every Effect.” <a href="https://react.dev/reference/react/StrictMode">https://react.dev/reference/react/StrictMode</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>WebMCP specification, §4.2.1 <code>ModelContextTool</code> dictionary (<code>object inputSchema</code>), read with Web IDL’s dictionary conversion rules. <a href="https://webmachinelearning.github.io/webmcp/#dictdef-modelcontexttool">https://webmachinelearning.github.io/webmcp/#dictdef-modelcontexttool</a> <a href="#fnref7" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>Chrome for Developers, “Imperative API” (published 18 May 2026, last updated 21 September 2026), sections “React support” and “Angular support”. <a href="https://developer.chrome.com/docs/ai/webmcp/imperative-api">https://developer.chrome.com/docs/ai/webmcp/imperative-api</a> <a href="#fnref8" class="footnote-backref">↩︎</a> <a href="#fnref8:1" class="footnote-backref">↩︎</a> <a href="#fnref8:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p><code>usewebmcp</code> README, version 6.0.3 (sections “Input schemas”, “State and lifecycle”, “Upgrading from 5.x”), as published in the npm package. <a href="https://www.npmjs.com/package/usewebmcp">https://www.npmjs.com/package/usewebmcp</a> <a href="#fnref9" class="footnote-backref">↩︎</a> <a href="#fnref9:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p><code>webmcp-types</code> on npm (version 0.1.10, published 28 September 2026). <a href="https://www.npmjs.com/package/webmcp-types">https://www.npmjs.com/package/webmcp-types</a> <a href="#fnref10" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>GoogleChromeLabs, <code>use-webmcp-tool</code> README (“This is maintained by Chrome, and will be updated with any spec changes”; return-value normalization), and the npm entry for version 0.3.0. <a href="https://github.com/GoogleChromeLabs/use-webmcp-tool">https://github.com/GoogleChromeLabs/use-webmcp-tool</a> <a href="#fnref11" class="footnote-backref">↩︎</a> <a href="#fnref11:1" class="footnote-backref">↩︎</a> <a href="#fnref11:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>MCP-B documentation, “usewebmcp reference” (sections “Hook”, “Config fields”, “JSON Schema and inference”, “Re-registration triggers”, “Results”). <a href="https://docs.mcp-b.ai/packages/usewebmcp/reference">https://docs.mcp-b.ai/packages/usewebmcp/reference</a> <a href="#fnref12" class="footnote-backref">↩︎</a> <a href="#fnref12:1" class="footnote-backref">↩︎</a> <a href="#fnref12:2" class="footnote-backref">↩︎</a> <a href="#fnref12:3" class="footnote-backref">↩︎</a> <a href="#fnref12:4" class="footnote-backref">↩︎</a> <a href="#fnref12:5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>MCP-B documentation, “Integrate with your framework” (sections “Choose a React hook”, “Handle server rendering”, “Use framework-owned guidance elsewhere”). <a href="https://docs.mcp-b.ai/how-to/frameworks">https://docs.mcp-b.ai/how-to/frameworks</a> <a href="#fnref13" class="footnote-backref">↩︎</a> <a href="#fnref13:1" class="footnote-backref">↩︎</a> <a href="#fnref13:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>React documentation, “useSyncExternalStore”. <a href="https://react.dev/reference/react/useSyncExternalStore">https://react.dev/reference/react/useSyncExternalStore</a> <a href="#fnref14" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>WebMCP specification, §3, “unregister a tool”, including the note on executions already in progress. <a href="https://webmachinelearning.github.io/webmcp/#model-context-unregister-a-tool">https://webmachinelearning.github.io/webmcp/#model-context-unregister-a-tool</a> <a href="#fnref15" class="footnote-backref">↩︎</a> <a href="#fnref15:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn16" class="footnote-item"><p>WebMCP specification, §4.3 Events: §4.3.1 <code>ToolActivatedEvent</code> and §4.3.2 <code>ToolCancelEvent</code>; §4.2.5 <code>ModelContextExecuteToolOptions</code> (“An AbortSignal that can be used to cancel the execution of the tool”). <a href="https://webmachinelearning.github.io/webmcp/#events">https://webmachinelearning.github.io/webmcp/#events</a> <a href="#fnref16" class="footnote-backref">↩︎</a> <a href="#fnref16:1" class="footnote-backref">↩︎</a> <a href="#fnref16:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn17" class="footnote-item"><p>WebMCP specification, §5.2 Page observations (non-normative). <a href="https://webmachinelearning.github.io/webmcp/#interaction-with-agents">https://webmachinelearning.github.io/webmcp/#interaction-with-agents</a> <a href="#fnref17" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn18" class="footnote-item"><p>Angular documentation, “WebMCP” (source <code>adev/src/content/ai/webmcp.md</code>, added 20 May 2026, last changed 10 October 2026), sections “Provide tools for the application”, “Provide tools for a route”, “Provide tools within services”, “Implicit tools in Signal Forms” and “Best practices”. <a href="https://angular.dev/ai/webmcp">https://angular.dev/ai/webmcp</a> <a href="#fnref18" class="footnote-backref">↩︎</a> <a href="#fnref18:1" class="footnote-backref">↩︎</a> <a href="#fnref18:2" class="footnote-backref">↩︎</a> <a href="#fnref18:3" class="footnote-backref">↩︎</a> <a href="#fnref18:4" class="footnote-backref">↩︎</a> <a href="#fnref18:5" class="footnote-backref">↩︎</a> <a href="#fnref18:6" class="footnote-backref">↩︎</a> <a href="#fnref18:7" class="footnote-backref">↩︎</a> <a href="#fnref18:8" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn19" class="footnote-item"><p><code>@angular/core</code> and <code>@angular/forms</code> 22.2.2 on npm (published 8 October 2026); type definitions for <code>provideExperimentalWebMcpTools</code>, <code>declareExperimentalWebMcpTool</code> (<code>@experimental</code>), the tool <code>Annotations</code> interface (<code>@experimental 22.2</code>) and the <code>experimentalWebMcpTool</code> form option. <a href="https://www.npmjs.com/package/@angular/core">https://www.npmjs.com/package/@angular/core</a> <a href="#fnref19" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn20" class="footnote-item"><p>angular/angular pull requests #69720 “Update WebMCP tool registration to be asynchronous” (merged 10 July 2026), #70258 “refactor(core): pass AbortSignal to WebMCP tools to handle cancellation” (merged 19 August 2026), #70496 “WebMCP annotations” (merged 1 September 2026) and #70654 “Add WebMCP <code>consequentialHint</code> annotation” (merged 10 September 2026). <a href="https://github.com/angular/angular/pull/70258">https://github.com/angular/angular/pull/70258</a> <a href="#fnref20" class="footnote-backref">↩︎</a> <a href="#fnref20:1" class="footnote-backref">↩︎</a> <a href="#fnref20:2" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="09-first-webmcp-app.html">← Chapter 9: Your First WebMCP App, End to End</a>
+          <a class="pager-link" rel="next" href="11-designing-tools.html">Chapter 11: Designing Tools Agents Can Actually Use →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Appendix C: Resources and Further Reading — Tools, Not Clicks</title>
+  <meta name="description" content="Appendix C of Tools, Not Clicks: Building Agent-Ready Websites with WebMCP by Maxim Salnikov.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Appendix C: Resources and Further Reading — Tools, Not Clicks">
+  <meta property="og:description" content="Appendix C of Tools, Not Clicks: Building Agent-Ready Websites with WebMCP by Maxim Salnikov.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page appendix-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="../chapters/01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="../chapters/02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="../chapters/03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="../chapters/04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="../chapters/05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="../chapters/06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="../chapters/07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="../chapters/08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="../chapters/09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="../chapters/10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="../chapters/11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="../chapters/12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="../chapters/13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="../chapters/14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="../chapters/15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="../chapters/16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="../chapters/17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a class="is-current" aria-current="page" href="c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / <a href="../index.html#part-appendices">Appendices</a> / Appendix C <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">appendix:</span> <span class="fm-v">C</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">Back matter</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">16 min</span></p>
+        <h1>Appendix C: Resources and Further Reading</h1>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#c1-the-specification-and-its-repository">C.1 The specification and its repository</a></li><li><a href="#c2-chrome">C.2 Chrome</a></li><li><a href="#c3-microsoft-edge">C.3 Microsoft Edge</a></li><li><a href="#c4-standards-positions-reviews-and-process">C.4 Standards positions, reviews and process</a></li><li><a href="#c5-the-model-context-protocol">C.5 The Model Context Protocol</a></li><li><a href="#c6-packages-the-chapters-use">C.6 Packages the chapters use</a></li><li><a href="#c7-community-projects-and-framework-guides">C.7 Community projects and framework guides</a></li><li><a href="#c8-web-platform-background">C.8 Web platform background</a></li><li><a href="#c9-the-books-own-repositories">C.9 The book’s own repositories</a></li><li><a href="#c10-how-to-track-changes">C.10 How to track changes</a></li><li><a href="#c11-summary">C.11 Summary</a></li><li><a href="#notes">Notes</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“Community Groups are for incubation. The Recommendation Track is for standardization.”</em></p>
+<p>— W3C, Community and Business Groups FAQ<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<p>WebMCP will keep moving after this book is printed, so this appendix is less a reading list than a map of where to look. It lists the primary sources the chapters rely on, grouped by who publishes them, with one line on what each is good for. It then maps the folders of the book’s demos repository to the chapters they belong to, and ends with a short routine for tracking changes yourself.</p>
+<p>Every URL here was fetched on 14 October 2026 and fetched again for the technical review on 15 October 2026, and answered with a working page. Dates in the annotations are the dates printed on the pages themselves. A few npm pages served a bot check to my script; for those I give the npm registry’s own record of the package, which is what <code>npm install</code> reads.<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup></p>
+<h2 id="c1-the-specification-and-its-repository"><a class="anchor-link" href="#c1-the-specification-and-its-repository">C.1 The specification and its repository</a></h2>
+<ul>
+<li><strong>WebMCP specification (Draft Community Group Report).</strong> The normative text: the IDL, the algorithms, the security and privacy sections. Check the date under the title first; it read 15 October 2026 when this appendix was last checked. <em>Chapters 4–7; Appendix A.</em>
+<a href="https://webmachinelearning.github.io/webmcp/">https://webmachinelearning.github.io/webmcp/</a></li>
+<li><strong>The webmcp repository and explainer.</strong> The README is the explainer: goals, use cases, open questions and the “Future Exploration” notes. <em>Chapters 4 and 17.</em>
+<a href="https://github.com/webmachinelearning/webmcp">https://github.com/webmachinelearning/webmcp</a></li>
+<li><strong>Issues.</strong> Where design questions are argued and resolved. Chapter 17 explains how to read an issue thread and which ones to watch.
+<a href="https://github.com/webmachinelearning/webmcp/issues">https://github.com/webmachinelearning/webmcp/issues</a></li>
+<li><strong>Pull requests.</strong> Proposed spec changes. A merged pull request is the moment something becomes spec text, or leaves it.
+<a href="https://github.com/webmachinelearning/webmcp/pulls">https://github.com/webmachinelearning/webmcp/pulls</a></li>
+<li><strong>Commit history.</strong> The fastest way to date a change. The move of the <code>modelContext</code> getter from <code>Navigator</code> to <code>Document</code> (27 May 2026), the removal of <code>provideContext()</code> (5 March 2026) and of the declarative API (8 October 2026) are all single commits here. <em>Appendix D.</em>
+<a href="https://github.com/webmachinelearning/webmcp/commits/main">https://github.com/webmachinelearning/webmcp/commits/main</a></li>
+<li><strong>Implementation status.</strong> The project’s own list of browsers and agents that support WebMCP, from Chrome’s origin trial to Brave Leo and ChatGPT Desktop. <em>Chapter 15.</em>
+<a href="https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md">https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md</a></li>
+<li><strong>Declarative API explainer.</strong> Where the HTML form attributes went when they left the spec. <em>Chapter 8.</em>
+<a href="https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md">https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md</a></li>
+<li><strong>Continuations explainer.</strong> The proposal for returning a tool’s result across a navigation. <em>Chapter 17.</em>
+<a href="https://github.com/webmachinelearning/webmcp/blob/main/continuations-explainer.md">https://github.com/webmachinelearning/webmcp/blob/main/continuations-explainer.md</a></li>
+<li><strong>WebMCP for Service Workers.</strong> A supplementary explainer, first published 28 August 2025, about tools for sites that aren’t open. <em>Chapter 17.</em>
+<a href="https://github.com/webmachinelearning/webmcp/blob/main/docs/service-workers.md">https://github.com/webmachinelearning/webmcp/blob/main/docs/service-workers.md</a></li>
+<li><strong>Contributing guide.</strong> How to take part: the group works under the W3C Community License Agreement, and substantive contributions require joining the Community Group.
+<a href="https://github.com/webmachinelearning/webmcp/blob/main/CONTRIBUTING.md">https://github.com/webmachinelearning/webmcp/blob/main/CONTRIBUTING.md</a></li>
+<li><strong>Web Machine Learning Community Group.</strong> The group that publishes the draft, with its charter and participant list. <em>Chapter 4.</em>
+<a href="https://www.w3.org/community/webmachinelearning/">https://www.w3.org/community/webmachinelearning/</a></li>
+<li><strong>web-platform-tests for WebMCP.</strong> The shared conformance tests the draft links to. Reading a test is often the quickest way to learn what a browser actually does. <em>Chapters 6 and 14.</em>
+<a href="https://github.com/web-platform-tests/wpt/tree/master/webmcp">https://github.com/web-platform-tests/wpt/tree/master/webmcp</a></li>
+<li><strong>wpt.fyi results.</strong> The same tests, run in every browser’s nightly builds.
+<a href="https://wpt.fyi/results/webmcp">https://wpt.fyi/results/webmcp</a></li>
+</ul>
+<h2 id="c2-chrome"><a class="anchor-link" href="#c2-chrome">C.2 Chrome</a></h2>
+<ul>
+<li><strong>WebMCP overview</strong> (published 18 May 2026, updated 7 October 2026). Chrome’s introduction, the definition of <em>actuation</em>, and how to turn on <code>chrome://flags/#enable-webmcp-testing</code>. <em>Chapters 1, 4 and 9.</em>
+<a href="https://developer.chrome.com/docs/ai/webmcp">https://developer.chrome.com/docs/ai/webmcp</a></li>
+<li><strong>Imperative API</strong> (updated 21 September 2026). Chrome’s guide to <code>registerTool()</code> and friends. <em>Chapters 5 and 6.</em>
+<a href="https://developer.chrome.com/docs/ai/webmcp/imperative-api">https://developer.chrome.com/docs/ai/webmcp/imperative-api</a></li>
+<li><strong>Declarative API</strong> (updated 25 September 2026). The form attributes, events and CSS pseudo-classes that still ship in the trial. <em>Chapter 8.</em>
+<a href="https://developer.chrome.com/docs/ai/webmcp/declarative-api">https://developer.chrome.com/docs/ai/webmcp/declarative-api</a></li>
+<li><strong>When to use WebMCP and MCP</strong> (updated 19 May 2026). Chrome’s side-by-side of the two. <em>Chapters 4 and 16.</em>
+<a href="https://developer.chrome.com/docs/ai/webmcp/compare-mcp">https://developer.chrome.com/docs/ai/webmcp/compare-mcp</a></li>
+<li><strong>WebMCP best practices</strong> (18 May 2026). Naming, descriptions and tool granularity. <em>Chapter 11.</em>
+<a href="https://developer.chrome.com/docs/ai/webmcp/best-practices">https://developer.chrome.com/docs/ai/webmcp/best-practices</a></li>
+<li><strong>Build your user’s agentic workflows with WebMCP tools</strong> (26 August 2026). Chrome’s guide to designing tools around the tasks people actually do. <em>Chapter 11.</em>
+<a href="https://developer.chrome.com/docs/ai/webmcp/build-tools">https://developer.chrome.com/docs/ai/webmcp/build-tools</a></li>
+<li><strong>How WebMCP fits in user journeys</strong> (18 May 2026). Chrome’s use cases. <em>Chapters 16 and 17.</em>
+<a href="https://developer.chrome.com/docs/ai/webmcp/use-cases">https://developer.chrome.com/docs/ai/webmcp/use-cases</a></li>
+<li><strong>WebMCP tool security</strong> (updated 1 September 2026). Guidance for site authors, including the character budgets, plus the <code>requestUserInteraction()</code> text the draft no longer has. <em>Chapters 11–13.</em>
+<a href="https://developer.chrome.com/docs/ai/webmcp/secure-tools">https://developer.chrome.com/docs/ai/webmcp/secure-tools</a></li>
+<li><strong>Agent security considerations for WebMCP</strong> (9 June 2026). The same topic from the agent builder’s side. <em>Chapter 12.</em>
+<a href="https://developer.chrome.com/docs/agents/security">https://developer.chrome.com/docs/agents/security</a></li>
+<li><strong>Test WebMCP with Evals</strong> (updated 28 May 2026). Chrome’s eval workflow. <em>Chapter 14.</em>
+<a href="https://developer.chrome.com/docs/ai/webmcp/evals">https://developer.chrome.com/docs/ai/webmcp/evals</a></li>
+<li><strong>Debug WebMCP tools.</strong> The DevTools WebMCP pane: available tools, invoked tools and command-line flags. <em>Chapters 9 and 14.</em>
+<a href="https://developer.chrome.com/docs/devtools/application/webmcp">https://developer.chrome.com/docs/devtools/application/webmcp</a></li>
+<li><strong>Chrome DevTools Protocol: WebMCP domain.</strong> The commands and events automation uses to list and invoke tools (<code>WebMCP.enable</code>, <code>WebMCP.invokeTool</code>, <code>WebMCP.toolsAdded</code>). <em>Chapter 14.</em>
+<a href="https://chromedevtools.github.io/devtools-protocol/tot/WebMCP/">https://chromedevtools.github.io/devtools-protocol/tot/WebMCP/</a></li>
+<li><strong>Join the WebMCP origin trial</strong> (9 June 2026). The announcement: “In Chrome 149, you can sign up for the WebMCP origin trial.” <em>Chapters 9 and 15.</em>
+<a href="https://developer.chrome.com/blog/ai-webmcp-origin-trial">https://developer.chrome.com/blog/ai-webmcp-origin-trial</a></li>
+<li><strong>Get started with origin trials.</strong> How tokens work and the three ways to deliver one. <em>Chapters 9 and 15.</em>
+<a href="https://developer.chrome.com/docs/web-platform/origin-trials">https://developer.chrome.com/docs/web-platform/origin-trials</a></li>
+<li><strong>Third-party origin trials.</strong> How an embedded script, such as a widget vendor’s, can register for a trial across the sites that embed it. <em>Chapter 15.</em>
+<a href="https://developer.chrome.com/docs/web-platform/third-party-origin-trials">https://developer.chrome.com/docs/web-platform/third-party-origin-trials</a></li>
+<li><strong>Chrome Platform Status: WebMCP.</strong> Chrome’s feature entry: status (“Proposed” on 15 October 2026), trial milestones and the reasons for the extension. The page renders in script; the JSON form below is easier to read and to watch. <em>Chapters 4 and 15.</em>
+<a href="https://chromestatus.com/feature/5117755740913664">https://chromestatus.com/feature/5117755740913664</a>
+<a href="https://chromestatus.com/api/v0/features/5117755740913664">https://chromestatus.com/api/v0/features/5117755740913664</a></li>
+<li><strong>The Prompt API</strong> (updated 26 August 2026). Chrome’s on-device model, which the Test Agent and the example extension can use as a planner. <em>Chapter 9.</em>
+<a href="https://developer.chrome.com/docs/ai/prompt-api">https://developer.chrome.com/docs/ai/prompt-api</a></li>
+<li><strong>GoogleChromeLabs/webmcp-tools.</strong> Chrome’s demos, the Model Context Tool Inspector, the eval tool and skills, in one repository. <em>Chapters 8, 9 and 14.</em>
+<a href="https://github.com/GoogleChromeLabs/webmcp-tools">https://github.com/GoogleChromeLabs/webmcp-tools</a></li>
+<li><strong>Model Context Tool Inspector.</strong> An extension to inspect, monitor and execute a page’s tools by hand or through Gemini. <em>Chapters 9 and 14.</em>
+<a href="https://github.com/beaufortfrancois/model-context-tool-inspector">https://github.com/beaufortfrancois/model-context-tool-inspector</a></li>
+<li><strong>Example Agentic Chrome Extension.</strong> A small, complete agent in the side panel, for testing your tools with a real model. <em>Chapter 9.</em>
+<a href="https://github.com/GoogleChromeLabs/webmcp-extension">https://github.com/GoogleChromeLabs/webmcp-extension</a></li>
+<li><strong>Chrome DevTools for agents (<code>chrome-devtools-mcp</code>).</strong> An MCP server that lets a coding assistant drive Chrome, with experimental WebMCP tools. <em>Chapter 14.</em>
+<a href="https://github.com/ChromeDevTools/chrome-devtools-mcp">https://github.com/ChromeDevTools/chrome-devtools-mcp</a></li>
+</ul>
+<h2 id="c3-microsoft-edge"><a class="anchor-link" href="#c3-microsoft-edge">C.3 Microsoft Edge</a></h2>
+<ul>
+<li><strong>Edge origin trial: WebMCP.</strong> Registration for Edge’s trial, with a trial expiration date of 30 March 2027. <em>Chapters 9 and 15.</em>
+<a href="https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a">https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a</a></li>
+<li><strong>What’s new in DevTools (Microsoft Edge 149).</strong> Lists “WebMCP debugging” among the updates Edge takes from Chromium. <em>Chapter 14.</em>
+<a href="https://learn.microsoft.com/en-us/microsoft-edge/devtools/whats-new/149">https://learn.microsoft.com/en-us/microsoft-edge/devtools/whats-new/149</a></li>
+</ul>
+<h2 id="c4-standards-positions-reviews-and-process"><a class="anchor-link" href="#c4-standards-positions-reviews-and-process">C.4 Standards positions, reviews and process</a></h2>
+<ul>
+<li><strong>Mozilla standards position on WebMCP</strong> (issue #1412). Labelled “position: neutral” on 15 October 2026; the thread explains what would move it. <em>Chapter 15.</em>
+<a href="https://github.com/mozilla/standards-positions/issues/1412">https://github.com/mozilla/standards-positions/issues/1412</a></li>
+<li><strong>WebKit standards position on WebMCP</strong> (issue #670). Labelled “position: oppose”, with WebKit’s reasons and its proposed alternative process. <em>Chapter 15.</em>
+<a href="https://github.com/WebKit/standards-positions/issues/670">https://github.com/WebKit/standards-positions/issues/670</a></li>
+<li><strong>W3C TAG design review</strong> (issue #1238, “Incubation: WebMCP”). Open on 15 October 2026, labelled “Missing: Multi-stakeholder support”. <em>Chapters 4 and 15.</em>
+<a href="https://github.com/w3ctag/design-reviews/issues/1238">https://github.com/w3ctag/design-reviews/issues/1238</a></li>
+<li><strong>TAG design reviews repository.</strong> How the TAG takes and prioritises reviews, useful context for reading #1238.
+<a href="https://github.com/w3ctag/design-reviews">https://github.com/w3ctag/design-reviews</a></li>
+<li><strong>The Web Machine Learning Working Group charter pull request</strong> (w3c/charter-drafts #829). The attempt to add WebMCP to that group’s charter, closed on 13 October 2026. <em>Chapter 15.</em>
+<a href="https://github.com/w3c/charter-drafts/pull/829">https://github.com/w3c/charter-drafts/pull/829</a></li>
+<li><strong>Web Machine Learning Working Group.</strong> The existing W3C Working Group that pull request targeted.
+<a href="https://www.w3.org/groups/wg/webmachinelearning/">https://www.w3.org/groups/wg/webmachinelearning/</a></li>
+<li><strong>Draft Agentic Web Working Group charter.</strong> The proposed new group whose one named normative deliverable is WebMCP. On 15 October 2026 many of its fields were still template placeholders. <em>Chapters 15 and 17.</em>
+<a href="https://w3c.github.io/charter-drafts/2026/agenticweb-wg.html">https://w3c.github.io/charter-drafts/2026/agenticweb-wg.html</a></li>
+<li><strong>W3C strategy issue #576, “[wg/agenticweb] Agentic Web Group Charter”.</strong> The W3C’s tracking issue for that charter, with its list of known concerns. <em>Chapter 15.</em>
+<a href="https://github.com/w3c/strategy/issues/576">https://github.com/w3c/strategy/issues/576</a></li>
+<li><strong>Start of charter refinement for the Agentic Web WG</strong> (public-new-work, 1 October 2026). The W3C’s announcement, with the expected end of refinement. <em>Chapter 15.</em>
+<a href="https://lists.w3.org/Archives/Public/public-new-work/2026Oct/0002.html">https://lists.w3.org/Archives/Public/public-new-work/2026Oct/0002.html</a></li>
+<li><strong>W3C Process Document</strong> (18 August 2025). The rules for Working Groups, charters, the TAG and formal objections. <em>Chapter 15; Appendix B.</em>
+<a href="https://www.w3.org/policies/process/">https://www.w3.org/policies/process/</a></li>
+<li><strong>W3C Community and Business Groups FAQ.</strong> What a Community Group can and can’t do. <em>Chapter 4; Appendix B.</em>
+<a href="https://www.w3.org/community/about/faq/">https://www.w3.org/community/about/faq/</a></li>
+</ul>
+<h2 id="c5-the-model-context-protocol"><a class="anchor-link" href="#c5-the-model-context-protocol">C.5 The Model Context Protocol</a></h2>
+<ul>
+<li><strong>MCP specification, version 2026-07-28.</strong> The revision this book follows: stateless, self-contained requests. The <code>latest</code> address redirected here on 15 October 2026. <em>Chapter 3.</em>
+<a href="https://modelcontextprotocol.io/specification/2026-07-28">https://modelcontextprotocol.io/specification/2026-07-28</a></li>
+<li><strong>Changelog for 2026-07-28.</strong> What changed from the legacy revisions, starting with the removal of the <code>initialize</code> handshake. <em>Chapter 3.</em>
+<a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog">https://modelcontextprotocol.io/specification/2026-07-28/changelog</a></li>
+<li><strong>Tools.</strong> MCP’s tool definition, results, <code>outputSchema</code> and annotations; the comparison point for WebMCP’s own. <em>Chapters 3, 11 and 17.</em>
+<a href="https://modelcontextprotocol.io/specification/2026-07-28/server/tools">https://modelcontextprotocol.io/specification/2026-07-28/server/tools</a></li>
+<li><strong>Elicitation.</strong> How an MCP server asks the user a question mid-call; the model for WebMCP’s proposed <code>requestUserInput()</code>. <em>Chapters 3 and 13.</em>
+<a href="https://modelcontextprotocol.io/specification/2026-07-28/client/elicitation">https://modelcontextprotocol.io/specification/2026-07-28/client/elicitation</a></li>
+<li><strong>Transports.</strong> stdio and Streamable HTTP. <em>Chapter 3.</em>
+<a href="https://modelcontextprotocol.io/specification/2026-07-28/basic/transports">https://modelcontextprotocol.io/specification/2026-07-28/basic/transports</a></li>
+<li><strong>“The 2026-07-28 Specification”</strong> (MCP blog). The release post, in plain language: MCP becomes “a request/response stateless protocol.” <em>Chapter 3.</em>
+<a href="https://blog.modelcontextprotocol.io/posts/2026-07-28/">https://blog.modelcontextprotocol.io/posts/2026-07-28/</a></li>
+<li><strong>Official SDKs.</strong> The list of SDKs by language and support tier; on 15 October 2026 TypeScript, Python, C#, Go, Rust and Ruby were Tier 1.
+<a href="https://modelcontextprotocol.io/docs/sdk">https://modelcontextprotocol.io/docs/sdk</a></li>
+<li><strong>TypeScript SDK, repository and v2 documentation.</strong> The SDK Trailhead’s backend server is built on. <em>Chapter 3.</em>
+<a href="https://github.com/modelcontextprotocol/typescript-sdk">https://github.com/modelcontextprotocol/typescript-sdk</a>
+<a href="https://ts.sdk.modelcontextprotocol.io/v2/">https://ts.sdk.modelcontextprotocol.io/v2/</a></li>
+<li><strong>MCP Inspector.</strong> The official tool for exercising servers by hand or from the command line. <em>Chapter 3.</em>
+<a href="https://github.com/modelcontextprotocol/inspector">https://github.com/modelcontextprotocol/inspector</a></li>
+<li><strong>MCP Apps.</strong> The extension for servers that return interactive UI. <em>Chapter 3.</em>
+<a href="https://modelcontextprotocol.io/extensions/apps/overview">https://modelcontextprotocol.io/extensions/apps/overview</a></li>
+<li><strong>Specification repository.</strong> The source of the MCP specification and its proposals (SEPs). The old <code>specification</code> address now redirects to <code>modelcontextprotocol/modelcontextprotocol</code>.
+<a href="https://github.com/modelcontextprotocol/modelcontextprotocol">https://github.com/modelcontextprotocol/modelcontextprotocol</a></li>
+</ul>
+<h2 id="c6-packages-the-chapters-use"><a class="anchor-link" href="#c6-packages-the-chapters-use">C.6 Packages the chapters use</a></h2>
+<p>Versions are what the npm registry reported as <code>latest</code> on 15 October 2026, which is also what the demos pin, except Angular: the demos pin 22.2.2, and 22.2.3 was published late on 14 October.<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">2:1</a></sup> Pin them; several of these change weekly.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Version</th>
+<th>What it is</th>
+<th>Chapters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@modelcontextprotocol/server</code></td>
+<td>2.3.1</td>
+<td>MCP TypeScript SDK v2, server package</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>@modelcontextprotocol/client</code></td>
+<td>2.3.1</td>
+<td>MCP TypeScript SDK v2, client package</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>@modelcontextprotocol/node</code></td>
+<td>2.1.1</td>
+<td>Node.js HTTP middleware for the SDK</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>@modelcontextprotocol/inspector</code></td>
+<td>2.11.0</td>
+<td>The MCP Inspector</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>zod</code></td>
+<td>4.6.7</td>
+<td>Schema library the SDK uses for tool inputs</td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>webmcp-types</code></td>
+<td>0.1.10</td>
+<td>TypeScript definitions for WebMCP</td>
+<td>5, 9, 10</td>
+</tr>
+<tr>
+<td><code>@mcp-b/global</code></td>
+<td>6.0.3</td>
+<td>WebMCP polyfill from MCP-B</td>
+<td>9, 15</td>
+</tr>
+<tr>
+<td><code>@mcp-b/webmcp-polyfill</code></td>
+<td>6.0.3</td>
+<td>Upstream polyfill “plus temporary declarative tools”</td>
+<td>9, 10, 15</td>
+</tr>
+<tr>
+<td><code>@mcp-b/webmcp-local-relay</code></td>
+<td>6.0.3</td>
+<td>Relay from a tab’s tools to desktop MCP clients</td>
+<td>9</td>
+</tr>
+<tr>
+<td><code>usewebmcp</code></td>
+<td>6.0.3</td>
+<td>React hooks for <code>document.modelContext</code></td>
+<td>10, 15</td>
+</tr>
+<tr>
+<td><code>@mcp-b/react-webmcp</code></td>
+<td>6.0.3</td>
+<td>MCP-B’s broader React hooks package</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>@angular/core</code>, <code>@angular/forms</code></td>
+<td>22.2.2 (latest: 22.2.3)</td>
+<td>Angular, whose WebMCP guide Chapter 10 follows</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>playwright</code></td>
+<td>1.64.1</td>
+<td>Browser automation used by every demo’s tests</td>
+<td>6–17</td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Table C.1 — npm packages used in the chapters and demos, with versions read from the npm registry on 15 October 2026.</em></p>
+<p>The packages’ pages:</p>
+<ul>
+<li><a href="https://www.npmjs.com/package/@modelcontextprotocol/server">https://www.npmjs.com/package/@modelcontextprotocol/server</a></li>
+<li><a href="https://www.npmjs.com/package/@modelcontextprotocol/client">https://www.npmjs.com/package/@modelcontextprotocol/client</a></li>
+<li><a href="https://www.npmjs.com/package/@modelcontextprotocol/node">https://www.npmjs.com/package/@modelcontextprotocol/node</a></li>
+<li><a href="https://www.npmjs.com/package/@modelcontextprotocol/inspector">https://www.npmjs.com/package/@modelcontextprotocol/inspector</a></li>
+<li><a href="https://www.npmjs.com/package/webmcp-types">https://www.npmjs.com/package/webmcp-types</a></li>
+<li><a href="https://www.npmjs.com/package/@mcp-b/global">https://www.npmjs.com/package/@mcp-b/global</a></li>
+<li><a href="https://www.npmjs.com/package/@mcp-b/webmcp-polyfill">https://www.npmjs.com/package/@mcp-b/webmcp-polyfill</a></li>
+<li><a href="https://www.npmjs.com/package/@mcp-b/webmcp-local-relay">https://www.npmjs.com/package/@mcp-b/webmcp-local-relay</a></li>
+<li><a href="https://www.npmjs.com/package/@mcp-b/react-webmcp">https://www.npmjs.com/package/@mcp-b/react-webmcp</a></li>
+<li><code>usewebmcp</code> (registry record; the npmjs.com page served a bot check): <a href="https://registry.npmjs.org/usewebmcp">https://registry.npmjs.org/usewebmcp</a></li>
+</ul>
+<h2 id="c7-community-projects-and-framework-guides"><a class="anchor-link" href="#c7-community-projects-and-framework-guides">C.7 Community projects and framework guides</a></h2>
+<ul>
+<li><strong>MCP-B documentation.</strong> Guides and references for the polyfill, the React hooks and the desktop relay. <em>Chapters 9, 10 and 15.</em>
+<a href="https://docs.mcp-b.ai/">https://docs.mcp-b.ai/</a></li>
+<li><strong>WebMCP-org/npm-packages.</strong> The source of the <code>@mcp-b/*</code> packages and <code>usewebmcp</code>. <em>Chapter 15.</em>
+<a href="https://github.com/WebMCP-org/npm-packages">https://github.com/WebMCP-org/npm-packages</a></li>
+<li><strong>Angular: WebMCP.</strong> Angular’s own guide to exposing tools from an Angular app. <em>Chapter 10.</em>
+<a href="https://angular.dev/ai/webmcp">https://angular.dev/ai/webmcp</a></li>
+</ul>
+<h2 id="c8-web-platform-background"><a class="anchor-link" href="#c8-web-platform-background">C.8 Web platform background</a></h2>
+<ul>
+<li><strong>MDN: Permissions-Policy.</strong> The header and the <code>allow</code> attribute that the <code>tools</code> feature plugs into. <em>Chapter 7.</em>
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy">https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy</a></li>
+<li><strong>Permissions Policy specification.</strong> The normative rules for policy-controlled features and allowlists.
+<a href="https://w3c.github.io/webappsec-permissions-policy/">https://w3c.github.io/webappsec-permissions-policy/</a></li>
+<li><strong>MDN: AbortSignal.</strong> The signal you pass to <code>registerTool()</code> and receive in <code>execute</code>. <em>Chapters 5 and 6.</em>
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal">https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal</a></li>
+<li><strong>DOM Standard: AbortSignal.</strong> The normative definition.
+<a href="https://dom.spec.whatwg.org/#interface-AbortSignal">https://dom.spec.whatwg.org/#interface-AbortSignal</a></li>
+<li><strong>MDN: Secure contexts.</strong> Why <code>document.modelContext</code> is missing on plain HTTP. <em>Chapter 5.</em>
+<a href="https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Secure_Contexts">https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Secure_Contexts</a></li>
+<li><strong>Secure Contexts specification.</strong> Including the definition of a potentially trustworthy origin. <em>Chapters 5 and 7.</em>
+<a href="https://w3c.github.io/webappsec-secure-contexts/">https://w3c.github.io/webappsec-secure-contexts/</a></li>
+<li><strong>HTML Standard: tracking user activation.</strong> What a user gesture is, and why a tool call isn’t one. <em>Chapter 13.</em>
+<a href="https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation">https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation</a></li>
+<li><strong>WAI-ARIA.</strong> The accessibility semantics WebKit argues agents should build on instead. <em>Chapters 13, 15 and 17.</em>
+<a href="https://www.w3.org/TR/wai-aria/">https://www.w3.org/TR/wai-aria/</a></li>
+<li><strong>JSON Schema specification.</strong> The 2020-12 vocabulary for <code>inputSchema</code>. <em>Chapters 2, 5 and 11.</em>
+<a href="https://json-schema.org/specification">https://json-schema.org/specification</a></li>
+<li><strong>JSON-RPC 2.0.</strong> MCP’s message format. <em>Chapter 3.</em>
+<a href="https://www.jsonrpc.org/specification">https://www.jsonrpc.org/specification</a></li>
+</ul>
+<h2 id="c9-the-books-own-repositories"><a class="anchor-link" href="#c9-the-books-own-repositories">C.9 The book’s own repositories</a></h2>
+<ul>
+<li><strong>The book.</strong> The Markdown for every chapter and appendix, the outline, and the generator for the website.
+<a href="https://github.com/vibeprogrammer/webmcp-book">https://github.com/vibeprogrammer/webmcp-book</a></li>
+<li><strong>The demos.</strong> Every listing as a runnable file, with tests.
+<a href="https://github.com/vibeprogrammer/webmcp-book-demos">https://github.com/vibeprogrammer/webmcp-book-demos</a></li>
+<li><strong>The website.</strong> The e-book edition, built from the same Markdown.
+<a href="https://vibeprogrammer.github.io/webmcp-book/">https://vibeprogrammer.github.io/webmcp-book/</a></li>
+</ul>
+<p>Every folder in the demos repository has a README that maps its files to listings, explains how to run the tests and records what passed. The listings are byte-identical to the book, and most folders include a test that checks this against the chapter’s Markdown. Behavioural tests run against a small <code>document.modelContext</code> mock and, wherever the API allows, against Chromium 156 with <code>--enable-features=WebMCPTesting</code>. Table C.2 maps the folders to the chapters.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Folder</th>
+<th>Chapter</th>
+<th>What it demonstrates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fjord-table/</code></td>
+<td>4, 5</td>
+<td>Fjord Table’s booking page in plain HTML and JavaScript modules, with <code>search_availability</code> and <code>book_table</code> registered through <code>document.modelContext</code>, unregistered with an <code>AbortSignal</code>, and typed with <code>webmcp-types</code>.</td>
+</tr>
+<tr>
+<td><code>chapters/03-mcp-in-practice/</code></td>
+<td>3</td>
+<td>Trailhead’s backend MCP server on the TypeScript SDK v2: <code>search_products</code>, <code>get_order_status</code>, a returns-policy resource and a <code>packing_list</code> prompt, served over stdio and Streamable HTTP in both protocol eras, tested with an SDK client and the Inspector CLI.</td>
+</tr>
+<tr>
+<td><code>chapters/05-registering-tools/</code></td>
+<td>5</td>
+<td>A Chromium 156 probe that backs Chapter 5’s statements about what Chromium does where it differs from the draft: <code>outputSchema</code> dropped, no input validation, return values, <code>UnknownError</code>. Chapter 5’s listings themselves live in <code>fjord-table/</code>.</td>
+</tr>
+<tr>
+<td><code>chapters/06-annotations-lifecycle-errors/</code></td>
+<td>6</td>
+<td>Trailhead’s product, cart and checkout tools with annotations, the call lifecycle, cancellation through the execution signal, tool-level errors versus platform errors, <code>toolactivated</code>/<code>toolcancel</code> logging, <code>toolchange</code> and debugging tools.</td>
+</tr>
+<tr>
+<td><code>chapters/07-frames-origins-agents/</code></td>
+<td>7</td>
+<td>The Helpdesk Widget across two origins: Ledgerly delegating the <code>tools</code> policy to Supportly’s iframe, <code>exposedTo</code> and <code>fromOrigins</code>, an in-page agent built on <code>getTools()</code> and <code>executeTool()</code>, and an extension that uses the API from a content script.</td>
+</tr>
+<tr>
+<td><code>chapters/08-declarative-api/</code></td>
+<td>8</td>
+<td>Fjord Table’s search and booking forms as declarative tools: <code>toolname</code>, <code>tooldescription</code>, <code>toolparamdescription</code>, <code>toolautosubmit</code>, <code>agentInvoked</code>, <code>respondWith()</code>, the CSS pseudo-classes and validation feedback, tested in Chrome’s trial implementation.</td>
+</tr>
+<tr>
+<td><code>chapters/09-first-webmcp-app/</code></td>
+<td>9</td>
+<td>Fjord Table end to end: progressive enhancement with native WebMCP or an opt-in pinned polyfill, the scriptable Test Agent with a Prompt API planner, an origin-trial meta tag and a desktop-relay configuration.</td>
+</tr>
+<tr>
+<td><code>chapters/10-webmcp-in-frameworks/</code></td>
+<td>10</td>
+<td>Trailhead in React 19 with Vite and <code>usewebmcp</code> (route-scoped <code>checkout</code>, StrictMode-safe registration, a shared external store), and an Angular version with tools in the injector and Signal Forms.</td>
+</tr>
+<tr>
+<td><code>chapters/11-designing-tools/</code></td>
+<td>11</td>
+<td>Trailhead’s catalogue and cart tools and the Helpdesk Widget redesigned: descriptions within character budgets, <code>oneOf</code> enums with titles, a validator that uses the published schema, a description linter, and results and errors a model can act on.</td>
+</tr>
+<tr>
+<td><code>chapters/12-threat-models/</code></td>
+<td>12</td>
+<td>Attacks and mitigations: a same-origin <code>registerTool()</code> wrapper attack (demonstration only), a pre-release audit of the registered tools, cross-origin exposure between Ledgerly and Supportly, and Trailhead tools hardened against injection and over-parameterisation.</td>
+</tr>
+<tr>
+<td><code>chapters/13-privacy-consent-human-in-the-loop/</code></td>
+<td>13</td>
+<td>Trailhead’s checkout, which never completes without a person: the confirmation sheet with trusted clicks and an arming delay, cancellation, and the proposed <code>requestUserInput()</code> IDL.</td>
+</tr>
+<tr>
+<td><code>chapters/14-testing-debugging-evals/</code></td>
+<td>14</td>
+<td>Testing in layers: unit tests for <code>execute</code>, a browser-contract suite, a driver for the DevTools Protocol’s WebMCP domain, an eval runner with a task suite for Fjord Table, and an instrumentation wrapper for real-user measurement.</td>
+</tr>
+<tr>
+<td><code>chapters/15-browser-support-and-standards/</code></td>
+<td>15</td>
+<td>Origin-trial tokens for Chrome and Edge (meta tags and headers), feature detection across WebMCP builds, and <code>standards-watch.mjs</code>, which snapshots seven primary sources and reports what changed.</td>
+</tr>
+<tr>
+<td><code>chapters/16-product-and-business-implications/</code></td>
+<td>16</td>
+<td>Trailhead’s tool catalog owned like product copy, a CI check for Chrome’s character budgets, a measurement wrapper and order attribution, in TypeScript.</td>
+</tr>
+<tr>
+<td><code>chapters/17-the-road-ahead/</code></td>
+<td>17</td>
+<td>Future-proofing: tools as plain data, one adapter that knows the API shape (feature detection, input validation, one signal for the whole catalog), and a probe that reports what a browser supports, from <code>navigator.modelContext</code> to whether <code>outputSchema</code> survives <code>getTools()</code>.</td>
+</tr>
+<tr>
+<td><code>appendices/a-api-reference/</code></td>
+<td>Appendix A</td>
+<td>The WebMCP IDL and the probes behind Appendix A’s error table, run in Chromium 156.</td>
+</tr>
+<tr>
+<td><code>appendices/d-migration/</code></td>
+<td>Appendix D</td>
+<td>Before-and-after migration listings, with the “after” code tested in Chromium 156.</td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Table C.2 — Folders in vibeprogrammer/webmcp-book-demos and what each demonstrates. Chapters 1 and 2 have no code. Chapter 4’s first listing is the seed of <code>fjord-table/</code>, which Chapter 5 builds out.</em></p>
+<h2 id="c10-how-to-track-changes"><a class="anchor-link" href="#c10-how-to-track-changes">C.10 How to track changes</a></h2>
+<p>Most of what dates this book will show up in five places first. A twenty-minute check once a month covers them.</p>
+<ol>
+<li><strong>The spec’s date line and commit history.</strong> If the date under the title has changed, read the commits since your last visit. Each one is small and dated.</li>
+<li><strong>New and closed issues.</strong> Watch the repository on GitHub (Watch → Custom → Issues and Pull requests) and skim the titles. Chapter 17 lists the open questions most likely to change your code.</li>
+<li><strong>chromestatus.</strong> The JSON form of the feature entry changes when a trial is extended, a stage moves or a review lands.</li>
+<li><strong>Positions and reviews.</strong> The labels on the Mozilla, WebKit and TAG issues are the signal; the comments explain it.</li>
+<li><strong>The charter.</strong> The Agentic Web WG draft, its strategy issue and the public-new-work list will show whether WebMCP gets a Working Group home.</li>
+</ol>
+<p>Chapter 15’s <code>standards-watch.mjs</code>, in the demos repository, automates most of this list. It fetches the spec, the commit history, chromestatus, the Edge trial page and the three position and review threads, saves a snapshot, and exits with a non-zero code when anything changed, so you can run it on a schedule in CI.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: this appendix</p>
+<p>URLs are the most fragile thing in a book. Two moved while this one was being written: <code>modelcontextprotocol.io/specification/latest</code> now redirects to the dated 2026-07-28 page, and the MCP specification repository now lives at <code>modelcontextprotocol/modelcontextprotocol</code>. If an address here fails, search the publisher’s site for the title; the repositories in C.1 and C.9 are the least likely to move.</p></aside>
+<h2 id="c11-summary"><a class="anchor-link" href="#c11-summary">C.11 Summary</a></h2>
+<ul>
+<li>The spec, its issues and its commit history are the primary sources. Chrome’s documentation shows what one implementation does, and the demos repository shows what Chromium 156 actually did.</li>
+<li>Chrome and Edge both run origin trials; chromestatus and the Edge trial page carry their dates.</li>
+<li>The standards picture lives in four GitHub threads (Mozilla, WebKit, the TAG and the W3C charter work) plus the W3C’s own announcements.</li>
+<li>Pin package versions. The ones in Table C.1 were current on 15 October 2026.</li>
+<li>Run a monthly check, or Chapter 15’s watcher, to know when the book has drifted.</li>
+</ul>
+<h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>W3C, “Community and Business Groups: Frequently Asked Questions”, answer to “Does the Community Group Process replace the Recommendation Track?” Read 15 October 2026. <a href="https://www.w3.org/community/about/faq/">https://www.w3.org/community/about/faq/</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>Every URL in this appendix was fetched on 14 October 2026 with <code>curl</code>, or for npmjs.com pages with a headless Chromium, and returned HTTP 200. All of them were fetched again on 15 October 2026: every non-npm URL returned HTTP 200, and every npmjs.com page answered a script with a bot check, so the packages and versions were confirmed in the registry records instead. Package versions are the <code>latest</code> versions in the npm registry’s package records, for example <a href="https://registry.npmjs.org/usewebmcp/latest">https://registry.npmjs.org/usewebmcp/latest</a>. <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="b-glossary.html">← Appendix B: Glossary</a>
+          <a class="pager-link" rel="next" href="d-migration.html">Appendix D: Migration Notes: navigator.modelContext and provideContext() to document.modelContext →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

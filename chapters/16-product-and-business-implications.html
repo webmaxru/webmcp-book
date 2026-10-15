@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chapter 16: Product and Business Implications — Tools, Not Clicks</title>
+  <meta name="description" content="What agent-readiness means for product strategy: which journeys to expose first, brand control versus aggregation, conversion and attribution, and how WebMCP and backend MCP fit into one plan.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Chapter 16: Product and Business Implications — Tools, Not Clicks">
+  <meta property="og:description" content="What agent-readiness means for product strategy: which journeys to expose first, brand control versus aggregation, conversion and attribution, and how WebMCP and backend MCP fit into one plan.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a class="is-current" aria-current="page" href="16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="../appendices/a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="../appendices/b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="../appendices/c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="../appendices/d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / Chapter 16 <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">chapter:</span> <span class="fm-v">16</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">VI — Strategy and the Future</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">34 min</span></p>
+        <h1>Chapter 16: Product and Business Implications</h1>
+        <p class="lead">What agent-readiness means for product strategy: which journeys to expose first, brand control versus aggregation, conversion and attribution, and how WebMCP and backend MCP fit into one plan.</p>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#the-question-on-karis-whiteboard">The question on Kari’s whiteboard</a></li><li><a href="#agent-readiness-is-not-the-new-seo-yet">Agent-readiness is not the new SEO (yet)</a></li><li><a href="#choosing-the-first-journeys">Choosing the first journeys</a></li><li><a href="#keeping-the-agent-a-guest">Keeping the agent a guest</a></li><li><a href="#measuring-agent-driven-conversion">Measuring agent-driven conversion</a></li><li><a href="#pricing-and-policy-questions">Pricing and policy questions</a></li><li><a href="#webmcp-and-backend-mcp-in-one-plan">WebMCP and backend MCP in one plan</a></li><li><a href="#who-owns-the-tools">Who owns the tools</a></li><li><a href="#trailheads-plan-on-one-page">Trailhead’s plan on one page</a></li><li><a href="#chapter-summary">Chapter summary</a></li><li><a href="#notes">Notes</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“Tools execute on your webpage visibly, so users gain trust that tasks are completed as expected. This also keeps your brand and human-centered design choices intact.”</em></p>
+<p>— Chrome for Developers, “WebMCP”<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<h2 id="the-question-on-karis-whiteboard"><a class="anchor-link" href="#the-question-on-karis-whiteboard">The question on Kari’s whiteboard</a></h2>
+<p>Trailhead’s product team meets on Monday mornings in a room above the warehouse in Lillestrøm. This Monday, Kari, who runs product, has written one question on the whiteboard: <em>What do we ship for agents, and how will we know it worked?</em></p>
+<p>Jonas, the front-end lead, has spent the last month on the earlier chapters of this book. He has a branch where <code>search_products</code> and <code>add_to_cart</code> are registered with <code>document.modelContext</code>, and he can show an agent finding a two-person tent under 4,000 NOK and putting it in the cart in four tool calls instead of forty clicks. Kari is impressed, and she is also the person who has to explain the work to the rest of the company. So her questions are not about <code>AbortSignal</code>. Will agents find us? Which journeys first? Do we lose the customer to the assistant? What do we measure? Who owns the descriptions? What happens if the standard changes or never ships?</p>
+<p>This chapter is for the people in that room. Most of it can be read without the code, and the code that is here is short: a catalog that treats tools as product surface, a budget check for CI, a measurement wrapper, and an attribution helper, all for Trailhead. Every listing runs, and the tests for them live in the book’s demos repository.<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup></p>
+<h2 id="agent-readiness-is-not-the-new-seo-yet"><a class="anchor-link" href="#agent-readiness-is-not-the-new-seo-yet">Agent-readiness is not the new SEO (yet)</a></h2>
+<p>The comparison comes up in every planning meeting about agents. Twenty-five years ago companies learned to describe their pages for crawlers, and now they will learn to describe their features for agents. Some of that holds. A WebMCP tool’s name and description are text written for a machine reader, and their quality decides whether the reader uses your feature correctly. Chrome’s guidance on descriptions reads like a copywriting brief: “use verbs that describe exactly what happens”, say “what the tool does and when to use it”, and “rely on positive language” rather than lists of limitations.<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup> Agents also choose between tools, and Chrome’s evaluation guide lists “Agent fails to select the correct tool” as the first failure mode to test for.<sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup> Writing good tool copy is a skill worth having in-house, as SEO copy once was.</p>
+<p>The analogy breaks at the step that made SEO valuable: discovery. A search engine indexes your pages before anyone visits them, and that index sends you visitors you didn’t have. WebMCP has no equivalent. Chrome’s own documentation lists it as a limitation: “Clients and browsers must visit a site directly to know if it has callable tools.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:1">1:1</a></sup> Chrome’s comparison with MCP says the same thing from the other side. MCP’s discovery happens through “agent-specific registration flows”, while WebMCP’s tools are “registered on the web page during the user’s visit.”<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup> There is no central registry of WebMCP sites, no crawler that reads <code>registerTool()</code> calls and no ranking for tools.</p>
+<p>This is a design choice, not an oversight. The explainer considered “static declarative manifests”, tools listed in a file such as the Web App Manifest, and set them aside because they “prevent web developers from dynamically adding, updating, or removing tools based on the active page state or user authentication status”. It left the door open: static declarations could be “layered on in the future”.<sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup> The supplementary explainer for service workers, which asks how an agent could use a site the user doesn’t have open, discusses discovery directly. It lists possible mechanisms (“installable PWAs”, “web search”, “curated site directories”, “direct links”) and floats the idea of sites advertising “high-level descriptions of the capabilities they offer” in a manifest or in page markup, so that crawlers and directories can recommend them. It also calls discovery “a complex topic which goes beyond the scope of this explainer”.<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup></p>
+<p><strong>Table 16.1 — Where the SEO analogy holds and where it breaks (October 2026)</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Search engine optimization</th>
+<th>Agent-readiness with WebMCP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Who reads your text</td>
+<td>A crawler, ahead of time</td>
+<td>An agent, during the user’s visit</td>
+</tr>
+<tr>
+<td>What brings the user</td>
+<td>The index sends new visitors</td>
+<td>The user is already on your site</td>
+</tr>
+<tr>
+<td>What you optimize</td>
+<td>Pages, titles, structured data</td>
+<td>Tool names, descriptions, schemas, results</td>
+</tr>
+<tr>
+<td>Central registry or ranking</td>
+<td>Yes, run by each search engine</td>
+<td>None defined</td>
+</tr>
+<tr>
+<td>How you measure</td>
+<td>Impressions, clicks, rankings</td>
+<td>Tool calls, outcomes, assisted conversions</td>
+</tr>
+<tr>
+<td>What it mostly grows</td>
+<td>Acquisition</td>
+<td>Conversion and task completion</td>
+</tr>
+</tbody>
+</table></div>
+<p>The business consequence is the most important sentence in this chapter. <em>WebMCP, as specified today, converts visits you already have. It doesn’t bring new ones.</em> An agent reaches Trailhead’s tools because the customer opened Trailhead, typed its address, followed a link or clicked a search result. That changes the investment case. You are not buying a new channel, you are cutting friction and failure out of the sessions you already pay to acquire. If agents arriving through actuation today fail half-way through your checkout, every one of those failures is a lost conversion you already paid for. That is a measurable cost, and it is where the case for WebMCP is strongest.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: discovery</p>
+<p><em>Manifests and directories.</em> Static tool declarations were rejected as the primary mechanism, but the explainer says they could be added on top later, and the service-worker explainer discusses manifest fields and capability descriptions for crawlers and directories. Neither is in the specification.<sup class="footnote-ref"><a href="#fn6" id="fnref6:1">6:1</a></sup><sup class="footnote-ref"><a href="#fn7" id="fnref7:1">7:1</a></sup>
+<em>Sites that aren’t open.</em> Letting agents call tools on sites the user doesn’t have open is an open question in the main explainer, which points to the service-worker proposal for it.<sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup> Chapter 17 covers what that would change.</p></aside>
+<h2 id="choosing-the-first-journeys"><a class="anchor-link" href="#choosing-the-first-journeys">Choosing the first journeys</a></h2>
+<p>If WebMCP converts visits you already have, the first journeys to expose are the ones where those visits fail today and where success is worth the most. Chrome frames the work around <em>critical user journeys</em> (CUJs), defined as “a user’s path to accomplish a goal, including any required context”, and its use-case guide walks through shopping, repeat purchases and form filling.<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup> For retail it suggests tools such as <code>search_products()</code>, <code>add_to_wishlist()</code> and a <code>refine_search()</code> for price ranges, and for repeat purchases a <code>get_order_history()</code> tool.<sup class="footnote-ref"><a href="#fn9" id="fnref9:1">9:1</a></sup> The explainer’s own shopping scenario has an agent fetch product listings, filter them against the user’s request and call a second tool to update the store’s grid, so the shopper sees the agent’s choice on the page.<sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup></p>
+<p>Four kinds of journey account for most of the candidates on a typical site.</p>
+<ul>
+<li><em>Search and filter.</em> Finding things in a catalogue, a timetable or an inventory. Read-only, high volume, and painful to actuate when filters are custom widgets. These are the safest place to start.</li>
+<li><em>Configure.</em> Choosing options, sizes, dates, seats or plans: the multi-step forms where agents guess at ambiguous fields. Chrome’s example is a tool that distinguishes “a full name versus a separate first and last name”.<sup class="footnote-ref"><a href="#fn1" id="fnref1:2">1:2</a></sup></li>
+<li><em>Book and buy.</em> Adding to a cart, reserving, checking out. High value, and consequential at the final step.</li>
+<li><em>Support.</em> Filing a claim, finding an order, opening a ticket. Chrome’s use-case guide includes a warranty claim, and its overview puts “Help your customers get support” first among its examples.<sup class="footnote-ref"><a href="#fn9" id="fnref9:2">9:2</a></sup><sup class="footnote-ref"><a href="#fn1" id="fnref1:3">1:3</a></sup></li>
+</ul>
+<p>Rank candidates on a few questions, in roughly this order.</p>
+<ol>
+<li><em>How badly does actuation fail here today?</em> If agents already complete the journey reliably, a tool adds little. Custom date pickers, steppers, infinite scroll and multi-step modals are the usual culprits.</li>
+<li><em>What is a completion worth?</em> An abandoned checkout costs more than an abandoned “About us” page.</li>
+<li><em>Can the existing code be reused?</em> The explainer’s goal is that “any task that a user can accomplish through a page’s UI can be turned into a tool by reusing much of the page’s existing client-side code.”<sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup> Chrome is equally clear about the opposite case: if a site is highly complex, “you likely need to refactor or add JavaScript to handle application and interface state.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:4">1:4</a></sup> A journey whose logic is tangled into components costs more to expose.</li>
+<li><em>What happens if the agent gets it wrong?</em> A wrong search is free. A wrong order is a refund, a support call and a customer who won’t try it again. Consequential steps are possible, but they need the confirmation design from Chapter 13.</li>
+<li><em>How many tools does it need?</em> Chrome notes that while there is no maximum, “each tool takes up part of the context window and adds to the time for completion”, and that overlapping tools make it harder for the agent to choose.<sup class="footnote-ref"><a href="#fn3" id="fnref3:1">3:1</a></sup> Journeys that need a small, distinct set of tools ship faster and test more easily.</li>
+</ol>
+<figure class="book-figure"><img decoding="async" src="16-product-and-business-implications/images/figure-16-1.png" alt="Figure 16.1 — Prioritizing Trailhead’s candidate journeys. Value per completion runs up; risk if the agent gets it wrong runs right. Start top-left, add the top-right journeys once confirmation UX is in place, and leave the bottom row for later." /><figcaption>Figure 16.1 — Prioritizing Trailhead’s candidate journeys. Value per completion runs up; risk if the agent gets it wrong runs right. Start top-left, add the top-right journeys once confirmation UX is in place, and leave the bottom row for later.</figcaption></figure>
+<p>For Trailhead, Figure 16.1 gives an order that Kari can defend. Product search and comparison come first: read-only, heavily used and backed by code the React app already has (Chapter 10 builds them in React). The cart comes next, because adding an item is reversible and the cart badge makes the result visible. Checkout comes third, as a tool that opens the checkout summary and stops. The customer places the order with their own click, which is how the canonical <code>checkout</code> tool is defined throughout this book. Order status and returns come later. Order status is already served by the backend MCP server from Chapter 3, and returns involve policy questions the team hasn’t answered yet.</p>
+<p><strong>Table 16.2 — Trailhead’s first release</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Journey</th>
+<th>Tool</th>
+<th>Annotation</th>
+<th>Why now</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Discover</td>
+<td><code>search_products</code></td>
+<td><code>readOnlyHint</code></td>
+<td>Custom filter widgets defeat actuation; no risk</td>
+</tr>
+<tr>
+<td>Decide</td>
+<td><code>compare_products</code></td>
+<td><code>readOnlyHint</code></td>
+<td>The comparison table is hard to read from pixels</td>
+</tr>
+<tr>
+<td>Buy</td>
+<td><code>add_to_cart</code>, <code>get_cart</code></td>
+<td>— / <code>readOnlyHint</code></td>
+<td>Reversible, visible in the cart badge</td>
+</tr>
+<tr>
+<td>Buy</td>
+<td><code>checkout</code></td>
+<td><code>consequentialHint</code></td>
+<td>Opens the summary only; the customer clicks “Place order”</td>
+</tr>
+<tr>
+<td>Support</td>
+<td><code>get_order_status</code></td>
+<td>—</td>
+<td>Later on the page; already on the backend MCP server (Chapter 3)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Five tools is a deliberate number. It is small enough for every one to have an owner and an eval suite, and it covers a complete journey from search to a placed order. A team that exposes fifty tools in its first release is making the agent’s choice harder and giving itself fifty things to test.</p>
+<h2 id="keeping-the-agent-a-guest"><a class="anchor-link" href="#keeping-the-agent-a-guest">Keeping the agent a guest</a></h2>
+<p>The strategic fear behind many agent discussions is disintermediation: the assistant becomes the storefront, your site becomes a supplier behind it, and your brand shrinks to a line in a chat transcript. WebMCP’s authors share the fear and designed against it. One of the explainer’s stated goals is “Prevent web content disintermediation”, which it explains as preventing “disintermediation of web apps by backend integrations by adapting front-ends for use by agents, rather than replacing them”. Its non-goals include “replacement of human interfaces”: “The human web interface remains primary; agent tools augment rather than replace user interaction.”<sup class="footnote-ref"><a href="#fn11" id="fnref11:1">11:1</a></sup> Chrome puts it more sharply in the line quoted in Chapter 4: “Instead of your application being a guest within an agent, the agent is a guest on your platform.”<sup class="footnote-ref"><a href="#fn5" id="fnref5:1">5:1</a></sup></p>
+<p>That framing is accurate about the mechanics, and it is worth being precise about what it does and doesn’t give you.</p>
+<p>What it gives you is presence. Tools are ephemeral and live in your tab: “Once the user navigates away from your site or closes the tab, the agent cannot access your site or take actions.”<sup class="footnote-ref"><a href="#fn5" id="fnref5:2">5:2</a></sup> Your tool runs your code and can update your interface while the user watches. That’s why Chrome says tools “execute on your webpage visibly” and keep “your brand and human-centered design choices intact”.<sup class="footnote-ref"><a href="#fn1" id="fnref1:5">1:5</a></sup> If <code>search_products</code> renders its results in Trailhead’s own grid, the customer sees Trailhead’s photography, prices and reviews, not a reformatted list in a chat bubble.</p>
+<p>What it doesn’t give you is control over how the agent uses what you return. An agent can call your tools, take the JSON and compare it with three other stores. Chrome’s use-case guide describes exactly that: a shopper asks for “the best prices for the products on my shopping list at two or three local stores”, and each store’s tools feed the comparison.<sup class="footnote-ref"><a href="#fn9" id="fnref9:3">9:3</a></sup> Structured results make you easier to compare, and in a commodity category easier to compare can mean easier to replace.</p>
+<p>So the brand decisions are about what you put in the tool contract and what you keep on the page.</p>
+<ul>
+<li><em>Show, don’t just return.</em> Have every tool that finds something put it on screen. Chapter 5’s rule, “the user sees what the agent found”, is as much a brand rule as a UX rule.</li>
+<li><em>Return what helps the agent decide honestly.</em> Ratings, stock, delivery times, the reasons to buy from you. If your advantage is next-day delivery to Tromsø, put it in the result. If it’s only visible in a banner image, the agent won’t see it.</li>
+<li><em>Keep consequential steps on your page.</em> The spec’s <code>consequentialHint</code> signals that a tool performs a significant action, “such as booking a flight or transferring money”, so that clients “can selectively enforce mandatory user confirmation prompts”.<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup> Trailhead goes further: the <code>checkout</code> tool opens the summary, and only the customer’s click places the order. Your confirmation screen, your terms, your upsells, your brand.</li>
+<li><em>Don’t over-ask.</em> The spec’s privacy section describes “privacy leakage through over-parameterization”: tools designed with many optional parameters so that helpful agents fill them from the user’s personal context, creating “a personalization-to-fingerprinting pipeline”.<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup> Asking an agent for age, location and previous purchases “for better recommendations” is the kind of thing that will cost you trust when someone notices, and the spec has named it as an attack.</li>
+</ul>
+<h3 id="tools-are-product-surface"><a class="anchor-link" href="#tools-are-product-surface">Tools are product surface</a></h3>
+<p>Trust in your tools is a brand asset, and the spec explains why it is fragile. Section 6.3.2, “Misrepresentation of Intent”, starts from the fact that “there is no guarantee that a WebMCP tool’s declared intent matches its actual behavior”, and it lists two causes. One is fraud. The other is “accidental misalignment”: “poorly written descriptions, outdated documentation, or inherent imprecision in natural language.”<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup> A description that says “adds to cart” while the code also applies a promotional bundle is a misrepresentation, even if nobody meant it.</p>
+<p>The fix is organizational as much as technical. Trailhead keeps every agent-facing string in one file, reviewed like product copy, with an owner and an eval suite per tool (Listing 16.1).</p>
+<figure class="code"><figcaption>Listing 16.1 — Trailhead’s tool catalog: agent-facing text as owned product surface (tool-catalog.ts)</figcaption>
+<pre><code class="language-ts">// tool-catalog.ts: Trailhead's agent-facing surface, owned like product copy.
+export type Journey = 'discover' | 'decide' | 'buy' | 'support';
+
+export interface CatalogEntry {
+  name: string;
+  title: string;
+  description: string;
+  journey: Journey;              // which user journey this tool serves
+  owner: string;                 // the team that answers for its behaviour
+  evalSuite: string;             // the task suite that must pass before it ships
+  annotations: WebMCP.ToolAnnotations;
+}
+
+export const toolCatalog = [
+  {
+    name: 'search_products',
+    title: 'Search products',
+    description:
+      'Search Trailhead outdoor gear by keyword, with optional category, ' +
+      'maximum price in NOK and an in-stock filter. Shows the results on ' +
+      'the page and returns up to 10 products with SKU, name, price and rating.',
+    journey: 'discover', owner: 'search', evalSuite: 'evals/search.jsonl',
+    annotations: { readOnlyHint: true },
+  },
+  {
+    name: 'compare_products',
+    title: 'Compare products',
+    description:
+      'Compare 2 to 4 products side by side by SKU. Opens the comparison ' +
+      'table on the page and returns the same rows: price, weight, rating, stock.',
+    journey: 'decide', owner: 'search', evalSuite: 'evals/compare.jsonl',
+    annotations: { readOnlyHint: true },
+  },
+  {
+    name: 'add_to_cart',
+    title: 'Add to cart',
+    description:
+      'Add a product to the shopping cart by SKU, quantity 1 to 10. ' +
+      'Updates the cart badge and returns the new cart total in NOK.',
+    journey: 'buy', owner: 'checkout', evalSuite: 'evals/cart.jsonl',
+    annotations: {},
+  },
+  {
+    name: 'get_cart',
+    title: 'Show cart',
+    description: 'Return the items in the cart with quantities and the total in NOK.',
+    journey: 'buy', owner: 'checkout', evalSuite: 'evals/cart.jsonl',
+    annotations: { readOnlyHint: true },
+  },
+  {
+    name: 'checkout',
+    title: 'Go to checkout',
+    description:
+      'Open the checkout summary for the current cart. The customer reviews ' +
+      'the order and places it with their own click; this tool never pays.',
+    journey: 'buy', owner: 'checkout', evalSuite: 'evals/checkout.jsonl',
+    annotations: { consequentialHint: true },
+  },
+] as const satisfies readonly CatalogEntry[];
+
+export type ToolName = (typeof toolCatalog)[number]['name'];
+</code></pre></figure>
+<p>Three details matter. The descriptions say what the tool does and what it returns, in positive language, as Chrome recommends.<sup class="footnote-ref"><a href="#fn3" id="fnref3:2">3:2</a></sup> The <code>checkout</code> description states the boundary (“this tool never pays”), because a description is the only promise the agent can read. And <code>as const satisfies</code> keeps the literal names as types, so that the registration code in Listing 16.4 can’t register a tool that isn’t in the catalog.</p>
+<h2 id="measuring-agent-driven-conversion"><a class="anchor-link" href="#measuring-agent-driven-conversion">Measuring agent-driven conversion</a></h2>
+<p>Kari’s second question was how they will know it worked. The good news is that WebMCP is unusually measurable. Every tool call runs your own <code>execute</code> callback in your own page, so you can see each call, its outcome and its timing with ordinary front-end analytics. The bad news is that you will know <em>that</em> an agent called you, but not <em>which</em> agent or <em>why</em>.</p>
+<h3 id="what-the-platform-tells-you"><a class="anchor-link" href="#what-the-platform-tells-you">What the platform tells you</a></h3>
+<p>Look at what your callback receives. In the specification’s IDL, <code>execute</code> gets the input object and a <code>ToolExecuteCallbackOptions</code> dictionary whose only member is the <code>signal</code>.<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup> There is no caller identity, no agent name, no model and no conversation. The spec defines agents broadly (its introduction says tools can be invoked by “agents, browser’s agents, and assistive technologies”), and it doesn’t ask any of them to identify themselves to the page.<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup></p>
+<p>The <code>ModelContext</code> object also fires two events: <code>toolactivated</code>, “dispatched … when the execution of a tool begins”, and <code>toolcancel</code>, dispatched when an execution is cancelled. Both carry only a <code>toolName</code>.<sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup> In our tests on 15 October 2026, Chromium 156 with the WebMCP testing flag fired <code>toolactivated</code> on <code>document.modelContext</code> for each in-page <code>executeTool()</code> call, in the same order as the calls.<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">2:1</a></sup> The events are useful for a lightweight counter that doesn’t touch tool code, but they can’t tell you whether a call succeeded.</p>
+<p>The declarative API, which Chapter 8 covers and which was removed from the specification in October 2026, adds an <code>agentInvoked</code> member to <code>SubmitEvent</code> so form handlers can tell agent submissions from human ones.<sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup> The imperative API has no equivalent because it doesn’t need one: a call to <code>execute</code> <em>is</em> an agent call.</p>
+<h3 id="recording-outcomes"><a class="anchor-link" href="#recording-outcomes">Recording outcomes</a></h3>
+<p>The most useful single metric is the outcome of each call. Chapter 5 established the rule of returning recoverable failures as values, and Chapter 11 settled their shape for the whole book: <code>{ status, code, message }</code>. The <code>status</code> says who acts next: <code>'error'</code> for something the agent can fix, like an unknown SKU; <code>'needs_input'</code> when only the user knows the answer; <code>'refused'</code> when a rule says no, as with an out-of-stock item (code <code>OUT_OF_STOCK</code>); and <code>'cancelled_by_user'</code> when the person declined in the page’s own UI. Exceptions are only for real faults. That convention makes outcomes easy to classify. Listing 16.2 wraps any tool and reports one record per call, without changing what the agent receives.</p>
+<figure class="code"><figcaption>Listing 16.2 — Measuring every call without touching the tool (measure.ts)</figcaption>
+<pre><code class="language-ts">// measure.ts: one wrapper, every outcome, no change to the tool itself.
+// Chapter 11's four statuses for a call that fell short, plus two for a call that never returned.
+export type Outcome =
+  | 'ok' | 'error' | 'needs_input' | 'refused' | 'cancelled_by_user'
+  | 'threw' | 'aborted';
+
+const FELL_SHORT = new Set(['error', 'needs_input', 'refused', 'cancelled_by_user']);
+
+export interface ToolCallRecord {
+  tool: string;
+  outcome: Outcome;
+  code?: string;   // the result's stable code, e.g. 'OUT_OF_STOCK'
+  ms: number;
+}
+
+export function withMeasurement(
+  tool: WebMCP.ModelContextTool,
+  report: (record: ToolCallRecord) =&gt; void,
+): WebMCP.ModelContextTool {
+  return {
+    ...tool,
+    async execute(input, options) {
+      const started = performance.now();
+      const done = (outcome: Outcome, code?: string) =&gt;
+        report({ tool: tool.name, outcome, code, ms: Math.round(performance.now() - started) });
+      try {
+        const result = await tool.execute(input, options);
+        // Chapter 11's convention: a call that falls short says so in `status`, with a `code`.
+        const { status, code } = (result ?? {}) as { status?: string; code?: string };
+        if (options.signal.aborted) done('aborted');
+        else if (status &amp;&amp; FELL_SHORT.has(status)) done(status as Outcome, code);
+        else done('ok');
+        return result;
+      } catch (err) {
+        done(options.signal.aborted ? 'aborted' : 'threw');
+        throw err;
+      }
+    },
+  };
+}
+</code></pre></figure>
+<p>Each outcome starts a different conversation. A falling <em>ok</em> rate after a release means a description or schema regressed, and your eval suite should have caught it. A rising <em>error</em> rate points the same way: agents are calling the tool with arguments it can’t use. A rising <em>refused</em> rate with one dominant code (<code>OUT_OF_STOCK</code>, say) is a merchandising problem, not an engineering one. <em>needs_input</em> and <em>cancelled_by_user</em> show how often the person had to step in. <em>Threw</em> is a bug. <em>Aborted</em> means the caller aborted the call’s signal, so the agent never sees a result even if your code ran on; Chapter 6 covers what that does to your code. It isn’t a result status: a person who declines in your own UI shows up as <em>cancelled_by_user</em>. Durations tell you where agents wait, and Chrome’s best practices remind you that the interface should be updated once the function completes, because “agents may rely on the interface to plan next steps”.<sup class="footnote-ref"><a href="#fn3" id="fnref3:3">3:3</a></sup></p>
+<p>Note what the record leaves out: the input. The tool name, outcome, code and duration are enough for every metric in this chapter. Logging arguments means logging whatever the agent drew from the user’s context, and that is exactly the data the over-parameterization warning is about.<sup class="footnote-ref"><a href="#fn13" id="fnref13:1">13:1</a></sup> If you need inputs for debugging, sample them, strip them of personal data and keep them out of your marketing warehouse.</p>
+<h3 id="from-calls-to-conversions"><a class="anchor-link" href="#from-calls-to-conversions">From calls to conversions</a></h3>
+<p>Tool metrics tell you whether the tools work. Conversion is a business number, and it needs to be joined to orders. Trailhead takes the simplest defensible approach. It remembers which tools succeeded in the current tab session and attaches that list to the order when the customer places it (Listing 16.3).</p>
+<figure class="code"><figcaption>Listing 16.3 — Attributing an order to agent help (attribution.ts)</figcaption>
+<pre><code class="language-ts">// attribution.ts: remember which tools helped, attach it to the order.
+const KEY = 'trailhead.agentAssist';
+
+export function noteAgentAssist(toolName: string): void {
+  const used = new Set&lt;string&gt;(JSON.parse(sessionStorage.getItem(KEY) ?? '[]'));
+  used.add(toolName);
+  sessionStorage.setItem(KEY, JSON.stringify([...used]));
+}
+
+// Called by the checkout page when the customer clicks &quot;Place order&quot;.
+export function orderAttribution(): { agentAssisted: boolean; toolsUsed: string[] } {
+  const toolsUsed: string[] = JSON.parse(sessionStorage.getItem(KEY) ?? '[]');
+  return { agentAssisted: toolsUsed.length &gt; 0, toolsUsed };
+}
+</code></pre></figure>
+<p><code>sessionStorage</code> is scoped to the tab, which matches WebMCP’s own scope: tools belong to a document in a tab, and so does the assistance. An order placed in a tab where the agent searched and added to the cart is <em>agent-assisted</em>. An order placed in a fresh tab is not. Listing 16.4 connects the pieces: the catalog decides what is registered, the wrapper measures it, and successful calls are noted for attribution.</p>
+<figure class="code"><figcaption>Listing 16.4 — Registering the catalog with measurement and attribution (register-tools.ts)</figcaption>
+<pre><code class="language-ts">// register-tools.ts: the catalog decides what agents see; code supplies behaviour.
+import { toolCatalog, type ToolName } from './tool-catalog.js';
+import { withMeasurement, type ToolCallRecord } from './measure.js';
+import { noteAgentAssist } from './attribution.js';
+import { schemas, handlers } from './trailhead-tools.js';   // the store's own code
+import { analytics } from './analytics.js';
+
+function report(record: ToolCallRecord) {
+  analytics.send('webmcp_tool_call', record);
+  if (record.outcome === 'ok') noteAgentAssist(record.tool);
+}
+
+export async function registerTrailheadTools(signal: AbortSignal): Promise&lt;void&gt; {
+  const modelContext = document.modelContext;
+  if (!modelContext) return;                 // progressive enhancement: no WebMCP, no tools
+  for (const entry of toolCatalog) {
+    const name: ToolName = entry.name;
+    const tool: WebMCP.ModelContextTool = {
+      name,
+      title: entry.title,
+      description: entry.description,
+      inputSchema: schemas[name],
+      annotations: entry.annotations,
+      // Delegate, so the store can swap a handler without re-registering.
+      execute: (input, options) =&gt; handlers[name](input, options),
+    };
+    await modelContext.registerTool(withMeasurement(tool, report), { signal });
+  }
+}
+</code></pre></figure>
+<p>The <code>execute</code> property delegates to the current handler instead of capturing it. The explainer’s best practices point out that a tool’s implementation can change: as long as the name, description and schema stay accurate, the callback can hand off to code the application changes over time, and the tool doesn’t need to be registered again.<sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup> Changing the <em>description</em> is different, and the organizational section below comes back to it.</p>
+<figure class="book-figure"><img decoding="async" src="16-product-and-business-implications/images/figure-16-2.png" alt="Figure 16.2 — The agent-assisted funnel at Trailhead. Each stage is measured with code from this chapter: tool outcomes from Listing 16.2, assisted orders from Listing 16.3, compared with sessions that had no tool calls. The order is always placed by the customer’s click." /><figcaption>Figure 16.2 — The agent-assisted funnel at Trailhead. Each stage is measured with code from this chapter: tool outcomes from Listing 16.2, assisted orders from Listing 16.3, compared with sessions that had no tool calls. The order is always placed by the customer’s click.</figcaption></figure>
+<p>Figure 16.2 shows the resulting funnel, and Table 16.3 lists the metrics Trailhead reports weekly.</p>
+<p><strong>Table 16.3 — Agent metrics Trailhead tracks</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>From</th>
+<th>Question it answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Calls per tool, per day</td>
+<td>Listing 16.2</td>
+<td>Is anyone using it? Which tools do agents reach for?</td>
+</tr>
+<tr>
+<td>Outcome mix (ok, Chapter 11’s four statuses, threw, aborted)</td>
+<td>Listing 16.2</td>
+<td>Does the tool work? Did a release regress it?</td>
+</tr>
+<tr>
+<td>Top <code>refused</code>, <code>error</code> and <code>needs_input</code> codes</td>
+<td>Listing 16.2</td>
+<td>What blocks agents: stock, input, policy?</td>
+</tr>
+<tr>
+<td>Median and slow-tail duration</td>
+<td>Listing 16.2</td>
+<td>Where do agents and customers wait?</td>
+</tr>
+<tr>
+<td>Assisted order rate and value</td>
+<td>Listing 16.3</td>
+<td>Do sessions with agent help end in orders?</td>
+</tr>
+<tr>
+<td>Checkout opened → order placed</td>
+<td>Listings 16.2–16.3</td>
+<td>Do customers confirm what agents prepare?</td>
+</tr>
+</tbody>
+</table></div>
+<p>Two cautions belong in the report next to these numbers. First, <em>assisted is not caused</em>. A customer who uses an agent may be a more determined buyer to begin with, so compare assisted sessions with similar unassisted ones before claiming a lift, and run a holdout (tools off for a sample of sessions) if the decision is big enough. Second, today’s numbers are an origin-trial sample. Only users whose browser runs WebMCP and whose agent consumes it will reach your tools at all. The project’s implementation-status page lists Chrome and Edge trials, experimental support in Brave’s Leo, support in ChatGPT Desktop and a “coming soon” integration for Meta’s Ray-Ban Display glasses.<sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup> Treat early volumes as a signal of where the tools work and where they don’t, not as a market forecast.</p>
+<h2 id="pricing-and-policy-questions"><a class="anchor-link" href="#pricing-and-policy-questions">Pricing and policy questions</a></h2>
+<p>WebMCP doesn’t change your pricing, but it surfaces pricing and policy questions that were easy to postpone while agents only clicked. None of them has a standard answer, and most need a decision from someone above the front-end team.</p>
+<p><em>Will agents see the same prices as people?</em> They should. A tool runs in the user’s session and reads the same data as the page, so the natural design shows the same price. Agent-only prices that the page doesn’t show are the “declared intent versus actual behavior” gap the spec warns about.<sup class="footnote-ref"><a href="#fn14" id="fnref14:1">14:1</a></sup> If you do want agent-specific offers, make them visible on the page the user is looking at.</p>
+<p><em>Do you welcome price comparison?</em> Chrome’s best practices assume you do: tools “should allow for reasonable repetition, such as for price comparison”, and a rate-limited tool should “return a meaningful error or advise the user to manually take on the task.”<sup class="footnote-ref"><a href="#fn3" id="fnref3:4">3:4</a></sup> If your business depends on not being compared, WebMCP makes that harder to maintain, though agents could already compare prices by reading your pages.</p>
+<p><em>What do your terms of service say about automation?</em> Many sites’ terms were written to discourage scraping and bots. Browser agents already actuate those sites on users’ behalf. A WebMCP tool is a sanctioned path, and the terms and the tools should agree. It makes little sense to register <code>add_to_cart</code> while your terms forbid automated purchasing.</p>
+<p><em>How autonomous do you allow it to be?</em> WebMCP’s design assumes a person is present. Chrome describes the API as “primarily designed for local browser workflows with a human in the loop”, and the explainer lists “fully autonomous workflows” as a non-goal.<sup class="footnote-ref"><a href="#fn1" id="fnref1:6">1:6</a></sup><sup class="footnote-ref"><a href="#fn11" id="fnref11:2">11:2</a></sup> Your policy can rely on that design. Consequential steps wait for a click, and a session with nobody watching gets nothing it couldn’t get from your public pages.</p>
+<p><em>Who is responsible when it goes wrong?</em> If an agent orders the wrong tent, is it the agent’s mistake, your description’s or the customer’s? The spec describes the opposite worry too, malicious tools designed so that a harmful action “can be attributed to the agent”.<sup class="footnote-ref"><a href="#fn14" id="fnref14:2">14:2</a></sup> Precise descriptions, values for recoverable failures, a confirmation on your own page and an order history that records which steps a tool prepared are the evidence you will want if that conversation ever happens.</p>
+<p><em>What about content you don’t control?</em> Product reviews and Q&amp;A are user-generated, and a review can contain instructions aimed at an agent. The spec’s <code>untrustedContentHint</code> exists for this. It marks a result whose payload “requires heightened security handling”, and Chrome recommends it for tools that return user-generated or externally sourced content.<sup class="footnote-ref"><a href="#fn21" id="fnref21">21</a></sup><sup class="footnote-ref"><a href="#fn22" id="fnref22">22</a></sup> Chapter 12 covers the threat model. The business point is that a tool returning reviews needs a security review before it ships.</p>
+<h2 id="webmcp-and-backend-mcp-in-one-plan"><a class="anchor-link" href="#webmcp-and-backend-mcp-in-one-plan">WebMCP and backend MCP in one plan</a></h2>
+<p>The last strategy question is whether WebMCP replaces Trailhead’s backend MCP server from Chapter 3. It doesn’t, and the explainer says so: WebMCP “is designed to complement, not replace, existing backend-focused protocols like MCP.”<sup class="footnote-ref"><a href="#fn11" id="fnref11:3">11:3</a></sup> Chrome’s comparison guide offers the clearest way to explain the split to a non-technical audience: “MCP is help call center and WebMCP is the in-store expert.” MCP is persistent and “available on any platform at any time”. WebMCP is ephemeral, tab-bound and “available only on your website”. Chrome’s recommendation is to use both: “manage core logic with MCP” as the platform-agnostic service layer, and “build a contextual UI with WebMCP” for in-browser work while the user has your site open.<sup class="footnote-ref"><a href="#fn5" id="fnref5:3">5:3</a></sup></p>
+<figure class="book-figure"><img decoding="async" src="16-product-and-business-implications/images/figure-16-3.png" alt="Figure 16.3 — One plan, two surfaces. Trailhead’s catalog and order services sit behind both its backend MCP server (available anywhere, no UI) and its WebMCP tools (in the open tab, with the customer watching). The same eval suites and owners cover both." /><figcaption>Figure 16.3 — One plan, two surfaces. Trailhead’s catalog and order services sit behind both its backend MCP server (available anywhere, no UI) and its WebMCP tools (in the open tab, with the customer watching). The same eval suites and owners cover both.</figcaption></figure>
+<p>For Trailhead the division looks like Figure 16.3. The backend MCP server exposes <code>search_products</code> and <code>get_order_status</code>, the things an assistant might need when the customer is nowhere near the site (“where is my order?”). The page exposes the full journey, from search to the checkout summary, because that journey benefits from the customer’s session, cart and eyes. Three choices keep the two surfaces from drifting apart.</p>
+<ul>
+<li><em>One implementation, two adapters.</em> Both surfaces call the same catalog service. The WebMCP tool adds the page update and the confirmation; the MCP tool adds authentication and pagination.</li>
+<li><em>The same name and schema where the tool overlaps.</em> <code>search_products</code> takes the same <code>query</code>, <code>category</code>, <code>maxPrice</code> and <code>inStockOnly</code> in both places, so one set of evals and one description review covers both.</li>
+<li><em>Different boundaries where the context differs.</em> The backend server has no <code>checkout</code> tool. Purchases need the customer’s confirmation, and the page is where that confirmation lives.</li>
+</ul>
+<h2 id="who-owns-the-tools"><a class="anchor-link" href="#who-owns-the-tools">Who owns the tools</a></h2>
+<p>Kari’s last question, who owns all this, is the one most teams get wrong, because a tool looks like code and so gets owned like code. A tool definition has at least four parts, and they belong to different people.</p>
+<ul>
+<li>The <em>name and description</em> are copy. The model reads them, and they decide whether a tool gets called. They need the care you give to checkout microcopy, and someone with a product or content role should approve changes.</li>
+<li>The <em>input schema and result shape</em> are an API contract. Engineering owns them, with the usual review for breaking changes.</li>
+<li>The <em>evals</em> are the acceptance test for both. Chrome’s guide says that before releasing tools into production “you must confirm agents understand when to call the tool, how to execute it, and what answers are acceptable”, and that classic deterministic tests should still cover everything that doesn’t talk to the model.<sup class="footnote-ref"><a href="#fn4" id="fnref4:1">4:1</a></sup> Chapter 14 builds Trailhead’s suites.</li>
+<li>The <em>annotations and exposure</em> (<code>readOnlyHint</code>, <code>consequentialHint</code>, <code>untrustedContentHint</code>, <code>exposedTo</code>) are security decisions. They belong in the same review as any change to who can do what on the site.<sup class="footnote-ref"><a href="#fn22" id="fnref22:1">22:1</a></sup></li>
+</ul>
+<p>A change to the copy is also a deployment event. A tool’s name, description and schema are read into the model’s context when the agent observes the tool. To change them you unregister the tool and register it again, and agents that watch for <code>toolchange</code> events refresh their lists.<sup class="footnote-ref"><a href="#fn19" id="fnref19:1">19:1</a></sup> So a description edit should go through the same eval run as a code change, and Trailhead’s CI enforces the mechanical part with Listing 16.5.</p>
+<figure class="code"><figcaption>Listing 16.5 — Enforcing budgets and ownership in CI (check-budgets.ts)</figcaption>
+<pre><code class="language-ts">// check-budgets.ts: fail the build when agent-facing text outgrows its budget.
+import type { CatalogEntry } from './tool-catalog.js';
+
+// Chrome's provisional character budgets (WebMCP tool security guidance).
+export const BUDGET = { name: 30, description: 500, parameterDescription: 150 };
+
+export function checkBudgets(catalog: readonly CatalogEntry[]): string[] {
+  const problems: string[] = [];
+  const seen = new Set&lt;string&gt;();
+  for (const tool of catalog) {
+    if (tool.name.length &gt; BUDGET.name) {
+      problems.push(`${tool.name}: name is ${tool.name.length} characters`);
+    }
+    if (tool.description.length &gt; BUDGET.description) {
+      problems.push(`${tool.name}: description is ${tool.description.length} characters`);
+    }
+    if (seen.has(tool.name)) problems.push(`${tool.name}: duplicate name`);
+    seen.add(tool.name);
+    if (!tool.owner || !tool.evalSuite) problems.push(`${tool.name}: no owner or eval suite`);
+  }
+  return problems;
+}
+</code></pre></figure>
+<p>The numbers come from Chrome’s tool-security guidance, which recommends 500 characters per tool description, 150 per parameter description and 30 per tool or parameter name, and 1,500 per tool output. Chrome marks them as recommendations that may change and says specific limits “may be added to the API specification in the future”.<sup class="footnote-ref"><a href="#fn22" id="fnref22:2">22:2</a></sup> The ownership check is Trailhead’s own rule. A tool without an owner and an eval suite doesn’t ship.</p>
+<p><strong>Table 16.4 — Who owns what in Trailhead’s agent surface</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Owner</th>
+<th>Reviewer</th>
+<th>Gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Names and descriptions</td>
+<td>Product (per journey)</td>
+<td>Content design</td>
+<td>Eval suite passes; Listing 16.5 passes</td>
+</tr>
+<tr>
+<td>Schemas and results</td>
+<td>Engineering (per team)</td>
+<td>API review</td>
+<td>Type check; deterministic tests</td>
+</tr>
+<tr>
+<td>Annotations, <code>exposedTo</code></td>
+<td>Engineering</td>
+<td>Security</td>
+<td>Threat-model review (Chapter 12)</td>
+</tr>
+<tr>
+<td>Eval suites</td>
+<td>QA / ML</td>
+<td>Product</td>
+<td>Run on every description or schema change</td>
+</tr>
+<tr>
+<td>Agent metrics</td>
+<td>Analytics</td>
+<td>Product</td>
+<td>Weekly report (Table 16.3)</td>
+</tr>
+<tr>
+<td>Spec and trial tracking</td>
+<td>One named engineer</td>
+<td>Tech lead</td>
+<td>Release notes reviewed each Chrome milestone</td>
+</tr>
+</tbody>
+</table></div>
+<p>The last row deserves emphasis. WebMCP is a Community Group draft in origin trials, and it changes. Chapter 15 records the churn, and Chapter 17 the open questions. Someone has to read the release notes, watch the issues that affect your tools and send the team’s findings back. Chrome’s origin-trial announcement describes the trial as a way of “gathering user feedback, with the goal of informing future iterations of the API”, and its documentation invites feedback on the API shape in the explainer’s repository and Chromium bugs for implementation problems.<sup class="footnote-ref"><a href="#fn23" id="fnref23">23</a></sup><sup class="footnote-ref"><a href="#fn22" id="fnref22:3">22:3</a></sup> A company that runs WebMCP in production and never reports what it learned is leaving its influence on the standard unused.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: what could change these plans</p>
+<p><em>Who sees your tools.</em> The explainer is considering a <code>native-agent</code> keyword for <code>exposedTo</code> that would control whether the browser’s built-in agent sees a tool, with different defaults for top-level pages and iframes.<sup class="footnote-ref"><a href="#fn8" id="fnref8:1">8:1</a></sup> That could change how many agents reach your tools without any change on your side.
+<em>Agent identity and confirmation.</em> The page can’t tell which agent is calling, and the design for asking the user for input during a call (<code>requestUserInteraction()</code> versus <code>requestUserInput()</code>, issues #165 and #204) is unresolved. Chapter 13 tracks both.
+<em>Budgets.</em> Chrome’s character budgets are provisional and may become limits in the specification.<sup class="footnote-ref"><a href="#fn22" id="fnref22:4">22:4</a></sup>
+<em>Tool grouping.</em> Proposals for higher-level “skills” (#161) and for tool collections with progressive disclosure (#255) could change how many tools a page can sensibly expose. On 3 September 2026 the Community Group resolved to “seek explicit model harness creator feedback and defer the tool collections feature”.<sup class="footnote-ref"><a href="#fn24" id="fnref24">24</a></sup>
+<em>Browser behaviour.</em> In our tests Chromium 156 returned <code>getTools()</code> in alphabetical order, not registration order, and fired <code>toolactivated</code> for in-page calls. Neither is guaranteed, so don’t build reports that depend on them.<sup class="footnote-ref"><a href="#fn2" id="fnref2:2">2:2</a></sup></p></aside>
+<h2 id="trailheads-plan-on-one-page"><a class="anchor-link" href="#trailheads-plan-on-one-page">Trailhead’s plan on one page</a></h2>
+<p>By the end of Monday, Kari’s whiteboard has a plan she can take upstairs.</p>
+<ol>
+<li><em>Release 1: discover and decide.</em> <code>search_products</code> and <code>compare_products</code>, read-only, results rendered in Trailhead’s own grid and comparison table. Measurement and attribution from day one (Listings 16.2–16.4).</li>
+<li><em>Release 2: the cart and the checkout handoff.</em> <code>add_to_cart</code>, <code>get_cart</code> and <code>checkout</code>, with checkout stopping at the summary and the customer’s click placing the order. The confirmation design comes from Chapter 13.</li>
+<li><em>In parallel: the backend MCP server.</em> <code>search_products</code> and <code>get_order_status</code> for assistants that aren’t in the browser, sharing services, names and evals with the page (Chapter 3).</li>
+<li><em>Governance.</em> The catalog file (Listing 16.1) with an owner and an eval suite per tool, the CI check (Listing 16.5), the ownership table (Table 16.4) and one engineer tracking the spec.</li>
+<li><em>Success criteria for the quarter.</em> Tool outcome mix above an agreed ok rate. Assisted orders measured against comparable unassisted sessions. A short list of findings sent back to the Community Group.</li>
+</ol>
+<p>None of this needs WebMCP to win the standards debate. The tools wrap code Trailhead already has, the measurement is ordinary analytics and the catalog is good practice for any agent surface, including the backend server. If WebMCP changes shape, the catalog and the evals carry over, and the adapter is the part that changes. Chapter 17 looks at how that adapter might need to change.</p>
+<h2 id="chapter-summary"><a class="anchor-link" href="#chapter-summary">Chapter summary</a></h2>
+<ul>
+<li>WebMCP converts visits you already have. Tools are discovered only during the user’s visit, and there is no central registry. Static manifests were set aside as the primary mechanism, and discovery for sites that aren’t open is an open proposal. Agent-readiness resembles SEO in its need for good machine-facing copy, not in its acquisition power.</li>
+<li>Choose first journeys by actuation pain, value per completion, code reuse, the cost of a wrong action and the number of tools needed. Search and comparison come first, then reversible cart steps, then a checkout that stops at your confirmation screen. Keep the tool count small.</li>
+<li>WebMCP keeps the agent a guest on your site: tools run in your tab, update your UI and disappear when the tab closes. It doesn’t stop agents comparing your structured results with competitors’. Show results on the page, return the facts that make you the right choice, keep consequential steps on your page and never over-ask.</li>
+<li>Every call runs your code, so tools are easy to measure. The page can’t tell which agent is calling: <code>execute</code> receives only the input and a signal, and <code>toolactivated</code> and <code>toolcancel</code> carry only a tool name. Record outcomes (ok, Chapter 11’s four statuses, threw, aborted), codes and durations, not inputs. Attribute orders to agent help by tab session, and treat assisted as different from caused.</li>
+<li>Pricing and policy decisions surface early: same prices for agents and people, rate limits that allow comparison, terms of service that match the tools you register, human-in-the-loop as policy, evidence for disputes, and <code>untrustedContentHint</code> for user-generated content.</li>
+<li>Use WebMCP and backend MCP together: one implementation behind two adapters, the same names and schemas where they overlap, and different boundaries where the context differs.</li>
+<li>Tools are product surface. Copy, schema, evals and security annotations have different owners. Description changes need re-registration and an eval run. Enforce Chrome’s provisional budgets in CI, and give one person the job of tracking the spec and reporting back.</li>
+</ul>
+<p>Chapter 17 turns from today’s plan to the open questions (output schemas, streaming and multimodal data, cross-document responses, service-worker tools and the competing futures for the API) and ends with a checklist for building now in a way that survives whichever future arrives.</p>
+<h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>Chrome for Developers, “WebMCP” (published 18 May 2026, updated 7 October 2026), including “Use cases” and “Limitations”. <a href="https://developer.chrome.com/docs/ai/webmcp">https://developer.chrome.com/docs/ai/webmcp</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a> <a href="#fnref1:2" class="footnote-backref">↩︎</a> <a href="#fnref1:3" class="footnote-backref">↩︎</a> <a href="#fnref1:4" class="footnote-backref">↩︎</a> <a href="#fnref1:5" class="footnote-backref">↩︎</a> <a href="#fnref1:6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>Tested by the author on 15 October 2026 with Playwright 1.64 and Chromium 156.0.8078.4, both with a <code>document.modelContext</code> mock and with the browser’s own implementation (<code>--enable-features=WebMCPTesting</code>). Code and tests: vibeprogrammer/webmcp-book-demos, folder chapters/16-product-and-business-implications. <a href="https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/16-product-and-business-implications">https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/16-product-and-business-implications</a> <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a> <a href="#fnref2:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>Chrome for Developers, “WebMCP best practices” (published 18 May 2026): “Create a tool strategy”, “Use clear language and semantic code” and “Prioritize reliability”. <a href="https://developer.chrome.com/docs/ai/webmcp/best-practices">https://developer.chrome.com/docs/ai/webmcp/best-practices</a> <a href="#fnref3" class="footnote-backref">↩︎</a> <a href="#fnref3:1" class="footnote-backref">↩︎</a> <a href="#fnref3:2" class="footnote-backref">↩︎</a> <a href="#fnref3:3" class="footnote-backref">↩︎</a> <a href="#fnref3:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>Chrome for Developers, “Test WebMCP with Evals” (published 19 May 2026, updated 28 May 2026), including “Failure modes”. <a href="https://developer.chrome.com/docs/ai/webmcp/evals">https://developer.chrome.com/docs/ai/webmcp/evals</a> <a href="#fnref4" class="footnote-backref">↩︎</a> <a href="#fnref4:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>Chrome for Developers, “WebMCP and MCP compared” (published 11 March 2026, updated 19 May 2026), including “Use WebMCP and MCP”. <a href="https://developer.chrome.com/docs/ai/webmcp/compare-mcp">https://developer.chrome.com/docs/ai/webmcp/compare-mcp</a> <a href="#fnref5" class="footnote-backref">↩︎</a> <a href="#fnref5:1" class="footnote-backref">↩︎</a> <a href="#fnref5:2" class="footnote-backref">↩︎</a> <a href="#fnref5:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>WebMCP explainer, “Alternatives Considered”, §2 “Static Declarative Manifests”, webmachinelearning/webmcp. <a href="https://github.com/webmachinelearning/webmcp#alternatives-considered">https://github.com/webmachinelearning/webmcp#alternatives-considered</a> <a href="#fnref6" class="footnote-backref">↩︎</a> <a href="#fnref6:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>Brandon Walderman, “WebMCP for Service Workers” (supplementary explainer, first published 28 August 2025), “Discovery and Installation” and “Appendix A: Discovery”. <a href="https://github.com/webmachinelearning/webmcp/blob/main/docs/service-workers.md">https://github.com/webmachinelearning/webmcp/blob/main/docs/service-workers.md</a> <a href="#fnref7" class="footnote-backref">↩︎</a> <a href="#fnref7:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>WebMCP explainer, “Open Questions” (built-in agent exposure by default; service workers integration). <a href="https://github.com/webmachinelearning/webmcp#open-questions">https://github.com/webmachinelearning/webmcp#open-questions</a> <a href="#fnref8" class="footnote-backref">↩︎</a> <a href="#fnref8:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p>Chrome for Developers, “WebMCP use cases” (published 18 May 2026): critical user journeys, “Help users make purchases”, “Support repeat purchases” and the warranty-claim example. <a href="https://developer.chrome.com/docs/ai/webmcp/use-cases">https://developer.chrome.com/docs/ai/webmcp/use-cases</a> <a href="#fnref9" class="footnote-backref">↩︎</a> <a href="#fnref9:1" class="footnote-backref">↩︎</a> <a href="#fnref9:2" class="footnote-backref">↩︎</a> <a href="#fnref9:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p>WebMCP explainer, “Use Cases”, “E-Commerce &amp; Tailored Shopping”. <a href="https://github.com/webmachinelearning/webmcp#use-cases">https://github.com/webmachinelearning/webmcp#use-cases</a> <a href="#fnref10" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>WebMCP explainer, “Goals &amp; Non-Goals”. <a href="https://github.com/webmachinelearning/webmcp#goals--non-goals">https://github.com/webmachinelearning/webmcp#goals--non-goals</a> <a href="#fnref11" class="footnote-backref">↩︎</a> <a href="#fnref11:1" class="footnote-backref">↩︎</a> <a href="#fnref11:2" class="footnote-backref">↩︎</a> <a href="#fnref11:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, §6.4.5 Consequential Annotation for Tool Executions. <a href="https://webmachinelearning.github.io/webmcp/#security-privacy">https://webmachinelearning.github.io/webmcp/#security-privacy</a> <a href="#fnref12" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>WebMCP specification, §6.3.3 Privacy Leakage Through Over-Parameterization. <a href="https://webmachinelearning.github.io/webmcp/#security-privacy">https://webmachinelearning.github.io/webmcp/#security-privacy</a> <a href="#fnref13" class="footnote-backref">↩︎</a> <a href="#fnref13:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>WebMCP specification, §6.3.2 Misrepresentation of Intent (including §6.3.2.2 Misalignment Types). <a href="https://webmachinelearning.github.io/webmcp/#security-privacy">https://webmachinelearning.github.io/webmcp/#security-privacy</a> <a href="#fnref14" class="footnote-backref">↩︎</a> <a href="#fnref14:1" class="footnote-backref">↩︎</a> <a href="#fnref14:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>WebMCP specification, §4.2 ModelContext interface, §4.2.2 ToolExecuteCallbackOptions dictionary and the IDL index. <a href="https://webmachinelearning.github.io/webmcp/#api">https://webmachinelearning.github.io/webmcp/#api</a> <a href="#fnref15" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn16" class="footnote-item"><p>WebMCP specification, §1 Introduction and §2 Terminology. <a href="https://webmachinelearning.github.io/webmcp/">https://webmachinelearning.github.io/webmcp/</a> <a href="#fnref16" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn17" class="footnote-item"><p>WebMCP specification, §4.3 Events (§4.3.1 ToolActivatedEvent, §4.3.2 ToolCancelEvent). <a href="https://webmachinelearning.github.io/webmcp/#api">https://webmachinelearning.github.io/webmcp/#api</a> <a href="#fnref17" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn18" class="footnote-item"><p>WebMCP, “Declarative API Explainer”, section “Events” (<code>SubmitEvent.agentInvoked</code> and <code>respondWith()</code>); removed from the specification by pull request #338. <a href="https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md">https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md</a> <a href="#fnref18" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn19" class="footnote-item"><p>WebMCP explainer, “Best Practices”: “Tool Strategy and Budget” and “Keeping agent-facing parts of a tool definition updated”. <a href="https://github.com/webmachinelearning/webmcp#best-practices">https://github.com/webmachinelearning/webmcp#best-practices</a> <a href="#fnref19" class="footnote-backref">↩︎</a> <a href="#fnref19:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn20" class="footnote-item"><p>WebMCP, “Browser and Agent Implementation Status” (the project’s own page, read 15 October 2026; vendor claims not independently confirmed). <a href="https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md">https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md</a> <a href="#fnref20" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn21" class="footnote-item"><p>WebMCP specification, §6.4.4 Untrusted Annotation for Tool Responses. <a href="https://webmachinelearning.github.io/webmcp/#security-privacy">https://webmachinelearning.github.io/webmcp/#security-privacy</a> <a href="#fnref21" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn22" class="footnote-item"><p>Chrome for Developers, “WebMCP tool security” (published 9 June 2026, updated 1 September 2026): “Use annotation hints”, “Expose your tools carefully”, “Set character budgets” and “Next steps”. <a href="https://developer.chrome.com/docs/ai/webmcp/secure-tools">https://developer.chrome.com/docs/ai/webmcp/secure-tools</a> <a href="#fnref22" class="footnote-backref">↩︎</a> <a href="#fnref22:1" class="footnote-backref">↩︎</a> <a href="#fnref22:2" class="footnote-backref">↩︎</a> <a href="#fnref22:3" class="footnote-backref">↩︎</a> <a href="#fnref22:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn23" class="footnote-item"><p>Chrome for Developers blog, “Join the WebMCP origin trial” (9 June 2026). <a href="https://developer.chrome.com/blog/ai-webmcp-origin-trial">https://developer.chrome.com/blog/ai-webmcp-origin-trial</a> <a href="#fnref23" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn24" class="footnote-item"><p>webmachinelearning/webmcp issue #161, “Proposal: Skills — workflow-level context for tool composition” (opened 3 April 2026), and issue #255, “Tool collections: coarse-grained grouping with progressive disclosure” (opened 22 August 2026), including the Community Group resolution of 3 September 2026. <a href="https://github.com/webmachinelearning/webmcp/issues/255">https://github.com/webmachinelearning/webmcp/issues/255</a> <a href="#fnref24" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="15-browser-support-and-standards.html">← Chapter 15: Browser Support and the Standards Road</a>
+          <a class="pager-link" rel="next" href="17-the-road-ahead.html">Chapter 17: The Road Ahead →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

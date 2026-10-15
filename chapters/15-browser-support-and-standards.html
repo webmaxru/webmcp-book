@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chapter 15: Browser Support and the Standards Road — Tools, Not Clicks</title>
+  <meta name="description" content="Who implements what, how a Community Group draft becomes (or doesn’t become) a standard, and how to read origin trials, standards positions and TAG reviews.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Chapter 15: Browser Support and the Standards Road — Tools, Not Clicks">
+  <meta property="og:description" content="Who implements what, how a Community Group draft becomes (or doesn’t become) a standard, and how to read origin trials, standards positions and TAG reviews.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a class="is-current" aria-current="page" href="15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="../appendices/a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="../appendices/b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="../appendices/c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="../appendices/d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / Chapter 15 <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">chapter:</span> <span class="fm-v">15</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">V — Shipping and the Ecosystem</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">36 min</span></p>
+        <h1>Chapter 15: Browser Support and the Standards Road</h1>
+        <p class="lead">Who implements what, how a Community Group draft becomes (or doesn’t become) a standard, and how to read origin trials, standards positions and TAG reviews.</p>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#two-answers-to-one-question">Two answers to one question</a></li><li><a href="#reading-the-signals">Reading the signals</a></li><li><a href="#chrome-and-edge-two-origin-trials">Chrome and Edge: two origin trials</a></li><li><a href="#firefox-and-webkit-in-their-own-words">Firefox and WebKit, in their own words</a></li><li><a href="#the-tag-review">The TAG review</a></li><li><a href="#who-consumes-webmcp-today">Who consumes WebMCP today</a></li><li><a href="#community-libraries">Community libraries</a></li><li><a href="#from-community-group-to-working-group">From Community Group to Working Group</a></li><li><a href="#keeping-this-chapter-current-yourself">Keeping this chapter current yourself</a></li><li><a href="#what-this-means-for-your-product">What this means for your product</a></li><li><a href="#chapter-summary">Chapter summary</a></li><li><a href="#notes">Notes</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“Please note that Community Groups do not create W3C standards.”</em></p>
+<p>— W3C, Community and Business Groups FAQ<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<h2 id="two-answers-to-one-question"><a class="anchor-link" href="#two-answers-to-one-question">Two answers to one question</a></h2>
+<p>Suppose the Trailhead team asks the question every web team asks before adopting a new API: <em>which browsers support it?</em> There are two honest answers, and they are not the same.</p>
+<p>The engineering answer fits in a sentence. Chromium-based browsers run WebMCP behind origin trials, so Chrome and Edge will expose <code>document.modelContext</code> on any page that carries a valid trial token. Every other engine doesn’t expose it at all. Chapter 5 showed the feature check that covers this, and this chapter extends it into a small module that tells you exactly which surface you are standing on.</p>
+<p>The standards answer takes the rest of the chapter. WebMCP is a Community Group draft whose editors come from Microsoft and Google.<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup> Mozilla recorded a neutral position and Apple’s WebKit team an opposed one.<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup><sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup> The W3C Technical Architecture Group (TAG) has been reviewing it since June and has labelled it “Missing: Multi-stakeholder support”.<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup> An attempt to move the specification into an existing W3C Working Group ran into a threatened formal objection over the summer and was closed on 13 October. Its replacement, a new Agentic Web Working Group, is a draft charter in review as this chapter is written.<sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup><sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup></p>
+<p>Chapter 4 sketched this landscape in one table and promised to come back to it. This chapter does so in depth. It explains how to read each signal (a spec’s status line, a chromestatus entry, an origin trial page, a standards-position label, a TAG review), what each party has actually said, which agents and libraries consume WebMCP today, and what the possible routes from Community Group to standard would mean for a team that ships tools now. It closes with a script that re-checks all of it for you, because every fact in the following pages has a date on it.</p>
+<p>Everything here was checked on 15 October 2026.</p>
+<h2 id="reading-the-signals"><a class="anchor-link" href="#reading-the-signals">Reading the signals</a></h2>
+<p>Web standards news arrives through a handful of documents, each with its own vocabulary. Before going vendor by vendor, it helps to know what each one can and cannot tell you.</p>
+<p><em>The specification’s status line.</em> The top of the WebMCP draft reads “Draft Community Group Report, 15 October 2026”, and its status section says plainly that it “is not a W3C Standard nor is it on the W3C Standards Track.”<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">2:1</a></sup> The date changes whenever the editors publish, which during 2026 has meant every few days. A <em>Community Group</em> is an open forum anyone can join for free, and the W3C’s own FAQ asks members not to call its output “standards work” or “draft standards”. CG reports exist to make a later move to a Working Group easier: the contributor licence agreement is designed so that patent commitments carry over.<sup class="footnote-ref"><a href="#fn1" id="fnref1:1">1:1</a></sup></p>
+<p><em>The commit history.</em> The status line tells you that the draft changed; the repository tells you what changed. For WebMCP, the history of <code>webmachinelearning/webmcp</code> is the most precise record there is of when an API was renamed, added or removed, and it is the source for every date in Table 15.1.<sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup></p>
+<p><em>chromestatus.</em> Each Chromium feature has an entry listing its owners, the blink-dev “intent” threads, and its trial stages with milestone numbers. It also has a “browser signals” block for other engines and a standards-maturity field.<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup> Read the stages and milestones as authoritative, since Chromium engineers maintain them. Read the signals block with care: on 15 October 2026 it still said “No signal” for both Firefox and Safari, months after both had published positions. The entry was last edited on 28 September.<sup class="footnote-ref"><a href="#fn9" id="fnref9:1">9:1</a></sup> The lesson generalises: a status page is only as current as its last edit, so go to the primary record whenever one exists.</p>
+<p><em>Origin trial pages.</em> Chrome and Edge each have a registration page per trial, with the trial’s description, its expiry and its terms.<sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup><sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup></p>
+<p><em>Standards positions.</em> Mozilla and WebKit both run public GitHub repositories where anyone can ask for an engine’s view of a proposal. The outcome is a label: <code>position: neutral</code>, <code>position: oppose</code> and so on. The discussion in the issue is where the reasons live.<sup class="footnote-ref"><a href="#fn3" id="fnref3:1">3:1</a></sup><sup class="footnote-ref"><a href="#fn4" id="fnref4:1">4:1</a></sup></p>
+<p><em>TAG design reviews.</em> The TAG reviews proposals for architectural fit. Its labels track progress (“Progress: in progress”), the review type and the focus areas still pending, and, sometimes, a missing prerequisite.<sup class="footnote-ref"><a href="#fn5" id="fnref5:1">5:1</a></sup></p>
+<p>Figure 15.1 puts the main events from all of these sources on one timeline.</p>
+<figure class="book-figure"><img decoding="async" src="15-browser-support-and-standards/images/figure-15-1.png" alt="Figure 15.1 — Fourteen months on the standards road: spec changes, Chromium trials, positions and W3C process events from the first explainer commit in August 2025 to the expiry of Edge’s trial in March 2027." /><figcaption>Figure 15.1 — Fourteen months on the standards road: spec changes, Chromium trials, positions and W3C process events from the first explainer commit in August 2025 to the expiry of Edge’s trial in March 2027.</figcaption></figure>
+<h2 id="chrome-and-edge-two-origin-trials"><a class="anchor-link" href="#chrome-and-edge-two-origin-trials">Chrome and Edge: two origin trials</a></h2>
+<h3 id="timelines"><a class="anchor-link" href="#timelines">Timelines</a></h3>
+<p>WebMCP reached Chromium in stages. chromestatus records a developer trial (the API behind a flag, for local testing) starting in Chrome 146, followed by an origin trial running from Chrome 149 through Chrome 156.<sup class="footnote-ref"><a href="#fn9" id="fnref9:2">9:2</a></sup> Google announced the trial on 9 June 2026 with the words “In Chrome 149, you can sign up for the WebMCP origin trial.”<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup> On 28 September 2026 the trial gained an extension through Chrome 162. The reason chromestatus gives is unusually candid: “OT feedback has suggested improvements to the API, which we are implementing. The OT extension would enable us to get data on those improvements as well as to continue getting data on the rest of the feature.”<sup class="footnote-ref"><a href="#fn9" id="fnref9:3">9:3</a></sup></p>
+<p>Microsoft runs its own trial. The project’s implementation-status page says it is live in Edge 150, and the Edge registration page gives a trial expiration date of 30 March 2027.<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup><sup class="footnote-ref"><a href="#fn11" id="fnref11:1">11:1</a></sup> Note that the two trials are measured differently: Chrome counts in milestones and Edge in calendar dates.</p>
+<p>For local development no token is needed. Chrome’s documentation tells you to enable <code>chrome://flags/#enable-webmcp-testing</code> and relaunch; that flag corresponds to the <code>WebMCPTesting</code> feature this book’s demos pass to Chromium on the command line.<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup></p>
+<h3 id="tokens"><a class="anchor-link" href="#tokens">Tokens</a></h3>
+<p>An origin trial lets a site use an experimental feature on its own origin, for real users, without those users touching any flags. You register your origin, receive a token, and serve that token with every page that should get the feature. Chrome’s origin-trial documentation lists three ways to deliver it: a <code>&lt;meta http-equiv=&quot;origin-trial&quot;&gt;</code> tag in the <code>&lt;head&gt;</code>, an <code>Origin-Trial</code> HTTP response header, or a meta tag injected from script.<sup class="footnote-ref"><a href="#fn10" id="fnref10:1">10:1</a></sup> Edge’s trial page offers the same meta-tag and header options, and its registration is separate from Chrome’s.<sup class="footnote-ref"><a href="#fn11" id="fnref11:2">11:2</a></sup></p>
+<figure class="code"><figcaption>Listing 15.1 — Enabling both trials on a page (origin-trial-head.html)</figcaption>
+<pre><code class="language-html">&lt;!-- In the &lt;head&gt; of every page that should run with WebMCP enabled. --&gt;
+&lt;!-- One token per trial; Chrome and Edge register separately. --&gt;
+&lt;meta http-equiv=&quot;origin-trial&quot; content=&quot;CHROME_TRIAL_TOKEN&quot;&gt;
+&lt;meta http-equiv=&quot;origin-trial&quot; content=&quot;EDGE_TRIAL_TOKEN&quot;&gt;
+</code></pre></figure>
+<p>The header form of the same thing, for a server or CDN configuration:</p>
+<pre><code class="language-http">Origin-Trial: CHROME_TRIAL_TOKEN
+Origin-Trial: EDGE_TRIAL_TOKEN
+</code></pre>
+<p>A page can carry several tokens, and Chrome ignores tokens that are invalid or expired.<sup class="footnote-ref"><a href="#fn10" id="fnref10:2">10:2</a></sup> That makes Listing 15.1 safe to serve to every browser: each one picks out the token it recognises.</p>
+<p>Three details of the token model matter in practice.</p>
+<ul>
+<li><em>Third-party tokens.</em> Both trials accept them: chromestatus records third-party support for the Chrome trial, and the Edge trial record has <code>supportsThirdParty</code> set to <code>true</code>.<sup class="footnote-ref"><a href="#fn9" id="fnref9:4">9:4</a></sup><sup class="footnote-ref"><a href="#fn11" id="fnref11:3">11:3</a></sup> A third-party token lets a provider of embedded content, such as Supportly’s Helpdesk Widget from Chapter 7, enable the feature in its own script across every customer site. Chrome’s documentation adds a caution: a third-party token works only when injected by an external script, not in a meta tag, inline script or header.<sup class="footnote-ref"><a href="#fn10" id="fnref10:3">10:3</a></sup></li>
+<li><em>Extensions mean renewal.</em> When a trial is extended, Chrome emails registrants, and each origin has to renew and deploy a new token.<sup class="footnote-ref"><a href="#fn10" id="fnref10:4">10:4</a></sup> Anyone who shipped a Chrome 149 token and expects it to work through Chrome 162 should check the registration console now.</li>
+<li><em>Measurement.</em> The trial measures adoption with a Chromium use counter named <code>kModelContextRegisterTool</code>.<sup class="footnote-ref"><a href="#fn9" id="fnref9:5">9:5</a></sup> Google’s stated goal for the experiment is “understanding the API ergonomics for agentic workflows across various verticals such as web commerce and productivity”, along with “metrics for tool usage and latency.”<sup class="footnote-ref"><a href="#fn9" id="fnref9:6">9:6</a></sup></li>
+</ul>
+<h3 id="what-can-change-during-a-trial"><a class="anchor-link" href="#what-can-change-during-a-trial">What can change during a trial</a></h3>
+<p>Origin trials exist to change an API. Chrome’s announcement calls trials “time-limited programs that offer early access to experimental platform features” whose goal is “informing future iterations of the API.”<sup class="footnote-ref"><a href="#fn12" id="fnref12:1">12:1</a></sup> The extension reason quoted above says the same about WebMCP specifically. Table 15.1 shows what that meant in 2026. Each row is a change to the specification that could break code written against an earlier draft.</p>
+<p><strong>Table 15.1 — Breaking or behaviour-changing spec changes in 2026, from the commit history<sup class="footnote-ref"><a href="#fn8" id="fnref8:1">8:1</a></sup></strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Change</th>
+<th>Pull request</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 Mar 2026</td>
+<td><code>provideContext()</code> and <code>clearContext()</code> removed</td>
+<td>#132</td>
+</tr>
+<tr>
+<td>27 May 2026</td>
+<td><code>modelContext</code> getter moved from <code>Navigator</code> to <code>Document</code></td>
+<td>#184</td>
+</tr>
+<tr>
+<td>8 Jun 2026</td>
+<td><code>registerTool()</code> returns a promise</td>
+<td>#200</td>
+</tr>
+<tr>
+<td>21 Jul 2026</td>
+<td><code>annotations</code> moved into a separate object</td>
+<td>#225</td>
+</tr>
+<tr>
+<td>17 Aug 2026</td>
+<td><code>executeTool()</code> takes an object instead of a JSON string</td>
+<td>#246</td>
+</tr>
+<tr>
+<td>30 Sep 2026</td>
+<td>Origin-keyed agent cluster requirement removed</td>
+<td>#330</td>
+</tr>
+<tr>
+<td>8 Oct 2026</td>
+<td>Declarative (HTML forms) API removed from the spec “for now”</td>
+<td>#338</td>
+</tr>
+<tr>
+<td>8 Oct 2026</td>
+<td><code>UnknownError</code> replaced with specific <code>DOMException</code> types</td>
+<td>#339</td>
+</tr>
+</tbody>
+</table></div>
+<p>The browser and the draft don’t always move together. Chrome’s WebMCP documentation, updated on 7 October 2026, still says “There are two APIs you can use” and describes the declarative one; the spec removed that API the next day.<sup class="footnote-ref"><a href="#fn14" id="fnref14:1">14:1</a></sup><sup class="footnote-ref"><a href="#fn8" id="fnref8:2">8:2</a></sup> Chapter 8 covers what the trial still ships, and Appendix D walks through migrating code written before the May move.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: the trial and the draft</p>
+<p><em>Error types.</em> Pull request #339 replaced <code>UnknownError</code> with specific exception types on 8 October 2026.<sup class="footnote-ref"><a href="#fn8" id="fnref8:3">8:3</a></sup> Chromium 156 still returns <code>UnknownError</code> in the cases Chapters 6 and 7 measured, so code that branches on <code>err.name</code> should treat both as possible for now.
+<em>The declarative API.</em> It is in Chrome’s trial and documentation, and out of the spec.<sup class="footnote-ref"><a href="#fn14" id="fnref14:2">14:2</a></sup><sup class="footnote-ref"><a href="#fn8" id="fnref8:4">8:4</a></sup>
+<em>Which improvements the extension tests.</em> chromestatus says the extension exists to gather data on API improvements suggested by trial feedback, but doesn’t list them.<sup class="footnote-ref"><a href="#fn9" id="fnref9:7">9:7</a></sup></p></aside>
+<h3 id="detecting-what-you-are-running-on"><a class="anchor-link" href="#detecting-what-you-are-running-on">Detecting what you are running on</a></h3>
+<p>With two trials, a flag, a moved attribute and a policy that can switch the whole API off, a single <code>'modelContext' in document</code> check answers only part of the question. Listing 15.2 is a small module that answers all of it and registers tools only where that is safe.</p>
+<figure class="code"><figcaption>Listing 15.2 — Feature detection across WebMCP builds (webmcp-support.js)</figcaption>
+<pre><code class="language-js">// webmcp-support.js: detect WebMCP without assuming which build you are on.
+export function detectWebMCP(win = globalThis) {
+  const doc = win.document;
+  const mc = doc &amp;&amp; 'modelContext' in doc ? doc.modelContext : null;
+  const policy = doc?.permissionsPolicy ?? doc?.featurePolicy;
+  const knowsTools = !!policy &amp;&amp; policy.features().includes('tools');
+  return {
+    available: !!mc &amp;&amp; typeof mc.registerTool === 'function',
+    secureContext: !!win.isSecureContext,
+    methods: mc
+      ? ['registerTool', 'getTools', 'executeTool'].filter((m) =&gt; typeof mc[m] === 'function')
+      : [],
+    events: mc
+      ? ['toolchange', 'toolactivated', 'toolcancel'].filter((e) =&gt; `on${e}` in mc)
+      : [],
+    // true or false when the browser knows the &quot;tools&quot; policy; null when it doesn't.
+    policyAllows: knowsTools ? policy.allowsFeature('tools') : null,
+    // A pre-May-2026 build exposed navigator.modelContext; see Appendix D.
+    legacyNavigator: 'modelContext' in (win.navigator ?? {}),
+  };
+}
+
+// Register tools only where the platform supports them; the page works either way.
+export async function registerIfSupported(tools, { signal } = {}, win = globalThis) {
+  const support = detectWebMCP(win);
+  const registered = [];
+  if (!support.available || support.policyAllows === false) return { registered, support };
+  for (const tool of tools) {
+    try {
+      await win.document.modelContext.registerTool(tool, { signal });
+      registered.push(tool.name);
+    } catch (err) {
+      console.warn(`WebMCP: &quot;${tool.name}&quot; was not registered (${err.name}: ${err.message})`);
+    }
+  }
+  return { registered, support };
+}
+</code></pre></figure>
+<p>Each field maps to something in the draft. <code>modelContext</code> is a <code>[SecureContext]</code> attribute on <code>Document</code>, so it exists only on HTTPS pages and on localhost. The <code>ModelContext</code> interface declares the three methods and three event handler attributes the module looks for. Access is gated by a policy-controlled feature named <code>&quot;tools&quot;</code>, whose default allowlist is <code>'self'</code>.<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup> The spec recommends sending <code>Permissions-Policy: tools=()</code> from pages that should never register tools, so a page can find the API present and still be forbidden to use it.<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup></p>
+<p>The book’s companion repository (folder <code>chapters/15-browser-support-and-standards</code> in <code>webmcp-book-demos</code>) runs Listing 15.2 in Chromium 156.0.8078.4 in three configurations. With <code>--enable-features=WebMCPTesting</code>, the module reports all three methods, all three events and <code>policyAllows: true</code>, and the Trailhead <code>search_products</code> tool registers and shows up in <code>getTools()</code>. With the same flag and a <code>Permissions-Policy: tools=()</code> header, the API is still present but <code>policyAllows</code> is <code>false</code>. Calling <code>registerTool()</code> anyway is rejected with a <code>NotAllowedError</code> whose message reads “Access to the feature &quot;tools&quot; is disallowed by permissions policy.” Without the flag, <code>document.modelContext</code> doesn’t exist, the policy doesn’t list a <code>&quot;tools&quot;</code> feature, and the page carries on without tools. In all three cases the page itself works, which is the point.</p>
+<p>Two caveats. First, the module asks <code>document.permissionsPolicy</code> and falls back to <code>document.featurePolicy</code>, which is the object Chromium 156 answered on in these tests. Neither is available in every engine, so a <code>null</code> result means “unknown”, not “allowed”. Second, a polyfill (discussed later in this chapter) defines <code>document.modelContext</code> on purpose, and the module will report it as available. That is the correct answer for your registration code. It tells you nothing about which agent, if any, will call the tools.</p>
+<h2 id="firefox-and-webkit-in-their-own-words"><a class="anchor-link" href="#firefox-and-webkit-in-their-own-words">Firefox and WebKit, in their own words</a></h2>
+<p>Chapter 4 summarised both positions in a paragraph each. They deserve more than that, because they are the clearest statements anyone outside Google and Microsoft has made about what WebMCP is for, and because each points to a different future for the API.</p>
+<h3 id="mozilla-neutral-and-reopening"><a class="anchor-link" href="#mozilla-neutral-and-reopening">Mozilla: neutral, and reopening</a></h3>
+<p>Dominic Farolino, one of the spec’s editors, asked Mozilla for a position on 28 May 2026. His request framed WebMCP as serving two use cases: built-in browser agents acting on a site, and in-page agents, “possibly in cross-origin iframes”, calling tools another origin explicitly exposed.<sup class="footnote-ref"><a href="#fn3" id="fnref3:2">3:2</a></sup> Mozilla’s reviewer, Benjamin VanderSloot, replied on 1 June. His assessment is worth reading as a checklist of what a browser vendor weighs.</p>
+<p>He starts with the benefit. The API gives websites a way to declare dedicated “lanes” for automated interaction, and “with honest participants, the benefit is twofold”: agents get a clear signal of what actions are available, and developers no longer have to design a single interface that serves both humans and automation.<sup class="footnote-ref"><a href="#fn3" id="fnref3:3">3:3</a></sup> Then comes the risk: “in an adversarial setting there is a risk that sites will provide tools that do not match the experience of a user on the page,” whether to “tar pit automated browsers, provide prompt injection that is invisible to typical users, collect user data from the inputs of the tools, or otherwise manipulate a user’s browsing ‘agent’.” He adds a fair qualification: “it is not clear to what extent they are exacerbated by this API or if they are inherent to LLMs consuming content from and driving a browser.”<sup class="footnote-ref"><a href="#fn3" id="fnref3:4">3:4</a></sup></p>
+<p>Two further points carry practical weight for you. The first is the name. “The name is misleading,” he writes, because developers “(reasonably) assume the MCP spec is involved in any way. There is no MCP here.” He suggests names like “Website Tool API” or “Agent Capability API”.<sup class="footnote-ref"><a href="#fn3" id="fnref3:5">3:5</a></sup> If the API is ever renamed, this comment is where the pressure came from. The second is openness. “As of now, use of this mechanism is restricted to browser developer’s own products and in-page agents,” and opening it up means “adding WebExtension and WebDriver BiDi integrations.”<sup class="footnote-ref"><a href="#fn3" id="fnref3:6">3:6</a></sup> In other words, an independent agent shipped as a browser extension has no standard way to call your tools today.</p>
+<p>His conclusion: WebMCP “introduces a potentially valuable abstraction” but “opens a surface whose real-world dynamics leave too many open questions to wholeheartedly endorse,” so he proposed neutral, with a willingness “to come back to revisit it once there is more evidence of how it will be used by sites.” The label <code>position: neutral</code> was applied on 5 August 2026.<sup class="footnote-ref"><a href="#fn3" id="fnref3:7">3:7</a></sup></p>
+<p>The story didn’t end there. Mozilla had filed a meta bug in February, “[meta] Implement a prototype WebMCP API”, which is still open.<sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup> In August, Jake Archibald opened issue #236 in the WebMCP repository, asking whether the feature should be repositioned “as a general way to call functions in other environments”: windows, workers and other origins, with exposure to “the browser” (and through it to WebDriver or an LLM) as one more target.<sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup> Back in the positions thread, Farolino asked whether Mozilla’s support depended on dropping the declarative API. Archibald answered that the declarative form “sounds like a reasonable idea” but shouldn’t come “instead of an imperative way to call functions between environments”. Martin Thomson added that #236 “is pretty significant here. As is naming. But this position is not really based on the declarative variant.”<sup class="footnote-ref"><a href="#fn3" id="fnref3:8">3:8</a></sup> The editors have been working through #236 since, sketching handles such as <code>tool.call(…)</code> that could be passed across <code>postMessage()</code>; on 22 September Johann Hofmann summarised the security requirements for that model, starting with the rule that cross-origin exposure “must be opt in on the side of the tool providing origin.”<sup class="footnote-ref"><a href="#fn18" id="fnref18:1">18:1</a></sup> On 9 October Farolino told the TAG that the editors were “working closely with Mozilla” on these changes “to gain their support”, and asked the TAG to wait for “Mozilla’s refreshed standards position.”<sup class="footnote-ref"><a href="#fn5" id="fnref5:2">5:2</a></sup></p>
+<p>So Mozilla’s neutral is not a resting state. It is the start of a negotiation whose likely price is an API that looks less like “tools for AI” and more like a general cross-origin function-call mechanism, with agents as one consumer among several.</p>
+<h3 id="webkit-opposed-and-proposing-a-different-process"><a class="anchor-link" href="#webkit-opposed-and-proposing-a-different-process">WebKit: opposed, and proposing a different process</a></h3>
+<p>WebKit’s position, posted on 3 June 2026 and labelled <code>position: oppose</code> on 11 June, rests on five arguments.<sup class="footnote-ref"><a href="#fn4" id="fnref4:2">4:2</a></sup> Chapter 4 quoted the first two: tool descriptions move the brittleness “from the DOM into the tool descriptions”, and an agent acting for a user “is, in effect, assistive technology” that a site should not single out. The remaining three are as important.</p>
+<ul>
+<li><em>Unexamined risks.</em> WebKit calls WebMCP “a new cross-origin invocation path” whose interaction with the platform’s isolation model (COOP, COEP, site isolation) is unexamined, with “no consent or reversibility model for consequential actions”. It warns that a site could over-parameterise a tool so that a helpful agent fills it in from personal data “the user never gave that site”, a pipeline the comment links to cross-site tracking.<sup class="footnote-ref"><a href="#fn4" id="fnref4:3">4:3</a></sup></li>
+<li><em>Not really MCP.</em> Because the spec “does not prescribe the format in which tools are exposed”, WebKit reads WebMCP as a general mechanism for a page to register typed, callable functions, which “belongs with the platform’s existing messaging and capability mechanisms (<code>postMessage</code> and similar), not a parallel one.”<sup class="footnote-ref"><a href="#fn4" id="fnref4:4">4:4</a></sup> This is the same observation that led Mozilla to #236, reaching the opposite conclusion.</li>
+<li><em>The wrong venue.</em> “The Machine Learning CG/WG venue is wrong for the work.” The gaps WebMCP identifies, WebKit argues, are in HTML and accessibility semantics, which belong to WHATWG and the W3C’s ARIA and Accessible Platform Architectures groups.<sup class="footnote-ref"><a href="#fn4" id="fnref4:5">4:5</a></sup></li>
+</ul>
+<p>The issue’s labels record the same objections as concerns about API design, duplication, internationalisation, portability, privacy, security, use cases and venue.<sup class="footnote-ref"><a href="#fn4" id="fnref4:6">4:6</a></sup></p>
+<p>When Farolino asked follow-up questions, Marcos Cáceres replied on 17 June that WebKit would not answer them point by point, because each question assumed the rest of the approach was sound. Instead WebKit set out “invariants that put users in control” (“an agent acting on a user’s behalf is assistive technology”, sites should not be told that a user relies on an agent, and the result “must not privilege those who have one”), followed by a seven-step path: set WebMCP aside, stand up “a new community group for agent-assisted user agents”, define the problem with “no solutions and no engineering, just use cases”, hold a W3C workshop, perhaps around TPAC 2026 (26–30 October, Dublin), and only then route solutions to HTML, ARIA or elsewhere.<sup class="footnote-ref"><a href="#fn4" id="fnref4:7">4:7</a></sup></p>
+<p>For an adopter, the practical reading is simple. No WebKit implementation is coming for the API in its current form. Safari’s entry on the implementation-status page links to the position and to nothing else.<sup class="footnote-ref"><a href="#fn13" id="fnref13:1">13:1</a></sup> And the argument WebKit makes is not about details that a few pull requests could fix. It questions whether a separate tool layer should exist at all.</p>
+<h2 id="the-tag-review"><a class="anchor-link" href="#the-tag-review">The TAG review</a></h2>
+<p>The TAG’s early review of the Community Group work was filed on 11 June 2026. Marcos Cáceres suggested expediting it, since a proposal to add WebMCP to a Working Group charter was already on the table, and W3C staff agreed.<sup class="footnote-ref"><a href="#fn5" id="fnref5:3">5:3</a></sup> On 10 July the TAG labelled it “Progress: in progress” and set six focus areas as pending: API design, web architecture, security, privacy, accessibility and internationalisation. It also added the label that sums up the politics: “Missing: Multi-stakeholder support.”<sup class="footnote-ref"><a href="#fn5" id="fnref5:4">5:4</a></sup></p>
+<p>The public thread shows where the argument has settled. After a TAG breakout meeting in August, Farolino reported that the question that “keeps coming up over and over” was why WebMCP is shaped as an explicit capability layer rather than “more HTML semantics”. He asked that any negative resolution on those grounds come with evidence that semantics would be a sufficient alternative.<sup class="footnote-ref"><a href="#fn5" id="fnref5:5">5:5</a></sup> Two adopters weighed in. Yoav Weiss, writing “as someone deploying WebMCP (under an Origin Trial in various Chromium browsers) to a large number of storefronts”, listed the Shopify storefront tools in use (browsing collections, managing orders, searching the catalogue, showing product variants, searching store policies) and said he didn’t “see a feasible declarative alternative to the imperative tools that agents can call.”<sup class="footnote-ref"><a href="#fn5" id="fnref5:6">5:6</a></sup> A second commenter cited his company’s public benchmark, which reports UI actuation using about 5–10 times the tokens and cost per task, and running 4–5 times slower, than WebMCP. That figure is the vendor’s own claim, and this book has not reproduced it.<sup class="footnote-ref"><a href="#fn5" id="fnref5:7">5:7</a></sup> TAG members asked people not to read too much into draft notes. Marcos Cáceres reminded participants that notes shared privately “do not represent the consensus of the TAG in any way, shape, or form.”<sup class="footnote-ref"><a href="#fn5" id="fnref5:8">5:8</a></sup></p>
+<p>The latest public word from the TAG, on 6 October, is that the review is “taking a bit longer than usual.” On 9 October the editors asked the TAG to hold its position until after Mozilla’s refreshed position and after TPAC.<sup class="footnote-ref"><a href="#fn5" id="fnref5:9">5:9</a></sup></p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: the review outcomes</p>
+<p><em>The TAG’s conclusion.</em> No position had been published as of 15 October 2026, and the editors have asked for it to wait until after TPAC.<sup class="footnote-ref"><a href="#fn5" id="fnref5:10">5:10</a></sup>
+<em>Mozilla’s position.</em> It is being renegotiated around issue #236, and it could change the TAG’s “Missing: Multi-stakeholder support” label.<sup class="footnote-ref"><a href="#fn18" id="fnref18:2">18:2</a></sup><sup class="footnote-ref"><a href="#fn5" id="fnref5:11">5:11</a></sup>
+<em>WebKit’s position.</em> It is <code>oppose</code>, and the issue is closed.<sup class="footnote-ref"><a href="#fn4" id="fnref4:8">4:8</a></sup></p></aside>
+<h2 id="who-consumes-webmcp-today"><a class="anchor-link" href="#who-consumes-webmcp-today">Who consumes WebMCP today</a></h2>
+<p>Exposing tools is only half of the system. Something has to call them. The project’s implementation-status page is the only list of consumers in one place, and it is the project’s own claim rather than each vendor’s.<sup class="footnote-ref"><a href="#fn13" id="fnref13:2">13:2</a></sup> As of 15 October 2026 it lists:</p>
+<ul>
+<li><em>Chrome:</em> the origin trial, live from Chrome 149. The trial describes itself as letting websites “register tools for use by agents hosted by the site or in Chrome.”<sup class="footnote-ref"><a href="#fn13" id="fnref13:3">13:3</a></sup><sup class="footnote-ref"><a href="#fn9" id="fnref9:8">9:8</a></sup></li>
+<li><em>Edge:</em> the origin trial, live in Edge 150.<sup class="footnote-ref"><a href="#fn13" id="fnref13:4">13:4</a></sup></li>
+<li><em>Brave:</em> “Experimental support is added to Leo AI chat.”<sup class="footnote-ref"><a href="#fn13" id="fnref13:5">13:5</a></sup> The Brave issue behind it was first closed on 7 July 2026 but has been reopened twice since, most recently on 7 October, and it is open as of 15 October 2026. On 1 October a Brave engineer wrote that the feature is “flagged on in Nightly at the moment”. The issue’s test plan turns on <code>brave://flags/#enable-webmcp-testing</code> and expects a “tools pill” in Leo’s sidebar when a page offers tools.<sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup></li>
+<li><em>ChatGPT Desktop:</em> “WebMCP is supported in ChatGPT Desktop.”<sup class="footnote-ref"><a href="#fn13" id="fnref13:6">13:6</a></sup> OpenAI’s earlier agentic browser, ChatGPT Atlas, is gone. OpenAI announced its retirement on 9 July 2026, alongside a desktop app with its own built-in browser, and its help centre now says that “ChatGPT Atlas has been retired and no longer receives updates.”<sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup></li>
+<li><em>Meta Ray-Ban Display:</em> support for web apps is “coming soon”, letting Meta AI on the glasses call tools registered with <code>document.modelContext.registerTool()</code>. It is off by default and enabled per device.<sup class="footnote-ref"><a href="#fn13" id="fnref13:7">13:7</a></sup></li>
+<li><em>Firefox and Safari:</em> links to their positions, plus Mozilla’s Bugzilla meta bug.<sup class="footnote-ref"><a href="#fn13" id="fnref13:8">13:8</a></sup></li>
+</ul>
+<p>Then there are extensions. chromestatus notes that the Chrome Web Store “features about 9 different extensions with WebMCP on their title and 4* or more ratings”.<sup class="footnote-ref"><a href="#fn9" id="fnref9:9">9:9</a></sup> MCP-B’s Rook is one such agent extension.<sup class="footnote-ref"><a href="#fn21" id="fnref21">21</a></sup> Remember Mozilla’s point, though: there is no standard extension or WebDriver API for calling page tools yet, so each of these depends on Chromium-specific plumbing.<sup class="footnote-ref"><a href="#fn3" id="fnref3:9">3:9</a></sup> On the automation side, W3C staff have floated giving the Browser Testing and Tools Working Group the job of “enabling MCP support bidirectional WebDriver protocol for browser automation.”<sup class="footnote-ref"><a href="#fn6" id="fnref6:1">6:1</a></sup></p>
+<p>For planning, the order of confidence is: Chromium browsers with the trial (verifiable today with a token), Brave behind a flag, then vendors whose support is stated only on the status page. Test against what you can run, and treat the rest as upside.</p>
+<h2 id="community-libraries"><a class="anchor-link" href="#community-libraries">Community libraries</a></h2>
+<p>Long before the browsers, the community had built WebMCP-shaped libraries. Chapter 4 described MCP-B’s role in the API’s history. Today its packages are the most widely used way to try WebMCP outside a Chromium trial. Each of the three main packages was at version 6.0.3 on 15 October 2026, published the day before, under the MIT licence:<sup class="footnote-ref"><a href="#fn22" id="fnref22">22</a></sup></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Description (from the npm registry)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@mcp-b/global</code></td>
+<td>“W3C Web Model Context Protocol (WebMCP) API polyfill. Let AI agents like Claude, ChatGPT, and Gemini interact with your website via document.modelCont[ext]…”</td>
+</tr>
+<tr>
+<td><code>@mcp-b/webmcp-polyfill</code></td>
+<td>“Vendored upstream WebMCP polyfill plus temporary declarative tools”</td>
+</tr>
+<tr>
+<td><code>usewebmcp</code></td>
+<td>“Standalone React hooks for strict core WebMCP tool registration with document.modelContext”</td>
+</tr>
+</tbody>
+</table></div>
+<p>The documentation site registers a live tool with <code>document.modelContext.registerTool()</code> on its own home page and suggests calling it through “the Rook extension or Chrome’s native WebMCP support.”<sup class="footnote-ref"><a href="#fn21" id="fnref21:1">21:1</a></sup> The packages live in the <code>WebMCP-org/npm-packages</code> repository, which describes them as “Transport layers, React hooks, and browser tools for the Model Context Protocol”.<sup class="footnote-ref"><a href="#fn23" id="fnref23">23</a></sup> Chapter 10 uses <code>usewebmcp</code> in the Trailhead React app.</p>
+<p>Three cautions apply to any library that tracks a moving draft:</p>
+<ol>
+<li><em>A polyfill is a second implementation with its own schedule.</em> When the spec dropped the declarative API on 8 October, the polyfill kept “temporary declarative tools”.<sup class="footnote-ref"><a href="#fn8" id="fnref8:5">8:5</a></sup><sup class="footnote-ref"><a href="#fn22" id="fnref22:1">22:1</a></sup> That is a reasonable choice for users, but it means the polyfill and the draft can disagree.</li>
+<li><em>Version numbers move as fast as the spec.</em> All three packages were republished on 14 October 2026, the day before this chapter was checked. Pin exact versions, and read the changelog before upgrading.</li>
+<li><em>A polyfill cannot create consumers.</em> It gives your page a <code>document.modelContext</code> to register on. Calls still need an agent that knows how to reach it, such as a matching extension. The detection code in Listing 15.2 can’t tell native support from a polyfill, and for registration purposes it doesn’t need to.</li>
+</ol>
+<h2 id="from-community-group-to-working-group"><a class="anchor-link" href="#from-community-group-to-working-group">From Community Group to Working Group</a></h2>
+<h3 id="what-a-working-group-would-change"><a class="anchor-link" href="#what-a-working-group-would-change">What a Working Group would change</a></h3>
+<p>The W3C’s rule is short: “Community Groups are for incubation. The Recommendation Track is for standardization.” A technology that gains traction in a CG normally moves to a Working Group (WG) to become a standard, and the CG agreements are written so that participants’ patent commitments carry over.<sup class="footnote-ref"><a href="#fn1" id="fnref1:2">1:2</a></sup> For adopters, three things change when a WG takes over a specification:</p>
+<ul>
+<li><em>Patent commitments.</em> The W3C designed its CG agreements for “continuity of IPR commitments” when a Working Group adopts a CG specification, so the move itself is meant to be smooth.<sup class="footnote-ref"><a href="#fn1" id="fnref1:3">1:3</a></sup> A WG brings the W3C Patent Policy with it; the draft charter below has a Patent Policy section.<sup class="footnote-ref"><a href="#fn24" id="fnref24">24</a></sup></li>
+<li><em>Horizontal review.</em> The draft Agentic Web WG charter, discussed below, requires review for accessibility, internationalisation, privacy and security, and by the TAG, “during each major standards-track document transition”.<sup class="footnote-ref"><a href="#fn24" id="fnref24:1">24:1</a></sup></li>
+<li><em>Interoperability as a bar.</em> To advance beyond Candidate Recommendation, the draft charter expects “at least two independent interoperable implementations of every feature defined in the specification, where interoperability can be verified by passing open test suites.”<sup class="footnote-ref"><a href="#fn24" id="fnref24:2">24:2</a></sup> The WebMCP draft already links a test suite on wpt.fyi from its header.<sup class="footnote-ref"><a href="#fn2" id="fnref2:2">2:2</a></sup> Today, every implementation of WebMCP is built on Chromium.</li>
+</ul>
+<p>The last point is the political core of this chapter. Two Chromium-based browsers are not two independent implementations, and the two engines that are independent of Chromium are respectively neutral and opposed. A Working Group would not make WebMCP a standard by itself. It would set a bar that, as of October 2026, nobody has a plan to meet.</p>
+<h3 id="what-happened-in-2026"><a class="anchor-link" href="#what-happened-in-2026">What happened in 2026</a></h3>
+<p>The question of a WG came up within a day of the positions being requested. On 28 May 2026, the WebKit engineer who would post WebKit’s position a week later opened issue #192, noting that “Community Groups do not create W3C standards” and asking whether WebMCP should move to the WG.<sup class="footnote-ref"><a href="#fn25" id="fnref25">25</a></sup> W3C staff supported an early rechartering of the Web Machine Learning WG to take it in, and on 9 June a pull request proposed adding WebMCP to that group’s charter “as a tentative deliverable.”<sup class="footnote-ref"><a href="#fn6" id="fnref6:2">6:2</a></sup><sup class="footnote-ref"><a href="#fn25" id="fnref25:1">25:1</a></sup> The WebML WG is chartered until 30 April 2027.<sup class="footnote-ref"><a href="#fn26" id="fnref26">26</a></sup></p>
+<p>That route ran into trouble almost immediately. WebKit’s position, published the same month, called the machine-learning venue wrong for the work.<sup class="footnote-ref"><a href="#fn4" id="fnref4:9">4:9</a></sup> On 18 June the author of #192 clarified that they had proposed discussing the move, not supporting it: “We think WebML WG is the incorrect working group, but WebMCP should be part of some working group.”<sup class="footnote-ref"><a href="#fn25" id="fnref25:2">25:2</a></sup> On 13 August the WG recorded a resolution that it “has reviewed the charter proposal and approves the direction. WebKit position duly noted.” Marcos Cáceres replied that it was “baffling how you can record a resolution when a member of the working group has objected,” and Apple disputed the minutes the next day.<sup class="footnote-ref"><a href="#fn25" id="fnref25:3">25:3</a></sup> The same day, on the charter pull request, Cáceres recorded “that Apple is opposed to this going working group. Expect a formal objection if this is merged.” He added: “We'd be open to discussing a different venue at the W3C and doing this properly from first principles (i.e., some new agentic web CG/WG).”<sup class="footnote-ref"><a href="#fn6" id="fnref6:3">6:3</a></sup></p>
+<p>A formal objection is not just a strong comment. Under the W3C Process, Formal Objections “receive formal consideration and a formal response”. If the Team cannot resolve one through investigation and mediation, it goes to the W3C Council.<sup class="footnote-ref"><a href="#fn27" id="fnref27">27</a></sup> Any charter that names WebMCP and draws an objection from Apple faces that procedure.</p>
+<p>On 28 September W3C staff changed course. The “latest thinking,” wrote Philippe le Hégaret, the W3C’s Chartering Facilitator,<sup class="footnote-ref"><a href="#fn28" id="fnref28">28</a></sup> on the charter pull request, “is to have a working group dedicated to develop specifications that facilitate web pages and applications to be leveraged by LLMs and AI agents,” while the WebML WG would “stay focused on developing APIs for enabling efficient machine learning inference in the browser.”<sup class="footnote-ref"><a href="#fn6" id="fnref6:4">6:4</a></sup> The same day a charter proposal for an Agentic Web Working Group appeared, stated to “replace the previous thinking”, and on 13 October the WebML pull request was closed.<sup class="footnote-ref"><a href="#fn7" id="fnref7:1">7:1</a></sup><sup class="footnote-ref"><a href="#fn6" id="fnref6:5">6:5</a></sup></p>
+<h3 id="the-agentic-web-working-group-charter"><a class="anchor-link" href="#the-agentic-web-working-group-charter">The Agentic Web Working Group charter</a></h3>
+<p>The draft charter’s mission is “to develop specifications that facilitate web pages and applications to be leveraged by LLMs and AI agents.” Its scope covers describing site capabilities and context for agents, representing agent identity and delegation, transparency about agent interactions, “expressing permissions, policies, and constraints on agent actions”, and guidance for authors. It explicitly excludes model APIs, crawler controls, bot detection and agent-to-server communications, among others.<sup class="footnote-ref"><a href="#fn24" id="fnref24:3">24:3</a></sup> Its one named normative deliverable is WebMCP, “adopted from the Web Machine Learning Community Group”.<sup class="footnote-ref"><a href="#fn24" id="fnref24:4">24:4</a></sup></p>
+<p>It is still very much a draft. On 15 October 2026 the chairs, dates, team contact and timeline were template placeholders, and the deliverables section still carried both template options: whether the group intends to stop at Candidate Recommendation or go on to Recommendation.<sup class="footnote-ref"><a href="#fn24" id="fnref24:5">24:5</a></sup> The W3C announced the start of charter refinement on 1 October and estimated that it “will last until approximately 10 November 2026.”<sup class="footnote-ref"><a href="#fn28" id="fnref28:1">28:1</a></sup> The Process Document requires that phase to last at least 28 days, and an Advisory Committee review follows it.<sup class="footnote-ref"><a href="#fn27" id="fnref27:1">27:1</a></sup> The strategy issue lists the TAG review, the accessibility considerations and a threat model among its “known or potential areas of concern”.<sup class="footnote-ref"><a href="#fn7" id="fnref7:2">7:2</a></sup></p>
+<p>The draft’s scope is broader than WebMCP, and in places it echoes the critics. Agent transparency and “permissions, policies, and constraints on agent actions” are close to the consent and control questions WebKit raised.<sup class="footnote-ref"><a href="#fn24" id="fnref24:6">24:6</a></sup><sup class="footnote-ref"><a href="#fn4" id="fnref4:10">4:10</a></sup> Whether WebKit would accept this group as the “new agentic web CG/WG” Apple said it was open to, and whether it would accept WebMCP as a starting deliverable rather than a proposal to set aside, is not on the public record. Farolino’s answer to WebKit’s call for a new group was: “I have no objection to moving WebMCP exactly as-is to such a WG.”<sup class="footnote-ref"><a href="#fn25" id="fnref25:4">25:4</a></sup></p>
+<h3 id="the-paths-and-what-each-means-for-you"><a class="anchor-link" href="#the-paths-and-what-each-means-for-you">The paths, and what each means for you</a></h3>
+<p>Figure 15.2 lays out the routes visible on 15 October 2026.</p>
+<figure class="book-figure"><img decoding="async" src="15-browser-support-and-standards/images/figure-15-2.png" alt="Figure 15.2 — From Community Group draft to standard: the WebML WG route (closed), the proposed Agentic Web WG (in charter refinement) and continued incubation, with what each means for adopters." /><figcaption>Figure 15.2 — From Community Group draft to standard: the WebML WG route (closed), the proposed Agentic Web WG (in charter refinement) and continued incubation, with what each means for adopters.</figcaption></figure>
+<ul>
+<li><em>The Agentic Web WG charters with WebMCP in scope.</em> The specification moves to the Recommendation Track with patent commitments and horizontal review. Expect a stream of changes from TAG and accessibility review, and expect the interoperability bar to keep the specification at Candidate Recommendation, or below it, until a second engine implements it. For your code, nothing changes on charter day. Changes come later, through review.</li>
+<li><em>The charter is delayed or WebMCP is taken out of it.</em> WebMCP stays a CG report. Chromium-based browsers can keep running trials or ship it, but it would remain a Chromium-only feature with no standards-track commitments.</li>
+<li><em>The API is reshaped before either happens.</em> If #236 succeeds, the core becomes a general cross-environment function-call mechanism, and agents become one consumer.<sup class="footnote-ref"><a href="#fn18" id="fnref18:3">18:3</a></sup> Mozilla might move off neutral; WebKit’s objection to a separate agent-facing layer would remain.<sup class="footnote-ref"><a href="#fn3" id="fnref3:10">3:10</a></sup><sup class="footnote-ref"><a href="#fn4" id="fnref4:11">4:11</a></sup> Your tools would survive as functions with names, descriptions and schemas, but registration and invocation code would change.</li>
+</ul>
+<p>None of these paths removes the advice from Chapter 4. Build tools as thin wrappers over logic your interface already uses, feature-detect at run time, and treat WebMCP as a progressive enhancement. The cost of following a breaking change is then a few lines in one module.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: the venue</p>
+<p><em>Charter refinement.</em> It is expected to end around 10 November 2026; extensions are announced on the strategy issue.<sup class="footnote-ref"><a href="#fn28" id="fnref28:2">28:2</a></sup><sup class="footnote-ref"><a href="#fn7" id="fnref7:3">7:3</a></sup>
+<em>Apple’s response to the new charter.</em> Apple threatened a formal objection to the WebML route. Its view of the Agentic Web WG draft is not on the public record as of 15 October 2026.<sup class="footnote-ref"><a href="#fn6" id="fnref6:6">6:6</a></sup><sup class="footnote-ref"><a href="#fn7" id="fnref7:4">7:4</a></sup>
+<em>Recommendation or not.</em> The draft charter has not yet chosen whether the group will aim for full Recommendation.<sup class="footnote-ref"><a href="#fn24" id="fnref24:7">24:7</a></sup></p></aside>
+<h2 id="keeping-this-chapter-current-yourself"><a class="anchor-link" href="#keeping-this-chapter-current-yourself">Keeping this chapter current yourself</a></h2>
+<p>Every fact in this chapter has a date on it, and several will have changed before you read this. The responsible way to rely on any of them is to re-check them on a schedule. Listing 15.3 does that. It reads seven primary sources, extracts one status from each, saves a snapshot, and reports what changed since the last run.</p>
+<figure class="code"><figcaption>Listing 15.3 — A standards watcher (standards-watch.mjs)</figcaption>
+<pre><code class="language-js">// standards-watch.mjs: snapshot WebMCP's standards status and report what changed.
+// Usage: node standards-watch.mjs [snapshots/last.json]
+import { readFile, writeFile } from 'node:fs/promises';
+
+const SOURCES = {
+  spec: 'https://webmachinelearning.github.io/webmcp/',
+  commits: 'https://github.com/webmachinelearning/webmcp/commits/main.atom',
+  chromestatus: 'https://chromestatus.com/api/v0/features/5117755740913664',
+  edgeTrial: 'https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a',
+  mozilla: 'https://github.com/mozilla/standards-positions/issues/1412',
+  webkit: 'https://github.com/WebKit/standards-positions/issues/670',
+  tag: 'https://github.com/w3ctag/design-reviews/issues/1238',
+};
+
+export const parse = {
+  spec: (html) =&gt; html.replace(/&lt;[^&gt;]+&gt;/g, ' ').replace(/\s+/g, ' ')
+    .match(/(Draft Community Group Report|Final Community Group Report|Working Draft|Editor['’]s Draft)\s*,?\s*(\d{1,2} \w+ \d{4})/)
+    ?.slice(1, 3).join(', ') ?? null,
+  commits: (xml) =&gt; {
+    const entry = xml.match(/&lt;entry&gt;[\s\S]*?&lt;\/entry&gt;/)?.[0] ?? '';
+    const title = entry.match(/&lt;title&gt;\s*([\s\S]*?)\s*&lt;\/title&gt;/)?.[1]?.replace(/&amp;#39;/g, &quot;'&quot;);
+    const updated = entry.match(/&lt;updated&gt;([^&lt;]+)&lt;\/updated&gt;/)?.[1];
+    return title ? `${updated} ${title}` : null;
+  },
+  chromestatus: (text) =&gt; {
+    const feature = JSON.parse(text.replace(/^\)\]\}'\s*/, ''));
+    const trial = feature.stages.find((s) =&gt; s.stage_type === 150); // origin trial stage
+    if (!trial) return null;
+    const lasts = [trial.desktop_last, ...trial.extensions.map((e) =&gt; e.desktop_last)];
+    return { trialFrom: trial.desktop_first, trialThrough: Math.max(...lasts.filter(Boolean)) };
+  },
+  edgeTrial: (html) =&gt; html.match(/Trial Expiration Date&lt;\/strong&gt;\s*&lt;p&gt;([^&lt;]+)&lt;\/p&gt;/)?.[1] ?? null,
+  // Current labels only: the issue's &quot;labels&quot; block, not label events in its timeline.
+  labels: (prefixes) =&gt; (html) =&gt; {
+    const block = html.match(/&quot;labels&quot;:\{&quot;pageInfo&quot;:[\s\S]*?\]\}/)?.[0] ?? '';
+    return [...block.matchAll(/&quot;name&quot;:&quot;([^&quot;]+)&quot;/g)].map((m) =&gt; m[1])
+      .filter((name) =&gt; prefixes.some((p) =&gt; name.startsWith(p))).sort();
+  },
+};
+const PARSERS = {
+  spec: parse.spec, commits: parse.commits, chromestatus: parse.chromestatus,
+  edgeTrial: parse.edgeTrial,
+  mozilla: parse.labels(['position:']), webkit: parse.labels(['position:']),
+  tag: parse.labels(['Progress:', 'Missing:', 'Resolution:']),
+};
+
+async function fetchText(url) {
+  const res = await fetch(url, {
+    headers: { 'user-agent': 'webmcp-standards-watch/1.0' },
+    signal: AbortSignal.timeout(30_000),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.text();
+}
+
+export async function snapshot() {
+  const entries = await Promise.all(Object.entries(SOURCES).map(async ([key, url]) =&gt; {
+    try { return [key, PARSERS[key](await fetchText(url))]; }
+    catch (err) { return [key, { error: err.message }]; }
+  }));
+  return { checkedAt: new Date().toISOString(), ...Object.fromEntries(entries) };
+}
+
+export function diff(before, after) {
+  return Object.keys(SOURCES)
+    .filter((k) =&gt; JSON.stringify(before?.[k]) !== JSON.stringify(after[k]))
+    .map((k) =&gt; ({ source: k, before: before?.[k] ?? null, after: after[k] }));
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const file = process.argv[2] ?? 'snapshots/last.json';
+  const before = await readFile(file, 'utf8').then(JSON.parse).catch(() =&gt; null);
+  const after = await snapshot();
+  const changes = diff(before, after);
+  console.log(JSON.stringify(after, null, 2));
+  for (const c of changes) console.log(`CHANGED ${c.source}: ${JSON.stringify(c.before)} -&gt; ${JSON.stringify(c.after)}`);
+  await writeFile(file, JSON.stringify(after, null, 2) + '\n');
+  process.exitCode = before &amp;&amp; changes.length ? 2 : 0;
+}
+</code></pre></figure>
+<p>A few design choices are worth explaining. The script reads GitHub issue pages rather than the GitHub REST API, because unauthenticated API calls are rate-limited, and a weekly job shared by a team quickly hits that limit. It takes only the issue’s current labels block, not the label events in the timeline, so a label that was added and later removed doesn’t show up as current. The test suite has a case for exactly that, using the TAG’s since-removed “Progress: untriaged” label. Each source fails independently: a page that times out becomes an <code>{ error }</code> entry rather than a crash. And the exit code is <code>2</code> when something changed, so a CI job can open an issue or send a message.</p>
+<p>Here is the snapshot it produced when this chapter was checked:</p>
+<figure class="code"><figcaption>Listing 15.4 — The watcher’s snapshot on 15 October 2026 (snapshots/2026-10-15.json)</figcaption>
+<pre><code class="language-json">{
+  &quot;checkedAt&quot;: &quot;2026-10-15T09:10:15.852Z&quot;,
+  &quot;spec&quot;: &quot;Draft Community Group Report, 15 October 2026&quot;,
+  &quot;commits&quot;: &quot;2026-10-15T00:00:42Z Handle re-registration during input serialization (#347)&quot;,
+  &quot;chromestatus&quot;: {
+    &quot;trialFrom&quot;: 149,
+    &quot;trialThrough&quot;: 162
+  },
+  &quot;edgeTrial&quot;: &quot;March 30, 2027&quot;,
+  &quot;mozilla&quot;: [
+    &quot;position: neutral&quot;
+  ],
+  &quot;webkit&quot;: [
+    &quot;position: oppose&quot;
+  ],
+  &quot;tag&quot;: [
+    &quot;Missing: Multi-stakeholder support&quot;,
+    &quot;Progress: in progress&quot;
+  ]
+}
+</code></pre></figure>
+<p>Run it weekly. The fields that matter most for planning are <code>chromestatus.trialThrough</code> (renew your tokens before it passes), <code>edgeTrial</code>, and any change to the <code>mozilla</code>, <code>webkit</code> and <code>tag</code> labels. A spec date change on its own is routine; read the commit titles it points to.</p>
+<h2 id="what-this-means-for-your-product"><a class="anchor-link" href="#what-this-means-for-your-product">What this means for your product</a></h2>
+<ul>
+<li><em>Plan for Chromium only, and design for everyone.</em> Today’s reachable audience for WebMCP is users of Chromium-based browsers whose sites carry trial tokens, plus agents that consume tools through Chromium. Your site must work fully without tools in every other browser, which progressive enhancement gives you for free.</li>
+<li><em>Put the trial on someone’s calendar.</em> Chrome’s trial runs through Chrome 162, Edge’s through 30 March 2027, and an extension means new tokens. Assign an owner for registration, renewal and the token in your deployment configuration.</li>
+<li><em>Budget for churn.</em> Eight behaviour-changing spec changes in 2026 is the baseline (Table 15.1). Keep WebMCP code in one module, pin library versions, and run the Chapter 14 tests against each new Chromium release.</li>
+<li><em>Treat standards politics as a risk, not a verdict.</em> Neutral can become positive if the API is reshaped, and a Working Group would add review and stability. Opposition from WebKit means no Safari support for this design. Neither changes whether well-designed tools help your users in browsers that have them.</li>
+<li><em>Feed the process.</em> Google’s trial asks for feedback on the API shape, and the TAG thread shows that deployment data carries weight: Shopify storefront tools were cited as an argument.<sup class="footnote-ref"><a href="#fn12" id="fnref12:2">12:2</a></sup><sup class="footnote-ref"><a href="#fn5" id="fnref5:12">5:12</a></sup> Real usage from your product is the most persuasive input you can give.</li>
+</ul>
+<h2 id="chapter-summary"><a class="anchor-link" href="#chapter-summary">Chapter summary</a></h2>
+<ul>
+<li>WebMCP is a Draft Community Group Report (15 October 2026) of the W3C Web Machine Learning CG. It is not a W3C standard and not on the Standards Track. Community Groups incubate; only a Working Group can standardise.</li>
+<li>Chrome’s origin trial runs from Chrome 149, originally through 156 and since 28 September 2026 extended through 162. Edge’s trial runs in Edge 150 until 30 March 2027. Both accept third-party tokens. Tokens go in a meta tag, an HTTP header or, for third parties, an external script, and an extension means renewing them.</li>
+<li>Trials exist to change APIs. In 2026 the spec removed <code>provideContext()</code>, moved <code>modelContext</code> to <code>Document</code>, made <code>registerTool()</code> return a promise, removed the declarative API and changed its error types. The trial and the documentation don’t always match the draft.</li>
+<li>Feature detection should cover the secure context, the methods and events, the <code>&quot;tools&quot;</code> permissions policy and the old <code>navigator</code> surface. In Chromium 156, a page under <code>Permissions-Policy: tools=()</code> still sees the API, but calls are rejected with <code>NotAllowedError</code>.</li>
+<li>Mozilla is neutral: tools are useful “lanes”, but adversarial sites, a misleading name and a closed set of consumers leave “too many open questions”. It is renegotiating around a more general cross-environment function-call API (#236).</li>
+<li>WebKit is opposed: agents are assistive technology and should not be singled out, the tool layer duplicates HTML and ARIA, the risks are unexamined and the venue is wrong. It proposes starting over in a new group, from use cases.</li>
+<li>The TAG review, open since June 2026, is labelled “Missing: Multi-stakeholder support”, with six focus areas pending and no position yet.</li>
+<li>Consumers listed today: Chrome and Edge trials, Brave Leo (experimental), ChatGPT Desktop (per the project’s status page; ChatGPT Atlas was retired) and Meta Ray-Ban Display (“coming soon”), plus Chromium extensions. Community packages (<code>@mcp-b/global</code>, <code>@mcp-b/webmcp-polyfill</code>, <code>usewebmcp</code>, all at 6.0.3) track the draft quickly, but on their own schedule.</li>
+<li>A move into the WebML Working Group was dropped after Apple warned of a formal objection. A new Agentic Web Working Group charter naming WebMCP is in refinement until about 10 November 2026. Standardisation would still require two independent interoperable implementations.</li>
+<li>Re-check status on a schedule. Listing 15.3 snapshots seven primary sources and flags changes.</li>
+</ul>
+<p>Chapter 16 turns from the platform to the business: which journeys to expose first, how to keep the agent a guest on your site, and how to measure what agent-driven traffic is worth.</p>
+<h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>W3C, “Community and Business Groups: Frequently Asked Questions”, including “Are Community and Business Group reports W3C standards?”. <a href="https://www.w3.org/community/about/faq/">https://www.w3.org/community/about/faq/</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a> <a href="#fnref1:2" class="footnote-backref">↩︎</a> <a href="#fnref1:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, header, “Status of this document” and editors. <a href="https://webmachinelearning.github.io/webmcp/">https://webmachinelearning.github.io/webmcp/</a> <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a> <a href="#fnref2:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>mozilla/standards-positions issue #1412, “WebMCP”: request (28 May 2026), Benjamin VanderSloot’s assessment (1 June 2026; GitHub account <code>bvandersloot-mozilla</code>, which GitHub links to commits authored as “Benjamin VanderSloot <a href="mailto:bvandersloot@mozilla.com">bvandersloot@mozilla.com</a>”), label “position: neutral” (5 August 2026), and the exchange of 24–26 August 2026. <a href="https://github.com/mozilla/standards-positions/issues/1412">https://github.com/mozilla/standards-positions/issues/1412</a> <a href="#fnref3" class="footnote-backref">↩︎</a> <a href="#fnref3:1" class="footnote-backref">↩︎</a> <a href="#fnref3:2" class="footnote-backref">↩︎</a> <a href="#fnref3:3" class="footnote-backref">↩︎</a> <a href="#fnref3:4" class="footnote-backref">↩︎</a> <a href="#fnref3:5" class="footnote-backref">↩︎</a> <a href="#fnref3:6" class="footnote-backref">↩︎</a> <a href="#fnref3:7" class="footnote-backref">↩︎</a> <a href="#fnref3:8" class="footnote-backref">↩︎</a> <a href="#fnref3:9" class="footnote-backref">↩︎</a> <a href="#fnref3:10" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>WebKit/standards-positions issue #670, “WebMCP”: WebKit’s position comment (3 June 2026), label “position: oppose” (11 June 2026), concern and topic labels, and the follow-up of 17 June 2026. <a href="https://github.com/WebKit/standards-positions/issues/670">https://github.com/WebKit/standards-positions/issues/670</a> <a href="#fnref4" class="footnote-backref">↩︎</a> <a href="#fnref4:1" class="footnote-backref">↩︎</a> <a href="#fnref4:2" class="footnote-backref">↩︎</a> <a href="#fnref4:3" class="footnote-backref">↩︎</a> <a href="#fnref4:4" class="footnote-backref">↩︎</a> <a href="#fnref4:5" class="footnote-backref">↩︎</a> <a href="#fnref4:6" class="footnote-backref">↩︎</a> <a href="#fnref4:7" class="footnote-backref">↩︎</a> <a href="#fnref4:8" class="footnote-backref">↩︎</a> <a href="#fnref4:9" class="footnote-backref">↩︎</a> <a href="#fnref4:10" class="footnote-backref">↩︎</a> <a href="#fnref4:11" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>w3ctag/design-reviews issue #1238, “Incubation: WebMCP”: filed 11 June 2026; labels applied 10 July 2026; comments of 6, 18, 19 and 20 August and 6 and 9 October 2026. <a href="https://github.com/w3ctag/design-reviews/issues/1238">https://github.com/w3ctag/design-reviews/issues/1238</a> <a href="#fnref5" class="footnote-backref">↩︎</a> <a href="#fnref5:1" class="footnote-backref">↩︎</a> <a href="#fnref5:2" class="footnote-backref">↩︎</a> <a href="#fnref5:3" class="footnote-backref">↩︎</a> <a href="#fnref5:4" class="footnote-backref">↩︎</a> <a href="#fnref5:5" class="footnote-backref">↩︎</a> <a href="#fnref5:6" class="footnote-backref">↩︎</a> <a href="#fnref5:7" class="footnote-backref">↩︎</a> <a href="#fnref5:8" class="footnote-backref">↩︎</a> <a href="#fnref5:9" class="footnote-backref">↩︎</a> <a href="#fnref5:10" class="footnote-backref">↩︎</a> <a href="#fnref5:11" class="footnote-backref">↩︎</a> <a href="#fnref5:12" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>w3c/charter-drafts pull request #829, “[wg/webmachinelearning] Adds WebMCP in scope” (opened 9 June 2026; Apple’s comment of 13 August 2026; closed 13 October 2026). <a href="https://github.com/w3c/charter-drafts/pull/829">https://github.com/w3c/charter-drafts/pull/829</a> <a href="#fnref6" class="footnote-backref">↩︎</a> <a href="#fnref6:1" class="footnote-backref">↩︎</a> <a href="#fnref6:2" class="footnote-backref">↩︎</a> <a href="#fnref6:3" class="footnote-backref">↩︎</a> <a href="#fnref6:4" class="footnote-backref">↩︎</a> <a href="#fnref6:5" class="footnote-backref">↩︎</a> <a href="#fnref6:6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>w3c/strategy issue #576, “[wg/agenticweb] Agentic Web Group Charter” (opened 28 September 2026; label “In Charter Refinement”, 1 October 2026). <a href="https://github.com/w3c/strategy/issues/576">https://github.com/w3c/strategy/issues/576</a> <a href="#fnref7" class="footnote-backref">↩︎</a> <a href="#fnref7:1" class="footnote-backref">↩︎</a> <a href="#fnref7:2" class="footnote-backref">↩︎</a> <a href="#fnref7:3" class="footnote-backref">↩︎</a> <a href="#fnref7:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>Commit history of webmachinelearning/webmcp, branch <code>main</code>, read from a clone on 15 October 2026; the commits named are fe84c67 (#132, 5 March 2026), c7b5c70 (#184, 27 May 2026), ec37ec4 (#200, 8 June 2026), d29b8d7 (#225, 21 July 2026), a724ab1 (#246, 17 August 2026), d61d0e6 (#330, 30 September 2026), 14ae813 (#338, 8 October 2026), b206dae (#339, 8 October 2026) and the newest, 3279798 (#347, “Handle re-registration during input serialization”, committed 14 October 2026 at 21:00 UTC−3, which is 15 October in UTC). <a href="https://github.com/webmachinelearning/webmcp/commits/main">https://github.com/webmachinelearning/webmcp/commits/main</a> <a href="#fnref8" class="footnote-backref">↩︎</a> <a href="#fnref8:1" class="footnote-backref">↩︎</a> <a href="#fnref8:2" class="footnote-backref">↩︎</a> <a href="#fnref8:3" class="footnote-backref">↩︎</a> <a href="#fnref8:4" class="footnote-backref">↩︎</a> <a href="#fnref8:5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p>chromestatus.com, “WebMCP” (feature 5117755740913664), read through its JSON API: origin-trial stage (Chrome 149 to 156, third-party support, use counter <code>kModelContextRegisterTool</code>), extension stage created 28 September 2026 (through Chrome 162, with the stated reason), developer-trial stage (Chrome 146), standards maturity “Incubation”, and browser signals; entry last updated 28 September 2026. <a href="https://chromestatus.com/feature/5117755740913664">https://chromestatus.com/feature/5117755740913664</a> <a href="#fnref9" class="footnote-backref">↩︎</a> <a href="#fnref9:1" class="footnote-backref">↩︎</a> <a href="#fnref9:2" class="footnote-backref">↩︎</a> <a href="#fnref9:3" class="footnote-backref">↩︎</a> <a href="#fnref9:4" class="footnote-backref">↩︎</a> <a href="#fnref9:5" class="footnote-backref">↩︎</a> <a href="#fnref9:6" class="footnote-backref">↩︎</a> <a href="#fnref9:7" class="footnote-backref">↩︎</a> <a href="#fnref9:8" class="footnote-backref">↩︎</a> <a href="#fnref9:9" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p>Chrome for Developers, “Get started with origin trials” (last updated 7 November 2024): tokens in a meta tag, an HTTP header or script; third-party tokens; multiple tokens per page; renewal when a trial is extended; “Chrome ignores invalid or expired tokens.” <a href="https://developer.chrome.com/docs/web-platform/origin-trials">https://developer.chrome.com/docs/web-platform/origin-trials</a> <a href="#fnref10" class="footnote-backref">↩︎</a> <a href="#fnref10:1" class="footnote-backref">↩︎</a> <a href="#fnref10:2" class="footnote-backref">↩︎</a> <a href="#fnref10:3" class="footnote-backref">↩︎</a> <a href="#fnref10:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>Microsoft Edge Origin Trials, “WebMCP” trial page: description, “Trial Expiration Date: March 30, 2027”, registration, and the trial record (<code>supportsThirdParty: true</code>, <code>edgeOnly: false</code>). <a href="https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a">https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a</a> <a href="#fnref11" class="footnote-backref">↩︎</a> <a href="#fnref11:1" class="footnote-backref">↩︎</a> <a href="#fnref11:2" class="footnote-backref">↩︎</a> <a href="#fnref11:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>Chrome for Developers, “Join the WebMCP origin trial” (published 9 June 2026). <a href="https://developer.chrome.com/blog/ai-webmcp-origin-trial">https://developer.chrome.com/blog/ai-webmcp-origin-trial</a> <a href="#fnref12" class="footnote-backref">↩︎</a> <a href="#fnref12:1" class="footnote-backref">↩︎</a> <a href="#fnref12:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>webmachinelearning/webmcp, “Browser and Agent Implementation Status” (implementation-status.md). <a href="https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md">https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md</a> <a href="#fnref13" class="footnote-backref">↩︎</a> <a href="#fnref13:1" class="footnote-backref">↩︎</a> <a href="#fnref13:2" class="footnote-backref">↩︎</a> <a href="#fnref13:3" class="footnote-backref">↩︎</a> <a href="#fnref13:4" class="footnote-backref">↩︎</a> <a href="#fnref13:5" class="footnote-backref">↩︎</a> <a href="#fnref13:6" class="footnote-backref">↩︎</a> <a href="#fnref13:7" class="footnote-backref">↩︎</a> <a href="#fnref13:8" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>Chrome for Developers, “WebMCP” (published 18 May 2026, updated 7 October 2026): “Get started”, “Local WebMCP” and “Use WebMCP APIs”. <a href="https://developer.chrome.com/docs/ai/webmcp">https://developer.chrome.com/docs/ai/webmcp</a> <a href="#fnref14" class="footnote-backref">↩︎</a> <a href="#fnref14:1" class="footnote-backref">↩︎</a> <a href="#fnref14:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, §4.1 (the <code>[SecureContext]</code> <code>modelContext</code> attribute on <code>Document</code>), §4.2 (<code>ModelContext</code> IDL) and §4.4 “Permissions policy integration”. <a href="https://webmachinelearning.github.io/webmcp/#api">https://webmachinelearning.github.io/webmcp/#api</a> <a href="#fnref15" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn16" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, security and privacy considerations: the <code>Permissions-Policy: tools=()</code> mitigation. <a href="https://webmachinelearning.github.io/webmcp/">https://webmachinelearning.github.io/webmcp/</a> <a href="#fnref16" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn17" class="footnote-item"><p>Bugzilla bug 2018306, “[meta] Implement a prototype WebMCP API” (Core :: Machine Learning: General; filed 20 February 2026; status NEW), read through the Bugzilla REST API. <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=2018306">https://bugzilla.mozilla.org/show_bug.cgi?id=2018306</a> <a href="#fnref17" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn18" class="footnote-item"><p>webmachinelearning/webmcp issue #236, “Reposition feature as a generic communication tool?” (opened 3 August 2026 by Jake Archibald), including comments of 26–27 August and 22–24 September 2026. <a href="https://github.com/webmachinelearning/webmcp/issues/236">https://github.com/webmachinelearning/webmcp/issues/236</a> <a href="#fnref18" class="footnote-backref">↩︎</a> <a href="#fnref18:1" class="footnote-backref">↩︎</a> <a href="#fnref18:2" class="footnote-backref">↩︎</a> <a href="#fnref18:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn19" class="footnote-item"><p>brave/brave-browser issue #55232, “[AI Chat]: Add support for the WebMCP protocol to Leo” (opened 5 May 2026; closed 7 July 2026, reopened 27 August, closed 1 October, reopened 7 October; open on 15 October 2026), including its test plan and the comment of 1 October 2026. Event dates read through the GitHub REST API. <a href="https://github.com/brave/brave-browser/issues/55232">https://github.com/brave/brave-browser/issues/55232</a> <a href="#fnref19" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn20" class="footnote-item"><p>OpenAI Help Center, “ChatGPT Atlas retirement”, read on 15 October 2026 (the page refuses direct automated requests, so it was read through a text-rendering proxy): “ChatGPT Atlas has been retired and no longer receives updates.” Michael Kan, “OpenAI to Retire ChatGPT Atlas Browser Less Than a Year After Launch”, PCMag, 9 July 2026, for the announcement and the targeted deprecation date of 9 August 2026. <a href="https://help.openai.com/en/articles/20001371-chatgpt-atlas-retirement">https://help.openai.com/en/articles/20001371-chatgpt-atlas-retirement</a> and <a href="https://www.pcmag.com/news/openai-to-retire-chatgpt-atlas-browser-less-than-a-year-after-launch">https://www.pcmag.com/news/openai-to-retire-chatgpt-atlas-browser-less-than-a-year-after-launch</a> <a href="#fnref20" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn21" class="footnote-item"><p>MCP-B, “WebMCP documentation and developer tools” (docs.mcp-b.ai home page, with its live <code>registerTool()</code> example and the Rook extension). <a href="https://docs.mcp-b.ai">https://docs.mcp-b.ai</a> <a href="#fnref21" class="footnote-backref">↩︎</a> <a href="#fnref21:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn22" class="footnote-item"><p>npm registry records for <code>@mcp-b/global</code>, <code>@mcp-b/webmcp-polyfill</code> and <code>usewebmcp</code> (each at version 6.0.3 on 15 October 2026, published 14 October 2026; MIT licence; package descriptions as quoted). <a href="https://registry.npmjs.org/@mcp-b/global">https://registry.npmjs.org/@mcp-b/global</a>, <a href="https://registry.npmjs.org/@mcp-b/webmcp-polyfill">https://registry.npmjs.org/@mcp-b/webmcp-polyfill</a>, <a href="https://registry.npmjs.org/usewebmcp">https://registry.npmjs.org/usewebmcp</a> <a href="#fnref22" class="footnote-backref">↩︎</a> <a href="#fnref22:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn23" class="footnote-item"><p>WebMCP-org/npm-packages repository, “NPM packages for MCP-B: Transport layers, React hooks, and browser tools for the Model Context Protocol”. <a href="https://github.com/WebMCP-org/npm-packages">https://github.com/WebMCP-org/npm-packages</a> <a href="#fnref23" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn24" class="footnote-item"><p>W3C, “Agentic Web Working Group Charter” (DRAFT), including Scope, Out of Scope, Deliverables and Success Criteria. <a href="https://w3c.github.io/charter-drafts/2026/agenticweb-wg.html">https://w3c.github.io/charter-drafts/2026/agenticweb-wg.html</a> <a href="#fnref24" class="footnote-backref">↩︎</a> <a href="#fnref24:1" class="footnote-backref">↩︎</a> <a href="#fnref24:2" class="footnote-backref">↩︎</a> <a href="#fnref24:3" class="footnote-backref">↩︎</a> <a href="#fnref24:4" class="footnote-backref">↩︎</a> <a href="#fnref24:5" class="footnote-backref">↩︎</a> <a href="#fnref24:6" class="footnote-backref">↩︎</a> <a href="#fnref24:7" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn25" class="footnote-item"><p>webmachinelearning/webmcp issue #192, “Transitioning WebMCP to the working group” (opened 28 May 2026), including the comments of 18 June and 13–14 August 2026. <a href="https://github.com/webmachinelearning/webmcp/issues/192">https://github.com/webmachinelearning/webmcp/issues/192</a> <a href="#fnref25" class="footnote-backref">↩︎</a> <a href="#fnref25:1" class="footnote-backref">↩︎</a> <a href="#fnref25:2" class="footnote-backref">↩︎</a> <a href="#fnref25:3" class="footnote-backref">↩︎</a> <a href="#fnref25:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn26" class="footnote-item"><p>W3C, “Web Machine Learning Working Group” group page (charter until 30 April 2027). <a href="https://www.w3.org/groups/wg/webmachinelearning/">https://www.w3.org/groups/wg/webmachinelearning/</a> <a href="#fnref26" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn27" class="footnote-item"><p>W3C Process Document, 18 August 2025: §4 charter development (refinement of at least 28 days), §5.6 Formal Objections and the W3C Council. <a href="https://www.w3.org/policies/process/">https://www.w3.org/policies/process/</a> <a href="#fnref27" class="footnote-backref">↩︎</a> <a href="#fnref27:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn28" class="footnote-item"><p>Xueyuan Jia (W3C), “Start of refinement for a draft Agentic Web Working Group charter”, public-new-work mailing list, 1 October 2026. <a href="https://lists.w3.org/Archives/Public/public-new-work/2026Oct/0002.html">https://lists.w3.org/Archives/Public/public-new-work/2026Oct/0002.html</a> <a href="#fnref28" class="footnote-backref">↩︎</a> <a href="#fnref28:1" class="footnote-backref">↩︎</a> <a href="#fnref28:2" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="14-testing-debugging-evals.html">← Chapter 14: Testing, Debugging and Evals</a>
+          <a class="pager-link" rel="next" href="16-product-and-business-implications.html">Chapter 16: Product and Business Implications →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

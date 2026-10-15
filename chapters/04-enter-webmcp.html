@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chapter 4: Enter WebMCP — Tools, Not Clicks</title>
+  <meta name="description" content="Where WebMCP came from: community experiments such as MCP-B, a joint Microsoft and Google explainer, and incubation in the W3C Web Machine Learning Community Group. Also what it deliberately is not.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Chapter 4: Enter WebMCP — Tools, Not Clicks">
+  <meta property="og:description" content="Where WebMCP came from: community experiments such as MCP-B, a joint Microsoft and Google explainer, and incubation in the W3C Web Machine Learning Community Group. Also what it deliberately is not.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a class="is-current" aria-current="page" href="04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="../appendices/a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="../appendices/b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="../appendices/c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="../appendices/d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / Chapter 4 <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">chapter:</span> <span class="fm-v">04</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">I — Why the Web Needs an Agent Interface</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">33 min</span></p>
+        <h1>Chapter 4: Enter WebMCP</h1>
+        <p class="lead">Where WebMCP came from: community experiments such as MCP-B, a joint Microsoft and Google explainer, and incubation in the W3C Web Machine Learning Community Group. Also what it deliberately is not.</p>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#two-fridays-at-fjord-table">Two Fridays at Fjord Table</a></li><li><a href="#what-webmcp-is">What WebMCP is</a></li><li><a href="#the-problem-the-actuation-tax">The problem: the actuation tax</a></li><li><a href="#the-core-idea-tools-that-live-in-the-tab">The core idea: tools that live in the tab</a></li><li><a href="#a-first-taste-of-code">A first taste of code</a></li><li><a href="#webmcp-and-mcp-siblings-not-twins">WebMCP and MCP: siblings, not twins</a></li><li><a href="#roads-not-taken">Roads not taken</a></li><li><a href="#where-webmcp-came-from">Where WebMCP came from</a></li><li><a href="#who-decides-and-how">Who decides, and how</a></li><li><a href="#status-and-standards-politics-october-2026">Status and standards politics, October 2026</a></li><li><a href="#what-this-means-for-your-product">What this means for your product</a></li><li><a href="#bridge-to-part-ii">Bridge to Part II</a></li><li><a href="#chapter-summary">Chapter summary</a></li><li><a href="#notes">Notes</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“Instead of your application being a guest within an agent, the agent is a guest on your platform.”</em></p>
+<p>— Chrome for Developers, “WebMCP and MCP compared”<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<h2 id="two-fridays-at-fjord-table"><a class="anchor-link" href="#two-fridays-at-fjord-table">Two Fridays at Fjord Table</a></h2>
+<p>It is Wednesday evening in Oslo, and Ingrid wants a table for four at Fjord Table on Friday, around seven, by the window if possible. She doesn’t open the site and click through its date picker. She types one sentence into the assistant panel of her browser and goes back to her email.</p>
+<p>Here is how that request plays out on most of the web today. The agent takes a screenshot of the Fjord Table homepage, reads the accessibility tree, and decides that the blue button saying “Reserve” is probably the way in. It clicks. A modal opens with a calendar widget built from forty nested <code>div</code> elements. The agent counts squares to find Friday, clicks what it thinks is the 20th, takes another screenshot to check, notices the month header says October, finds the small arrow, and tries again. The party-size control is a custom stepper, so it clicks “+” three times and checks. The time slots load asynchronously, and on the first attempt the agent reads them before they arrive. Eventually, after a dozen model round trips, it gets to a confirmation screen. Or it doesn’t, because Fjord Table shipped a redesign on Tuesday and the button now says “Book”.</p>
+<p>Now replay the same Friday on a version of Fjord Table that has been made agent-ready. When Ingrid’s browser agent looks at the tab, it doesn’t only see pixels and markup. It also sees that the page offers two tools: <code>search_availability</code>, which takes a date, a time and a party size, and <code>book_table</code>, which takes a slot and a seating preference. Each one has a plain-language description and a JSON Schema for its inputs. The agent calls <code>search_availability</code> once. Fjord Table’s own JavaScript (the same code the date picker already uses) runs the search, updates the booking panel on screen so Ingrid can see the options, and hands back three time slots. The agent proposes 19:00 at a window table. Ingrid glances over, sees the familiar Fjord Table booking panel already filled in, and confirms.</p>
+<p>Nothing about the second Friday needs a new server, a new login, or a new app inside the agent. The restaurant’s website did the work, in the user’s own session, while the user watched. That is the whole idea of WebMCP in one scene. The rest of this chapter takes it apart: what WebMCP is, what problem it solves, how it relates to the Model Context Protocol from Chapter 3, where it came from, who is building it, and how contested it still is. Part II then goes deep on the API itself.</p>
+<h2 id="what-webmcp-is"><a class="anchor-link" href="#what-webmcp-is">What WebMCP is</a></h2>
+<p>The specification opens with one sentence: “The WebMCP API enables web applications to provide JavaScript-based tools to AI agents.”<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup> Its introduction then gives the mental model the rest of the design follows. Pages that use WebMCP “can be thought of as Model Context Protocol servers that implement tools in client-side script instead of on the backend.”<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">2:1</a></sup></p>
+<p>Three ideas are packed into that description.</p>
+<ul>
+<li><em>Tools, not clicks.</em> A tool is a JavaScript function with a name, a natural-language description and a structured input schema. The page declares what it can do, and the agent stops guessing from the layout.</li>
+<li><em>Client-side.</em> The tool runs in the page, in the browser tab the user already has open. It can reuse the application’s existing front-end logic and its state, and it inherits the user’s logged-in session.</li>
+<li><em>MCP-shaped.</em> The vocabulary (tools, descriptions, input schemas, results) is borrowed from MCP, so anyone who read Chapter 3 will recognise it. As we’ll see, though, WebMCP is not MCP running in a browser.</li>
+</ul>
+<p>In API terms the surface is small. Every document gets a <code>modelContext</code> object (<code>document.modelContext</code>), and a page calls <code>registerTool()</code> on it to offer a tool.<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup> The browser’s own agent, or an agent embedded in the page, can then discover the tool and call it. The page’s callback does the work and returns a result. That’s the core of it. Annotations, cancellation, cross-origin frames and the rest are refinements on that loop, and they get their own chapters.</p>
+<p>Formally, WebMCP is a Draft Community Group Report of the W3C Web Machine Learning Community Group. The version this chapter was checked against is dated 15 October 2026, and its status section is blunt: “It is not a W3C Standard nor is it on the W3C Standards Track.”<sup class="footnote-ref"><a href="#fn2" id="fnref2:2">2:2</a></sup> Chrome and Edge are running time-limited origin trials. That status shapes how you should read everything that follows, and we come back to it near the end of the chapter.</p>
+<h2 id="the-problem-the-actuation-tax"><a class="anchor-link" href="#the-problem-the-actuation-tax">The problem: the actuation tax</a></h2>
+<p>Chapter 1 described <em>actuation</em>, which Chrome’s documentation defines as “the act of an agent simulating manual mouse clicks and text input, as though it were the human user engaging with your website.”<sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup> It is how today’s general-purpose browser agents get things done when nothing better is available. The WebMCP explainer describes the technique plainly: agents observe “the browser state through a combination of screenshots, and DOM and accessibility tree snapshots, and then interact with the page by simulating human user input.”<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup></p>
+<p>Actuation is remarkable when it works, and it carries a tax that every site and every agent pays.</p>
+<ul>
+<li><em>It is brittle.</em> The agent infers intent from presentation. Rename a button, move a field, swap a native <code>&lt;select&gt;</code> for a custom component, and an agent that worked yesterday fails today. Your design team has no idea it broke anything.</li>
+<li><em>It is slow and expensive.</em> Each step is a model call over a screenshot or a large DOM snapshot. Booking a table can take a dozen round trips. The explainer notes that “even when agents succeed, simple operations often require multiple steps and can be slow or unreliable.”<sup class="footnote-ref"><a href="#fn5" id="fnref5:1">5:1</a></sup></li>
+<li><em>It is ambiguous.</em> Does “Name” mean full name, or first name with a separate surname field? Is this date picker showing check-in or check-out? Humans resolve this from context. Agents guess.</li>
+<li><em>The site has no say.</em> The site owner can’t tell the agent “this is the right way to book” or “don’t touch the admin menu”. It can only hope the agent infers the intended path.</li>
+</ul>
+<p>The obvious alternative is to skip the page and give the agent an API. That is what MCP servers, OpenAPI descriptions and platform plug-ins do. The explainer calls these <em>backend integrations</em>, and it is candid about why they don’t fit interactive web apps.<sup class="footnote-ref"><a href="#fn5" id="fnref5:2">5:2</a></sup> They cause UI disintermediation and context loss: the conversation happens between the agent and your server, and your interface, the thing you designed and the place where the user sees what is happening, is bypassed. They force replication of state and authentication: the user is already signed in to the tab, but the backend integration needs its own credentials and its own copy of whatever the user was looking at. And they add developer burden, because exposing something your front end already does means writing and running a separate server.</p>
+<p>The explainer illustrates the mismatch with a browser agent that combines both worlds. It scrapes the page, calls a backend MCP tool, and then has to “scrape / actuate DOM to reconcile visible UI”, because the server’s state and the screen have drifted apart.<sup class="footnote-ref"><a href="#fn5" id="fnref5:3">5:3</a></sup> Anyone who has watched an agent book something through an API and then try to show the user what it did will recognise the problem.</p>
+<p>WebMCP’s answer sits between the two approaches. Keep the page, keep the session and keep the user’s view, but let the page describe its capabilities as tools so the agent doesn’t have to reverse-engineer them. The explainer’s phrase is a “lightweight way to adapt web content for use by AI agents”.<sup class="footnote-ref"><a href="#fn5" id="fnref5:4">5:4</a></sup></p>
+<h2 id="the-core-idea-tools-that-live-in-the-tab"><a class="anchor-link" href="#the-core-idea-tools-that-live-in-the-tab">The core idea: tools that live in the tab</a></h2>
+<p>The most important property of a WebMCP tool is where it runs. It lives in a document’s event loop, the same main thread as the rest of your page script.<sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup> When an agent calls it, your code runs with everything the page already has: the signed-in session and its cookies, the application state in memory, the components on screen. Chrome’s comparison guide sums it up: WebMCP “accesses live session data, cookies, and DOM elements that are available only in a live browser tab.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:1">1:1</a></sup></p>
+<p>The explainer’s lifecycle of a tool call has five steps, shown in Figure 4.1 for Fjord Table.<sup class="footnote-ref"><a href="#fn5" id="fnref5:5">5:5</a></sup></p>
+<ol>
+<li><em>Registration.</em> The page registers one or more tools with <code>document.modelContext.registerTool()</code>.</li>
+<li><em>Discovery.</em> An agent connected to the page asks the browser which tools are active and what their schemas are.</li>
+<li><em>Invocation.</em> The agent requests a tool call, with structured arguments that match the tool’s input schema.</li>
+<li><em>Execution.</em> The browser mediates the call and runs the tool’s <code>execute</code> callback in the page.</li>
+<li><em>Response.</em> The callback returns a result, which goes back to the agent so it can carry on with the user.</li>
+</ol>
+<figure class="book-figure"><img decoding="async" src="04-enter-webmcp/images/figure-4-1.png" alt="Figure 4.1 — A WebMCP tool call at Fjord Table. The browser mediates between the agent and the page. The tool runs in the user’s live tab, reuses the site’s own code and updates the UI the user is looking at." /><figcaption>Figure 4.1 — A WebMCP tool call at Fjord Table. The browser mediates between the agent and the page. The tool runs in the user’s live tab, reuses the site’s own code and updates the UI the user is looking at.</figcaption></figure>
+<p>Three consequences follow from running in the tab, and together they explain most of WebMCP’s design.</p>
+<h3 id="the-user-stays-in-the-loop"><a class="anchor-link" href="#the-user-stays-in-the-loop">The user stays in the loop</a></h3>
+<p>The explainer’s first stated goal is to “enable human-in-the-loop workflows”, cooperative scenarios in which users delegate tasks while “maintaining visibility, history, and control over web pages.”<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup> Because the tool runs in the visible page, it can and should update the visible page. When Ingrid’s agent calls <code>search_availability</code>, the booking panel shows the slots. When it calls <code>book_table</code>, Fjord Table’s normal confirmation screen appears. The agent becomes a fast pair of hands on an interface the user can still see and correct. The spec’s introduction describes WebMCP as enabling “collaborative workflows where users and agents work together within the same web interface”.<sup class="footnote-ref"><a href="#fn2" id="fnref2:3">2:3</a></sup></p>
+<h3 id="tools-are-ephemeral-and-tab-bound"><a class="anchor-link" href="#tools-are-ephemeral-and-tab-bound">Tools are ephemeral and tab-bound</a></h3>
+<p>A WebMCP tool exists while the page that registered it exists. Chrome’s guide puts it plainly: “WebMCP tools are ephemeral. They exist only when your page is open. Once the user navigates away from your site or closes the tab, the agent cannot access your site or take actions.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:2">1:2</a></sup> Pages can also add and remove tools as the user moves around. Fjord Table might offer <code>book_table</code> only once a restaurant and date are on screen. That is a feature, not a limitation: the set of tools reflects what the user could do right now in the UI.</p>
+<h3 id="the-browser-is-the-broker"><a class="anchor-link" href="#the-browser-is-the-broker">The browser is the broker</a></h3>
+<p>Agents don’t talk to your page directly. The browser mediates. It knows which origin registered each tool, applies a permissions policy (a feature called <code>tools</code>, allowed by default only for the page itself and same-origin frames), and decides how to present the tools to its agent.<sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup> The spec deliberately leaves that last part open. Despite the name, it “does not prescribe the format in which tools are exposed to the browser agent. Browsers are free to distill and expose tools via Model Context Protocol, other proprietary ‘function calling’ methods, or any other way it deems appropriate.”<sup class="footnote-ref"><a href="#fn6" id="fnref6:1">6:1</a></sup> For a page author this means you write to one web API, and each browser’s agent consumes your tools in whatever form its model prefers.</p>
+<p>There are two kinds of consumer. One is the <em>browser agent</em>, built into or hosted by the browser (think of a sidebar assistant), which reads a snapshot of the page’s tools alongside screenshots and other context. The other is an <em>in-page agent</em> written in JavaScript, such as a chat widget, possibly running in an iframe, which discovers tools with <code>getTools()</code> and calls them with <code>executeTool()</code>.<sup class="footnote-ref"><a href="#fn3" id="fnref3:1">3:1</a></sup> Mozilla’s standards-position thread contains a revealing admission from the editors: WebMCP “was conceived with only the first use case in mind”, and support for agents in cross-origin iframes was added “due to developer demand.”<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup> Chapter 7 covers that second world in detail.</p>
+<h3 id="goals-and-what-webmcp-is-deliberately-not"><a class="anchor-link" href="#goals-and-what-webmcp-is-deliberately-not">Goals, and what WebMCP is deliberately not</a></h3>
+<p>The explainer lists six goals: human-in-the-loop workflows, simpler and more reliable agent integration, preventing web content disintermediation, reusing existing client-side code, improving accessibility through agents, and headless scenarios that reuse the same tools.<sup class="footnote-ref"><a href="#fn7" id="fnref7:1">7:1</a></sup> The non-goals matter just as much, because they mark the edges of the design.</p>
+<ul>
+<li><em>Not for fully autonomous workflows.</em> The API “is not intended for fully autonomous agents where a browser UI is not present.” Chrome’s own limitations note says that while headless use may be possible, the API “is primarily designed for local browser workflows with a human in the loop.”[4,7]</li>
+<li><em>Not a replacement for backend integrations.</em> WebMCP is designed to “complement, not replace” protocols like MCP.<sup class="footnote-ref"><a href="#fn7" id="fnref7:2">7:2</a></sup></li>
+<li><em>Not a replacement for human interfaces.</em> “The human web interface remains primary; agent tools augment rather than replace user interaction.”<sup class="footnote-ref"><a href="#fn7" id="fnref7:3">7:3</a></sup></li>
+<li><em>Not a replacement for actuation.</em> An agent that can’t do the job with a page’s tools can still fall back to screenshots and clicks. The explainer says WebMCP “will not conflict with these existing automation techniques.”<sup class="footnote-ref"><a href="#fn5" id="fnref5:6">5:6</a></sup></li>
+</ul>
+<p>There are two more things it is not, and it helps to say them early. WebMCP isn’t an accessibility API: the explainer says it is not designed for ingestion by assistive technology or to interact with the accessibility tree.<sup class="footnote-ref"><a href="#fn7" id="fnref7:4">7:4</a></sup> And it isn’t a trust mechanism. The spec’s security section admits that “there is no guarantee that a WebMCP tool’s declared intent matches its actual behavior.”<sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup> A tool description is a claim made by the site, and agents and browsers still have to decide how far to believe it. Part IV is devoted to that problem.</p>
+<h2 id="a-first-taste-of-code"><a class="anchor-link" href="#a-first-taste-of-code">A first taste of code</a></h2>
+<p>Chapter 5 covers registration properly. Still, it is easier to reason about an API once you’ve seen it, so here is the smallest useful WebMCP tool for Fjord Table, written against the 15 October 2026 draft. It offers a read-only availability search that reuses the code behind the site’s date picker.</p>
+<figure class="code"><figcaption>Listing 4.1 — Fjord Table’s first tool (agent-tools.js, loaded as a module)</figcaption>
+<pre><code class="language-js">// Progressive enhancement: do nothing where WebMCP isn't available.
+if ('modelContext' in document) {
+  const agentTools = new AbortController();
+
+  await document.modelContext.registerTool({
+    name: 'search_availability',
+    title: 'Search available tables',
+    description:
+      'Find open tables at Fjord Table for a date, time and party size. ' +
+      'Returns up to five nearby time slots. Does not make a booking.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        date:      { type: 'string', description: 'Visit date, YYYY-MM-DD' },
+        time:      { type: 'string', description: 'Preferred time, 24h HH:MM' },
+        partySize: { type: 'integer', minimum: 1, maximum: 12 }
+      },
+      required: ['date', 'partySize']
+    },
+    annotations: { readOnlyHint: true },
+    async execute({ date, time, partySize }, { signal }) {
+      // The same function the date picker calls when a human searches.
+      const slots = await availability.search({ date, time, partySize, signal });
+      bookingPanel.showSlots(slots);   // the user sees what the agent found
+      return { date, partySize, slots: slots.map((s) =&gt; s.time) };
+    }
+  }, { signal: agentTools.signal });
+
+  // Later, e.g. when the user leaves the booking view:
+  // agentTools.abort();   // unregisters the tool
+}
+</code></pre></figure>
+<p>Most of what matters is visible in those few lines. The name must be 1 to 128 characters from a small ASCII set (letters, digits, underscore, hyphen and full stop), and the description may not be empty.<sup class="footnote-ref"><a href="#fn3" id="fnref3:2">3:2</a></sup> The <code>inputSchema</code> is ordinary JSON Schema. The <code>execute</code> callback receives the agent’s arguments as an object, plus a signal the browser uses to cancel the call. Whatever the callback returns is serialized to JSON for the agent. <code>readOnlyHint</code> tells the agent this tool changes nothing. Registration returns a promise, which rejects if the name is already taken or the inputs are invalid. To unregister, you don’t call a method: you abort the <code>AbortSignal</code> passed at registration.<sup class="footnote-ref"><a href="#fn3" id="fnref3:3">3:3</a></sup></p>
+<p>The second listing shows the other side of the loop. Suppose Fjord Table embeds its own assistant widget. That in-page agent can find the tool and call it with two methods.</p>
+<figure class="code"><figcaption>Listing 4.2 — An in-page agent calling the tool</figcaption>
+<pre><code class="language-js">const tools  = await document.modelContext.getTools();
+const search = tools.find((t) =&gt; t.name === 'search_availability');
+
+const json = await document.modelContext.executeTool(search, {
+  date: '2026-11-20', time: '19:00', partySize: 4
+});
+console.log(JSON.parse(json).slots);   // e.g. [&quot;18:30&quot;, &quot;19:00&quot;, &quot;20:15&quot;]
+</code></pre></figure>
+<p><code>executeTool()</code> resolves to the stringified result, which is why the widget parses it. A browser’s built-in agent doesn’t use these methods. It gets the page’s tools through the browser’s own internal mechanism, which the spec calls an <em>observation</em>.<sup class="footnote-ref"><a href="#fn6" id="fnref6:2">6:2</a></sup></p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: the API you may have seen elsewhere</p>
+<p>If you’ve read older blog posts, you’ve probably seen <code>navigator.modelContext</code> and methods called <code>provideContext()</code> and <code>clearContext()</code>. Both are gone. The two methods were removed from the draft on 5 March 2026 (pull request #132), and in May 2026 the <code>modelContext</code> object moved from <code>navigator</code> to <code>document</code>, scoped to each document (pull requests #177 and #184).<sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup> Some community polyfills and tutorials still use the old shapes. Every listing in this book follows the current draft, and Appendix D collects the migration notes. Treat any WebMCP snippet without a date on it with suspicion.</p></aside>
+<p>Notice what Listing 4.1 doesn’t do. It doesn’t open a port, mint a token, or describe Fjord Table’s backend. It wraps a function the site already had and shows its result on screen. The explainer calls this goal <em>code reuse</em>: “Any task that a user can accomplish through a page’s UI can be turned into a tool by reusing much of the page’s existing client-side code.”<sup class="footnote-ref"><a href="#fn7" id="fnref7:5">7:5</a></sup></p>
+<h2 id="webmcp-and-mcp-siblings-not-twins"><a class="anchor-link" href="#webmcp-and-mcp-siblings-not-twins">WebMCP and MCP: siblings, not twins</a></h2>
+<p>The name invites the obvious question, and Google has a whole page answering it: “Will WebMCP replace Model Context Protocol (MCP)?” Its answer is no: “WebMCP is not an extension or a replacement of MCP. WebMCP and MCP address different needs.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:3">1:3</a></sup></p>
+<p>Chrome’s analogy is useful. MCP is a company’s customer-service call centre: available on any platform at any time, pulling up data and handling core tasks. WebMCP is the in-store expert: available only when you are in the shop, but able to walk you to the right shelf and hand you the thing.<sup class="footnote-ref"><a href="#fn1" id="fnref1:4">1:4</a></sup> The two share a philosophy. Both offer structured tool discovery, predictable execution and explicit intent in place of guesswork. The key difference, in Google’s words, “is where the application functionality lives.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:5">1:5</a></sup></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>MCP (Chapter 3)</th>
+<th>WebMCP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Where tools run</td>
+<td>On a server or local process you operate</td>
+<td>In the page’s script, in the user’s tab</td>
+</tr>
+<tr>
+<td>Lifecycle</td>
+<td>Persistent (server or daemon)</td>
+<td>Ephemeral and tab-bound</td>
+</tr>
+<tr>
+<td>Transport</td>
+<td>JSON-RPC 2.0 between client and server</td>
+<td>No wire protocol; the browser mediates, in a format the spec leaves open</td>
+</tr>
+<tr>
+<td>Identity and auth</td>
+<td>The server needs its own credentials and auth flow</td>
+<td>Inherits the user’s logged-in browser session</td>
+</tr>
+<tr>
+<td>Discovery</td>
+<td>Agent-specific registration and configuration</td>
+<td>Tools registered by the page while the user visits it</td>
+</tr>
+<tr>
+<td>Feature set</td>
+<td>Tools, resources, prompts, plus client features such as elicitation</td>
+<td>Tools only, in a web-native API with origins and permissions policy</td>
+</tr>
+<tr>
+<td>User’s view</td>
+<td>Headless, outside your UI</td>
+<td>DOM-aware, inside your UI</td>
+</tr>
+<tr>
+<td>Governance</td>
+<td>Versioned protocol (current version 2026-07-28, the stateless revision)</td>
+<td>W3C Community Group draft</td>
+</tr>
+</tbody>
+</table></div>
+<p>Sources for the table: Chrome’s comparison page, the WebMCP explainer and spec, and the MCP versioning page.[1,5,12] A few rows deserve a sentence each.</p>
+<p><em>No JSON-RPC.</em> WebMCP borrows MCP’s vocabulary, not its wire format. Chrome’s guide describes it as “a set of ‘MCP-inspired’ APIs, rather than a direct JavaScript implementation of MCP,” and notes that it omits server-side concepts such as resources.<sup class="footnote-ref"><a href="#fn1" id="fnref1:6">1:6</a></sup> A browser could translate your tools into MCP for its agent, or into something else entirely.</p>
+<p><em>Tools only.</em> Chapter 3 spent time on MCP resources and prompts. Today’s WebMCP has neither. Its open questions include output schemas, progress reporting, streaming and a higher-level notion of “skills”, several of them explicitly modelled on MCP features.<sup class="footnote-ref"><a href="#fn5" id="fnref5:7">5:7</a></sup> The two vocabularies may converge over time, but they haven’t yet.</p>
+<p><em>Stateless protocol, stateful tab.</em> The two also differ in where state lives. Since its 2026-07-28 revision, MCP is stateless: the <code>initialize</code> handshake is gone, and every request carries its own protocol version and client capabilities, so a server keeps no per-connection session.<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup> A WebMCP tool works the other way round. It runs inside a tab whose signed-in session, application state and visible UI persist from one call to the next.</p>
+<p><em>Different lifecycles, complementary jobs.</em> Google’s recommendation is to use both: “Manage core logic with MCP” as a platform-agnostic service layer that is always available, and “Build a contextual UI with WebMCP” for the moments when the user has your site open.<sup class="footnote-ref"><a href="#fn1" id="fnref1:7">1:7</a></sup> For Fjord Table that split is natural. A backend MCP server, like the one built for Trailhead in Chapter 3, could let an assistant check opening hours or cancel a booking from anywhere. The WebMCP tools handle the rich, visual work of choosing a table with the user watching.</p>
+<p>The relationship also runs through people and history, not just design. Some of WebMCP’s earliest code was an attempt to put MCP itself into the browser, and the decision <em>not</em> to adopt MCP wholesale is one of the most important choices in the design. That is where we turn next.</p>
+<h2 id="roads-not-taken"><a class="anchor-link" href="#roads-not-taken">Roads not taken</a></h2>
+<p>Good standards proposals explain the designs they rejected, and the WebMCP explainer lists three.<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup> They are worth knowing because each one comes back regularly in issue threads and conference questions.</p>
+<h3 id="1-just-adopt-mcp"><a class="anchor-link" href="#1-just-adopt-mcp">1. Just adopt MCP</a></h3>
+<p>Why not run the Model Context Protocol in the browser and be done? The explainer gives two reasons. MCP “was built primarily for server-to-client and stdio/SSE process communication” and “lacks native web concepts like origins, standard browser permissions, DOM integration, and tab-level lifecycle management.” And “coupling a web API directly to an actively evolving backend protocol would hinder backward compatibility and platform stability.”<sup class="footnote-ref"><a href="#fn13" id="fnref13:1">13:1</a></sup> Web APIs are effectively forever, while MCP is a fast-moving protocol with dated revisions. WebMCP keeps a “common vocabulary” with MCP and leaves the browser free to bridge to whatever protocol its agent speaks.</p>
+<h3 id="2-static-manifests"><a class="anchor-link" href="#2-static-manifests">2. Static manifests</a></h3>
+<p>Could sites list their tools in a static file, like the Web App Manifest? It would help background discovery, but static manifests “prevent web developers from dynamically adding, updating, or removing tools based on the active page state or user authentication status,” and manifests can’t contain the code that runs the tool.<sup class="footnote-ref"><a href="#fn13" id="fnref13:2">13:2</a></sup> The explainer leaves the door open to layering static declarations on top later, and a separate service-worker explainer explores how agents might discover tools on sites the user doesn’t have open.<sup class="footnote-ref"><a href="#fn5" id="fnref5:8">5:8</a></sup></p>
+<h3 id="3-a-toolcall-event"><a class="anchor-link" href="#3-a-toolcall-event">3. A toolcall event</a></h3>
+<p>A third design would have pages listen for a <code>toolcall</code> event and respond, much like a service worker’s <code>fetch</code> handler. It was rejected because it separates a tool’s declaration from its implementation and leads to sprawling <code>switch</code> statements. A hybrid, an interceptable event dispatched before the registered callback runs, is still on the table.<sup class="footnote-ref"><a href="#fn13" id="fnref13:3">13:3</a></sup></p>
+<h3 id="the-alternative-webmcps-critics-prefer"><a class="anchor-link" href="#the-alternative-webmcps-critics-prefer">The alternative WebMCP’s critics prefer</a></h3>
+<p>There is a fourth alternative that the explainer doesn’t list, and it is central to the politics. Apple’s WebKit team argues that “when a site’s actions are hard for an agent to use, that is a gap in the page’s own semantics,” and that the fix belongs in HTML and ARIA, “where the user, assistive technology, and agents all benefit,” rather than in a parallel layer of JavaScript tools.<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup> The declarative form API, which annotates existing HTML forms, is partly an attempt to meet that argument halfway. We look at it in Chapter 8, and at the wider dispute below.</p>
+<h2 id="where-webmcp-came-from"><a class="anchor-link" href="#where-webmcp-came-from">Where WebMCP came from</a></h2>
+<aside class="callout callout--note"><p class="callout-title">A note on sources</p>
+<p>This section mixes two kinds of evidence. Dates of repositories, explainers, specification changes and browser milestones come from primary sources: the GitHub repositories themselves, the explainer’s acknowledgments, chromestatus and the spec. The personal story of MCP-B’s creation, and how the browser teams came to work with its author, comes from secondary sources, mainly interviews and community write-ups. It is presented as community history, not established fact.</p></aside>
+<p>WebMCP has the usual messy origins of a web feature: independent tinkering, parallel efforts inside browser vendors, and a convergence in a standards venue.</p>
+<p><em>An early proposal (March 2025).</em> Developer Jason McGhee published a repository called WebMCP in early March 2025, describing “a proposal and code for websites to support client side LLMs” in which “a website [can] be an MCP server.”<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup> His README now redirects readers to the W3C work and says, with some charm, “I was just a guy with a dream.”<sup class="footnote-ref"><a href="#fn15" id="fnref15:1">15:1</a></sup></p>
+<p><em>MCP-B (mid-2025).</em> Around the same time, Alex Nahas built MCP-B, the “B” standing for browser. His repository dates from June 2025, and its implementation of MCP transports between a page and a browser extension became the best-known prototype of the idea.<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup> According to an interview published by Arcade in February 2026, Nahas was a backend engineer at Amazon when MCP arrived. Faced with an unwieldy internal MCP setup, he tried running MCP in the browser, where single sign-on and session cookies already handled identity, using the MCP TypeScript SDK and a custom <code>postMessage</code> transport to a Chrome extension.<sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup> The same account says that teams at Google’s Chrome and Microsoft’s Edge had been exploring parallel ideas and joined forces with him through the W3C, and that Nahas initially pushed to port the full protocol to the browser before the group chose a looser coupling. Treat these details as the community’s account: they are consistent with the primary record but not documented by it.</p>
+<p><em>Script tools at Google (July 2025).</em> The primary record does show Google working in parallel. The Chrome Platform Status entry for WebMCP was created on 8 July 2025 and lists its “initial public proposal” as an explainer called <em>script-tools</em> in Google’s explainers repository, created later that month.[18,19]</p>
+<p><em>The joint explainer (August 2025).</em> The WebMCP explainer in the Web Machine Learning Community Group’s GitHub organization was “first published August 13, 2025.” Its authors are three engineers from Microsoft (Brandon Walderman, Leo Lee and Andrew Nolan) and three from Google (David Bokan, Khushal Sagar and Hannah Van Opstal).<sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup> The explainer credits MCP-B as prior art, and both the explainer and the spec thank Alex Nahas and Jason McGhee for sharing their implementation experience.[2,20]</p>
+<p><em>From explainer to spec (late 2025 to 2026).</em> The explainer notes that the specification “has evolved significantly, primarily driven by Dominic Farolino” of Google.<sup class="footnote-ref"><a href="#fn18" id="fnref18:1">18:1</a></sup> Chrome shipped a developer trial behind a flag from Chrome 146 and opened an origin trial in Chrome 149, announced in June 2026.[18,21] Meanwhile the API went through the churn described in the callout above. The MCP-B project’s own README now sends developers to the Community Group’s repository, and its extension is no longer open source.<sup class="footnote-ref"><a href="#fn16" id="fnref16:1">16:1</a></sup></p>
+<h2 id="who-decides-and-how"><a class="anchor-link" href="#who-decides-and-how">Who decides, and how</a></h2>
+<p>Understanding WebMCP’s governance helps you predict how it will change, which matters if you’re building on it.</p>
+<p><em>The venue.</em> WebMCP is incubated in the W3C Web Machine Learning Community Group.<sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup> Community Groups are open: anyone can join after agreeing to the W3C Community Contributor License Agreement, and they can publish reports. A Community Group report isn’t a standard. To get on the standards track, the work would need to be taken up by a Working Group, which requires broader agreement, including from other browser vendors. The first attempt to do that stalled in October 2026, as the status section below describes.</p>
+<p><em>The editors.</em> The 15 October 2026 draft lists three editors: Brandon Walderman (Microsoft), Khushal Sagar (Google) and Dominic Farolino (Google).<sup class="footnote-ref"><a href="#fn2" id="fnref2:4">2:4</a></sup> In the W3C’s architecture review, the TAG review request names Google and Microsoft as the organizations driving the design.<sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup></p>
+<p><em>The workflow.</em> Day to day, decisions happen in the open on GitHub. Issues collect use cases and objections, pull requests change the spec, and the group’s calls record resolutions in minutes. The removal of the declarative API on 8 October 2026 is a typical example: one pull request, merged after discussion, with the explainer updated to match.<sup class="footnote-ref"><a href="#fn21" id="fnref21">21</a></sup> If you want to influence WebMCP, an issue with a concrete use case from a real product is the most effective tool you have, and origin-trial feedback is explicitly invited for that purpose.<sup class="footnote-ref"><a href="#fn22" id="fnref22">22</a></sup></p>
+<p><em>The browser processes.</em> Running alongside the Community Group are each vendor’s own shipping processes. In Chromium, a feature moves through public “intents” on the blink-dev mailing list, developer trials and origin trials. The chromestatus entry lists the owners and links each step.<sup class="footnote-ref"><a href="#fn23" id="fnref23">23</a></sup> An origin trial lets real sites use an experimental feature on their own origin with a token, for a limited number of releases. It exists to gather feedback, and the API can change between releases.</p>
+<h2 id="status-and-standards-politics-october-2026"><a class="anchor-link" href="#status-and-standards-politics-october-2026">Status and standards politics, October 2026</a></h2>
+<p>Everything in this section was checked on 15 October 2026, and much of it will have moved by the time you read it. Chapter 15 returns to it in depth. For now, here is the picture.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Party</th>
+<th>Position or state</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Specification</td>
+<td>Draft Community Group Report, 15 Oct 2026; not on the W3C standards track</td>
+<td>Spec<sup class="footnote-ref"><a href="#fn2" id="fnref2:5">2:5</a></sup></td>
+</tr>
+<tr>
+<td>Chrome</td>
+<td>Origin trial from Chrome 149, originally through 156, extended through Chrome 162</td>
+<td>chromestatus<sup class="footnote-ref"><a href="#fn23" id="fnref23:1">23:1</a></sup></td>
+</tr>
+<tr>
+<td>Microsoft Edge</td>
+<td>Origin trial from Edge 150 (released 2 July 2026); expires 30 March 2027</td>
+<td>Edge origin trials and Edge 150 release notes<sup class="footnote-ref"><a href="#fn24" id="fnref24">24</a></sup></td>
+</tr>
+<tr>
+<td>Mozilla (Firefox)</td>
+<td>Position recorded as “neutral”</td>
+<td>standards-positions #1412<sup class="footnote-ref"><a href="#fn9" id="fnref9:1">9:1</a></sup></td>
+</tr>
+<tr>
+<td>Apple (WebKit)</td>
+<td>Position recorded as “oppose”</td>
+<td>standards-positions #670<sup class="footnote-ref"><a href="#fn14" id="fnref14:1">14:1</a></sup></td>
+</tr>
+<tr>
+<td>W3C TAG</td>
+<td>Early review open; labelled “Missing: Multi-stakeholder support”</td>
+<td>design-reviews #1238<sup class="footnote-ref"><a href="#fn20" id="fnref20:1">20:1</a></sup></td>
+</tr>
+<tr>
+<td>W3C chartering</td>
+<td>Plan to add WebMCP to the WebML Working Group closed unmerged on 13 Oct 2026; draft Agentic Web WG charter naming WebMCP in refinement until about 10 Nov 2026</td>
+<td>charter-drafts #829, Agentic Web WG charter draft[26,27]</td>
+</tr>
+<tr>
+<td>Agents</td>
+<td>Brave Leo (experimental), ChatGPT Desktop, Meta Ray-Ban Display (“coming soon”)</td>
+<td>Project status page only<sup class="footnote-ref"><a href="#fn25" id="fnref25">25</a></sup></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="the-chromium-side"><a class="anchor-link" href="#the-chromium-side">The Chromium side</a></h3>
+<p>Google’s chromestatus entry records the origin trial as running from Chrome 149 to 156, with an extension through Chrome 162 added in late September 2026. Its stated reason: “OT feedback has suggested improvements to the API, which we are implementing.”<sup class="footnote-ref"><a href="#fn23" id="fnref23:2">23:2</a></sup> Microsoft runs its own origin trial, first listed in the release notes for Edge 150 (released 2 July 2026), and its trial page gives an expiry date of 30 March 2027.<sup class="footnote-ref"><a href="#fn24" id="fnref24:1">24:1</a></sup> For developers, local testing is a flag (<code>chrome://flags/#enable-webmcp-testing</code>), and Chrome publishes inspector and example-agent extensions for trying tools out.<sup class="footnote-ref"><a href="#fn4" id="fnref4:1">4:1</a></sup></p>
+<h3 id="mozilla-neutral-with-conditions"><a class="anchor-link" href="#mozilla-neutral-with-conditions">Mozilla: neutral, with conditions</a></h3>
+<p>Mozilla’s position is neutral. Its reviewer, Benjamin VanderSloot, framed WebMCP as a way for websites to declare dedicated “lanes” for automated interaction. With honest participants, he wrote, that helps both agents and developers. But “in an adversarial setting there is a risk that sites will provide tools that do not match the experience of a user on the page,” whether to trap agents, to hide prompt injection from users or to harvest data from tool inputs.<sup class="footnote-ref"><a href="#fn9" id="fnref9:2">9:2</a></sup> Later in the thread, Mozilla engineers said their position was not driven by the declarative variant, and pointed to issue #236, which proposes repositioning WebMCP more generally as a way to call functions between environments (windows, workers and origins), with agents as one consumer among several.[9,29]</p>
+<h3 id="webkit-opposed-from-first-principles"><a class="anchor-link" href="#webkit-opposed-from-first-principles">WebKit: opposed, from first principles</a></h3>
+<p>WebKit’s opposition is the most substantial critique on record and deserves to be read in full. It has two parts. The first is practical: a parallel tool layer doesn’t deliver the promised reliability, because “the agent still selects and interprets a tool from its natural-language name and description,” so “the brittleness just moves from the DOM into the tool descriptions.” The second is architectural: an agent acting for a user “is, in effect, assistive technology,” and the site should not treat it differently. WebMCP makes “an agent is driving” an observable fact.<sup class="footnote-ref"><a href="#fn14" id="fnref14:2">14:2</a></sup> When the editors replied with questions, WebKit declined to evaluate the proposal piece by piece and asked instead for the underlying problem to be established first: is HTML insufficient, or how authors write it, or today’s models?<sup class="footnote-ref"><a href="#fn14" id="fnref14:3">14:3</a></sup> The issue’s labels list concerns about duplication, privacy, security, internationalization, portability, venue, use cases and API design, and tag it with the topic of meaningful user consent.</p>
+<h3 id="the-tag-and-multi-stakeholder-support"><a class="anchor-link" href="#the-tag-and-multi-stakeholder-support">The TAG and “multi-stakeholder support”</a></h3>
+<p>The W3C’s Technical Architecture Group opened an early review of the Community Group work in June 2026. As of mid-October it is still in progress, with pending focus areas covering API design, web architecture, security, privacy, accessibility and internationalization, and a label that sums up the political situation: “Missing: Multi-stakeholder support.”<sup class="footnote-ref"><a href="#fn20" id="fnref20:2">20:2</a></sup> With two Chromium-based browsers in favour, Firefox neutral and WebKit opposed, WebMCP lacks the cross-engine agreement a standard normally needs.</p>
+<h3 id="the-venue-question"><a class="anchor-link" href="#the-venue-question">The venue question</a></h3>
+<p>The status table’s second-to-last row records the newest move, and it is the one that most directly decides whether WebMCP gets onto the standards track. In June 2026 W3C staff opened a pull request adding WebMCP to the scope of the Web Machine Learning <em>Working Group</em> charter. On 13 August Marcos Cáceres of Apple replied on that pull request: “Just recording that Apple is opposed to this going working group. Expect a formal objection if this is merged.” He added that Apple would be open to “a different venue at the W3C and doing this properly from first principles (i.e., some new agentic web CG/WG).” On 28 September Philippe le Hégaret, who had opened the pull request, wrote that “the latest thinking is to have a working group dedicated to develop specifications that facilitate web pages and applications to be leveraged by LLMs and AI agents.” On 13 October 2026 he closed the pull request without merging it.<sup class="footnote-ref"><a href="#fn26" id="fnref26">26</a></sup></p>
+<p>The replacement is a draft charter for a new Agentic Web Working Group. It lists WebMCP as its one named normative deliverable, “Adopted from the Web Machine Learning Community Group.” The W3C opened charter refinement on 1 October 2026 and estimated that refinement would last “until approximately 10 November 2026.”<sup class="footnote-ref"><a href="#fn27" id="fnref27">27</a></sup> A draft charter is not an approved one. The group has no chairs or dates yet, and whether Apple accepts this venue is not on the public record. Chapter 15 follows the chartering process and what each outcome would mean for your code.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: what may have changed by the time you read this</p>
+<p><em>The declarative API.</em> On 8 October 2026 the HTML-forms version of WebMCP was removed from the spec and moved to a separate explainer (pull request #338). Chrome’s documentation, updated a day earlier, still describes it as one of the “two APIs you can use”, and the trial ships it.[4,24] Chapter 8 treats it as an experimental extension, not part of the standard.
+<em>User confirmation.</em> Chrome’s security guidance mentions a <code>requestUserInteraction()</code> method for asking the user for input during a tool call, but the current draft contains no such method. Issue #165 is still discussing elicitation, and pull request #204 proposes replacing it with a <code>requestUserInput()</code> method modelled on MCP elicitation.<sup class="footnote-ref"><a href="#fn28" id="fnref28">28</a></sup>
+<em>Who sees which tools.</em> An open question proposes a keyword that would let authors control whether the built-in browser agent can see a tool, with different defaults for top-level pages and iframes.<sup class="footnote-ref"><a href="#fn5" id="fnref5:9">5:9</a></sup>
+<em>What WebMCP is for.</em> Issue #236 asks whether WebMCP should become a general cross-environment function-calling API, a shift that Mozilla called “pretty significant”.[9,29]
+<em>Agent support.</em> Support from ChatGPT Desktop, Brave and Meta is claimed only on the project’s implementation-status page, not in those vendors’ own documentation.<sup class="footnote-ref"><a href="#fn25" id="fnref25:1">25:1</a></sup>
+<em>The Working Group charter.</em> The Agentic Web Working Group charter is a draft in refinement. Its scope, its deliverables and even whether it is approved with WebMCP in it can still change.<sup class="footnote-ref"><a href="#fn27" id="fnref27:1">27:1</a></sup></p></aside>
+<p>None of this means WebMCP is going away. It means the honest description of WebMCP in late 2026 is a well-resourced, actively developed proposal with two shipping trials and a serious, unresolved debate about whether the web needs it in this form. The way to build on it is the way you build on any experimental web feature: as a progressive enhancement over a site that works without it, with your tools kept close to logic you already have, so that if the API shape changes the cost of following it is small.</p>
+<h2 id="what-this-means-for-your-product"><a class="anchor-link" href="#what-this-means-for-your-product">What this means for your product</a></h2>
+<p>Product and technical leads can take three practical points from this chapter.</p>
+<ul>
+<li><em>WebMCP is an enhancement, not a channel.</em> It doesn’t put your product inside an agent’s marketplace. It makes your existing site cheaper, faster and more reliable to use for agents that visit it with a user, and it keeps that user on your interface, under your brand and your design.</li>
+<li><em>Start from your highest-value journeys.</em> The candidates are the flows where actuation hurts most and where the user wants to stay in control: search and filtering, configuration, multi-step forms, bookings. For Fjord Table, that means availability search and the booking itself, not the “About us” page.</li>
+<li><em>Keep MCP in the plan.</em> If agents also need to reach you when your site isn’t open, a backend MCP server is still the right tool. The two share a vocabulary, so a well-designed tool can often be offered in both places.</li>
+</ul>
+<p>For web developers, the message is simpler. The API surface is small, the hard parts are design and trust, and the details are still moving, so write your tools as thin wrappers over code you already have.</p>
+<h2 id="bridge-to-part-ii"><a class="anchor-link" href="#bridge-to-part-ii">Bridge to Part II</a></h2>
+<p>We now have the idea, the history and the politics. Part II turns to the API in detail. Chapter 5 takes Listing 4.1 apart line by line: feature detection and secure contexts, the name and schema rules, what happens to return values, and how unregistration works. Chapter 6 covers the four annotation hints, the step-by-step lifecycle of a call, cancellation and errors. Chapter 7 moves to the multi-frame world of <code>exposedTo</code>, <code>getTools()</code> and page-embedded agents. Chapter 8 returns to Fjord Table’s plain HTML forms and the declarative API, which is out of the spec but still in the browser.</p>
+<h2 id="chapter-summary"><a class="anchor-link" href="#chapter-summary">Chapter summary</a></h2>
+<ul>
+<li>WebMCP is a proposed web API that lets a page register JavaScript <em>tools</em> (a name, a description, a JSON Schema for inputs and an async callback) through <code>document.modelContext.registerTool()</code>, so agents can call them instead of scraping and clicking.</li>
+<li>It addresses the <em>actuation tax</em> (brittle, slow, ambiguous agent interaction with human-first UIs) without the costs of backend integrations: bypassing your interface, duplicating state and auth, and running a separate server.</li>
+<li>Tools run in the user’s live tab, with the user’s session and in view of the user. They are ephemeral and tab-bound, and the browser mediates every call.</li>
+<li>WebMCP borrows MCP’s vocabulary but not its protocol: there is no JSON-RPC, it offers tools only, and the format for agents is left to the browser. Google frames them as complementary, with MCP as the call centre and WebMCP as the in-store expert.</li>
+<li>The design rejected adopting MCP directly, static manifests and a pure <code>toolcall</code> event. WebKit argues for a different alternative altogether: better HTML and ARIA.</li>
+<li>Its roots include community prototypes by Jason McGhee and Alex Nahas (MCP-B), Google’s script-tools work and a joint Microsoft–Google explainer published in August 2025, now incubated in the W3C Web Machine Learning Community Group.</li>
+<li>As of 15 October 2026 it is a Community Group draft in origin trials in Chrome (149 to 162) and Edge (from 150, until 30 March 2027), with Mozilla neutral, WebKit opposed and a TAG review noting missing multi-stakeholder support. A plan to move it into the WebML Working Group was dropped on 13 October 2026 after Apple warned of a formal objection; a draft Agentic Web Working Group charter that names it is in refinement. Build on it as a progressive enhancement.</li>
+</ul>
+<h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>Chrome for Developers, “WebMCP and MCP compared” (published 11 March 2026, updated 19 May 2026). <a href="https://developer.chrome.com/docs/ai/webmcp/compare-mcp">https://developer.chrome.com/docs/ai/webmcp/compare-mcp</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a> <a href="#fnref1:2" class="footnote-backref">↩︎</a> <a href="#fnref1:3" class="footnote-backref">↩︎</a> <a href="#fnref1:4" class="footnote-backref">↩︎</a> <a href="#fnref1:5" class="footnote-backref">↩︎</a> <a href="#fnref1:6" class="footnote-backref">↩︎</a> <a href="#fnref1:7" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, Abstract, Status of this document, §1 Introduction and §8 Acknowledgements. <a href="https://webmachinelearning.github.io/webmcp/">https://webmachinelearning.github.io/webmcp/</a> <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a> <a href="#fnref2:2" class="footnote-backref">↩︎</a> <a href="#fnref2:3" class="footnote-backref">↩︎</a> <a href="#fnref2:4" class="footnote-backref">↩︎</a> <a href="#fnref2:5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>WebMCP specification, §4.1–4.2 (Document extension, ModelContext interface, registerTool(), getTools(), executeTool() and the IDL index). <a href="https://webmachinelearning.github.io/webmcp/#api">https://webmachinelearning.github.io/webmcp/#api</a> <a href="#fnref3" class="footnote-backref">↩︎</a> <a href="#fnref3:1" class="footnote-backref">↩︎</a> <a href="#fnref3:2" class="footnote-backref">↩︎</a> <a href="#fnref3:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>Chrome for Developers, “WebMCP” (published 18 May 2026, updated 7 October 2026), including “Limitations”. <a href="https://developer.chrome.com/docs/ai/webmcp">https://developer.chrome.com/docs/ai/webmcp</a> <a href="#fnref4" class="footnote-backref">↩︎</a> <a href="#fnref4:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>WebMCP explainer (README), “Background and Motivation” and “Existing web actuation techniques”, webmachinelearning/webmcp. <a href="https://github.com/webmachinelearning/webmcp">https://github.com/webmachinelearning/webmcp</a> <a href="#fnref5" class="footnote-backref">↩︎</a> <a href="#fnref5:1" class="footnote-backref">↩︎</a> <a href="#fnref5:2" class="footnote-backref">↩︎</a> <a href="#fnref5:3" class="footnote-backref">↩︎</a> <a href="#fnref5:4" class="footnote-backref">↩︎</a> <a href="#fnref5:5" class="footnote-backref">↩︎</a> <a href="#fnref5:6" class="footnote-backref">↩︎</a> <a href="#fnref5:7" class="footnote-backref">↩︎</a> <a href="#fnref5:8" class="footnote-backref">↩︎</a> <a href="#fnref5:9" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>WebMCP specification, §5.1 Event loop integration and §5.2 Page observations. <a href="https://webmachinelearning.github.io/webmcp/#interaction-with-agents">https://webmachinelearning.github.io/webmcp/#interaction-with-agents</a> <a href="#fnref6" class="footnote-backref">↩︎</a> <a href="#fnref6:1" class="footnote-backref">↩︎</a> <a href="#fnref6:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>WebMCP explainer, “Goals &amp; Non-Goals”. <a href="https://github.com/webmachinelearning/webmcp#goals--non-goals">https://github.com/webmachinelearning/webmcp#goals--non-goals</a> <a href="#fnref7" class="footnote-backref">↩︎</a> <a href="#fnref7:1" class="footnote-backref">↩︎</a> <a href="#fnref7:2" class="footnote-backref">↩︎</a> <a href="#fnref7:3" class="footnote-backref">↩︎</a> <a href="#fnref7:4" class="footnote-backref">↩︎</a> <a href="#fnref7:5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>WebMCP specification, §4.4 Permissions policy integration (policy-controlled feature “tools”, default allowlist 'self'). <a href="https://webmachinelearning.github.io/webmcp/#permissions-policy">https://webmachinelearning.github.io/webmcp/#permissions-policy</a> <a href="#fnref8" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p>Mozilla standards-positions issue #1412, “WebMCP” (position: neutral; comments June–August 2026). <a href="https://github.com/mozilla/standards-positions/issues/1412">https://github.com/mozilla/standards-positions/issues/1412</a> <a href="#fnref9" class="footnote-backref">↩︎</a> <a href="#fnref9:1" class="footnote-backref">↩︎</a> <a href="#fnref9:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p>WebMCP specification, §6.3.2 Misrepresentation of Intent. <a href="https://webmachinelearning.github.io/webmcp/#security-privacy">https://webmachinelearning.github.io/webmcp/#security-privacy</a> <a href="#fnref10" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>webmachinelearning/webmcp pull requests #132 (removed provideContext() and clearContext(), merged 5 March 2026), #177 (merged 19 May 2026) and #184 (moved the modelContext getter to Document, merged 27 May 2026). <a href="https://github.com/webmachinelearning/webmcp/pull/184">https://github.com/webmachinelearning/webmcp/pull/184</a> <a href="#fnref11" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>Model Context Protocol, “Versioning” (current protocol version 2026-07-28) <a href="https://modelcontextprotocol.io/specification/versioning">https://modelcontextprotocol.io/specification/versioning</a>; MCP specification 2026-07-28, Overview (“Stateless, self-contained requests”) and Key Changes (“Make MCP stateless: remove the initialize / notifications/initialized handshake”). <a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog">https://modelcontextprotocol.io/specification/2026-07-28/changelog</a> <a href="#fnref12" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>WebMCP explainer, “Alternatives Considered”. <a href="https://github.com/webmachinelearning/webmcp#alternatives-considered">https://github.com/webmachinelearning/webmcp#alternatives-considered</a> <a href="#fnref13" class="footnote-backref">↩︎</a> <a href="#fnref13:1" class="footnote-backref">↩︎</a> <a href="#fnref13:2" class="footnote-backref">↩︎</a> <a href="#fnref13:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>WebKit standards-positions issue #670, “WebMCP” (position: oppose; WebKit comments of 3 June and 17 June 2026). <a href="https://github.com/WebKit/standards-positions/issues/670">https://github.com/WebKit/standards-positions/issues/670</a> <a href="#fnref14" class="footnote-backref">↩︎</a> <a href="#fnref14:1" class="footnote-backref">↩︎</a> <a href="#fnref14:2" class="footnote-backref">↩︎</a> <a href="#fnref14:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>Jason McGhee, jasonjmcghee/WebMCP (repository created March 2025; README note added 12 February 2026). <a href="https://github.com/jasonjmcghee/WebMCP">https://github.com/jasonjmcghee/WebMCP</a> <a href="#fnref15" class="footnote-backref">↩︎</a> <a href="#fnref15:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn16" class="footnote-item"><p>Alex Nahas, MiguelsPizza/WebMCP (MCP-B; repository created June 2025; README status notes). See also mcp-b.ai. <a href="https://github.com/MiguelsPizza/WebMCP">https://github.com/MiguelsPizza/WebMCP</a> <a href="#fnref16" class="footnote-backref">↩︎</a> <a href="#fnref16:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn17" class="footnote-item"><p>RL Nabors, “WebMCP: The Web Standard That Makes Every Website a Tool for Agents”, Arcade.dev, 11 February 2026 (secondary source; interview with Alex Nahas). <a href="https://www.arcade.dev/blog/web-mcp-alex-nahas-interview/">https://www.arcade.dev/blog/web-mcp-alex-nahas-interview/</a> <a href="#fnref17" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn18" class="footnote-item"><p>WebMCP explainer, “Acknowledgments” (first published 13 August 2025; authors and credits) and “Prior Art”. <a href="https://github.com/webmachinelearning/webmcp#acknowledgments">https://github.com/webmachinelearning/webmcp#acknowledgments</a> <a href="#fnref18" class="footnote-backref">↩︎</a> <a href="#fnref18:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn19" class="footnote-item"><p>W3C Web Machine Learning Community Group. <a href="https://www.w3.org/community/webmachinelearning/">https://www.w3.org/community/webmachinelearning/</a> <a href="#fnref19" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn20" class="footnote-item"><p>W3C TAG design review #1238, “Incubation: WebMCP” (opened 11 June 2026; open as of 14 October 2026). <a href="https://github.com/w3ctag/design-reviews/issues/1238">https://github.com/w3ctag/design-reviews/issues/1238</a> <a href="#fnref20" class="footnote-backref">↩︎</a> <a href="#fnref20:1" class="footnote-backref">↩︎</a> <a href="#fnref20:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn21" class="footnote-item"><p>webmachinelearning/webmcp pull request #338, “Remove declarative API from spec” (merged 8 October 2026), and the Declarative API Explainer. <a href="https://github.com/webmachinelearning/webmcp/pull/338">https://github.com/webmachinelearning/webmcp/pull/338</a> <a href="#fnref21" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn22" class="footnote-item"><p>Chrome for Developers blog, “Join the WebMCP origin trial” (9 June 2026). <a href="https://developer.chrome.com/blog/ai-webmcp-origin-trial">https://developer.chrome.com/blog/ai-webmcp-origin-trial</a> <a href="#fnref22" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn23" class="footnote-item"><p>Chrome Platform Status, “WebMCP” (feature 5117755740913664): owners, developer trial from M146, origin trial M149–M156, extension to M162 recorded 28 September 2026. <a href="https://chromestatus.com/feature/5117755740913664">https://chromestatus.com/feature/5117755740913664</a> <a href="#fnref23" class="footnote-backref">↩︎</a> <a href="#fnref23:1" class="footnote-backref">↩︎</a> <a href="#fnref23:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn24" class="footnote-item"><p>Microsoft Edge Origin Trials, “WebMCP” (trial expiration date 30 March 2027) <a href="https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a">https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a</a>; Microsoft Edge 150 web platform release notes (2 July 2026), “Origin trials”, which list WebMCP (the Edge 149 notes do not). <a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/release-notes/150">https://learn.microsoft.com/en-us/microsoft-edge/web-platform/release-notes/150</a> <a href="#fnref24" class="footnote-backref">↩︎</a> <a href="#fnref24:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn25" class="footnote-item"><p>WebMCP, “Browser and Agent Implementation Status” (the project’s own page; vendor claims not independently confirmed). <a href="https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md">https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md</a> <a href="#fnref25" class="footnote-backref">↩︎</a> <a href="#fnref25:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn26" class="footnote-item"><p>w3c/charter-drafts pull request #829, “[wg/webmachinelearning] Adds WebMCP in scope”, including Marcos Cáceres’s comment of 13 August 2026 and Philippe le Hégaret’s comment of 28 September 2026 (closed without merging, 13 October 2026). <a href="https://github.com/w3c/charter-drafts/pull/829">https://github.com/w3c/charter-drafts/pull/829</a> <a href="#fnref26" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn27" class="footnote-item"><p>W3C, “Agentic Web Working Group Charter” (draft), Mission and Deliverables <a href="https://w3c.github.io/charter-drafts/2026/agenticweb-wg.html">https://w3c.github.io/charter-drafts/2026/agenticweb-wg.html</a>; Xueyuan Jia, “Start of refinement for a draft Agentic Web Working Group charter”, public-new-work, 1 October 2026 <a href="https://lists.w3.org/Archives/Public/public-new-work/2026Oct/0002.html">https://lists.w3.org/Archives/Public/public-new-work/2026Oct/0002.html</a>; w3c/strategy issue #576 (label “In Charter Refinement”). <a href="https://github.com/w3c/strategy/issues/576">https://github.com/w3c/strategy/issues/576</a> <a href="#fnref27" class="footnote-backref">↩︎</a> <a href="#fnref27:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn28" class="footnote-item"><p>Chrome for Developers, “WebMCP tool security” (updated 1 September 2026) <a href="https://developer.chrome.com/docs/ai/webmcp/secure-tools">https://developer.chrome.com/docs/ai/webmcp/secure-tools</a>; webmachinelearning/webmcp issue #165, “WebMCP elicitation via requestUserInteraction()”, and pull request #204, “Replace requestUserInteraction with requestUserInput” (open). <a href="https://github.com/webmachinelearning/webmcp/issues/165">https://github.com/webmachinelearning/webmcp/issues/165</a> <a href="#fnref28" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="03-mcp-in-practice.html">← Chapter 3: MCP in Practice</a>
+          <a class="pager-link" rel="next" href="05-registering-tools.html">Chapter 5: Registering Tools with document.modelContext →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

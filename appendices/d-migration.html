@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Appendix D: Migration Notes: navigator.modelContext and provideContext() to document.modelContext — Tools, Not Clicks</title>
+  <meta name="description" content="Appendix D of Tools, Not Clicks: Building Agent-Ready Websites with WebMCP by Maxim Salnikov.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Appendix D: Migration Notes: navigator.modelContext and provideContext() to document.modelContext — Tools, Not Clicks">
+  <meta property="og:description" content="Appendix D of Tools, Not Clicks: Building Agent-Ready Websites with WebMCP by Maxim Salnikov.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page appendix-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="../chapters/01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="../chapters/02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="../chapters/03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="../chapters/04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="../chapters/05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="../chapters/06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="../chapters/07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="../chapters/08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="../chapters/09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="../chapters/10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="../chapters/11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="../chapters/12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="../chapters/13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="../chapters/14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="../chapters/15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="../chapters/16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="../chapters/17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a class="is-current" aria-current="page" href="d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / <a href="../index.html#part-appendices">Appendices</a> / Appendix D <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">appendix:</span> <span class="fm-v">D</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">Back matter</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">11 min</span></p>
+        <h1>Appendix D: Migration Notes: navigator.<wbr>modelContext and provideContext() to document.<wbr>modelContext</h1>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#d1-what-changed-and-when">D.1 What changed, and when</a></li><li><a href="#d2-before-the-early-2026-shape">D.2 Before: the early-2026 shape</a></li><li><a href="#d3-after-the-current-shape">D.3 After: the current shape</a></li><li><a href="#d4-keeping-the-swap-the-tool-set-pattern">D.4 Keeping the “swap the tool set” pattern</a></li><li><a href="#d5-finding-old-code-paths">D.5 Finding old code paths</a></li><li><a href="#d6-checklist">D.6 Checklist</a></li><li><a href="#d7-summary">D.7 Summary</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“WebMCP is currently focused on the imperative <code>document.modelContext.registerTool()</code> API described above, which is what the specification defines.”</em></p>
+<p>— WebMCP README, October 2026<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<p>If you wrote WebMCP code in the first half of 2026, or you’re reading a tutorial from then, it probably starts with <code>navigator.modelContext.provideContext({ tools: [...] })</code>. None of that runs in a current browser. This appendix shows what changed, when, and how to port the code, with the same Fjord Table tools in both shapes. Chapter 5 tells the story behind the two big changes; this appendix is the practical checklist.</p>
+<p>The dates come from the commit history of the specification repository, <code>webmachinelearning/webmcp</code>, read on 14 October 2026 and re-checked on 15 October 2026; the merge times of the key pull requests were checked against GitHub’s own records.<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup> The specification has no changelog section of its own, so the commit log is the record. The “after” code was tested in Chromium 156.0.8078.4 with <code>--enable-features=WebMCPTesting</code>; the listings and their tests are in the book’s demos repository, in <code>appendices/d-migration/</code>, and all 20 checks pass.</p>
+<h2 id="d1-what-changed-and-when"><a class="anchor-link" href="#d1-what-changed-and-when">D.1 What changed, and when</a></h2>
+<p><strong>Table D.1 — API-shape changes in the WebMCP specification, February to October 2026</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Date (UTC)</th>
+<th>Change</th>
+<th>Pull request / commit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 March 2026</td>
+<td><code>provideContext()</code> and <code>clearContext()</code> removed</td>
+<td>#132, <code>fe84c67</code><sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup></td>
+</tr>
+<tr>
+<td>26 March 2026</td>
+<td><code>registerTool()</code> takes an optional <code>AbortSignal</code>; <code>unregisterTool(name)</code> removed</td>
+<td>#147, <code>6708e33</code><sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup></td>
+</tr>
+<tr>
+<td>19 May 2026</td>
+<td><code>ModelContext</code> scoped to the <code>Document</code> instead of the <code>Navigator</code></td>
+<td>#177, <code>986f461</code><sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup></td>
+</tr>
+<tr>
+<td>27 May 2026</td>
+<td>The <code>modelContext</code> getter moved from <code>Navigator</code> to <code>Document</code></td>
+<td>#184, <code>c7b5c70</code><sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup></td>
+</tr>
+<tr>
+<td>8 June 2026</td>
+<td><code>registerTool()</code> returns a promise</td>
+<td>#200, <code>ec37ec4</code><sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup></td>
+</tr>
+<tr>
+<td>11 June 2026</td>
+<td><code>ModelContextClient</code> (the execute callback’s second argument, with <code>requestUserInteraction()</code>) removed</td>
+<td>#205, <code>067a1c9</code><sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup></td>
+</tr>
+<tr>
+<td>19 August 2026</td>
+<td>The execute callback receives <code>{ signal }</code> for cancellation</td>
+<td>#247, <code>83e893a</code><sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup></td>
+</tr>
+<tr>
+<td>8 October 2026</td>
+<td>Declarative API removed from the specification</td>
+<td>#338, <code>14ae813</code><sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup></td>
+</tr>
+<tr>
+<td>8 October 2026</td>
+<td><code>UnknownError</code> replaced by specific exception names in <code>executeTool()</code></td>
+<td>#339, <code>b206dae</code><sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup></td>
+</tr>
+</tbody>
+</table></div>
+<p>Two of these rows break old code outright: 5 March and 27 May. The others change details you’ll meet while porting. The two October rows don’t affect migration from <code>navigator</code>, but they explain what you’ll see in Chrome today (Appendix A, Tables A.7 and A.8).</p>
+<figure class="book-figure"><img decoding="async" src="d-migration/images/figure-d-1.png" alt="Figure D.1 — The WebMCP API shape, February to October 2026: from navigator.modelContext with provideContext() to document.modelContext with registerTool(tool, { signal })." /><figcaption>Figure D.1 — The API’s shape over 2026, from the commit history. The two breaking changes are 5 March (<code>provideContext()</code> and <code>clearContext()</code> removed) and 27 May (the <code>modelContext</code> getter moved from <code>navigator</code> to <code>document</code>).</figcaption></figure>
+<h2 id="d2-before-the-early-2026-shape"><a class="anchor-link" href="#d2-before-the-early-2026-shape">D.2 Before: the early-2026 shape</a></h2>
+<p>Listing D.1 is Fjord Table’s two tools written the way the explainer and early tutorials wrote them, close to the example in the explainer of November 2025.<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup> It uses everything that has since gone: the <code>navigator</code> namespace, <code>provideContext()</code> to set the whole tool list in one call, <code>clearContext()</code> to drop it, and a second <code>execute</code> argument, a <code>ModelContextClient</code>, whose <code>requestUserInteraction()</code> asked the browser to let the page talk to the user mid-call.</p>
+<figure class="code"><figcaption>Listing D.1 — Before: Fjord Table’s tools with <code>provideContext()</code> (before/fjord-tools.before.js)</figcaption>
+<pre><code class="language-js">// BEFORE (navigator.modelContext, early 2026). Does not run in current browsers.
+// provideContext() replaced the page's whole tool set; clearContext() removed it.
+if ('modelContext' in navigator) {
+  navigator.modelContext.provideContext({
+    tools: [
+      {
+        name: 'search_availability',
+        description: 'Find open tables at Fjord Table for a date, time and party size.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            date: { type: 'string', description: 'Visit date, YYYY-MM-DD' },
+            time: { type: 'string', description: 'Preferred time, 24h HH:MM' },
+            partySize: { type: 'integer', minimum: 1, maximum: 12 }
+          },
+          required: ['date', 'partySize']
+        },
+        async execute({ date, time, partySize }) {
+          const slots = await availability.search({ date, time, partySize });
+          return { date, partySize, slots: slots.map((s) =&gt; s.time) };
+        }
+      },
+      {
+        name: 'book_table',
+        description: 'Book a table at Fjord Table. Asks the user to confirm first.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            date: { type: 'string' },
+            time: { type: 'string' },
+            partySize: { type: 'integer', minimum: 1, maximum: 12 },
+            name: { type: 'string' }
+          },
+          required: ['date', 'time', 'partySize', 'name']
+        },
+        // The second argument was a ModelContextClient.
+        async execute(booking, client) {
+          const ok = await client.requestUserInteraction(() =&gt; confirmBooking(booking));
+          if (!ok) return { booked: false, reason: 'The user declined.' };
+          return { booked: true, reference: await bookings.create(booking) };
+        }
+      }
+    ]
+  });
+
+  // Leaving the booking view: drop every tool on the page.
+  window.addEventListener('pagehide', () =&gt; navigator.modelContext.clearContext());
+}
+</code></pre></figure>
+<p>Listing D.2 is the other early pattern: adding and removing single tools with <code>registerTool()</code> and <code>unregisterTool(name)</code>. <code>registerTool()</code> returned nothing then.<sup class="footnote-ref"><a href="#fn4" id="fnref4:1">4:1</a></sup><sup class="footnote-ref"><a href="#fn7" id="fnref7:1">7:1</a></sup></p>
+<figure class="code"><figcaption>Listing D.2 — Before: registering and unregistering by name (before/register-unregister.before.js)</figcaption>
+<pre><code class="language-js">// BEFORE (navigator.modelContext, February 2026). Does not run in current browsers.
+// registerTool() returned nothing, and tools were removed by name.
+navigator.modelContext.registerTool({
+  name: 'search_availability',
+  description: 'Find open tables at Fjord Table for a date, time and party size.',
+  inputSchema: { type: 'object', properties: { date: { type: 'string' } }, required: ['date'] },
+  async execute({ date }) {
+    return { date, slots: (await availability.search({ date })).map((s) =&gt; s.time) };
+  }
+});
+
+// Any script on the page could do this, including to tools it didn't register.
+navigator.modelContext.unregisterTool('search_availability');
+</code></pre></figure>
+<p>In Chromium 156 neither listing works (tested). <code>'modelContext' in navigator</code> is <code>false</code>, so Listing D.1’s guard quietly skips everything: no error, and no tools. Listing D.2 has no guard and throws a <code>TypeError</code> on its first line. The quiet failure is the dangerous one: the page keeps working for people, and agents simply find nothing.</p>
+<h2 id="d3-after-the-current-shape"><a class="anchor-link" href="#d3-after-the-current-shape">D.3 After: the current shape</a></h2>
+<p>Listing D.3 is the same two tools for the 15 October 2026 draft.<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup> It is close to chapter 5’s Listing 5.1, wrapped in a function so the test can call it, and its results follow chapter 11’s convention: a booking returns <code>status: 'booked'</code>, and a guest who says no in the page’s dialog gives <code>status: 'cancelled_by_user'</code>.</p>
+<figure class="code"><figcaption>Listing D.3 — After: Fjord Table’s tools on <code>document.modelContext</code> (after/fjord-tools.js)</figcaption>
+<pre><code class="language-js">// AFTER (document.modelContext, 15 October 2026 draft; Chromium 156).
+// One registerTool() call per tool, one AbortController per view.
+export async function registerFjordTools({ availability, bookings, confirmBooking }) {
+  if (!('modelContext' in document)) return null;   // progressive enhancement
+  const view = new AbortController();
+  const options = { signal: view.signal };
+
+  await document.modelContext.registerTool({
+    name: 'search_availability',
+    description: 'Find open tables at Fjord Table for a date, time and party size.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        date: { type: 'string', description: 'Visit date, YYYY-MM-DD' },
+        time: { type: 'string', description: 'Preferred time, 24h HH:MM' },
+        partySize: { type: 'integer', minimum: 1, maximum: 12 }
+      },
+      required: ['date', 'partySize']
+    },
+    annotations: { readOnlyHint: true },
+    async execute({ date, time, partySize }, { signal }) {
+      const slots = await availability.search({ date, time, partySize, signal });
+      return { date, partySize, slots: slots.map((s) =&gt; s.time) };
+    }
+  }, options);
+
+  await document.modelContext.registerTool({
+    name: 'book_table',
+    description: 'Book a table at Fjord Table. The user confirms in the page first.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        date: { type: 'string' },
+        time: { type: 'string' },
+        partySize: { type: 'integer', minimum: 1, maximum: 12 },
+        name: { type: 'string' }
+      },
+      required: ['date', 'time', 'partySize', 'name']
+    },
+    annotations: { consequentialHint: true },
+    // The second argument is now { signal }. Confirmation is the page's own UI.
+    async execute(booking, { signal }) {
+      const ok = await confirmBooking(booking, { signal });
+      if (!ok) return { status: 'cancelled_by_user', message: 'The guest declined in the booking dialog.' };
+      return { status: 'booked', reference: await bookings.create(booking) };
+    }
+  }, options);
+
+  // Leaving the booking view: abort() unregisters exactly these two tools.
+  window.addEventListener('pagehide', () =&gt; view.abort(), { once: true });
+  return view;
+}
+</code></pre></figure>
+<p>Table D.2 lists the changes one by one.</p>
+<p><strong>Table D.2 — Porting map: early-2026 shape to the 15 October 2026 draft</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Before</th>
+<th>After</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>'modelContext' in navigator</code></td>
+<td><code>'modelContext' in document</code></td>
+<td>The getter lives on <code>Document</code> and exists only in secure contexts.<sup class="footnote-ref"><a href="#fn13" id="fnref13:1">13:1</a></sup></td>
+</tr>
+<tr>
+<td><code>navigator.modelContext.provideContext({ tools })</code></td>
+<td>One <code>document.modelContext.registerTool(tool, { signal })</code> per tool</td>
+<td>Duplicate names reject with <code>InvalidStateError</code> instead of silently replacing a tool.</td>
+</tr>
+<tr>
+<td><code>navigator.modelContext.clearContext()</code></td>
+<td><code>controller.abort()</code> on the signal(s) you registered with</td>
+<td>You can only remove tools you registered yourself.</td>
+</tr>
+<tr>
+<td><code>navigator.modelContext.unregisterTool(name)</code></td>
+<td><code>controller.abort()</code></td>
+<td>Unregistering doesn’t cancel calls already running (chapter 6).</td>
+</tr>
+<tr>
+<td><code>registerTool(tool)</code> returns <code>undefined</code></td>
+<td><code>await registerTool(tool, options)</code></td>
+<td>Errors arrive as a rejected promise, not a throw.</td>
+</tr>
+<tr>
+<td><code>execute(input, client)</code></td>
+<td><code>execute(input, { signal })</code></td>
+<td>The second argument is now options with an <code>AbortSignal</code>.</td>
+</tr>
+<tr>
+<td><code>client.requestUserInteraction(cb)</code></td>
+<td>The page’s own confirmation UI, plus <code>annotations: { consequentialHint: true }</code></td>
+<td>See the callout below.</td>
+</tr>
+<tr>
+<td>Results: any value</td>
+<td>Return an object</td>
+<td>The browser serializes it to a JSON string; Chromium 156 passes plain strings through unquoted (Appendix A, Table A.5). Use chapter 11’s statuses, such as <code>cancelled_by_user</code> when the person declines.</td>
+</tr>
+<tr>
+<td><code>executeTool(tool, '{&quot;date&quot;:&quot;…&quot;}')</code> (string input)</td>
+<td><code>executeTool(tool, { date: '…' })</code></td>
+<td>Chrome deprecated JSON-string input from Chrome 155.<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup></td>
+</tr>
+</tbody>
+</table></div>
+<p>Tested in Chromium 156: both tools register, <code>getTools()</code> returns them with their annotations, <code>search_availability</code> returns its slots through <code>executeTool()</code>, <code>book_table</code> goes through the page’s confirmation (both the yes and the no path), and <code>view.abort()</code> removes both tools and fires <code>toolchange</code>.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: asking the user mid-call</p>
+<p><code>requestUserInteraction()</code> was removed on 11 June 2026 because, in the words of the pull request, “this interface and its only method are not fully specified and not implemented yet”; the removal is meant to last until issue #165 and pull request #204 settle a more permanent design.<sup class="footnote-ref"><a href="#fn8" id="fnref8:1">8:1</a></sup> Listing D.1’s <code>book_table</code> therefore never worked anywhere as written. Until a replacement lands, confirm consequential actions in your own UI, as Listing D.3 does and chapter 13 explains.</p></aside>
+<h2 id="d4-keeping-the-swap-the-tool-set-pattern"><a class="anchor-link" href="#d4-keeping-the-swap-the-tool-set-pattern">D.4 Keeping the “swap the tool set” pattern</a></h2>
+<p><code>provideContext()</code> had one genuinely useful property: a single-page app could switch views and replace the whole tool list in one call. It was removed because the same call let any script on the page wipe out tools it didn’t own.<sup class="footnote-ref"><a href="#fn3" id="fnref3:1">3:1</a></sup> Chapter 5 tells that story. Listing D.4 keeps the useful half. A tool set owns one <code>AbortController</code>; <code>replace()</code> aborts it and registers the new tools under a fresh one. It can only ever remove its own tools.</p>
+<figure class="code"><figcaption>Listing D.4 — A view-scoped tool set that replaces <code>provideContext()</code> (after/tool-set.js)</figcaption>
+<pre><code class="language-js">// AFTER: the useful half of provideContext(), &quot;swap this view's tools&quot;,
+// without the dangerous half. It can only remove tools it registered itself.
+export function createToolSet(modelContext = document.modelContext) {
+  let current = null;
+  return {
+    async replace(tools) {
+      current?.abort();                        // drop the previous set (ours only)
+      current = new AbortController();
+      const { signal } = current;
+      await Promise.all(tools.map((tool) =&gt; modelContext.registerTool(tool, { signal })));
+    },
+    clear() {
+      current?.abort();
+      current = null;
+    }
+  };
+}
+</code></pre></figure>
+<p>Tested in Chromium 156: with a tool registered by other code on the same page, <code>replace([menu_search, opening_hours])</code> followed by <code>replace([book_table])</code> leaves exactly <code>book_table</code> and the other code’s tool; <code>clear()</code> leaves only the other code’s tool. Two tools with the same name in one <code>replace()</code> call reject with <code>InvalidStateError</code>, which <code>provideContext()</code> would have accepted without complaint.</p>
+<h2 id="d5-finding-old-code-paths"><a class="anchor-link" href="#d5-finding-old-code-paths">D.5 Finding old code paths</a></h2>
+<p>A site that ported half its code, or a library that still has a <code>navigator</code> branch, fails quietly. Listing D.5 tells the cases apart, so you can log them.</p>
+<figure class="code"><figcaption>Listing D.5 — Feature detection that spots the legacy namespace (after/detect.js)</figcaption>
+<pre><code class="language-js">// AFTER: feature detection that also spots outdated code paths.
+export function webmcpStatus() {
+  if ('modelContext' in document) return 'current';           // document.modelContext
+  if ('modelContext' in navigator) return 'legacy-navigator'; // a pre-May-2026 build
+  return 'unavailable';
+}
+</code></pre></figure>
+<p>In Chromium 156 with <code>WebMCPTesting</code>, <code>webmcpStatus()</code> returns <code>'current'</code> (tested). <code>'legacy-navigator'</code> should only appear in old builds. A quick search of your codebase for <code>navigator.modelContext</code>, <code>provideContext</code>, <code>clearContext</code>, <code>unregisterTool</code> and <code>requestUserInteraction</code> finds the rest.</p>
+<h2 id="d6-checklist"><a class="anchor-link" href="#d6-checklist">D.6 Checklist</a></h2>
+<ol>
+<li>Replace <code>navigator.modelContext</code> with <code>document.modelContext</code>, and the feature test with <code>'modelContext' in document</code>.</li>
+<li>Turn each <code>provideContext({ tools })</code> into one <code>registerTool(tool, { signal })</code> per tool, sharing one <code>AbortController</code> per view or component.</li>
+<li>Replace <code>clearContext()</code> and <code>unregisterTool(name)</code> with <code>abort()</code>.</li>
+<li><code>await</code> every <code>registerTool()</code> and handle rejections (<code>InvalidStateError</code>, <code>NotAllowedError</code>, <code>SecurityError</code>; Appendix A, Table A.7).</li>
+<li>Change <code>execute(input, client)</code> to <code>execute(input, { signal })</code>, and pass the signal to anything long-running.</li>
+<li>Remove <code>requestUserInteraction()</code>; confirm in your own UI and mark the tool <code>consequentialHint: true</code>.</li>
+<li>Return objects, not strings or <code>undefined</code>.</li>
+<li>Pass objects, not JSON strings, to <code>executeTool()</code>.</li>
+<li>Re-test in Chrome with <code>chrome://flags/#enable-webmcp-testing</code> enabled.<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup></li>
+</ol>
+<h2 id="d7-summary"><a class="anchor-link" href="#d7-summary">D.7 Summary</a></h2>
+<ul>
+<li>Two changes break early-2026 code: <code>provideContext()</code> and <code>clearContext()</code> were removed on 5 March 2026, and <code>navigator.modelContext</code> moved to <code>document.modelContext</code> on 27 May 2026.</li>
+<li>In Chromium 156 old code fails quietly: <code>navigator.modelContext</code> doesn’t exist, guarded code registers nothing, and unguarded code throws.</li>
+<li>Register one tool per call and unregister by aborting the signal you passed. A small tool-set helper (Listing D.4) keeps the view-switching convenience of <code>provideContext()</code> without its risk.</li>
+<li>The execute callback’s second argument is <code>{ signal }</code>; <code>requestUserInteraction()</code> is gone until a new design lands, so confirmation belongs in your page.</li>
+</ul>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>webmachinelearning/webmcp README, section “Future Exploration: Declarative API”, as changed on 8 October 2026 and read 15 October 2026. <a href="https://github.com/webmachinelearning/webmcp#future-exploration-declarative-api">https://github.com/webmachinelearning/webmcp#future-exploration-declarative-api</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>webmachinelearning/webmcp commit history (<code>git log</code> of <code>main</code> and <code>index.bs</code>), read 14 October 2026 (head 1636b33) and again on 15 October 2026 (head 3279798, 15 October 2026); every date in Table D.1 was re-checked against the commits that day. Merge times for pull requests #132, #184 and #205 were read from the GitHub API the same day. <a href="https://github.com/webmachinelearning/webmcp/commits/main/index.bs">https://github.com/webmachinelearning/webmcp/commits/main/index.bs</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>webmachinelearning/webmcp pull request #132, “Remove <code>provideContext()</code> and <code>clearContext()</code>”, by Dominic Farolino, merged 5 March 2026 at 19:47 UTC (commit fe84c67). Its description says it closes issue #101, “<code>navigator.modelContext.provideContext</code> allows overwriting of previously registered tools in the same environment” (opened by François Beaufort, 20 February 2026), and follows the proposal made there, with tool unregistration to be designed in issue #130. Read 15 October 2026. Issue: <a href="https://github.com/webmachinelearning/webmcp/issues/101">https://github.com/webmachinelearning/webmcp/issues/101</a>. Pull request: <a href="https://github.com/webmachinelearning/webmcp/pull/132">https://github.com/webmachinelearning/webmcp/pull/132</a> <a href="#fnref3" class="footnote-backref">↩︎</a> <a href="#fnref3:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>webmachinelearning/webmcp commit 6708e33, “<code>registerTool()</code> takes an optional <code>AbortSignal</code> (#147)”, 26 March 2026: adds <code>ModelContextRegisterToolOptions.signal</code> and removes <code>unregisterTool(DOMString name)</code> from the IDL. Read 14 October 2026. <a href="https://github.com/webmachinelearning/webmcp/commit/6708e3399871458c07ed4cddc04057dec2549955">https://github.com/webmachinelearning/webmcp/commit/6708e3399871458c07ed4cddc04057dec2549955</a> <a href="#fnref4" class="footnote-backref">↩︎</a> <a href="#fnref4:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>webmachinelearning/webmcp commit 986f461, “Scope <code>ModelContext</code> to <code>Document</code>, and handle detached documents (#177)”, committed 18 May 2026 at 22:19 −04:00 (19 May UTC). Read 14 October 2026. <a href="https://github.com/webmachinelearning/webmcp/commit/986f4611d6696843c4ba86c96b7623a5cf2e5413">https://github.com/webmachinelearning/webmcp/commit/986f4611d6696843c4ba86c96b7623a5cf2e5413</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>webmachinelearning/webmcp pull request #184, “Move the <code>modelContext</code> getter to <code>Document</code>”, by Dominic Farolino, merged 27 May 2026 at 15:04 UTC (commit c7b5c70); it closes issue #173 and replaces <code>partial interface Navigator</code> with <code>partial interface Document</code>. Read 15 October 2026. <a href="https://github.com/webmachinelearning/webmcp/pull/184">https://github.com/webmachinelearning/webmcp/pull/184</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>webmachinelearning/webmcp commit ec37ec4, “Make <code>registerTool()</code> return a promise (#200)”, 8 June 2026: <code>undefined registerTool(…)</code> becomes <code>Promise&lt;undefined&gt; registerTool(…)</code>. Read 14 October 2026. <a href="https://github.com/webmachinelearning/webmcp/commit/ec37ec4878e08a166f1460ac40b1ca4ab8096d14">https://github.com/webmachinelearning/webmcp/commit/ec37ec4878e08a166f1460ac40b1ca4ab8096d14</a> <a href="#fnref7" class="footnote-backref">↩︎</a> <a href="#fnref7:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>webmachinelearning/webmcp pull request #205, “Remove <code>ModelContextClient</code> for now”, merged 11 June 2026 (commit 067a1c9): the callback changes from <code>(object input, ModelContextClient client)</code> to <code>(object input)</code>. Quoted from its description, read 15 October 2026. <a href="https://github.com/webmachinelearning/webmcp/pull/205">https://github.com/webmachinelearning/webmcp/pull/205</a> <a href="#fnref8" class="footnote-backref">↩︎</a> <a href="#fnref8:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p>webmachinelearning/webmcp commit 83e893a, “Spec <code>AbortSignal</code> integration with tool execution (#247)”, 19 August 2026: introduces <code>ToolExecuteCallbackOptions</code> with <code>signal</code>. Read 14 October 2026. <a href="https://github.com/webmachinelearning/webmcp/commit/83e893ac3eaa8d72610062933c33a79494bf4fb5">https://github.com/webmachinelearning/webmcp/commit/83e893ac3eaa8d72610062933c33a79494bf4fb5</a> <a href="#fnref9" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p>webmachinelearning/webmcp commit 14ae813, “Remove declarative API from the spec for now (#338)”, by François Beaufort, committed 8 October 2026. Read 14 October 2026. <a href="https://github.com/webmachinelearning/webmcp/commit/14ae813cc4e9fe0d39313f4b1ee5b231746731ad">https://github.com/webmachinelearning/webmcp/commit/14ae813cc4e9fe0d39313f4b1ee5b231746731ad</a> <a href="#fnref10" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>webmachinelearning/webmcp commit b206dae, “Replace UnknownError with specific DOMException types. (#339)”, by Mark Foltz, committed 8 October 2026. Read 14 October 2026. <a href="https://github.com/webmachinelearning/webmcp/commit/b206dae8bad34ea8e6ff7213b417b50b14a37e9a">https://github.com/webmachinelearning/webmcp/commit/b206dae8bad34ea8e6ff7213b417b50b14a37e9a</a> <a href="#fnref11" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>webmachinelearning/webmcp <code>docs/proposal.md</code> as of commit adbc2c5, “Fix provideContext API example”, 17 November 2025: the <code>window.navigator.modelContext.provideContext({ tools: [...] })</code> example, <code>execute({ text }, agent)</code>, and <code>registerTool</code> / <code>unregisterTool(&quot;add-todo&quot;)</code>. Read 14 October 2026. <a href="https://github.com/webmachinelearning/webmcp/blob/adbc2c5374ec898d54bc312a871f9de62e582671/docs/proposal.md">https://github.com/webmachinelearning/webmcp/blob/adbc2c5374ec898d54bc312a871f9de62e582671/docs/proposal.md</a> <a href="#fnref12" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, §4.1 Extensions to Document, §4.2 ModelContext interface and the IDL index. Read 15 October 2026. <a href="https://webmachinelearning.github.io/webmcp/#idl-index">https://webmachinelearning.github.io/webmcp/#idl-index</a> <a href="#fnref13" class="footnote-backref">↩︎</a> <a href="#fnref13:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>Chrome for Developers, “Imperative API” (published 18 May 2026, last updated 21 September 2026): “JSON stringified input arguments are deprecated from Chrome 155.” Read 15 October 2026. <a href="https://developer.chrome.com/docs/ai/webmcp/imperative-api">https://developer.chrome.com/docs/ai/webmcp/imperative-api</a> <a href="#fnref14" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>Chrome for Developers, “WebMCP” overview (published 18 May 2026, last updated 7 October 2026), section “Local WebMCP”. Read 15 October 2026. <a href="https://developer.chrome.com/docs/ai/webmcp">https://developer.chrome.com/docs/ai/webmcp</a> <a href="#fnref15" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="c-resources.html">← Appendix C: Resources and Further Reading</a>
+          <span></span>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

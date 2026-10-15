@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Appendix A: API Quick Reference (IDL, Attributes, Events, Errors) — Tools, Not Clicks</title>
+  <meta name="description" content="Appendix A of Tools, Not Clicks: Building Agent-Ready Websites with WebMCP by Maxim Salnikov.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Appendix A: API Quick Reference (IDL, Attributes, Events, Errors) — Tools, Not Clicks">
+  <meta property="og:description" content="Appendix A of Tools, Not Clicks: Building Agent-Ready Websites with WebMCP by Maxim Salnikov.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page appendix-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="../chapters/01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="../chapters/02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="../chapters/03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="../chapters/04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="../chapters/05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="../chapters/06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="../chapters/07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="../chapters/08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="../chapters/09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="../chapters/10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="../chapters/11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="../chapters/12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="../chapters/13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="../chapters/14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="../chapters/15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="../chapters/16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="../chapters/17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a class="is-current" aria-current="page" href="a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / <a href="../index.html#part-appendices">Appendices</a> / Appendix A <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">appendix:</span> <span class="fm-v">A</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">Back matter</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">16 min</span></p>
+        <h1>Appendix A: API Quick Reference (IDL, Attributes, Events, Errors)</h1>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#a1-the-interface-at-a-glance">A.1 The interface at a glance</a></li><li><a href="#a2-registertooltool-options">A.2 registerTool(tool, options)</a></li><li><a href="#a3-gettoolsoptions-and-registeredtool">A.3 getTools(options) and RegisteredTool</a></li><li><a href="#a4-executetooltool-inputobject-options">A.4 executeTool(tool, inputObject, options)</a></li><li><a href="#a5-events">A.5 Events</a></li><li><a href="#a6-permissions-policy">A.6 Permissions Policy</a></li><li><a href="#a7-errors">A.7 Errors</a></li><li><a href="#a8-the-declarative-attributes-removed-from-the-specification">A.8 The declarative attributes (removed from the specification)</a></li><li><a href="#a9-summary">A.9 Summary</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“Tool execution errors are not exposed to the web.”</em></p>
+<p>— WebMCP specification, §3 Supporting concepts<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<p>This appendix is the page to keep open while you write tool code. It collects the whole WebMCP surface in one place: the WebIDL, every dictionary member, the three events, the Permissions Policy feature, and the exceptions each method can reject with. It doesn’t teach; the chapters do that, and each section points back to the chapter that explains the idea.</p>
+<p>Everything here was checked against the WebMCP Draft Community Group Report dated 15 October 2026, read on 15 October 2026; its IDL is unchanged from the 14 October draft.<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup> Every behaviour marked “tested” was observed in Chromium 156.0.8078.4 with the <code>WebMCPTesting</code> feature switched on, which is what <code>chrome://flags/#enable-webmcp-testing</code> turns on in Chrome.<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup> The probes behind the tables are in the book’s demos repository, in <code>appendices/a-api-reference/</code>, and all 25 checks pass. Where Chromium and the draft disagree, the tables show both.</p>
+<h2 id="a1-the-interface-at-a-glance"><a class="anchor-link" href="#a1-the-interface-at-a-glance">A.1 The interface at a glance</a></h2>
+<p>Listing A.1 is the specification’s IDL index, unabridged. It’s short, which tells you something: the whole imperative API is three methods, three events and seven dictionaries.</p>
+<figure class="code"><figcaption>Listing A.1 — The WebMCP IDL, from the specification’s IDL index (15 October 2026) (webmcp.idl)</figcaption>
+<pre><code class="language-webidl">partial interface Document {
+  [SecureContext, SameObject] readonly attribute ModelContext modelContext;
+};
+
+[Exposed=Window, SecureContext]
+interface ModelContext : EventTarget {
+  Promise&lt;undefined&gt; registerTool(ModelContextTool tool, optional ModelContextRegisterToolOptions options = {});
+  Promise&lt;sequence&lt;RegisteredTool&gt;&gt; getTools(optional ModelContextGetToolOptions options = {});
+  Promise&lt;DOMString&gt; executeTool(RegisteredTool tool, optional object inputObject, optional ModelContextExecuteToolOptions options = {});
+
+  attribute EventHandler ontoolchange;
+  attribute EventHandler ontoolactivated;
+  attribute EventHandler ontoolcancel;
+};
+
+dictionary ModelContextTool {
+  required DOMString name;
+  // Because `title` is for display in possibly native UIs, this must be a `USVString`.
+  // See https://w3ctag.github.io/design-principles/#idl-string-types.
+  USVString title;
+  required DOMString description;
+  object inputSchema;
+  required ToolExecuteCallback execute;
+  ToolAnnotations annotations;
+};
+
+dictionary ToolAnnotations {
+  boolean readOnlyHint = false;
+  boolean untrustedContentHint = false;
+  boolean consequentialHint = false;
+  boolean debugging = false;
+};
+
+dictionary ToolExecuteCallbackOptions {
+  required AbortSignal signal;
+};
+
+callback ToolExecuteCallback = Promise&lt;any&gt; (object inputObject, ToolExecuteCallbackOptions options);
+
+dictionary ModelContextRegisterToolOptions {
+  sequence&lt;USVString&gt; exposedTo;
+  AbortSignal signal;
+};
+
+dictionary ModelContextGetToolOptions {
+  sequence&lt;USVString&gt; fromOrigins;
+};
+
+dictionary ModelContextExecuteToolOptions {
+  AbortSignal signal;
+};
+
+dictionary RegisteredTool {
+  required DOMString name;
+  // `title` can be exposed as a `DOMString` since it was taken in by a
+  // `USVString`, meaning all unmatched surrogate processing has already been
+  // done, and there's no need to do it again on tool exposure.
+  DOMString title;
+  required DOMString description;
+  object inputSchema;
+  required Window window;
+  required USVString origin;
+  ToolAnnotations annotations;
+};
+
+[Exposed=Window, SecureContext]
+interface ToolActivatedEvent : Event {
+  constructor(DOMString type, optional ToolActivatedEventInit eventInitDict = {});
+  readonly attribute DOMString toolName;
+};
+
+dictionary ToolActivatedEventInit : EventInit {
+  DOMString toolName = &quot;&quot;;
+};
+
+[Exposed=Window, SecureContext]
+interface ToolCancelEvent : Event {
+  constructor(DOMString type, optional ToolCancelEventInit eventInitDict = {});
+  readonly attribute DOMString toolName;
+};
+
+dictionary ToolCancelEventInit : EventInit {
+  DOMString toolName = &quot;&quot;;
+};
+</code></pre></figure>
+<p>Three things about Listing A.1 matter more than the rest:</p>
+<ul>
+<li><strong>The entry point is <code>document.modelContext</code>.</strong> It hangs off <code>Document</code>, not <code>Navigator</code>, and only exists in secure contexts.<sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup> There is one <code>ModelContext</code> per document, so every iframe has its own. (Tested: <code>'modelContext' in document</code> is <code>true</code> and <code>'modelContext' in navigator</code> is <code>false</code> in Chromium 156.) Appendix D covers the move from <code>navigator</code>.</li>
+<li><strong>There is no <code>unregisterTool()</code>.</strong> You unregister by aborting the <code>AbortSignal</code> you passed to <code>registerTool()</code>.<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup></li>
+<li><strong>Results are strings.</strong> <code>executeTool()</code> resolves with a <code>DOMString</code>, whatever the tool returned.<sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup></li>
+</ul>
+<h2 id="a2-registertooltool-options"><a class="anchor-link" href="#a2-registertooltool-options">A.2 <code>registerTool(tool, options)</code></a></h2>
+<pre><code class="language-js">await document.modelContext.registerTool(tool, { signal, exposedTo });
+</code></pre>
+<p>Registers one tool on the current document. It returns a <code>Promise&lt;undefined&gt;</code>; tested, it resolves with <code>undefined</code> in Chromium 156 as well.<sup class="footnote-ref"><a href="#fn5" id="fnref5:1">5:1</a></sup> Chapter 5 introduces it, and chapter 6 covers annotations and the execute callback’s signal.</p>
+<p><strong>Table A.1 — <code>ModelContextTool</code> members</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Required</th>
+<th>Rule in the draft</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>DOMString</code></td>
+<td>yes</td>
+<td>1–128 characters, only ASCII letters and digits, <code>_</code>, <code>-</code> and <code>.</code>; unique per document. Otherwise <code>InvalidStateError</code>.</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td><code>USVString</code></td>
+<td>no</td>
+<td>Display name for the browser’s UI.</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td><code>DOMString</code></td>
+<td>yes</td>
+<td>Must not be empty, or <code>InvalidStateError</code>.</td>
+</tr>
+<tr>
+<td><code>inputSchema</code></td>
+<td><code>object</code></td>
+<td>no</td>
+<td>Serialized with <code>JSON.stringify</code> at registration. A <code>toJSON()</code> that returns <code>undefined</code> rejects with a <code>TypeError</code>; an error <code>JSON.stringify</code> throws (a circular object, for example) is rethrown. Because serializing can run script, the name and fully-active checks run again afterwards. (Tested: when <code>toJSON()</code> registers another tool with the same name, Chromium 156 kills the page’s renderer; see Table A.7.)</td>
+</tr>
+<tr>
+<td><code>execute</code></td>
+<td><code>ToolExecuteCallback</code></td>
+<td>yes</td>
+<td><code>(inputObject, { signal }) =&gt; any</code>, may return a promise.</td>
+</tr>
+<tr>
+<td><code>annotations</code></td>
+<td><code>ToolAnnotations</code></td>
+<td>no</td>
+<td>See Table A.2.</td>
+</tr>
+</tbody>
+</table></div>
+<p>The rules in Table A.1 are the draft’s registration steps.<sup class="footnote-ref"><a href="#fn5" id="fnref5:2">5:2</a></sup> All of them were tested in Chromium 156 and agree: a name with a space, a 129-character name, an empty description and a duplicate name each reject with <code>InvalidStateError</code>; a missing <code>execute</code>, a circular <code>inputSchema</code> and a <code>toJSON()</code> that returns <code>undefined</code> each reject with <code>TypeError</code>.</p>
+<p><strong>Table A.2 — <code>ToolAnnotations</code> members (all <code>boolean</code>, default <code>false</code>)</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Meaning in the draft</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>readOnlyHint</code></td>
+<td>The tool doesn’t modify any state and only reads data.</td>
+</tr>
+<tr>
+<td><code>untrustedContentHint</code></td>
+<td>The tool’s output contains data that is untrusted from the registering author’s point of view.</td>
+</tr>
+<tr>
+<td><code>consequentialHint</code></td>
+<td>Running the tool has significant, real-world or non-reversible consequences, such as booking a flight or transferring money.</td>
+</tr>
+<tr>
+<td><code>debugging</code></td>
+<td>The tool is meant for debugging and developer tooling rather than end-user interactions.</td>
+</tr>
+</tbody>
+</table></div>
+<p>The wording in Table A.2 paraphrases the draft’s dictionary descriptions.<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup> The draft carries annotations through to <code>getTools()</code> but doesn’t say what an agent must do with them; that is the agent’s policy (chapter 6).</p>
+<p><strong>Table A.3 — <code>ModelContextRegisterToolOptions</code> members</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>signal</code></td>
+<td><code>AbortSignal</code></td>
+<td>Aborting it unregisters the tool. If it’s already aborted, <code>registerTool()</code> rejects with the signal’s abort reason.</td>
+</tr>
+<tr>
+<td><code>exposedTo</code></td>
+<td><code>sequence&lt;USVString&gt;</code></td>
+<td>Origins of other documents in the same tree that may see and call this tool. Each entry must parse as a URL with a potentially trustworthy origin, or the call rejects with <code>SecurityError</code>.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Both members come from the draft’s registration steps.<sup class="footnote-ref"><a href="#fn5" id="fnref5:3">5:3</a></sup><sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup> Tested in Chromium 156: an already-aborted signal rejects with <code>AbortError</code> (the default abort reason), and <code>exposedTo: ['http://example.com']</code> rejects with <code>SecurityError: Only secure origins are allowed in the exposedTo list.</code> Unregistering a tool doesn’t cancel calls already in flight; chapter 6 shows how to handle that.</p>
+<h2 id="a3-gettoolsoptions-and-registeredtool"><a class="anchor-link" href="#a3-gettoolsoptions-and-registeredtool">A.3 <code>getTools(options)</code> and <code>RegisteredTool</code></a></h2>
+<pre><code class="language-js">const tools = await document.modelContext.getTools({ fromOrigins });
+</code></pre>
+<p>Returns the tools an in-page agent may see: the tools of every document in the tab’s frame tree that uses the <code>tools</code> feature, is same-origin with the caller or listed in <code>fromOrigins</code>, and has exposed the tool to the caller’s origin. The list is sorted by <code>name</code>.<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup> The browser’s own agent doesn’t use this method; it has an internal mechanism.<sup class="footnote-ref"><a href="#fn6" id="fnref6:1">6:1</a></sup> Chapter 7 builds an in-page agent on it.</p>
+<p><strong>Table A.4 — <code>RegisteredTool</code> members, as <code>getTools()</code> returns them</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>DOMString</code></td>
+<td>As registered.</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td><code>DOMString</code></td>
+<td>The empty string when no title was given (tested: <code>&quot;&quot;</code> in Chromium 156).</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td><code>DOMString</code></td>
+<td>As registered.</td>
+</tr>
+<tr>
+<td><code>inputSchema</code></td>
+<td><code>object</code></td>
+<td>Parsed back from the stored JSON string; absent when none was given.</td>
+</tr>
+<tr>
+<td><code>window</code></td>
+<td><code>Window</code></td>
+<td>The window of the document that registered the tool.</td>
+</tr>
+<tr>
+<td><code>origin</code></td>
+<td><code>USVString</code></td>
+<td>That document’s serialized origin.</td>
+</tr>
+<tr>
+<td><code>annotations</code></td>
+<td><code>ToolAnnotations</code></td>
+<td>Present only when the tool was registered with annotations.</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>fromOrigins</code> follows the same rule as <code>exposedTo</code>: every entry must be a URL with a potentially trustworthy origin, or <code>getTools()</code> rejects with <code>SecurityError</code>.<sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup> Tested, an insecure origin and a string that isn’t a URL both reject that way in Chromium 156.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: what an empty title looks like</p>
+<p>The draft fills a missing <code>title</code> with the empty string, and an inline issue in the <code>getTools()</code> steps asks whether to leave the member out instead.<sup class="footnote-ref"><a href="#fn9" id="fnref9:1">9:1</a></sup> Issue #224, “Tool <code>title</code> and <code>inputSchema</code>: what to expose when not provided?”, opened on 21 July 2026, was still open on 15 October 2026.<sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup> Test for a falsy title, not for <code>undefined</code> or <code>&quot;&quot;</code> specifically.</p></aside>
+<h2 id="a4-executetooltool-inputobject-options"><a class="anchor-link" href="#a4-executetooltool-inputobject-options">A.4 <code>executeTool(tool, inputObject, options)</code></a></h2>
+<pre><code class="language-js">const text = await document.modelContext.executeTool(tool, { query: 'tent' }, { signal });
+</code></pre>
+<p>Runs a tool on the document that registered it and resolves with the result as a string. <code>tool</code> is a <code>RegisteredTool</code>, usually one that <code>getTools()</code> returned; the browser looks the tool up again by <code>name</code> in the document behind <code>tool.window</code> and checks that document’s origin against <code>tool.origin</code>, so a hand-made dictionary can’t reach a tool it couldn’t see. A missing <code>inputObject</code> becomes <code>{}</code>. The options take one member, <code>signal</code>: aborting it rejects the promise with the signal’s reason and cancels the execution in the target document.<sup class="footnote-ref"><a href="#fn6" id="fnref6:2">6:2</a></sup></p>
+<p><strong>Table A.5 — What <code>executeTool()</code> resolves with (tested, Chromium 156)</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>The tool’s <code>execute</code> returns</th>
+<th>Draft</th>
+<th>Chromium 156</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>An object, <code>{ got: { a: 1 } }</code></td>
+<td>Its JSON string</td>
+<td><code>'{&quot;got&quot;:{&quot;a&quot;:1}}'</code></td>
+</tr>
+<tr>
+<td>A string, <code>'plain'</code></td>
+<td>Its JSON string, <code>'&quot;plain&quot;'</code></td>
+<td><code>'plain'</code> (not JSON-quoted)</td>
+</tr>
+<tr>
+<td><code>undefined</code></td>
+<td>Rejects: “unserializable result”, <code>OperationError</code></td>
+<td>Resolves with <code>'undefined'</code></td>
+</tr>
+<tr>
+<td>A <code>BigInt</code>, <code>10n</code></td>
+<td>Rejects: “unserializable result”, <code>OperationError</code></td>
+<td>Resolves with <code>'10'</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>The draft’s column follows its execution steps, which serialize whatever the tool’s promise fulfils with to a JSON string and treat a failure to do so (<code>JSON.stringify</code> throws or yields <code>undefined</code>) as the “unserializable result” error.<sup class="footnote-ref"><a href="#fn6" id="fnref6:3">6:3</a></sup><sup class="footnote-ref"><a href="#fn1" id="fnref1:1">1:1</a></sup> Chapter 5 recommends returning a small, flat object, which behaves the same everywhere.</p>
+<h2 id="a5-events"><a class="anchor-link" href="#a5-events">A.5 Events</a></h2>
+<p><code>ModelContext</code> is an <code>EventTarget</code> with three events. Each has an <code>on…</code> handler attribute as well.<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup></p>
+<p><strong>Table A.6 — <code>ModelContext</code> events</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Interface</th>
+<th>Fired at</th>
+<th>When (draft)</th>
+<th>Tested, Chromium 156</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>toolchange</code></td>
+<td><code>Event</code></td>
+<td>Each document in the tree that can see the changed tool</td>
+<td>A tool is registered or unregistered</td>
+<td>Fires once per registration and once per unregistration</td>
+</tr>
+<tr>
+<td><code>toolactivated</code></td>
+<td><code>ToolActivatedEvent</code> (<code>toolName</code>)</td>
+<td>The <code>ModelContext</code> of the tool’s document</td>
+<td>Execution of a tool begins, after the input is parsed</td>
+<td>Fires once per <code>executeTool()</code> call</td>
+</tr>
+<tr>
+<td><code>toolcancel</code></td>
+<td><code>ToolCancelEvent</code> (<code>toolName</code>)</td>
+<td>The <code>ModelContext</code> of the tool’s document</td>
+<td>A pending execution is cancelled; the tool’s <code>signal</code> is aborted first</td>
+<td>Fires when the caller aborts; the tool’s <code>signal</code> aborts too</td>
+</tr>
+</tbody>
+</table></div>
+<p>The firing rules in Table A.6 are from the draft’s <code>toolchange</code> notification steps, its execution steps and its cancellation steps.<sup class="footnote-ref"><a href="#fn12" id="fnref12:1">12:1</a></sup><sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup> The draft warns that <code>toolchange</code> is queued from parallel steps, so its timing relative to other tasks can’t be relied on.<sup class="footnote-ref"><a href="#fn13" id="fnref13:1">13:1</a></sup> <code>ToolActivatedEvent</code> and <code>ToolCancelEvent</code> were added to the draft on 17 September 2026.<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup></p>
+<h2 id="a6-permissions-policy"><a class="anchor-link" href="#a6-permissions-policy">A.6 Permissions Policy</a></h2>
+<p>All three methods are gated on the policy-controlled feature <code>tools</code>, whose default allowlist is <code>'self'</code>.<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup> In practice:</p>
+<ul>
+<li>A same-origin iframe can use the API; a cross-origin iframe can’t unless the embedder delegates the feature with <code>&lt;iframe allow=&quot;tools&quot;&gt;</code>.</li>
+<li><code>Permissions-Policy: tools=()</code> on a response turns the API off for that document and every frame inside it. The draft lists this header as a mitigation for pages where WebMCP isn’t an intended capability.<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup></li>
+<li>A document without the feature gets <code>NotAllowedError</code> from <code>registerTool()</code>, <code>getTools()</code> and <code>executeTool()</code>, and <code>getTools()</code> in other documents skips it.<sup class="footnote-ref"><a href="#fn9" id="fnref9:2">9:2</a></sup><sup class="footnote-ref"><a href="#fn10" id="fnref10:1">10:1</a></sup></li>
+</ul>
+<p>Tested in Chromium 156: with <code>Permissions-Policy: tools=()</code>, <code>document.featurePolicy.allowsFeature('tools')</code> is <code>false</code> and all three methods reject with <code>NotAllowedError</code>. A cross-origin iframe without <code>allow=&quot;tools&quot;</code> gets <code>NotAllowedError</code> from <code>registerTool()</code>; with <code>allow=&quot;tools&quot;</code> and <code>exposedTo</code> naming the parent, the parent sees the frame’s tool through <code>getTools({ fromOrigins })</code> and not without it. Chapter 7 covers the three opt-ins in detail.</p>
+<h2 id="a7-errors"><a class="anchor-link" href="#a7-errors">A.7 Errors</a></h2>
+<p>The draft names five platform failures for a tool execution and maps each to an exception name. Callers only ever see the exception name.<sup class="footnote-ref"><a href="#fn1" id="fnref1:2">1:2</a></sup> Other exceptions come from the method steps themselves.<sup class="footnote-ref"><a href="#fn5" id="fnref5:4">5:4</a></sup><sup class="footnote-ref"><a href="#fn6" id="fnref6:4">6:4</a></sup><sup class="footnote-ref"><a href="#fn9" id="fnref9:3">9:3</a></sup> Table A.7 puts all of them next to what Chromium 156 actually does.</p>
+<p><strong>Table A.7 — Exception names: the 15 October 2026 draft vs Chromium 156 with WebMCPTesting (tested)</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Method</th>
+<th>Draft</th>
+<th>Chromium 156</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Document not fully active</td>
+<td>all three</td>
+<td><code>InvalidStateError</code></td>
+<td>not tested</td>
+</tr>
+<tr>
+<td><code>tools</code> feature not allowed (header or missing <code>allow</code>)</td>
+<td>all three</td>
+<td><code>NotAllowedError</code></td>
+<td><code>NotAllowedError</code> ✓</td>
+</tr>
+<tr>
+<td>Bad name, empty description, duplicate name</td>
+<td><code>registerTool()</code></td>
+<td><code>InvalidStateError</code></td>
+<td><code>InvalidStateError</code> ✓</td>
+</tr>
+<tr>
+<td><code>inputSchema</code> can’t be serialized; <code>execute</code> missing</td>
+<td><code>registerTool()</code></td>
+<td><code>TypeError</code> (rethrown)</td>
+<td><code>TypeError</code> ✓</td>
+</tr>
+<tr>
+<td>Another tool with the same name registered while <code>inputSchema</code> is serialized</td>
+<td><code>registerTool()</code></td>
+<td><code>InvalidStateError</code> (added 15 October 2026)</td>
+<td><strong>The browser kills the page’s renderer</strong> (a known bug)<sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup></td>
+</tr>
+<tr>
+<td>Already-aborted <code>signal</code></td>
+<td><code>registerTool()</code>, <code>executeTool()</code></td>
+<td>The signal’s abort reason</td>
+<td>The abort reason ✓ (<code>AbortError</code>, or your own reason)</td>
+</tr>
+<tr>
+<td>Insecure or unparsable origin in <code>exposedTo</code> / <code>fromOrigins</code></td>
+<td><code>registerTool()</code>, <code>getTools()</code></td>
+<td><code>SecurityError</code></td>
+<td><code>SecurityError</code> ✓</td>
+</tr>
+<tr>
+<td><code>tool.origin</code> is opaque (<code>&quot;null&quot;</code>) or unparsable</td>
+<td><code>executeTool()</code></td>
+<td><code>NotSupportedError</code></td>
+<td><code>NotSupportedError</code> ✓</td>
+</tr>
+<tr>
+<td><code>inputObject</code> can’t be serialized to JSON (a circular object)</td>
+<td><code>executeTool()</code></td>
+<td>The <code>JSON.stringify</code> error (rethrown)</td>
+<td><code>TypeError</code> ✓</td>
+</tr>
+<tr>
+<td>Target document has no navigable (detached), or is in another tab</td>
+<td><code>executeTool()</code></td>
+<td><code>InvalidStateError</code></td>
+<td>not tested</td>
+</tr>
+<tr>
+<td>Tool not registered (unregistered, or a forged <code>name</code>)</td>
+<td><code>executeTool()</code></td>
+<td><code>NotFoundError</code></td>
+<td><strong><code>UnknownError</code></strong></td>
+</tr>
+<tr>
+<td><code>tool.origin</code> doesn’t match the target document</td>
+<td><code>executeTool()</code></td>
+<td><code>NotFoundError</code></td>
+<td><strong><code>UnknownError</code></strong></td>
+</tr>
+<tr>
+<td>Tool not exposed to the caller’s origin</td>
+<td><code>executeTool()</code></td>
+<td><code>NotFoundError</code></td>
+<td>not tested directly; the tool isn’t in <code>getTools()</code></td>
+</tr>
+<tr>
+<td>Input can’t be parsed into an object</td>
+<td><code>executeTool()</code></td>
+<td><code>DataError</code></td>
+<td>not tested</td>
+</tr>
+<tr>
+<td>The tool’s <code>execute</code> throws or rejects</td>
+<td><code>executeTool()</code></td>
+<td><code>OperationError</code></td>
+<td><strong><code>UnknownError</code></strong></td>
+</tr>
+<tr>
+<td>The result can’t be serialized</td>
+<td><code>executeTool()</code></td>
+<td><code>OperationError</code></td>
+<td><strong>Resolves</strong> (Table A.5)</td>
+</tr>
+<tr>
+<td>Target document unloaded mid-call (iframe removed)</td>
+<td><code>executeTool()</code></td>
+<td><code>AbortError</code></td>
+<td><strong><code>UnknownError</code></strong></td>
+</tr>
+<tr>
+<td>Caller aborts the <code>signal</code> mid-call</td>
+<td><code>executeTool()</code></td>
+<td>The signal’s abort reason</td>
+<td><code>AbortError</code> ✓, and <code>toolcancel</code> fires</td>
+</tr>
+</tbody>
+</table></div>
+<p>A ✓ means Chromium agrees with the draft; bold marks a difference. Chromium’s <code>UnknownError</code> comes in two messages. For a tool that threw it says “Tool was executed but the invocation failed. For example, the script function threw an error”; for a missing or forged tool and a removed frame it says “The operation failed for an unknown transient reason (e.g. out of memory).” The messages aren’t part of any contract, so don’t parse them.</p>
+<p>Chapter 7 observed the same <code>UnknownError</code> for forged names and origins and for a frame that went away mid-call, and the same <code>NotAllowedError</code> under a blocking policy. Until Chromium and the draft line up, treat the two names as one family. Listing A.2 does that.</p>
+<figure class="code"><figcaption>Listing A.2 — Classifying an <code>executeTool()</code> rejection under both the draft and Chromium 156 (classify-tool-error.js)</figcaption>
+<pre><code class="language-js">// Listing A.2: classify an executeTool() rejection in a way that works with both
+// the draft's exception names (since 8 October 2026) and Chromium 156's.
+export function classifyToolError(err) {
+  const name = err &amp;&amp; err.name;
+  switch (name) {
+    case 'AbortError':
+      return { kind: 'cancelled', retry: false };   // caller's signal, or (draft) target unloaded
+    case 'NotAllowedError':
+      return { kind: 'blocked', retry: false };     // &quot;tools&quot; Permissions Policy says no
+    case 'SecurityError':
+      return { kind: 'bad-origin', retry: false };  // exposedTo / fromOrigins not secure
+    case 'NotFoundError':                           // draft: tool gone or not exposed
+    case 'InvalidStateError':                       // document inactive or other tab
+      return { kind: 'gone', retry: true };         // re-read getTools(), then retry
+    case 'OperationError':                          // draft: the tool threw or rejected
+    case 'UnknownError':                            // Chromium 156: all of the above
+      return { kind: 'failed', retry: true };
+    default:
+      return { kind: 'error', retry: false };
+  }
+}
+</code></pre></figure>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: exception names</p>
+<p>Chromium’s <code>UnknownError</code> isn’t a bug against an old idea; it is what the draft itself said until recently. Until 8 October 2026 the <code>executeTool()</code> steps rejected with <code>UnknownError</code> in each of these cases, next to an inline issue asking for “more granular errors than UnknownError”. A pull request merged that day replaced it with the specific names in Table A.7 and added the tool execution error table.<sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup> Chromium 156 still behaves the way the draft read before that change. Expect the right-hand column of Table A.7 to move toward the draft, and key error handling on families (Listing A.2), not on single names.</p></aside>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: what <code>registerTool()</code> resolves with</p>
+<p>Issue #234, “registerTool should return registered tool instead of undefined”, opened on 29 July 2026, was open on 15 October 2026.<sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup> Code that ignores the resolved value, as every listing in this book does, won’t break either way.</p></aside>
+<h2 id="a8-the-declarative-attributes-removed-from-the-specification"><a class="anchor-link" href="#a8-the-declarative-attributes-removed-from-the-specification">A.8 The declarative attributes (removed from the specification)</a></h2>
+<p>Chapter 8 covers the declarative API: HTML attributes that turn a <code>&lt;form&gt;</code> into a tool. It was removed from the specification on 8 October 2026.<sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup> The project README now calls it a “future exploration” that “is not part of the specification at this time”, and its explainer stays in the repository.<sup class="footnote-ref"><a href="#fn21" id="fnref21">21</a></sup> Chrome’s documentation still describes it, and Chromium 156’s trial still ships it.<sup class="footnote-ref"><a href="#fn22" id="fnref22">22</a></sup></p>
+<p><strong>Table A.8 — Declarative API surface: removed from the spec on 8 October 2026, still in Chrome’s trial</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Surface</th>
+<th>Where</th>
+<th>What it does (Chrome documentation)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>toolname</code></td>
+<td><code>&lt;form&gt;</code></td>
+<td>Names the tool; registers the form as a tool.</td>
+</tr>
+<tr>
+<td><code>tooldescription</code></td>
+<td><code>&lt;form&gt;</code></td>
+<td>Describes the tool.</td>
+</tr>
+<tr>
+<td><code>toolparamdescription</code></td>
+<td>form controls</td>
+<td>Becomes the property’s <code>description</code> in the generated JSON Schema.</td>
+</tr>
+<tr>
+<td><code>toolautosubmit</code></td>
+<td><code>&lt;form&gt;</code></td>
+<td>Submits the form when the agent calls the tool; without it the user clicks Submit.</td>
+</tr>
+<tr>
+<td><code>SubmitEvent.agentInvoked</code></td>
+<td>event</td>
+<td><code>true</code> when an agent triggered the submission.</td>
+</tr>
+<tr>
+<td><code>SubmitEvent.respondWith(promise)</code></td>
+<td>event</td>
+<td>Hands the browser a promise for the form’s result.</td>
+</tr>
+<tr>
+<td><code>:tool-form-active</code>, <code>:tool-submit-active</code></td>
+<td>CSS</td>
+<td>Match the form and its submit button while an agent is using them.</td>
+</tr>
+</tbody>
+</table></div>
+<p>The rows in Table A.8 are from Chrome’s declarative API page (published 18 May 2026, last updated 25 September 2026).<sup class="footnote-ref"><a href="#fn22" id="fnref22:1">22:1</a></sup> Tested in Chromium 156: a <code>&lt;form toolname=&quot;search_availability&quot; tooldescription=&quot;Find free tables&quot;&gt;</code> with a required <code>date</code> input and a required <code>number</code> input (<code>min=&quot;1&quot; max=&quot;12&quot;</code>) shows up in <code>getTools()</code> as a tool with a generated schema: <code>date</code> becomes <code>{ type: 'string', format: 'date' }</code>, <code>partySize</code> becomes <code>{ type: 'number', minimum: 1, maximum: 12, multipleOf: 1 }</code>, and both are listed in <code>required</code>.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: the declarative API</p>
+<p>Removed from the specification is not the same as removed from Chrome. Use the attributes only behind feature detection, keep an imperative tool for the same action, and check chapter 8 and the Chrome page before relying on them.</p></aside>
+<h2 id="a9-summary"><a class="anchor-link" href="#a9-summary">A.9 Summary</a></h2>
+<ul>
+<li>The API is <code>document.modelContext</code> with three methods: <code>registerTool(tool, { signal, exposedTo })</code>, <code>getTools({ fromOrigins })</code> and <code>executeTool(tool, input, { signal })</code>, plus three events: <code>toolchange</code>, <code>toolactivated</code> and <code>toolcancel</code>.</li>
+<li>Unregister by aborting the signal. There’s no <code>unregisterTool()</code>, <code>provideContext()</code> or <code>clearContext()</code> any more (Appendix D).</li>
+<li>The <code>tools</code> Permissions Policy feature, default <code>'self'</code>, gates all three methods; without it you get <code>NotAllowedError</code>.</li>
+<li><code>exposedTo</code> and <code>fromOrigins</code> accept only potentially trustworthy origins; anything else is a <code>SecurityError</code>.</li>
+<li>Chromium 156 reports most execution failures as <code>UnknownError</code> where the draft says <code>NotFoundError</code>, <code>OperationError</code> or <code>AbortError</code>, and it resolves results the draft would reject. Handle errors by family.</li>
+<li>The declarative form attributes left the specification on 8 October 2026 but still work in Chrome’s trial.</li>
+</ul>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, §3 Supporting concepts: the tool execution error table (“tool not found” → <code>NotFoundError</code>, “invalid input” → <code>DataError</code>, “tool rejected” and “unserializable result” → <code>OperationError</code>, “target document unloaded” → <code>AbortError</code>) and the note that tool execution errors are not exposed to the web. Read 15 October 2026. <a href="https://webmachinelearning.github.io/webmcp/#tool-execution-error">https://webmachinelearning.github.io/webmcp/#tool-execution-error</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a> <a href="#fnref1:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>WebMCP specification, Draft Community Group Report dated 15 October 2026, editors Brandon Walderman (Microsoft), Khushal Sagar and Dominic Farolino (Google), published by the W3C Web Machine Learning Community Group. Read 15 October 2026. The changes since the 14 October draft are commits 1636b33 (#345) and 3279798 (#347); neither touches the IDL or the exception names. <a href="https://webmachinelearning.github.io/webmcp/">https://webmachinelearning.github.io/webmcp/</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>Chrome for Developers, “WebMCP” overview (published 18 May 2026, last updated 7 October 2026), section “Local WebMCP”: the <code>chrome://flags/#enable-webmcp-testing</code> flag. Read 15 October 2026. <a href="https://developer.chrome.com/docs/ai/webmcp">https://developer.chrome.com/docs/ai/webmcp</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>WebMCP specification, §4.1 Extensions to Document and the IDL index: <code>partial interface Document { [SecureContext, SameObject] readonly attribute ModelContext modelContext; }</code>. <a href="https://webmachinelearning.github.io/webmcp/#idl-index">https://webmachinelearning.github.io/webmcp/#idl-index</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>WebMCP specification, §4.2, the <code>registerTool(tool, options)</code> method steps: the “tools” check, the name, description and duplicate checks, <code>inputSchema</code> serialization and the checks repeated after it, the already-aborted signal, <code>exposedTo</code> parsing, and the abort steps that unregister the tool. <a href="https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool">https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool</a> <a href="#fnref5" class="footnote-backref">↩︎</a> <a href="#fnref5:1" class="footnote-backref">↩︎</a> <a href="#fnref5:2" class="footnote-backref">↩︎</a> <a href="#fnref5:3" class="footnote-backref">↩︎</a> <a href="#fnref5:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>WebMCP specification, §4.2, the non-normative description of <code>executeTool()</code> (resolves to the stringified result; an omitted argument becomes an empty object) and the <code>executeTool(tool, inputObject, options)</code> method steps (including the rethrown error when <code>inputObject</code> can’t be serialized, and <code>InvalidStateError</code> when the target document has no navigable). <a href="https://webmachinelearning.github.io/webmcp/#dom-modelcontext-executetool">https://webmachinelearning.github.io/webmcp/#dom-modelcontext-executetool</a> <a href="#fnref6" class="footnote-backref">↩︎</a> <a href="#fnref6:1" class="footnote-backref">↩︎</a> <a href="#fnref6:2" class="footnote-backref">↩︎</a> <a href="#fnref6:3" class="footnote-backref">↩︎</a> <a href="#fnref6:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>WebMCP specification, §4.2.1, the <code>ToolAnnotations</code> dictionary descriptions. <a href="https://webmachinelearning.github.io/webmcp/#dictdef-toolannotations">https://webmachinelearning.github.io/webmcp/#dictdef-toolannotations</a> <a href="#fnref7" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>WebMCP specification, §4.2.3 ModelContextRegisterToolOptions Dictionary: <code>exposedTo</code> is “an array of origins that control which documents this tool is exposed to, in the current document’s tree”; <code>signal</code> “unregisters the tool when aborted”. <a href="https://webmachinelearning.github.io/webmcp/#dictdef-modelcontextregistertooloptions">https://webmachinelearning.github.io/webmcp/#dictdef-modelcontextregistertooloptions</a> <a href="#fnref8" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p>WebMCP specification, §4.2, the <code>getTools(options)</code> method steps: traversal of the inclusive descendant navigables, the “tools” check per document, the same-origin-or-<code>fromOrigins</code> check, the exposure check, the empty-string <code>title</code> with its inline reference to issue #224, and sorting by name. <a href="https://webmachinelearning.github.io/webmcp/#dom-modelcontext-gettools">https://webmachinelearning.github.io/webmcp/#dom-modelcontext-gettools</a> <a href="#fnref9" class="footnote-backref">↩︎</a> <a href="#fnref9:1" class="footnote-backref">↩︎</a> <a href="#fnref9:2" class="footnote-backref">↩︎</a> <a href="#fnref9:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p>WebMCP specification, §4.2.4 ModelContextGetToolOptions Dictionary and the <code>getTools()</code> steps (<code>SecurityError</code> for an origin that fails to parse or is not potentially trustworthy). <a href="https://webmachinelearning.github.io/webmcp/#dom-modelcontextgettooloptions-fromorigins">https://webmachinelearning.github.io/webmcp/#dom-modelcontextgettooloptions-fromorigins</a> <a href="#fnref10" class="footnote-backref">↩︎</a> <a href="#fnref10:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>“Tool <code>title</code> and <code>inputSchema</code>: what to expose when not provided?”, webmachinelearning/webmcp issue #224, opened 21 July 2026, open on 15 October 2026. <a href="https://github.com/webmachinelearning/webmcp/issues/224">https://github.com/webmachinelearning/webmcp/issues/224</a> <a href="#fnref11" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>WebMCP specification, §4.3 Events, §4.3.1 ToolActivatedEvent Interface and §4.3.2 ToolCancelEvent Interface. <a href="https://webmachinelearning.github.io/webmcp/#events">https://webmachinelearning.github.io/webmcp/#events</a> <a href="#fnref12" class="footnote-backref">↩︎</a> <a href="#fnref12:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>WebMCP specification: the steps that notify documents of a tool change (including the note on <code>toolchange</code> timing), the execute-callback steps that fire <code>toolactivated</code>, and the steps that cancel a pending tool execution and fire <code>toolcancel</code>. <a href="https://webmachinelearning.github.io/webmcp/#eventdef-modelcontext-toolcancel">https://webmachinelearning.github.io/webmcp/#eventdef-modelcontext-toolcancel</a> <a href="#fnref13" class="footnote-backref">↩︎</a> <a href="#fnref13:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>webmachinelearning/webmcp commit f5645e9, “Add <code>ToolActivatedEvent</code> and <code>ToolCancelEvent</code> event interfaces (#245)”, committed 17 September 2026; repository history read 15 October 2026. <a href="https://github.com/webmachinelearning/webmcp/commit/f5645e9aea51eb589599f181d104a2f49430608e">https://github.com/webmachinelearning/webmcp/commit/f5645e9aea51eb589599f181d104a2f49430608e</a> <a href="#fnref14" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>WebMCP specification, §4.4 Permissions policy integration: the policy-controlled feature “tools” with a default allowlist of <code>'self'</code>. <a href="https://webmachinelearning.github.io/webmcp/#permissions-policy">https://webmachinelearning.github.io/webmcp/#permissions-policy</a> <a href="#fnref15" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn16" class="footnote-item"><p>WebMCP specification, §6.4.1 Disabling WebMCP with Permissions Policy. <a href="https://webmachinelearning.github.io/webmcp/#mitigation-disable-permissions-policy">https://webmachinelearning.github.io/webmcp/#mitigation-disable-permissions-policy</a> <a href="#fnref16" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn17" class="footnote-item"><p>Chromium issue 573722078, “WebMCP: Renderer killed when <code>registerTool()</code>’s <code>inputSchema</code> serialization registers a tool with the same name”, filed 14 October 2026 (Blink &gt; Agentic Platform &gt; WebMCP). The browser terminates the renderer for a bad IPC message, reason 345 (<code>RFHI_WEBMCP_REGISTER_DUPLICATE_TOOL_NAME</code>). The issue is marked Fixed, but the fix (crrev.com/c/8583183) was reverted on main (crrev.com/c/8575491) and had not relanded as of 15 October 2026, 09:26 UTC. <a href="https://issues.chromium.org/issues/573722078">https://issues.chromium.org/issues/573722078</a> <a href="#fnref17" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn18" class="footnote-item"><p>webmachinelearning/webmcp commit b206dae, “Replace UnknownError with specific DOMException types. (#339)”, by Mark Foltz, committed 8 October 2026: it removes the <code>UnknownError</code> rejections and their “Support more granular errors” issue notes from <code>index.bs</code> and adds the <code>NotFoundError</code> / <code>DataError</code> / <code>OperationError</code> / <code>AbortError</code> table. Repository history and diff read 14 October 2026. <a href="https://github.com/webmachinelearning/webmcp/commit/b206dae8bad34ea8e6ff7213b417b50b14a37e9a">https://github.com/webmachinelearning/webmcp/commit/b206dae8bad34ea8e6ff7213b417b50b14a37e9a</a> <a href="#fnref18" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn19" class="footnote-item"><p>“registerTool should return registered tool instead of undefined”, webmachinelearning/webmcp issue #234, opened 29 July 2026, last updated 3 October 2026, open on 15 October 2026. <a href="https://github.com/webmachinelearning/webmcp/issues/234">https://github.com/webmachinelearning/webmcp/issues/234</a> <a href="#fnref19" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn20" class="footnote-item"><p>webmachinelearning/webmcp commit 14ae813, “Remove declarative API from the spec for now (#338)”, by François Beaufort, committed 8 October 2026; it changed <code>index.bs</code> and <code>README.md</code>. Repository history read 14 October 2026. <a href="https://github.com/webmachinelearning/webmcp/commit/14ae813cc4e9fe0d39313f4b1ee5b231746731ad">https://github.com/webmachinelearning/webmcp/commit/14ae813cc4e9fe0d39313f4b1ee5b231746731ad</a> <a href="#fnref20" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn21" class="footnote-item"><p>webmachinelearning/webmcp README, section “Future Exploration: Declarative API”, and the Declarative API Explainer, both read 15 October 2026. <a href="https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md">https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md</a> <a href="#fnref21" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn22" class="footnote-item"><p>Chrome for Developers, “Declarative API” (published 18 May 2026, last updated 25 September 2026): <code>toolname</code>, <code>tooldescription</code>, <code>toolparamdescription</code>, <code>toolautosubmit</code>, <code>SubmitEvent.agentInvoked</code>, <code>SubmitEvent.respondWith()</code>, <code>:tool-form-active</code> and <code>:tool-submit-active</code>. Read 15 October 2026. <a href="https://developer.chrome.com/docs/ai/webmcp/declarative-api">https://developer.chrome.com/docs/ai/webmcp/declarative-api</a> <a href="#fnref22" class="footnote-backref">↩︎</a> <a href="#fnref22:1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="../chapters/17-the-road-ahead.html">← Chapter 17: The Road Ahead</a>
+          <a class="pager-link" rel="next" href="b-glossary.html">Appendix B: Glossary →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

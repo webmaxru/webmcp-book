@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chapter 3: MCP in Practice — Tools, Not Clicks</title>
+  <meta name="description" content="A working understanding of Anthropic’s Model Context Protocol: hosts, clients and servers over JSON-RPC, and what servers and clients offer each other. This is the vocabulary WebMCP borrows.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Chapter 3: MCP in Practice — Tools, Not Clicks">
+  <meta property="og:description" content="A working understanding of Anthropic’s Model Context Protocol: hosts, clients and servers over JSON-RPC, and what servers and clients offer each other. This is the vocabulary WebMCP borrows.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a class="is-current" aria-current="page" href="03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="../appendices/a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="../appendices/b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="../appendices/c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="../appendices/d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / Chapter 3 <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">chapter:</span> <span class="fm-v">03</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">I — Why the Web Needs an Agent Interface</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">43 min</span></p>
+        <h1>Chapter 3: MCP in Practice</h1>
+        <p class="lead">A working understanding of Anthropic’s Model Context Protocol: hosts, clients and servers over JSON-RPC, and what servers and clients offer each other. This is the vocabulary WebMCP borrows.</p>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#a-tent-an-order-and-a-protocol">A tent, an order and a protocol</a></li><li><a href="#where-mcp-came-from">Where MCP came from</a></li><li><a href="#architecture-hosts-clients-and-servers">Architecture: hosts, clients and servers</a></li><li><a href="#the-wire-json-rpc-20-one-request-at-a-time">The wire: JSON-RPC 2.0, one request at a time</a></li><li><a href="#what-servers-offer-tools-resources-and-prompts">What servers offer: tools, resources and prompts</a></li><li><a href="#what-clients-offer-elicitation">What clients offer: elicitation</a></li><li><a href="#building-trailheads-mcp-server">Building Trailhead’s MCP server</a></li><li><a href="#talking-to-the-server">Talking to the server</a></li><li><a href="#mcp-apps-and-streaming-mcps-move-toward-ui">MCP Apps and streaming: MCP’s move toward UI</a></li><li><a href="#spec-versioning-what-2026-07-28-latest-means-for-authors">Spec versioning: what “2026-07-28 (latest)” means for authors</a></li><li><a href="#from-a-backend-server-to-a-page">From a backend server to a page</a></li><li><a href="#chapter-summary">Chapter summary</a></li><li><a href="#notes">Notes</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“It provides a universal, open standard for connecting AI systems with data sources, replacing fragmented integrations with a single protocol.”</em></p>
+<p>— Anthropic, “Introducing the Model Context Protocol”<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<h2 id="a-tent-an-order-and-a-protocol"><a class="anchor-link" href="#a-tent-an-order-and-a-protocol">A tent, an order and a protocol</a></h2>
+<p>Lars is planning three nights in Jotunheimen at the end of October. He has two questions for his AI assistant: is there a two-person tent under 4,000 kroner that Trailhead, his favourite Norwegian outdoor-gear shop, actually has in stock, and where is the order he placed last week? He doesn’t have Trailhead’s website open. He is in the assistant’s desktop app, and the assistant answers both questions in one go: the Fjellheim 2 Tent at 3,499 NOK, in stock, rated 4.6; and order TH-100231, shipped with Posten, arriving on Saturday.</p>
+<p>Nothing in that exchange involved a browser. The assistant didn’t scrape Trailhead’s product pages or guess at a tracking form. Somebody at Trailhead had written a small server that offers two operations, <code>search_products</code> and <code>get_order_status</code>, each with a name, a plain-language description and a JSON Schema for its inputs. Lars (or his company’s IT department) had added that server to the assistant once. From then on the model could see the two tools, decide when to use them, and call them with structured arguments. The server ran Trailhead’s own code and sent back structured results.</p>
+<p>That arrangement is the <em>Model Context Protocol</em> (MCP), and it is the subject of this chapter. MCP matters to a book about WebMCP for two reasons. First, WebMCP borrows MCP’s vocabulary almost word for word: tools, descriptions, input schemas, annotations, results. Chapter 4 quotes the WebMCP specification’s own description of a page that uses it: a Model Context Protocol server that implements tools “in client-side script instead of on the backend”. That description only means something once you know what a backend one looks like. Second, most products that become agent-ready will end up with both: a backend MCP server for the moments when the user is anywhere, and WebMCP tools for the moments when the user is on the site. Trailhead will have both by the end of this book.</p>
+<p>So this chapter is practical. We look at MCP’s architecture and its wire format, at what servers and clients offer each other, and at the big change in the current revision, 2026-07-28, which removed the handshake and made the protocol stateless. Then we build Trailhead’s backend MCP server with the official TypeScript SDK, run it over both of MCP’s standard transports, and test it with an SDK client and the MCP Inspector. Every listing in this chapter runs, and every one is in the book’s companion repository with its tests.</p>
+<h2 id="where-mcp-came-from"><a class="anchor-link" href="#where-mcp-came-from">Where MCP came from</a></h2>
+<p>Anthropic open-sourced MCP on 25 November 2024, describing it as “a new standard for connecting AI assistants to the systems where data lives, including content repositories, business tools, and development environments.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:1">1:1</a></sup> The problem it set out to solve was the integration matrix. Every assistant needed its own connector for every data source, and the announcement put it bluntly: “Every new data source requires its own custom implementation, making truly connected systems difficult to scale.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:2">1:2</a></sup> Chapter 2 traced how function calling, platform plug-ins and OpenAPI descriptions each solved part of that problem for one platform at a time. MCP’s pitch was to solve it once, with an open protocol that any host and any server could speak.</p>
+<p>The specification names its model: “MCP takes some inspiration from the Language Server Protocol,” which lets any code editor support any programming language through one standard interface.<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup> MCP aims for the same shape. Trailhead writes one server, and any MCP-capable assistant can use it.</p>
+<p>The protocol is versioned by date. The revision current as I write, and the one this chapter follows, is 2026-07-28.<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup> We come back to what that date means, and why it matters for anyone writing about MCP, at the end of the chapter.</p>
+<h2 id="architecture-hosts-clients-and-servers"><a class="anchor-link" href="#architecture-hosts-clients-and-servers">Architecture: hosts, clients and servers</a></h2>
+<p>MCP names three roles, and the names are precise enough that it’s worth learning them exactly. The specification defines them in one line each: <em>hosts</em> are “LLM applications that initiate connections”, <em>clients</em> are “connectors within the host application”, and <em>servers</em> are “services that provide context and capabilities.”<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">2:1</a></sup></p>
+<ul>
+<li><em>The host</em> is the application the user is talking to: a chat assistant, an IDE, an agent framework. The architecture page lists its duties, among them creating and managing client instances, enforcing “security policies and consent requirements”, handling “user authorization decisions” and coordinating the model integration.<sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup> The host owns the model, the conversation and the user’s trust.</li>
+<li><em>A client</em> lives inside the host and holds one connection to one server. “A host application creates and manages multiple clients, with each client having a 1:1 relationship with a particular server.”<sup class="footnote-ref"><a href="#fn4" id="fnref4:1">4:1</a></sup></li>
+<li><em>A server</em> offers capabilities: tools, resources and prompts. It “can be local processes or remote services.”<sup class="footnote-ref"><a href="#fn4" id="fnref4:2">4:2</a></sup> Trailhead’s server is one of these.</li>
+</ul>
+<p>Figure 3.1 puts the three together, with Trailhead’s server on the right.</p>
+<figure class="book-figure"><img decoding="async" src="03-mcp-in-practice/images/figure-3-1.png" alt="Figure 3.1 — MCP’s client–host–server architecture. The host runs one client per server. Each client speaks JSON-RPC 2.0 to its server over stdio or Streamable HTTP. Trailhead’s server offers two tools, one resource and one prompt, and calls Trailhead’s own catalogue and order services." /><figcaption>Figure 3.1 — MCP’s client–host–server architecture. The host runs one client per server. Each client speaks JSON-RPC 2.0 to its server over stdio or Streamable HTTP. Trailhead’s server offers two tools, one resource and one prompt, and calls Trailhead’s own catalogue and order services.</figcaption></figure>
+<p>The interesting part of the architecture is not the boxes but the walls between them. Among MCP’s stated design principles are that “Servers should be extremely easy to build”, with the host handling the complex orchestration, and that “Servers should not be able to read the whole conversation, nor ‘see into’ other servers.”<sup class="footnote-ref"><a href="#fn4" id="fnref4:3">4:3</a></sup> Trailhead’s server never sees what Lars said to his assistant before he asked about tents, and it can’t see that the same assistant is also connected to his calendar. It receives one structured request at a time and answers it. The host decides what to send, and the host decides what the model sees of the answer.</p>
+<p>Keep that division of labour in mind, because WebMCP changes it. There the page is the server and the browser plays the host, and the tool runs inside the very tab the user is looking at, with the user’s session. In MCP, the server is deliberately kept at arm’s length.</p>
+<h2 id="the-wire-json-rpc-20-one-request-at-a-time"><a class="anchor-link" href="#the-wire-json-rpc-20-one-request-at-a-time">The wire: JSON-RPC 2.0, one request at a time</a></h2>
+<p>MCP messages are JSON-RPC 2.0 messages.<sup class="footnote-ref"><a href="#fn2" id="fnref2:2">2:2</a></sup> JSON-RPC is a small, old and stable specification (last updated in January 2013) that describes itself as “a stateless, light-weight remote procedure call (RPC) protocol.”<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup> It has three message types. A <em>request</em> carries a <code>method</code>, optional <code>params</code> and an <code>id</code>. A <em>response</em> carries the same <code>id</code> and either a <code>result</code> or an <code>error</code> object with a numeric <code>code</code> and a <code>message</code>. A <em>notification</em> is a request without an <code>id</code>, and it never gets a response.<sup class="footnote-ref"><a href="#fn5" id="fnref5:1">5:1</a></sup> That is all MCP needs from the format. Everything else, the method names and the shapes of the params and results, is MCP’s own vocabulary on top.</p>
+<p>How the messages travel is the job of a <em>transport</em>. The 2026-07-28 revision defines two standard ones.<sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup></p>
+<ul>
+<li><em>stdio.</em> The host launches the server as a child process and the two talk over standard input and output. Each message is one line of JSON. The binding is strict about it: the server “MUST NOT write anything to its stdout that is not a valid MCP message”, though it may log to stderr.<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup> This is the transport for local servers: a developer tool, a file-system server, or Trailhead’s server running on Lars’s laptop.</li>
+<li><em>Streamable HTTP.</em> The server exposes a single HTTP endpoint (conventionally <code>/mcp</code>), and the client sends each JSON-RPC message as its own POST. The server answers with either a single JSON object or a Server-Sent Events stream scoped to that one request, carrying progress notifications followed by the final response.<sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup> This is the transport for remote servers, the kind Trailhead would run in production for all its customers.</li>
+</ul>
+<h3 id="the-handshake-that-went-away"><a class="anchor-link" href="#the-handshake-that-went-away">The handshake that went away</a></h3>
+<p>Until the 2026-07-28 revision, every MCP connection began with a handshake. The client sent <code>initialize</code> with the protocol version it wanted and the capabilities it supported, the server replied with its own version and capabilities, the client confirmed with a <code>notifications/initialized</code> notification, and only then could real work begin. Everything after that relied on the session the handshake had set up. On HTTP, the session had an ID in a header, and every request had to reach a server that remembered it.</p>
+<p>The 2026-07-28 revision removed all of that. The release announcement calls the result “a stateless protocol core” and describes the change as “MCP is transforming from a bidirectional stateful protocol into a request/response stateless protocol.”<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup> The changelog lists the specifics: the <code>initialize</code> and <code>notifications/initialized</code> handshake is gone, the <code>Mcp-Session-Id</code> header is gone, and “Every request now carries its protocol version and client capabilities in <code>_meta</code>.”<sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup> The architecture page now opens with the new rule: “MCP is a stateless protocol: every request is self-contained and carries its own protocol version and capabilities.”<sup class="footnote-ref"><a href="#fn4" id="fnref4:4">4:4</a></sup></p>
+<p>In practice, three reserved keys travel in every request’s <code>_meta</code> object: <code>io.modelcontextprotocol/protocolVersion</code>, <code>io.modelcontextprotocol/clientInfo</code> and <code>io.modelcontextprotocol/clientCapabilities</code>.<sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup> A client that wants to know what a server supports before it does anything else can call a new method, <code>server/discover</code>. Servers must implement it, but clients don’t have to call it: “a client is free to invoke any RPC inline and handle <code>UnsupportedProtocolVersionError</code> if its preferred version is not supported.”<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup></p>
+<p>Listing 3.1 shows a real <code>server/discover</code> exchange with the Trailhead server we build later in the chapter. It was captured from the wire, not written by hand: the companion repository’s tests replay the exchange and check that it still matches this listing byte for byte, once both are parsed.</p>
+<figure class="code"><figcaption>Listing 3.1 — <code>server/discover</code> against the Trailhead server, captured over stdio</figcaption>
+<pre><code class="language-json">{
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;id&quot;: &quot;server-discover-probe-1&quot;,
+  &quot;method&quot;: &quot;server/discover&quot;,
+  &quot;params&quot;: {
+    &quot;_meta&quot;: {
+      &quot;io.modelcontextprotocol/protocolVersion&quot;: &quot;2026-07-28&quot;,
+      &quot;io.modelcontextprotocol/clientInfo&quot;: {
+        &quot;name&quot;: &quot;trailhead-cli&quot;,
+        &quot;version&quot;: &quot;1.0.0&quot;
+      },
+      &quot;io.modelcontextprotocol/clientCapabilities&quot;: {}
+    }
+  }
+}
+
+{
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;id&quot;: &quot;server-discover-probe-1&quot;,
+  &quot;result&quot;: {
+    &quot;supportedVersions&quot;: [
+      &quot;2026-07-28&quot;
+    ],
+    &quot;capabilities&quot;: {
+      &quot;tools&quot;: {
+        &quot;listChanged&quot;: true
+      },
+      &quot;resources&quot;: {
+        &quot;listChanged&quot;: true
+      },
+      &quot;prompts&quot;: {
+        &quot;listChanged&quot;: true
+      }
+    },
+    &quot;resultType&quot;: &quot;complete&quot;,
+    &quot;ttlMs&quot;: 0,
+    &quot;cacheScope&quot;: &quot;private&quot;,
+    &quot;_meta&quot;: {
+      &quot;io.modelcontextprotocol/serverInfo&quot;: {
+        &quot;name&quot;: &quot;trailhead&quot;,
+        &quot;version&quot;: &quot;1.0.0&quot;
+      }
+    }
+  }
+}
+</code></pre></figure>
+<p>The response says three things. The server speaks protocol version 2026-07-28. It offers tools, resources and prompts, and it can notify clients when any of those lists change (<code>listChanged</code>). And, in the result’s own <code>_meta</code>, it identifies itself as <code>trailhead</code> version 1.0.0. The <code>resultType</code>, <code>ttlMs</code> and <code>cacheScope</code> fields are also new in this revision: list-style results now carry cache hints, so a client can cache a tool catalogue instead of fetching it again on every turn.<sup class="footnote-ref"><a href="#fn9" id="fnref9:1">9:1</a></sup></p>
+<p>Capability negotiation hasn’t disappeared; it has moved. Instead of being agreed once at the start of a session, it happens on every request. The client declares its capabilities in each request’s <code>_meta</code>, and the server advertises its own in the <code>server/discover</code> result. Both sides must respect what the other has declared.<sup class="footnote-ref"><a href="#fn4" id="fnref4:5">4:5</a></sup> If a client asks for a version the server doesn’t support, the server answers with error code <code>-32022</code>, <code>UnsupportedProtocolVersionError</code>, listing the versions it does support, and the client can retry with one of them.<sup class="footnote-ref"><a href="#fn12" id="fnref12:1">12:1</a></sup></p>
+<p>Why does this matter? Because a stateless server is far easier to run: “Any request can now land on any server instance behind a plain round-robin load balancer without needing shared storage.”<sup class="footnote-ref"><a href="#fn9" id="fnref9:2">9:2</a></sup> Figure 3.2 compares the two styles.</p>
+<figure class="book-figure"><img decoding="async" src="03-mcp-in-practice/images/figure-3-2.png" alt="Figure 3.2 — The two eras of MCP. Up to revision 2025-11-25, a client opens a session with an initialize handshake and later requests depend on it. From 2026-07-28, every request carries its own version, identity and capabilities; server/discover is optional; and when a tool needs input from the user mid-call, the server answers input_required and the client retries with the answers." /><figcaption>Figure 3.2 — The two eras of MCP. Up to revision 2025-11-25, a client opens a session with an initialize handshake and later requests depend on it. From 2026-07-28, every request carries its own version, identity and capabilities; server/discover is optional; and when a tool needs input from the user mid-call, the server answers input_required and the client retries with the answers.</figcaption></figure>
+<p>The old style hasn’t vanished. The specification calls handshake-based revisions (2025-11-25 and earlier) <em>legacy</em> and the new style <em>modern</em>, and a <em>dual-era</em> implementation can serve both: a request carrying modern <code>_meta</code> is served statelessly, while an <code>initialize</code> request selects legacy behaviour for that process or session.<sup class="footnote-ref"><a href="#fn12" id="fnref12:2">12:2</a></sup> As we’ll see when we test Trailhead’s server, some common tools still open with <code>initialize</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Revisions up to 2025-11-25 (legacy)</th>
+<th>Revision 2026-07-28 (modern)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Starting a conversation</td>
+<td><code>initialize</code> request, then <code>notifications/initialized</code></td>
+<td>No handshake; optional <code>server/discover</code></td>
+</tr>
+<tr>
+<td>Protocol version</td>
+<td>Negotiated once per session</td>
+<td>Declared on every request in <code>_meta</code> (and the <code>MCP-Protocol-Version</code> header on HTTP)</td>
+</tr>
+<tr>
+<td>Capabilities</td>
+<td>Exchanged once in the handshake</td>
+<td>Client capabilities sent with every request; server capabilities from <code>server/discover</code></td>
+</tr>
+<tr>
+<td>Sessions on HTTP</td>
+<td><code>Mcp-Session-Id</code> header; requests must reach the same server</td>
+<td>None; any instance can answer any request</td>
+</tr>
+<tr>
+<td>Server asking the client for input</td>
+<td>Server-initiated requests (<code>elicitation/create</code>, <code>sampling/createMessage</code>, <code>roots/list</code>)</td>
+<td>Multi round-trip requests: the result says <code>input_required</code> and the client retries</td>
+</tr>
+<tr>
+<td>Change notifications</td>
+<td>HTTP GET stream, <code>resources/subscribe</code></td>
+<td>One <code>subscriptions/listen</code> stream, opted into per notification type</td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Table 3.1 — What changed in MCP revision 2026-07-28. Sources: the 2026-07-28 changelog, the versioning page and the release announcement.<sup class="footnote-ref"><a href="#fn10" id="fnref10:1">10:1</a></sup><sup class="footnote-ref"><a href="#fn12" id="fnref12:3">12:3</a></sup><sup class="footnote-ref"><a href="#fn9" id="fnref9:3">9:3</a></sup></em></p>
+<h2 id="what-servers-offer-tools-resources-and-prompts"><a class="anchor-link" href="#what-servers-offer-tools-resources-and-prompts">What servers offer: tools, resources and prompts</a></h2>
+<p>An MCP server can offer three kinds of thing, which the specification calls server <em>features</em>: “Resources: Context and data, for the user or the AI model to use”, “Prompts: Templated messages and workflows for users” and “Tools: Functions for the AI model to execute.”<sup class="footnote-ref"><a href="#fn2" id="fnref2:3">2:3</a></sup> The most useful way to tell them apart is to ask who decides when each is used. The specification answers that question for each one, and the answers differ.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Who decides when it’s used</th>
+<th>What it is</th>
+<th>Trailhead example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tool</td>
+<td>The model (“model-controlled”)</td>
+<td>A function with a name, description and input schema that the model can call</td>
+<td><code>search_products</code>, <code>get_order_status</code></td>
+</tr>
+<tr>
+<td>Resource</td>
+<td>The host application (“application-driven”)</td>
+<td>Data identified by a URI that the host can attach as context</td>
+<td><code>trailhead://policies/returns</code></td>
+</tr>
+<tr>
+<td>Prompt</td>
+<td>The user (“user-controlled”)</td>
+<td>A reusable message template, often surfaced as a slash command</td>
+<td><code>packing_list</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Table 3.2 — The three server features and who controls them. Sources: the specification’s tools, resources and prompts pages.<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup><sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup><sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup></em></p>
+<h3 id="tools"><a class="anchor-link" href="#tools">Tools</a></h3>
+<p>Tools are where the action is, and they are the one feature WebMCP adopted. The specification describes them as “designed to be model-controlled, meaning that the language model can discover and invoke tools automatically based on its contextual understanding and the user’s prompts.”<sup class="footnote-ref"><a href="#fn13" id="fnref13:1">13:1</a></sup> A client finds them with <code>tools/list</code> and calls one with <code>tools/call</code>.</p>
+<p>A tool definition has a <code>name</code>, an optional <code>title</code> for display, a <code>description</code>, an <code>inputSchema</code> and, optionally, an <code>outputSchema</code> and <code>annotations</code>.<sup class="footnote-ref"><a href="#fn13" id="fnref13:2">13:2</a></sup> A few rules are worth knowing before you design one.</p>
+<ul>
+<li><em>Names.</em> Tool names “SHOULD be between 1 and 128 characters in length” and should use only ASCII letters, digits, underscore, hyphen and full stop.<sup class="footnote-ref"><a href="#fn13" id="fnref13:3">13:3</a></sup> Those are the same characters WebMCP allows, which is no accident: a tool that moves between the two worlds keeps its name.</li>
+<li><em>Schemas.</em> The <code>inputSchema</code> is a JSON Schema object whose root is <code>type: &quot;object&quot;</code>, and it defaults to the 2020-12 dialect when no <code>$schema</code> is given.<sup class="footnote-ref"><a href="#fn13" id="fnref13:4">13:4</a></sup> The description and the per-property descriptions are, in practice, the documentation the model reads before deciding to call your tool.</li>
+<li><em>Structured results.</em> A tool can return <code>structuredContent</code>, any JSON value, alongside its ordinary <code>content</code> blocks. If the tool declares an <code>outputSchema</code>, “Servers MUST provide structured results that conform to this schema.” For compatibility, a tool that returns structured content “SHOULD also return the serialized JSON in a TextContent block.”<sup class="footnote-ref"><a href="#fn13" id="fnref13:5">13:5</a></sup></li>
+<li><em>Annotations.</em> Four optional hints describe a tool’s behaviour: <code>readOnlyHint</code> (“the tool does not modify its environment”), <code>destructiveHint</code>, <code>idempotentHint</code> and <code>openWorldHint</code> (whether the tool reaches out to “an ‘open world’ of external entities”).<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup> The defaults are cautious: unless told otherwise, a client should assume a tool may write, may destroy and may reach the outside world. And the hints are only hints. “For trust &amp; safety and security, clients MUST consider tool annotations to be untrusted unless they come from trusted servers.”<sup class="footnote-ref"><a href="#fn13" id="fnref13:6">13:6</a></sup> Chapter 6 shows how WebMCP took over <code>readOnlyHint</code> and added hints of its own, under the same caveat.</li>
+</ul>
+<p>Tools also have a clear model for failure, and it’s one of the more useful ideas WebMCP inherited. MCP distinguishes two kinds of error.<sup class="footnote-ref"><a href="#fn13" id="fnref13:7">13:7</a></sup> <em>Protocol errors</em> are for requests that are broken: an unknown tool, a malformed request, a server failure. They come back as JSON-RPC <code>error</code> objects. <em>Tool execution errors</em> are for things the model can fix: “Input validation errors (e.g., date in wrong format, value out of range)” and “Business logic errors”. They come back as an ordinary result with <code>isError: true</code> and a message the model can read, and the specification wants clients to pass them on: “Clients SHOULD provide tool execution errors to language models to enable self-correction.”<sup class="footnote-ref"><a href="#fn13" id="fnref13:8">13:8</a></sup> Chapter 5 makes the same argument for WebMCP tools, which return recoverable failures as values, and Chapter 11 turns it into a convention. Trailhead’s <code>get_order_status</code>, later in this chapter, does exactly this when an order ID doesn’t exist.</p>
+<p>Finally, the specification is firm about the human: “there SHOULD always be a human in the loop with the ability to deny tool invocations.” And servers must validate all tool inputs, implement access controls, rate-limit invocations and sanitize outputs.<sup class="footnote-ref"><a href="#fn13" id="fnref13:9">13:9</a></sup> Part IV applies the same discipline to tools that run inside a page.</p>
+<h3 id="resources-and-prompts"><a class="anchor-link" href="#resources-and-prompts">Resources and prompts</a></h3>
+<p><em>Resources</em> are data that a server makes available by URI: a file, a database record, a policy document. Unlike tools, they are “designed to be application-driven, with host applications determining how to incorporate context based on their needs.”<sup class="footnote-ref"><a href="#fn14" id="fnref14:1">14:1</a></sup> A host might show them in a picker for the user to attach, or include them automatically when they seem relevant. Trailhead’s server offers one, its returns policy, at <code>trailhead://policies/returns</code>.</p>
+<p><em>Prompts</em> are templates that a server offers and a user picks. The specification calls them “user-controlled, meaning they are exposed from servers to clients with the intention of the user being able to explicitly select them for use,” and suggests slash commands as a typical interface.<sup class="footnote-ref"><a href="#fn15" id="fnref15:1">15:1</a></sup> Trailhead’s <code>packing_list</code> prompt turns “Jotunheimen in October, three nights” into a ready-made request that tells the model to draft a packing list and use <code>search_products</code> for each item.</p>
+<p>Neither of these exists in WebMCP today. As Chapter 4 explains, WebMCP offers tools only; Chrome’s comparison guide says it “omits various server-side concepts, such as resources.”<sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup> That is one reason a site may want a backend MCP server even after it adopts WebMCP: resources and prompts are useful, and only MCP has them.</p>
+<h2 id="what-clients-offer-elicitation"><a class="anchor-link" href="#what-clients-offer-elicitation">What clients offer: elicitation</a></h2>
+<p>Capabilities flow the other way, too. The 2026-07-28 overview lists one client feature: “Elicitation: Server-initiated requests for additional information from users.”<sup class="footnote-ref"><a href="#fn2" id="fnref2:4">2:4</a></sup> It lets a server pause in the middle of handling a request to ask the user something, through the host’s own UI.</p>
+<p>Elicitation has two modes. In <em>form mode</em> the server sends a message and a JSON Schema for the answer, and the host renders a form. In <em>URL mode</em> the server sends the user to a web page, “for sensitive interactions that must not pass through the MCP client.”<sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup> The rules about which to use are strict. Servers “MUST NOT use form mode elicitation to request sensitive information such as passwords, API keys, access tokens, or payment credentials”, and must use URL mode for those. Clients, in turn, must make clear which server is asking, offer clear decline and cancel options, and, for URL mode, show the target domain and get the user’s consent before navigating.<sup class="footnote-ref"><a href="#fn18" id="fnref18:1">18:1</a></sup></p>
+<p>How a stateless protocol asks a question mid-call is one of the neater ideas in the new revision. In the old design, the server sent its own JSON-RPC request back to the client over an open stream, which forced long-lived connections. In 2026-07-28 servers never initiate requests at all.<sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup> Instead, the server <em>answers</em> the original request with a result whose <code>resultType</code> is <code>&quot;input_required&quot;</code>, carrying the questions it needs answered (for example an <code>elicitation/create</code> request). The client collects the answers and sends the original request again, as a new request with a new <code>id</code>, with the answers in <code>inputResponses</code>. The server can include an opaque <code>requestState</code> to pick up where it left off.<sup class="footnote-ref"><a href="#fn13" id="fnref13:10">13:10</a></sup> The specification calls this pattern <em>multi round-trip requests</em> (MRTR), and it is shown at the bottom right of Figure 3.2.</p>
+<p>Older tutorials also mention <em>sampling</em> (a server asking the host’s model for a completion) and <em>roots</em> (a server asking which directories it may use). Both are deprecated as of 2026-07-28, along with logging; new implementations “SHOULD NOT adopt” sampling, and deprecated features stay in the specification for at least twelve months.<sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup><sup class="footnote-ref"><a href="#fn9" id="fnref9:4">9:4</a></sup></p>
+<p>Elicitation is the MCP feature WebMCP most visibly lacks, and the gap is a live debate. Chrome’s tool-security page says “the spec draft includes <code>requestUserInteraction()</code> to asynchronously request user input at tool execution”,<sup class="footnote-ref"><a href="#fn21" id="fnref21">21</a></sup> but the WebMCP draft I checked today (dated 15 October 2026) contains no such method,<sup class="footnote-ref"><a href="#fn22" id="fnref22">22</a></sup> and the issue titled “WebMCP elicitation via requestUserInteraction()” is still open.<sup class="footnote-ref"><a href="#fn23" id="fnref23">23</a></sup> Chapter 13 takes up that thread; for now, note that MCP solved “ask the human” with a protocol message, while WebMCP sites today solve it with their own UI, as Fjord Table’s booking form, which the guest confirms on screen, does in Chapter 5.</p>
+<h2 id="building-trailheads-mcp-server"><a class="anchor-link" href="#building-trailheads-mcp-server">Building Trailhead’s MCP server</a></h2>
+<p>Time to build. Trailhead’s backend server is small on purpose. It offers the two tools from the book’s project list, <code>search_products</code> and <code>get_order_status</code>, plus the returns-policy resource and the packing-list prompt, so that you have seen all three server features in working code. It is written in plain JavaScript modules for Node.js, so it runs with no build step, and it uses the official MCP TypeScript SDK, which ships its own type definitions for anyone who prefers TypeScript.</p>
+<h3 id="the-sdk-version-2"><a class="anchor-link" href="#the-sdk-version-2">The SDK, version 2</a></h3>
+<p>The official SDK changed shape this year, and older tutorials will confuse you if you don’t know. Version 1 was a single package, <code>@modelcontextprotocol/sdk</code>. Version 2 splits it into separate packages, of which we need <code>@modelcontextprotocol/server</code>, <code>@modelcontextprotocol/client</code> and, for the Node HTTP adapter, <code>@modelcontextprotocol/node</code>. The server package’s README describes itself as “v2 of the MCP TypeScript SDK, the stable release line, implementing the 2026-07-28 MCP spec,” and says it “replaces the single <code>@modelcontextprotocol/sdk</code> package from v1.”<sup class="footnote-ref"><a href="#fn24" id="fnref24">24</a></sup> On 15 October 2026 the npm registry listed <code>@modelcontextprotocol/server</code> and <code>@modelcontextprotocol/client</code> at 2.3.1, <code>@modelcontextprotocol/node</code> at 2.1.1, and Zod, which the SDK uses for schemas, at 4.6.7.<sup class="footnote-ref"><a href="#fn24" id="fnref24:1">24:1</a></sup> Those are the exact versions the companion repository pins.</p>
+<p>Install them in an empty folder with <code>&quot;type&quot;: &quot;module&quot;</code> in its <code>package.json</code>:</p>
+<pre><code class="language-sh">npm install @modelcontextprotocol/server @modelcontextprotocol/client @modelcontextprotocol/node zod
+</code></pre>
+<h3 id="a-stand-in-backend"><a class="anchor-link" href="#a-stand-in-backend">A stand-in backend</a></h3>
+<p>Listing 3.2 is Trailhead’s “backend”: six products and two orders in memory. In a real store these would be calls to the catalogue and order services. Prices are whole kroner, and the <code>tags</code> give the keyword search something to match.</p>
+<figure class="code"><figcaption>Listing 3.2 — A stand-in for Trailhead’s product and order services (src/catalog.js)</figcaption>
+<pre><code class="language-js">// A stand-in for Trailhead's real product and order services.
+export const products = [
+  { sku: 'TH-TENT-001', name: 'Fjellheim 2 Tent', category: 'tents',
+    tags: ['2-person', 'tent', 'backpacking'], price: 3499, rating: 4.6, inStock: true },
+  { sku: 'TH-TENT-002', name: 'Lofoten 4 Dome Tent', category: 'tents',
+    tags: ['4-person', 'tent', 'family'], price: 5999, rating: 4.3, inStock: false },
+  { sku: 'TH-BAG-001', name: 'Polar Down Sleeping Bag -15', category: 'sleeping-bags',
+    tags: ['down', 'winter', 'sleeping bag'], price: 4299, rating: 4.8, inStock: true },
+  { sku: 'TH-PACK-001', name: 'Besseggen 45 L Backpack', category: 'backpacks',
+    tags: ['45l', 'hiking', 'backpack'], price: 1899, rating: 4.5, inStock: true },
+  { sku: 'TH-BOOT-001', name: 'Rondane GTX Hiking Boot', category: 'footwear',
+    tags: ['waterproof', 'hiking', 'boot'], price: 2499, rating: 4.4, inStock: true },
+  { sku: 'TH-SHELL-001', name: 'Vestland Rain Shell', category: 'clothing',
+    tags: ['waterproof', 'jacket', 'rain'], price: 2799, rating: 4.7, inStock: false }
+];
+
+export const orders = new Map([
+  ['TH-100231', { orderState: 'shipped', carrier: 'Posten', estimatedDelivery: '2026-10-17' }],
+  ['TH-100232', { orderState: 'processing', carrier: null, estimatedDelivery: '2026-10-21' }]
+]);
+</code></pre></figure>
+<h3 id="the-tools"><a class="anchor-link" href="#the-tools">The tools</a></h3>
+<p>Listing 3.3 registers the two tools. In SDK version 2, <code>registerTool()</code> takes a name, a configuration object and a handler, and the input schema is a Zod schema: “the only schema you write.” From it, the SDK “derives the JSON Schema the model sees, validates arguments before your handler runs, and infers the handler’s argument types.”<sup class="footnote-ref"><a href="#fn25" id="fnref25">25</a></sup></p>
+<figure class="code"><figcaption>Listing 3.3 — Trailhead’s two tools (src/tools.js)</figcaption>
+<pre><code class="language-js">import * as z from 'zod/v4';
+import { products, orders } from './catalog.js';
+
+const Product = z.object({
+  sku: z.string(),
+  name: z.string(),
+  price: z.object({ amount: z.number(), currency: z.literal('NOK') }),
+  rating: z.number(),
+  inStock: z.boolean()
+});
+
+export function registerTools(server) {
+  server.registerTool(
+    'search_products',
+    {
+      title: 'Search Trailhead products',
+      description:
+        'Search the Trailhead outdoor-gear catalogue by keywords, optionally ' +
+        'filtered by category, maximum price in NOK and stock. ' +
+        'Returns at most 10 products. Does not change anything.',
+      inputSchema: z.object({
+        query: z.string().min(1).describe('Keywords, e.g. &quot;2-person tent&quot;'),
+        category: z
+          .enum(['tents', 'sleeping-bags', 'backpacks', 'footwear', 'clothing'])
+          .optional(),
+        maxPrice: z.number().positive().optional().describe('Maximum price in NOK'),
+        inStockOnly: z.boolean().optional()
+      }),
+      outputSchema: z.object({ products: z.array(Product) }),
+      annotations: { readOnlyHint: true, openWorldHint: false }
+    },
+    async ({ query, category, maxPrice, inStockOnly }) =&gt; {
+      const words = query.toLowerCase().split(/\s+/);
+      const found = products
+        .filter((p) =&gt; {
+          const text = [p.name, p.category, ...p.tags].join(' ').toLowerCase();
+          return words.every((word) =&gt; text.includes(word));
+        })
+        .filter((p) =&gt; !category || p.category === category)
+        .filter((p) =&gt; maxPrice === undefined || p.price &lt;= maxPrice)
+        .filter((p) =&gt; !inStockOnly || p.inStock)
+        .slice(0, 10)
+        .map(({ sku, name, price, rating, inStock }) =&gt; ({
+          sku, name, price: { amount: price, currency: 'NOK' }, rating, inStock
+        }));
+
+      const output = { products: found };
+      return {
+        content: [{ type: 'text', text: JSON.stringify(output) }],
+        structuredContent: output
+      };
+    }
+  );
+
+  server.registerTool(
+    'get_order_status',
+    {
+      title: 'Get order status',
+      description:
+        'Look up the delivery status of a Trailhead order by its order ID ' +
+        '(format TH-123456). Does not change anything.',
+      inputSchema: z.object({
+        orderId: z.string().regex(/^TH-\d{6}$/).describe('Order ID, e.g. TH-100231')
+      }),
+      annotations: { readOnlyHint: true, openWorldHint: false }
+    },
+    async ({ orderId }) =&gt; {
+      const order = orders.get(orderId);
+      if (!order) {
+        // A recoverable failure: tell the model what went wrong, as a result.
+        return {
+          content: [{ type: 'text', text: `No order found with ID ${orderId}.` }],
+          isError: true
+        };
+      }
+      const output = { orderId, ...order };
+      return {
+        content: [{ type: 'text', text: JSON.stringify(output) }],
+        structuredContent: output
+      };
+    }
+  );
+}
+</code></pre></figure>
+<p>Most of Listing 3.3 is description and schema rather than logic, and that is the right proportion. A few details are deliberate.</p>
+<p><em>The descriptions say what the tool does not do.</em> Both end with “Does not change anything.” <code>readOnlyHint</code> says the same to the client, and <code>openWorldHint: false</code> says neither tool reaches beyond Trailhead’s systems. The sentence is for the model; the hint is for the host’s policy, which may distrust it.<sup class="footnote-ref"><a href="#fn13" id="fnref13:11">13:11</a></sup></p>
+<p><em>Every argument that has a format says so.</em> The <code>category</code> is an enum, <code>maxPrice</code> must be positive and is documented as kroner, and the order ID has a regular expression and an example. The SDK’s <code>.describe()</code> text survives the conversion into JSON Schema; its documentation calls it “the only documentation the model gets for that argument.”<sup class="footnote-ref"><a href="#fn25" id="fnref25:1">25:1</a></sup> You can see the result in the <code>tools/list</code> response: <code>&quot;pattern&quot;:&quot;^TH-\\d{6}$&quot;</code> and <code>&quot;description&quot;:&quot;Order ID, e.g. TH-100231&quot;</code>.</p>
+<p><em>Validation happens before the handler runs, and its failures are recoverable.</em> If a model sends <code>category: &quot;kayaks&quot;</code> or <code>orderId: &quot;12345&quot;</code>, the SDK rejects the call without running the handler and returns an ordinary result with <code>isError: true</code> and a message that begins “Input validation error”, which the model can read and correct.<sup class="footnote-ref"><a href="#fn25" id="fnref25:2">25:2</a></sup> The test suite checks both cases.</p>
+<p><em>A missing order is a result, not an exception.</em> When the ID is well formed but unknown, <code>get_order_status</code> returns <code>isError: true</code> with “No order found with ID TH-999999.” That is the tool execution error from the specification: a business-logic failure the model can explain to the user or retry, rather than a protocol error that tells it nothing.<sup class="footnote-ref"><a href="#fn13" id="fnref13:12">13:12</a></sup></p>
+<p><em>Two ways to report an outcome.</em> In Parts II and III, the book’s WebMCP tools report how a call went inside the result itself, as <code>{ status, code, message }</code>: <code>status</code> is <code>'error'</code>, <code>'refused'</code>, <code>'needs_input'</code> or <code>'cancelled_by_user'</code> when a call falls short, and a domain word such as <code>'booked'</code> when it succeeds. Chapter 11 explains that vocabulary. WebMCP needs it because a WebMCP result is just the value your function returns, with no failure flag around it, so the outcome has to travel in the data. An MCP result already has the flag, and MCP clients act on <code>isError</code>, so Trailhead’s server uses it and doesn’t repeat the outcome in the payload. One rule carries over unchanged: Chapter 11 reserves the name <code>status</code> for the outcome, so the order’s own state is <code>orderState</code>, just as the Helpdesk Widget’s tickets have a <code>ticketState</code>.</p>
+<p><em><code>search_products</code> returns both renderings.</em> It declares an <code>outputSchema</code> and returns the same data as <code>structuredContent</code> and as serialized JSON in a text block, as the specification recommends for compatibility.<sup class="footnote-ref"><a href="#fn13" id="fnref13:13">13:13</a></sup> The SDK validates <code>structuredContent</code> against <code>outputSchema</code> “before the result leaves your server.”<sup class="footnote-ref"><a href="#fn25" id="fnref25:3">25:3</a></sup> The output shape (<code>sku</code>, <code>name</code>, a <code>price</code> with <code>amount</code> and <code>currency: 'NOK'</code>, <code>rating</code>, <code>inStock</code>) is the same shape Trailhead’s WebMCP <code>search_products</code> tool returns in later chapters, so an agent sees the same product whichever door it comes through.</p>
+<p>Listing 3.3 deliberately leaves out authentication. In a real store, <code>get_order_status</code> must only reveal the caller’s own orders. On Streamable HTTP that is the job of MCP’s authorization framework, and the SDK hands the verified caller to your server factory as <code>authInfo</code>.<sup class="footnote-ref"><a href="#fn26" id="fnref26">26</a></sup> Trailhead’s website gets the same answer for free, because WebMCP tools run in the user’s logged-in session. That contrast is the heart of Chapter 4.</p>
+<h3 id="a-resource-and-a-prompt"><a class="anchor-link" href="#a-resource-and-a-prompt">A resource and a prompt</a></h3>
+<p>Listing 3.4 adds the other two server features. <code>registerResource()</code> takes a name, a URI, metadata and a read callback. <code>registerPrompt()</code> takes a name, a configuration with an <code>argsSchema</code>, and a callback that returns the messages. Prompt arguments arrive as strings, which is why <code>nights</code> is a string here.</p>
+<figure class="code"><figcaption>Listing 3.4 — The returns-policy resource and the packing-list prompt (src/context.js)</figcaption>
+<pre><code class="language-js">import * as z from 'zod/v4';
+
+const RETURNS_POLICY = `# Trailhead returns policy
+- Unused items can be returned within 60 days for a full refund.
+- Tents and sleeping bags that have been used can be returned within 30 days.
+- Returns are free with Posten from any post office in Norway.`;
+
+export function registerContext(server) {
+  // A resource: context the host or the user chooses to attach.
+  server.registerResource(
+    'returns-policy',
+    'trailhead://policies/returns',
+    {
+      title: 'Trailhead returns policy',
+      description: 'The current returns and refunds policy',
+      mimeType: 'text/markdown'
+    },
+    async (uri) =&gt; ({
+      contents: [{ uri: uri.href, mimeType: 'text/markdown', text: RETURNS_POLICY }]
+    })
+  );
+
+  // A prompt: a reusable starting point the user picks, e.g. as a slash command.
+  server.registerPrompt(
+    'packing_list',
+    {
+      title: 'Plan a packing list',
+      description: 'Draft a packing list for a trip using Trailhead gear',
+      argsSchema: z.object({
+        trip: z.string().describe('Where and when, e.g. &quot;Jotunheimen in October&quot;'),
+        nights: z.string().describe('Number of nights')
+      })
+    },
+    ({ trip, nights }) =&gt; ({
+      messages: [{
+        role: 'user',
+        content: {
+          type: 'text',
+          text:
+            `I'm going to ${trip} for ${nights} nights. Draft a packing list. ` +
+            'Use search_products to suggest in-stock Trailhead gear for each item.'
+        }
+      }]
+    })
+  );
+}
+</code></pre></figure>
+<h3 id="one-factory-two-transports"><a class="anchor-link" href="#one-factory-two-transports">One factory, two transports</a></h3>
+<p>Listing 3.5 wires the pieces together. The SDK’s serving entry points take a <em>factory</em>, a function that builds and returns a fully configured <code>McpServer</code>, rather than a server instance.</p>
+<figure class="code"><figcaption>Listing 3.5 — The server factory (src/server.js)</figcaption>
+<pre><code class="language-js">import { McpServer } from '@modelcontextprotocol/server';
+import { registerTools } from './tools.js';
+import { registerContext } from './context.js';
+
+// One factory builds a fully configured server instance.
+// The stdio and HTTP entry points both call it.
+export function createTrailheadServer() {
+  const server = new McpServer({ name: 'trailhead', version: '1.0.0' });
+  registerTools(server);
+  registerContext(server);
+  return server;
+}
+</code></pre></figure>
+<p>The reason for a factory becomes clear on HTTP. There, “The factory runs once per HTTP request: a fresh instance serves every request, and the handler holds nothing between requests.”<sup class="footnote-ref"><a href="#fn26" id="fnref26:1">26:1</a></sup> That is the stateless protocol from earlier in the chapter, made concrete in code: no instance outlives the request it serves, so there is nothing to share between servers behind a load balancer. The SDK’s advice follows from it: keep the factory cheap and side-effect free, and create connection pools and caches once at module scope.<sup class="footnote-ref"><a href="#fn26" id="fnref26:2">26:2</a></sup></p>
+<p>Listing 3.6 is the stdio entry point. <code>serveStdio()</code> owns the transport and calls the factory to build the instance that serves the connection.<sup class="footnote-ref"><a href="#fn27" id="fnref27">27</a></sup></p>
+<figure class="code"><figcaption>Listing 3.6 — Serving over stdio (src/stdio.js)</figcaption>
+<pre><code class="language-js">import { serveStdio } from '@modelcontextprotocol/server/stdio';
+import { createTrailheadServer } from './server.js';
+
+const handle = serveStdio(createTrailheadServer);
+
+// stdout carries JSON-RPC, so log to stderr.
+console.error('Trailhead MCP server running on stdio');
+process.on('SIGINT', () =&gt; void handle.close());
+</code></pre></figure>
+<p>The one line most worth remembering is the comment. On stdio, standard output <em>is</em> the protocol channel, so a stray <code>console.log()</code> puts a line that no JSON-RPC parser accepts into the stream the host is reading. The SDK’s documentation demonstrates exactly that failure and recommends logging with <code>console.error()</code>, which writes to stderr.<sup class="footnote-ref"><a href="#fn27" id="fnref27:1">27:1</a></sup> The stdio binding says the same thing in normative language.<sup class="footnote-ref"><a href="#fn7" id="fnref7:1">7:1</a></sup></p>
+<p>Listing 3.7 serves the same factory over Streamable HTTP on plain <code>node:http</code>. <code>createMcpHandler()</code> turns the factory into a handler, <code>toNodeHandler()</code> adapts it to Node’s request and response objects, and two guards from <code>@modelcontextprotocol/node</code> check the <code>Host</code> and <code>Origin</code> headers before the handler sees anything.</p>
+<figure class="code"><figcaption>Listing 3.7 — Serving over Streamable HTTP (src/http.js)</figcaption>
+<pre><code class="language-js">import { createServer } from 'node:http';
+import { createMcpHandler } from '@modelcontextprotocol/server';
+import {
+  toNodeHandler, localhostHostValidation, localhostOriginValidation
+} from '@modelcontextprotocol/node';
+import { createTrailheadServer } from './server.js';
+
+const PORT = Number(process.env.PORT ?? 3000);
+
+// The factory runs once per request, so the endpoint holds no state.
+const handler = createMcpHandler(createTrailheadServer);
+const nodeHandler = toNodeHandler(handler);
+const validateHost = localhostHostValidation();     // blocks DNS rebinding
+const validateOrigin = localhostOriginValidation();
+
+createServer((req, res) =&gt; {
+  if (!validateHost(req, res) || !validateOrigin(req, res)) return;
+  void nodeHandler(req, res);
+}).listen(PORT, '127.0.0.1', () =&gt; {
+  console.error(`Trailhead MCP server on http://127.0.0.1:${PORT}/mcp`);
+});
+</code></pre></figure>
+<p>Those two guards are not decoration. The SDK’s documentation is explicit that the handler “trusts its caller: it validates no <code>Host</code> header, no <code>Origin</code> header, and no token,” and that on a localhost bind the <code>Host</code> check “is what stops DNS rebinding, a malicious page resolving its own domain to 127.0.0.1 so the browser treats your local server as same-origin.”<sup class="footnote-ref"><a href="#fn26" id="fnref26:3">26:3</a></sup> The Streamable HTTP binding makes the same requirement normative: servers must validate <code>Origin</code> and should bind only to localhost when running locally.<sup class="footnote-ref"><a href="#fn8" id="fnref8:1">8:1</a></sup> The test suite sends a request with <code>Host: evil.example</code> and gets HTTP 403, as it should.</p>
+<p>The tests also turned up a detail of the new transport worth knowing if you ever debug MCP traffic with <code>curl</code>. A hand-written <code>server/discover</code> POST that carried the <code>MCP-Protocol-Version</code> header but not an <code>Mcp-Method</code> header was rejected with HTTP 400 and the message “the body names method server/discover but the required Mcp-Method header is absent”. That is the 2026-07-28 binding at work: every request must carry <code>Mcp-Method</code>, and requests that target a named tool, resource or prompt must also carry <code>Mcp-Name</code>, so that gateways can route and authorize on headers without parsing JSON.<sup class="footnote-ref"><a href="#fn8" id="fnref8:2">8:2</a></sup><sup class="footnote-ref"><a href="#fn9" id="fnref9:5">9:5</a></sup> SDK clients add the headers for you.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: the SDK speaks two eras, and chooses the old one by default</p>
+<p>Version 2 of the SDK supports both protocol eras from the same code, but it does not switch to the new one silently. Its migration guide says: “Nothing in v2 puts a 2026-07-28 byte on the wire by default: a hand-constructed <code>Client</code> / <code>Server</code> / <code>McpServer</code> keeps speaking the 2025-era protocol it was written for. Serving or speaking 2026-07-28 is always an explicit opt-in.”<sup class="footnote-ref"><a href="#fn28" id="fnref28">28</a></sup> On the server side, the opt-in is using the serving entry points: <code>createMcpHandler()</code> serves modern clients statelessly and, by default, also answers legacy <code>initialize</code> requests from a fresh instance with no sessions (<code>legacy: 'stateless'</code>); <code>legacy: 'reject'</code> makes an endpoint modern-only.<sup class="footnote-ref"><a href="#fn29" id="fnref29">29</a></sup> On the client side, the opt-in is <code>versionNegotiation</code>, covered next. Expect these defaults to move as legacy clients disappear, and check the SDK’s protocol-versions page before you rely on them.<sup class="footnote-ref"><a href="#fn30" id="fnref30">30</a></sup></p></aside>
+<h2 id="talking-to-the-server"><a class="anchor-link" href="#talking-to-the-server">Talking to the server</a></h2>
+<p>A server is only half of a conversation. This section talks to Trailhead’s server three ways: from an SDK client, from the MCP Inspector, and from an automated test suite.</p>
+<h3 id="an-sdk-client"><a class="anchor-link" href="#an-sdk-client">An SDK client</a></h3>
+<p>Listing 3.8 is a complete MCP client in a dozen lines. It launches the stdio server as a child process, lists the tools and calls <code>search_products</code> with the question from the start of the chapter.</p>
+<figure class="code"><figcaption>Listing 3.8 — A minimal client that asks Lars’s question (src/client.js)</figcaption>
+<pre><code class="language-js">import { Client } from '@modelcontextprotocol/client';
+import { StdioClientTransport } from '@modelcontextprotocol/client/stdio';
+
+const client = new Client(
+  { name: 'trailhead-cli', version: '1.0.0' },
+  { versionNegotiation: { mode: 'auto' } }   // try 2026-07-28, fall back if needed
+);
+
+await client.connect(new StdioClientTransport({ command: 'node', args: ['src/stdio.js'] }));
+console.log('Protocol era:', client.getProtocolEra());
+
+const { tools } = await client.listTools();
+console.log('Tools:', tools.map((t) =&gt; t.name).join(', '));
+
+const result = await client.callTool({
+  name: 'search_products',
+  arguments: { query: 'tent', maxPrice: 4000, inStockOnly: true }
+});
+console.log(JSON.stringify(result.structuredContent, null, 2));
+
+await client.close();
+</code></pre></figure>
+<p>The interesting option is <code>versionNegotiation: { mode: 'auto' }</code>. Without it, the client performs the 2025 <code>initialize</code> handshake “byte for byte”. With <code>'auto'</code>, it first probes the server with <code>server/discover</code> and connects on whichever era it finds, falling back to the handshake against a 2025-only server; <code>mode: { pin: '2026-07-28' }</code> refuses to fall back at all.<sup class="footnote-ref"><a href="#fn30" id="fnref30:1">30:1</a></sup> On stdio, the SDK runs that probe on a short-lived sibling process, because some legacy servers exit when they receive any request before <code>initialize</code>.<sup class="footnote-ref"><a href="#fn28" id="fnref28:1">28:1</a></sup></p>
+<p>Run it with <code>node src/client.js</code> and you get:</p>
+<pre><code class="language-text">Protocol era: modern
+Tools: search_products, get_order_status
+{
+  &quot;products&quot;: [
+    {
+      &quot;sku&quot;: &quot;TH-TENT-001&quot;,
+      &quot;name&quot;: &quot;Fjellheim 2 Tent&quot;,
+      &quot;price&quot;: {
+        &quot;amount&quot;: 3499,
+        &quot;currency&quot;: &quot;NOK&quot;
+      },
+      &quot;rating&quot;: 4.6,
+      &quot;inStock&quot;: true
+    }
+  ]
+}
+</code></pre>
+<p>Listing 3.9 shows what the client and server actually said to each other for Lars’s second question. Like Listing 3.1, it was captured from the stdio pipe by a small logging proxy in the repository, and the tests check that the listing still matches the live exchange.</p>
+<figure class="code"><figcaption>Listing 3.9 — A <code>tools/call</code> request and response, captured over stdio</figcaption>
+<pre><code class="language-json">{
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;id&quot;: 0,
+  &quot;method&quot;: &quot;tools/call&quot;,
+  &quot;params&quot;: {
+    &quot;name&quot;: &quot;get_order_status&quot;,
+    &quot;arguments&quot;: {
+      &quot;orderId&quot;: &quot;TH-100231&quot;
+    },
+    &quot;_meta&quot;: {
+      &quot;io.modelcontextprotocol/protocolVersion&quot;: &quot;2026-07-28&quot;,
+      &quot;io.modelcontextprotocol/clientInfo&quot;: {
+        &quot;name&quot;: &quot;trailhead-cli&quot;,
+        &quot;version&quot;: &quot;1.0.0&quot;
+      },
+      &quot;io.modelcontextprotocol/clientCapabilities&quot;: {}
+    }
+  }
+}
+
+{
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;id&quot;: 0,
+  &quot;result&quot;: {
+    &quot;content&quot;: [
+      {
+        &quot;type&quot;: &quot;text&quot;,
+        &quot;text&quot;: &quot;{\&quot;orderId\&quot;:\&quot;TH-100231\&quot;,\&quot;orderState\&quot;:\&quot;shipped\&quot;,\&quot;carrier\&quot;:\&quot;Posten\&quot;,\&quot;estimatedDelivery\&quot;:\&quot;2026-10-17\&quot;}&quot;
+      }
+    ],
+    &quot;structuredContent&quot;: {
+      &quot;orderId&quot;: &quot;TH-100231&quot;,
+      &quot;orderState&quot;: &quot;shipped&quot;,
+      &quot;carrier&quot;: &quot;Posten&quot;,
+      &quot;estimatedDelivery&quot;: &quot;2026-10-17&quot;
+    },
+    &quot;resultType&quot;: &quot;complete&quot;,
+    &quot;_meta&quot;: {
+      &quot;io.modelcontextprotocol/serverInfo&quot;: {
+        &quot;name&quot;: &quot;trailhead&quot;,
+        &quot;version&quot;: &quot;1.0.0&quot;
+      }
+    }
+  }
+}
+</code></pre></figure>
+<p>Every piece of the protocol from the first half of the chapter is visible here. The request carries the tool name, the arguments and the three <code>_meta</code> keys. The response carries the human-readable <code>content</code>, the machine-readable <code>structuredContent</code>, <code>resultType: &quot;complete&quot;</code> (as opposed to <code>&quot;input_required&quot;</code>), and the server’s identity in its own <code>_meta</code>. There is no session ID anywhere, and no earlier message this one depends on.</p>
+<h3 id="the-mcp-inspector"><a class="anchor-link" href="#the-mcp-inspector">The MCP Inspector</a></h3>
+<p>The MCP Inspector is the project’s own tool for poking at servers. Version 2.11.0, current on npm on 15 October 2026, has a web UI, a terminal UI and a command-line mode (<code>--web</code>, <code>--cli</code>, <code>--tui</code>).<sup class="footnote-ref"><a href="#fn31" id="fnref31">31</a></sup> <code>npx @modelcontextprotocol/inspector node src/stdio.js</code> (the repository’s <code>npm run inspect</code>) opens the web UI, where you can click through the tools.<sup class="footnote-ref"><a href="#fn27" id="fnref27:2">27:2</a></sup> For scripts and CI, the CLI mode is handier. Listing 3.10 lists Trailhead’s tools, calls one, reads the resource and renders the prompt, without configuring the server in any host.</p>
+<figure class="code"><figcaption>Listing 3.10 — Exercising the server with the Inspector CLI (scripts/inspect.sh)</figcaption>
+<pre><code class="language-sh"># List the tools (and check their schemas for portability problems)
+npx @modelcontextprotocol/inspector --cli node src/stdio.js \
+  --method tools/list --strict
+
+# Call a tool with arguments
+npx @modelcontextprotocol/inspector --cli node src/stdio.js \
+  --method tools/call --tool-name search_products \
+  --tool-arg query=tent maxPrice=4000 inStockOnly=true
+
+# Read the resource and render the prompt
+npx @modelcontextprotocol/inspector --cli node src/stdio.js \
+  --method resources/read --uri trailhead://policies/returns
+npx @modelcontextprotocol/inspector --cli node src/stdio.js \
+  --method prompts/get --prompt-name packing_list \
+  --prompt-args trip=&quot;Jotunheimen in October&quot; nights=3
+</code></pre></figure>
+<p>The <code>--strict</code> flag on <code>tools/list</code> reports schema portability problems; Trailhead’s schemas produced none. While testing, I also put the logging proxy between the Inspector and the server to see which protocol era it chose. Inspector CLI 2.11.0 opened with a 2025-11-25 <code>initialize</code> request, so it exercised the server’s legacy path, not the stateless one. That is a useful reminder that “the latest spec” and “what the tools in your toolbox speak” are different questions, and it is one more reason to keep the dual-era default on the server for now.</p>
+<h3 id="automated-tests"><a class="anchor-link" href="#automated-tests">Automated tests</a></h3>
+<p>The companion repository’s test suite, run with <code>npm test</code>, drives the server the way the SDK’s testing guide recommends: “through a real <code>Client</code>, in-process — no port, no socket, no mock transport,” by passing the HTTP handler’s <code>fetch</code> function straight to the client transport.<sup class="footnote-ref"><a href="#fn32" id="fnref32">32</a></sup> It then repeats the important checks over a real stdio child process, over a real HTTP port, and through the Inspector CLI. On Node.js 22 the suite runs eleven tests in under four seconds. They cover both eras over HTTP and stdio, every tool path (a match, filters, an empty result, two kinds of schema rejection, a found and a missing order), the resource and the prompt, the <code>Mcp-Method</code> header rule, the DNS-rebinding guard, Listing 3.8 run end to end, and the check that Listings 3.1 and 3.9 still match the live wire. All eleven passed for the versions pinned above.</p>
+<h2 id="mcp-apps-and-streaming-mcps-move-toward-ui"><a class="anchor-link" href="#mcp-apps-and-streaming-mcps-move-toward-ui">MCP Apps and streaming: MCP’s move toward UI</a></h2>
+<p>For most of its life MCP was a protocol for text and data. A tool returned words, numbers or JSON, and the host decided how to show them. Over the last year the protocol has been moving toward the user interface from two directions, and both are worth understanding before we meet WebMCP, which approaches the same problem from the opposite side.</p>
+<p>The first direction is <em>streaming</em>. On Streamable HTTP, a server can answer a request with a Server-Sent Events stream instead of a single JSON object, and send notifications such as <code>notifications/progress</code> before the final response, all scoped to that one request.<sup class="footnote-ref"><a href="#fn8" id="fnref8:3">8:3</a></sup> For a long-running tool, that turns a silent wait into a progress bar. In the 2026-07-28 design, the stream belongs to the request: closing it is itself the cancellation signal on HTTP, and long-lived change notifications, such as “the tool list changed”, have their own <code>subscriptions/listen</code> stream that a client opts into.<sup class="footnote-ref"><a href="#fn8" id="fnref8:4">8:4</a></sup><sup class="footnote-ref"><a href="#fn10" id="fnref10:2">10:2</a></sup></p>
+<p>The second direction is <em>MCP Apps</em>, an official extension that lets a server return a real, interactive interface. Its overview puts the motivation plainly: “Text responses can only go so far. Sometimes users need to interact with data, not just read about it. MCP Apps let servers return interactive HTML interfaces (data visualizations, forms, dashboards) that render directly in the chat.”<sup class="footnote-ref"><a href="#fn33" id="fnref33">33</a></sup> The mechanism reuses MCP’s own building blocks. A tool’s description includes a <code>_meta.ui.resourceUri</code> field pointing to a <code>ui://</code> resource; the host fetches that resource, an HTML page, and renders it, typically in a sandboxed iframe inside the conversation. The page and the host then talk over <code>postMessage</code> in “their own dialect of MCP”, so the app can call the server’s tools, send messages and update the model’s context.<sup class="footnote-ref"><a href="#fn33" id="fnref33:1">33:1</a></sup> Like every extension, MCP Apps is opt-in and negotiated: the client advertises the <code>io.modelcontextprotocol/ui</code> extension in its capabilities, and a party that doesn’t support an extension must fall back to core behaviour or reject the request.<sup class="footnote-ref"><a href="#fn12" id="fnref12:4">12:4</a></sup> The overview lists Claude, Claude Desktop, VS Code GitHub Copilot, Microsoft 365 Copilot, Goose, Postman, MCPJam and Archestra.AI as hosts that support it.<sup class="footnote-ref"><a href="#fn33" id="fnref33:2">33:2</a></sup></p>
+<p>For Trailhead, an MCP App could show a real comparison table of two tents, with photos and an “Add to cart” button, inside the chat: a small piece of Trailhead’s website carried into the conversation.</p>
+<p>WebMCP is the mirror image. MCP Apps bring the site’s UI into the agent’s conversation. WebMCP brings the agent’s tools into the site’s UI, the real one, in the user’s real tab. Chrome’s documentation frames the difference with a line used as the epigraph of Chapter 4: “Instead of your application being a guest within an agent, the agent is a guest on your platform.”<sup class="footnote-ref"><a href="#fn17" id="fnref17:1">17:1</a></sup> Both answers exist because both situations exist. When Lars is in his assistant, an MCP App is the best Trailhead can do. When Lars is on trailhead.example with the assistant panel open, the page itself can do better.</p>
+<h2 id="spec-versioning-what-2026-07-28-latest-means-for-authors"><a class="anchor-link" href="#spec-versioning-what-2026-07-28-latest-means-for-authors">Spec versioning: what “2026-07-28 (latest)” means for authors</a></h2>
+<p>If you write about MCP, as this book does, or build on it, you need to read its version numbers correctly, because they don’t mean what version numbers usually mean.</p>
+<p>An MCP version is a date, and the date marks a break, not a release. In the specification’s words, the identifier indicates “the last date backwards incompatible changes were made. The protocol version will not be incremented when the protocol is updated, as long as the changes maintain backwards compatibility.”<sup class="footnote-ref"><a href="#fn3" id="fnref3:1">3:1</a></sup> So “2026-07-28” is not a snapshot frozen on 28 July. It is the name of a protocol that may still receive compatible changes after that date.</p>
+<p>Revisions carry a status: <em>Draft</em> (“not yet ready for consumption”), <em>Current</em> (“ready for use and may continue to receive backwards compatible changes”) or <em>Final</em> (“past, complete specifications that will not be changed”). As of today, “The current protocol version is 2026-07-28.”<sup class="footnote-ref"><a href="#fn3" id="fnref3:2">3:2</a></sup> Individual features can also be marked <em>Deprecated</em>, and the policy gives you time to react: deprecated features “remain in the specification for at least twelve months, or at least ninety days under the policy’s expedited-removal exception, before they become eligible for removal.”<sup class="footnote-ref"><a href="#fn3" id="fnref3:3">3:3</a></sup> The release announcement describes that policy as giving developers “a twelve-month minimum window so you can plan upgrades instead of reacting to them.”<sup class="footnote-ref"><a href="#fn9" id="fnref9:6">9:6</a></sup></p>
+<p>Three practical consequences follow for anyone writing or reading about MCP.</p>
+<p><em>“Latest” is a moving link.</em> The address <code>modelcontextprotocol.io/specification/latest</code> redirected to the 2026-07-28 revision when I fetched it today. Next year it will point somewhere else. When you cite MCP, cite the dated URL, as the notes in this chapter do.</p>
+<p><em>Your toolchain may lag the spec.</em> The specification moved to stateless requests on 28 July 2026, and the release post says all four Tier 1 SDKs (TypeScript, Python, Go and C#) spoke the new revision on the day it shipped.<sup class="footnote-ref"><a href="#fn9" id="fnref9:7">9:7</a></sup> Yet, as we saw, the TypeScript SDK still defaults to the 2025 handshake unless you opt in, and the Inspector CLI current today opens with <code>initialize</code>. A server you write today should expect both eras for a while. Writing it with the SDK’s serving entry points, as Trailhead does, gets you that for free.</p>
+<p><em>Concepts outlive wire formats.</em> Between November 2025 and July 2026, MCP removed its handshake, its sessions and its server-initiated requests, yet its tools, with their names, descriptions, schemas, annotations and two kinds of error, barely changed. That is why this book compares MCP and WebMCP at the level of concepts.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: MCP after 2026-07-28</p>
+<p>The 2026-07-28 revision deprecated sampling, roots and logging, and formally deprecated the old HTTP+SSE transport and Dynamic Client Registration, all with year-long off-ramps.<sup class="footnote-ref"><a href="#fn9" id="fnref9:8">9:8</a></sup> Tasks, the mechanism for long-running operations, moved out of the core into the <code>io.modelcontextprotocol/tasks</code> extension, alongside MCP Apps.<sup class="footnote-ref"><a href="#fn10" id="fnref10:3">10:3</a></sup><sup class="footnote-ref"><a href="#fn34" id="fnref34">34</a></sup> On 22 August 2026 the project published a new roadmap covering the next specification release.<sup class="footnote-ref"><a href="#fn35" id="fnref35">35</a></sup> Treat every MCP detail in this chapter as accurate for revision 2026-07-28 and for the SDK versions named above, as checked on 15 October 2026, and check the changelog of whatever revision is current when you read this.</p></aside>
+<h2 id="from-a-backend-server-to-a-page"><a class="anchor-link" href="#from-a-backend-server-to-a-page">From a backend server to a page</a></h2>
+<p>Trailhead now has a working backend MCP server. It runs on Trailhead’s infrastructure or the user’s machine, speaks JSON-RPC, needs its own authorization, offers tools, a resource and a prompt, and knows nothing about what the user can see.</p>
+<p>Chapter 4 introduces WebMCP by changing one thing at a time. Keep the tools, with their names, descriptions, JSON Schemas, read-only hints and recoverable errors; you will recognise all of them in <code>document.modelContext.registerTool()</code>. Drop the wire protocol: there is no JSON-RPC in WebMCP, because the browser sits between the agent and the page. Drop the separate authorization: the tool runs in the user’s own logged-in tab. Drop resources, prompts and elicitation, at least for now. And add the one thing a backend server can never have, the page the user is looking at.</p>
+<p>The two will live side by side. Trailhead keeps the server from this chapter for assistants that are not in a browser, and in Part II and Part III it gains WebMCP tools for its React storefront: the same <code>search_products</code>, returning the same product shape, plus <code>compare_products</code>, <code>add_to_cart</code>, <code>get_cart</code> and a <code>checkout</code> that never completes without the user’s click. Chrome’s guidance recommends exactly that split: “Manage core logic with MCP” and “Build a contextual UI with WebMCP.”<sup class="footnote-ref"><a href="#fn17" id="fnref17:2">17:2</a></sup></p>
+<h2 id="chapter-summary"><a class="anchor-link" href="#chapter-summary">Chapter summary</a></h2>
+<ul>
+<li>MCP, open-sourced by Anthropic on 25 November 2024, standardizes how AI applications connect to tools and data. Its roles are the <em>host</em> (the AI application), one <em>client</em> per connection inside it, and <em>servers</em> that offer capabilities. Servers are kept isolated from the conversation and from each other.</li>
+<li>MCP messages are JSON-RPC 2.0 requests, responses and notifications, carried over <em>stdio</em> (for local servers) or <em>Streamable HTTP</em> (for remote ones).</li>
+<li>Revision 2026-07-28 made the protocol stateless. There is no <code>initialize</code> handshake and no session; every request carries its protocol version, client identity and capabilities in <code>_meta</code>, <code>server/discover</code> is available but optional, and any server instance can answer any request. Older “legacy” revisions still exist in the wild, and dual-era servers serve both.</li>
+<li>Servers offer <em>tools</em> (model-controlled), <em>resources</em> (application-driven) and <em>prompts</em> (user-controlled). Tools have names, descriptions, JSON Schema inputs, optional output schemas and structured content, untrusted behaviour hints, and two kinds of error: protocol errors and tool execution errors with <code>isError: true</code> that the model can learn from.</li>
+<li>Clients offer <em>elicitation</em>, in form or URL mode, which a stateless server reaches through multi round-trip requests (<code>resultType: &quot;input_required&quot;</code>). Sampling, roots and logging are deprecated.</li>
+<li>Trailhead’s backend server, built with version 2 of the official TypeScript SDK, registers <code>search_products</code> and <code>get_order_status</code> with Zod schemas, adds a resource and a prompt, and serves one factory over stdio and Streamable HTTP with Host and Origin checks. An SDK client, the Inspector CLI and eleven automated tests exercise it in both protocol eras.</li>
+<li>MCP is moving toward UI through request-scoped streaming and the MCP Apps extension, which renders a server’s HTML inside the host. WebMCP approaches the same goal from the other side, by bringing tools into the site’s own page.</li>
+<li>MCP versions are dates that mark the last breaking change. Cite dated URLs, expect toolchains to lag the specification, and keep comparisons at the level of concepts.</li>
+</ul>
+<h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>Anthropic, “Introducing the Model Context Protocol” (25 November 2024). <a href="https://www.anthropic.com/news/model-context-protocol">https://www.anthropic.com/news/model-context-protocol</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a> <a href="#fnref1:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>Model Context Protocol specification, revision 2026-07-28, Overview (“Overview”, “Key Details”, “Features”). <a href="https://modelcontextprotocol.io/specification/2026-07-28">https://modelcontextprotocol.io/specification/2026-07-28</a> <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a> <a href="#fnref2:2" class="footnote-backref">↩︎</a> <a href="#fnref2:3" class="footnote-backref">↩︎</a> <a href="#fnref2:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>Model Context Protocol, “Versioning” (revisions, feature states and deprecation; “The current protocol version is 2026-07-28”). <a href="https://modelcontextprotocol.io/docs/2026-07-28/learn/versioning">https://modelcontextprotocol.io/docs/2026-07-28/learn/versioning</a> <a href="#fnref3" class="footnote-backref">↩︎</a> <a href="#fnref3:1" class="footnote-backref">↩︎</a> <a href="#fnref3:2" class="footnote-backref">↩︎</a> <a href="#fnref3:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>Model Context Protocol specification 2026-07-28, “Architecture” (core components, design principles, capability negotiation). <a href="https://modelcontextprotocol.io/specification/2026-07-28/architecture">https://modelcontextprotocol.io/specification/2026-07-28/architecture</a> <a href="#fnref4" class="footnote-backref">↩︎</a> <a href="#fnref4:1" class="footnote-backref">↩︎</a> <a href="#fnref4:2" class="footnote-backref">↩︎</a> <a href="#fnref4:3" class="footnote-backref">↩︎</a> <a href="#fnref4:4" class="footnote-backref">↩︎</a> <a href="#fnref4:5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>JSON-RPC Working Group, “JSON-RPC 2.0 Specification” (origin date 26 March 2010, updated 4 January 2013). <a href="https://www.jsonrpc.org/specification">https://www.jsonrpc.org/specification</a> <a href="#fnref5" class="footnote-backref">↩︎</a> <a href="#fnref5:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>Model Context Protocol specification 2026-07-28, “Transports”. <a href="https://modelcontextprotocol.io/specification/2026-07-28/basic/transports">https://modelcontextprotocol.io/specification/2026-07-28/basic/transports</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>Model Context Protocol specification 2026-07-28, “stdio” transport binding. <a href="https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio">https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio</a> <a href="#fnref7" class="footnote-backref">↩︎</a> <a href="#fnref7:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>Model Context Protocol specification 2026-07-28, “Streamable HTTP” transport binding (security, sending and receiving messages, standard request headers). <a href="https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http">https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http</a> <a href="#fnref8" class="footnote-backref">↩︎</a> <a href="#fnref8:1" class="footnote-backref">↩︎</a> <a href="#fnref8:2" class="footnote-backref">↩︎</a> <a href="#fnref8:3" class="footnote-backref">↩︎</a> <a href="#fnref8:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p>Model Context Protocol Blog, “The 2026-07-28 Specification” (28 July 2026). <a href="https://blog.modelcontextprotocol.io/posts/2026-07-28/">https://blog.modelcontextprotocol.io/posts/2026-07-28/</a> <a href="#fnref9" class="footnote-backref">↩︎</a> <a href="#fnref9:1" class="footnote-backref">↩︎</a> <a href="#fnref9:2" class="footnote-backref">↩︎</a> <a href="#fnref9:3" class="footnote-backref">↩︎</a> <a href="#fnref9:4" class="footnote-backref">↩︎</a> <a href="#fnref9:5" class="footnote-backref">↩︎</a> <a href="#fnref9:6" class="footnote-backref">↩︎</a> <a href="#fnref9:7" class="footnote-backref">↩︎</a> <a href="#fnref9:8" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p>Model Context Protocol specification 2026-07-28, “Key Changes” (changelog since 2025-11-25). <a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog">https://modelcontextprotocol.io/specification/2026-07-28/changelog</a> <a href="#fnref10" class="footnote-backref">↩︎</a> <a href="#fnref10:1" class="footnote-backref">↩︎</a> <a href="#fnref10:2" class="footnote-backref">↩︎</a> <a href="#fnref10:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>Model Context Protocol specification 2026-07-28, “Overview” of the base protocol (<code>_meta</code> and its reserved keys). <a href="https://modelcontextprotocol.io/specification/2026-07-28/basic">https://modelcontextprotocol.io/specification/2026-07-28/basic</a> <a href="#fnref11" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>Model Context Protocol specification 2026-07-28, “Versioning and Compatibility” (protocol version negotiation, <code>server/discover</code>, extension negotiation, backward compatibility and the compatibility matrix). <a href="https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning">https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning</a> <a href="#fnref12" class="footnote-backref">↩︎</a> <a href="#fnref12:1" class="footnote-backref">↩︎</a> <a href="#fnref12:2" class="footnote-backref">↩︎</a> <a href="#fnref12:3" class="footnote-backref">↩︎</a> <a href="#fnref12:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>Model Context Protocol specification 2026-07-28, “Tools” (user interaction model, tool names, structured content, output schema, error handling, security considerations). <a href="https://modelcontextprotocol.io/specification/2026-07-28/server/tools">https://modelcontextprotocol.io/specification/2026-07-28/server/tools</a> <a href="#fnref13" class="footnote-backref">↩︎</a> <a href="#fnref13:1" class="footnote-backref">↩︎</a> <a href="#fnref13:2" class="footnote-backref">↩︎</a> <a href="#fnref13:3" class="footnote-backref">↩︎</a> <a href="#fnref13:4" class="footnote-backref">↩︎</a> <a href="#fnref13:5" class="footnote-backref">↩︎</a> <a href="#fnref13:6" class="footnote-backref">↩︎</a> <a href="#fnref13:7" class="footnote-backref">↩︎</a> <a href="#fnref13:8" class="footnote-backref">↩︎</a> <a href="#fnref13:9" class="footnote-backref">↩︎</a> <a href="#fnref13:10" class="footnote-backref">↩︎</a> <a href="#fnref13:11" class="footnote-backref">↩︎</a> <a href="#fnref13:12" class="footnote-backref">↩︎</a> <a href="#fnref13:13" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>Model Context Protocol specification 2026-07-28, “Resources”. <a href="https://modelcontextprotocol.io/specification/2026-07-28/server/resources">https://modelcontextprotocol.io/specification/2026-07-28/server/resources</a> <a href="#fnref14" class="footnote-backref">↩︎</a> <a href="#fnref14:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>Model Context Protocol specification 2026-07-28, “Prompts”. <a href="https://modelcontextprotocol.io/specification/2026-07-28/server/prompts">https://modelcontextprotocol.io/specification/2026-07-28/server/prompts</a> <a href="#fnref15" class="footnote-backref">↩︎</a> <a href="#fnref15:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn16" class="footnote-item"><p>Model Context Protocol, schema for revision 2026-07-28, <code>ToolAnnotations</code> interface (schema.ts). <a href="https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/schema/2026-07-28/schema.ts">https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/schema/2026-07-28/schema.ts</a> <a href="#fnref16" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn17" class="footnote-item"><p>Chrome for Developers, “WebMCP and MCP compared” (published 11 March 2026, updated 19 May 2026). <a href="https://developer.chrome.com/docs/ai/webmcp/compare-mcp">https://developer.chrome.com/docs/ai/webmcp/compare-mcp</a> <a href="#fnref17" class="footnote-backref">↩︎</a> <a href="#fnref17:1" class="footnote-backref">↩︎</a> <a href="#fnref17:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn18" class="footnote-item"><p>Model Context Protocol specification 2026-07-28, “Elicitation” (form and URL modes, user interaction model, capabilities). <a href="https://modelcontextprotocol.io/specification/2026-07-28/client/elicitation">https://modelcontextprotocol.io/specification/2026-07-28/client/elicitation</a> <a href="#fnref18" class="footnote-backref">↩︎</a> <a href="#fnref18:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn19" class="footnote-item"><p>Model Context Protocol specification 2026-07-28, “Message Patterns” (request and response, multi round-trip requests, subscribe and notify). <a href="https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns">https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns</a> <a href="#fnref19" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn20" class="footnote-item"><p>Model Context Protocol specification 2026-07-28, “Sampling” (deprecated as of 2026-07-28, SEP-2577). <a href="https://modelcontextprotocol.io/specification/2026-07-28/client/sampling">https://modelcontextprotocol.io/specification/2026-07-28/client/sampling</a> <a href="#fnref20" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn21" class="footnote-item"><p>Chrome for Developers, “WebMCP tool security” (“Next steps”). <a href="https://developer.chrome.com/docs/ai/webmcp/secure-tools">https://developer.chrome.com/docs/ai/webmcp/secure-tools</a> <a href="#fnref21" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn22" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026 (searched for <code>requestUserInteraction</code>; no occurrence). <a href="https://webmachinelearning.github.io/webmcp/">https://webmachinelearning.github.io/webmcp/</a> <a href="#fnref22" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn23" class="footnote-item"><p>webmachinelearning/webmcp issue #165, “WebMCP elicitation via requestUserInteraction() (was: Human in the Loop support for non-browser clients)” (open on 15 October 2026). <a href="https://github.com/webmachinelearning/webmcp/issues/165">https://github.com/webmachinelearning/webmcp/issues/165</a> <a href="#fnref23" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn24" class="footnote-item"><p>npm registry entries for <code>@modelcontextprotocol/server</code> (2.3.1), <code>@modelcontextprotocol/client</code> (2.3.1), <code>@modelcontextprotocol/node</code> (2.1.1) and <code>zod</code> (4.6.7), read with <code>npm view</code> on 15 October 2026, and the <code>@modelcontextprotocol/server</code> 2.3.1 README. <a href="https://www.npmjs.com/package/@modelcontextprotocol/server">https://www.npmjs.com/package/@modelcontextprotocol/server</a> <a href="#fnref24" class="footnote-backref">↩︎</a> <a href="#fnref24:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn25" class="footnote-item"><p>MCP TypeScript SDK v2 documentation, “Tools”. <a href="https://ts.sdk.modelcontextprotocol.io/v2/servers/tools">https://ts.sdk.modelcontextprotocol.io/v2/servers/tools</a> <a href="#fnref25" class="footnote-backref">↩︎</a> <a href="#fnref25:1" class="footnote-backref">↩︎</a> <a href="#fnref25:2" class="footnote-backref">↩︎</a> <a href="#fnref25:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn26" class="footnote-item"><p>MCP TypeScript SDK v2 documentation, “Serve over HTTP” (per-request factory, Host and Origin validation, passing authentication through). <a href="https://ts.sdk.modelcontextprotocol.io/v2/serving/http">https://ts.sdk.modelcontextprotocol.io/v2/serving/http</a> <a href="#fnref26" class="footnote-backref">↩︎</a> <a href="#fnref26:1" class="footnote-backref">↩︎</a> <a href="#fnref26:2" class="footnote-backref">↩︎</a> <a href="#fnref26:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn27" class="footnote-item"><p>MCP TypeScript SDK v2 documentation, “Serve over stdio”. <a href="https://ts.sdk.modelcontextprotocol.io/v2/serving/stdio">https://ts.sdk.modelcontextprotocol.io/v2/serving/stdio</a> <a href="#fnref27" class="footnote-backref">↩︎</a> <a href="#fnref27:1" class="footnote-backref">↩︎</a> <a href="#fnref27:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn28" class="footnote-item"><p>MCP TypeScript SDK v2 documentation, “Supporting protocol revision 2026-07-28”. <a href="https://ts.sdk.modelcontextprotocol.io/v2/migration/support-2026-07-28.html">https://ts.sdk.modelcontextprotocol.io/v2/migration/support-2026-07-28.html</a> <a href="#fnref28" class="footnote-backref">↩︎</a> <a href="#fnref28:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn29" class="footnote-item"><p>MCP TypeScript SDK v2 documentation, “Support legacy clients”. <a href="https://ts.sdk.modelcontextprotocol.io/v2/serving/legacy-clients.html">https://ts.sdk.modelcontextprotocol.io/v2/serving/legacy-clients.html</a> <a href="#fnref29" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn30" class="footnote-item"><p>MCP TypeScript SDK v2 documentation, “Protocol versions”. <a href="https://ts.sdk.modelcontextprotocol.io/v2/protocol-versions.html">https://ts.sdk.modelcontextprotocol.io/v2/protocol-versions.html</a> <a href="#fnref30" class="footnote-backref">↩︎</a> <a href="#fnref30:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn31" class="footnote-item"><p>npm registry, <code>@modelcontextprotocol/inspector</code> 2.11.0 (latest on 15 October 2026), and the output of <code>mcp-inspector --help</code> and <code>mcp-inspector --cli --help</code> for that version. <a href="https://www.npmjs.com/package/@modelcontextprotocol/inspector">https://www.npmjs.com/package/@modelcontextprotocol/inspector</a> <a href="#fnref31" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn32" class="footnote-item"><p>MCP TypeScript SDK v2 documentation, “Test a server”. <a href="https://ts.sdk.modelcontextprotocol.io/v2/testing.html">https://ts.sdk.modelcontextprotocol.io/v2/testing.html</a> <a href="#fnref32" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn33" class="footnote-item"><p>Model Context Protocol, “MCP Apps” (extension overview: how MCP Apps work, security model, client support). <a href="https://modelcontextprotocol.io/extensions/apps/overview">https://modelcontextprotocol.io/extensions/apps/overview</a> <a href="#fnref33" class="footnote-backref">↩︎</a> <a href="#fnref33:1" class="footnote-backref">↩︎</a> <a href="#fnref33:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn34" class="footnote-item"><p>Model Context Protocol, “Extensions” overview (identifiers and official extensions). <a href="https://modelcontextprotocol.io/extensions/overview">https://modelcontextprotocol.io/extensions/overview</a> <a href="#fnref34" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn35" class="footnote-item"><p>Model Context Protocol Blog, “The New MCP Roadmap” (22 August 2026). <a href="https://blog.modelcontextprotocol.io/posts/mcp-roadmap/">https://blog.modelcontextprotocol.io/posts/mcp-roadmap/</a> <a href="#fnref35" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="02-from-apis-to-tools.html">← Chapter 2: From APIs to Tools: A Short History</a>
+          <a class="pager-link" rel="next" href="04-enter-webmcp.html">Chapter 4: Enter WebMCP →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

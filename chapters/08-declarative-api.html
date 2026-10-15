@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chapter 8: The Declarative API: Forms as Tools — Tools, Not Clicks</title>
+  <meta name="description" content="Turning existing HTML forms into tools with attributes, and the events, submit handling and CSS hooks that support it. The chapter is explicit that this part has been taken out of the spec and is being explored separately.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Chapter 8: The Declarative API: Forms as Tools — Tools, Not Clicks">
+  <meta property="og:description" content="Turning existing HTML forms into tools with attributes, and the events, submit handling and CSS hooks that support it. The chapter is explicit that this part has been taken out of the spec and is being explored separately.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a class="is-current" aria-current="page" href="08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="../appendices/a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="../appendices/b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="../appendices/c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="../appendices/d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / Chapter 8 <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">chapter:</span> <span class="fm-v">08</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">II — The WebMCP API in Depth</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">41 min</span></p>
+        <h1>Chapter 8: The Declarative API: Forms as Tools</h1>
+        <p class="lead">Turning existing HTML forms into tools with attributes, and the events, submit handling and CSS hooks that support it. The chapter is explicit that this part has been taken out of the spec and is being explored separately.</p>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#a-form-is-already-a-tool">A form is already a tool</a></li><li><a href="#where-the-declarative-api-came-from">Where the declarative API came from</a></li><li><a href="#three-attributes">Three attributes</a></li><li><a href="#schema-synthesis-what-the-agent-actually-sees">Schema synthesis: what the agent actually sees</a></li><li><a href="#the-life-of-a-declarative-call">The life of a declarative call</a></li><li><a href="#submitting-the-persons-click-or-toolautosubmit">Submitting: the person’s click or toolautosubmit</a></li><li><a href="#answering-the-agent-agentinvoked-and-respondwith">Answering the agent: agentInvoked and respondWith()</a></li><li><a href="#answering-across-a-navigation-json-ld">Answering across a navigation: JSON-LD</a></li><li><a href="#events-toolactivated-and-toolcancel">Events: toolactivated and toolcancel</a></li><li><a href="#css-hooks-tool-form-active-and-tool-submit-active">CSS hooks: :tool-form-active and :tool-submit-active</a></li><li><a href="#validation-feedback-to-agents">Validation feedback to agents</a></li><li><a href="#limits-when-javascript-owns-the-form">Limits: when JavaScript owns the form</a></li><li><a href="#testing-declarative-tools">Testing declarative tools</a></li><li><a href="#fjord-table-so-far">Fjord Table so far</a></li><li><a href="#chapter-summary">Chapter summary</a></li><li><a href="#notes">Notes</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“Much of a site’s functionality is provided via semantic HTML elements like <code>&lt;form&gt;</code>, and its various inputs.”</em></p>
+<p>— WebMCP Declarative API Explainer<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<h2 id="a-form-is-already-a-tool"><a class="anchor-link" href="#a-form-is-already-a-tool">A form is already a tool</a></h2>
+<p>Look at Fjord Table’s booking page as an agent would. Long before anyone wrote <code>registerTool()</code>, the page already had a search form with a date field, a time field, a number of guests and a seating choice, plus a booking form that asks for the same things and a note for the kitchen. Each field has a name and a label, and some are marked <code>required</code> or limited with <code>min</code> and <code>max</code>. Each form has a submit button and does one job. That is most of what a tool definition contains: a name, a description, typed parameters with constraints, and an action. The declarative API asks whether you can say “this form is a tool” with a few HTML attributes and let the browser work out the rest.</p>
+<p>In Chrome’s implementation you can. Add <code>toolname</code> and <code>tooldescription</code> to a <code>&lt;form&gt;</code>, and the browser builds a tool definition from the form’s controls. When an agent calls the tool, the browser fills in the fields in front of the user and either waits for the user to press Submit or submits the form itself. Your page sees an ordinary <code>submit</code> event with one new property, <code>agentInvoked</code>, and can answer the agent through <code>respondWith()</code>. There are also two events for the start and end of a call and two CSS pseudo-classes for highlighting the form the agent is working on.<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup></p>
+<p>This chapter covers all of that, using Fjord Table’s two forms. It also covers something unusual for a book chapter. On 8 October 2026, the WebMCP specification removed the declarative API, six days before this chapter was written.<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup> The API still ships in Chrome, in the WebMCP origin trial and behind the testing flag, Chrome’s documentation still describes it and links the trial, and the Chrome team has said it plans to ship it “shortly after” the imperative API.<sup class="footnote-ref"><a href="#fn3" id="fnref3:1">3:1</a></sup> But no specification describes it now. That makes the browser’s behaviour the only reference, so I tested it. Everything marked <em>observed</em> in this chapter comes from Chromium 156.0.8078.4 with the <code>WebMCPTesting</code> feature enabled (the switch behind <code>chrome://flags/#enable-webmcp-testing</code>), run on 14 October 2026. Each observation is a test in the book’s companion repository, so you can check it against whatever Chrome you are running.<sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup></p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: out of the spec, still in Chrome</p>
+<p><em>The spec.</em> Pull request #338, “Remove declarative API from spec,” was opened on 7 October 2026 and merged on 8 October. It deleted the specification’s placeholder section on declarative WebMCP, which had been “entirely a TODO,” along with its two placeholder algorithms. It also rewrote the explainer’s README to say the API “is being explored separately” and “is not part of the specification at this time.”<sup class="footnote-ref"><a href="#fn3" id="fnref3:2">3:2</a></sup> The current draft, dated 15 October 2026, defines only <code>registerTool()</code>, <code>getTools()</code>, <code>executeTool()</code> and the tool events.<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup></p>
+<p><em>Chrome.</em> Chrome’s “Declarative API” page (last updated 25 September 2026) still documents every attribute, event and pseudo-class in this chapter, and Chrome’s WebMCP overview still lists a declarative demo.<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">2:1</a></sup><sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup> On 13 October 2026 the author of the removal PR, who also co-authors Chrome’s WebMCP documentation, added: “The Chrome team plans to ship the imperative API <strong>first</strong>, with the declarative API following shortly after.”<sup class="footnote-ref"><a href="#fn3" id="fnref3:3">3:3</a></sup></p>
+<p><em>What to do.</em> Use the attributes as a progressive enhancement on forms you already have, and treat every detail below as an implementation fact about Chromium 156, not as a standard. If you need guarantees, use the imperative API from Chapter 5. It can do everything in this chapter and more.</p></aside>
+<h2 id="where-the-declarative-api-came-from"><a class="anchor-link" href="#where-the-declarative-api-came-from">Where the declarative API came from</a></h2>
+<p>The idea is almost as old as WebMCP’s public repository. In September 2025, a month after the explainer repository opened, issue #22 asked why WebMCP was “being pursued exclusively as a JavaScript API,” and suggested that “simply adding a few attributes, combined with existing HTML semantics should do the trick for a lot of scenarios.” Its sketch used a <code>&lt;form&gt;</code> with <code>tool-name</code>, <code>tool-description</code> and a per-input <code>tool-prop-description</code>.<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup> A community pull request that month, #26, worked out a fuller proposal. According to its description, the design was shaped by building a real application and a polyfill during a hackathon.<sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup> The editors replaced it with their own Declarative API Explainer, pull request #76, which was merged on 9 March 2026.<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup></p>
+<p>The explainer states the motivation plainly. Not all site functionality is exposed through JavaScript functions, and the functions that are “take some effort to rewrite with an agent invoker in mind.” A great deal of a site’s functionality is in its forms. So the proposal has three parts: attributes that turn forms and their controls into tools, an algorithm that “compiles” a form into an input schema, and two ways to send a result back to the agent.<sup class="footnote-ref"><a href="#fn1" id="fnref1:1">1:1</a></sup></p>
+<p>There is a second reason the declarative API matters, which Chapter 4 touched on. WebKit’s objection to WebMCP is that a separate JavaScript layer for agents duplicates what HTML and ARIA already describe. Annotating the forms a site already has, so that people and agents use the same controls, is the closest WebMCP has come to meeting that objection. That is one reason to expect the idea to come back in some form even though it has left the spec.</p>
+<p>The removal itself was not a rejection. The specification never had a declarative algorithm, only placeholders. The explainer still admits that the schema-synthesis algorithms “are TBD,” and that “Chromium is implementing a loose version of this and will conduct testing/trials to see if what we’ve come up with should be supported by the community as a general approach.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:2">1:2</a></sup> Pull request #338 brought the spec into line with that: the imperative API is specified, and the declarative API is an experiment Chrome is running. The README now says it plainly: “Even if a declarative API is added, it would complement rather than replace the imperative API.”<sup class="footnote-ref"><a href="#fn3" id="fnref3:4">3:4</a></sup></p>
+<h2 id="three-attributes"><a class="anchor-link" href="#three-attributes">Three attributes</a></h2>
+<p>Here is Fjord Table’s search form as it was before anyone thought about agents. It submits to a results page with a GET request, uses native controls and labels every field.</p>
+<figure class="code"><figcaption>Listing 8.1 — Fjord Table’s search form, before (index.html)</figcaption>
+<pre><code class="language-html">&lt;form id=&quot;search-form&quot; class=&quot;search&quot; action=&quot;results.html&quot; method=&quot;get&quot;&gt;
+  &lt;label for=&quot;search-date&quot;&gt;Date&lt;/label&gt;
+  &lt;input id=&quot;search-date&quot; name=&quot;date&quot; type=&quot;date&quot; required&gt;
+  &lt;label for=&quot;search-time&quot;&gt;Preferred time&lt;/label&gt;
+  &lt;input id=&quot;search-time&quot; name=&quot;time&quot; type=&quot;time&quot;&gt;
+  &lt;label for=&quot;search-party&quot;&gt;Guests&lt;/label&gt;
+  &lt;input id=&quot;search-party&quot; name=&quot;partySize&quot; type=&quot;number&quot; min=&quot;1&quot; max=&quot;12&quot; required&gt;
+  &lt;label for=&quot;search-seating&quot;&gt;Seating&lt;/label&gt;
+  &lt;select id=&quot;search-seating&quot; name=&quot;seating&quot;&gt;
+    &lt;option value=&quot;&quot;&gt;No preference&lt;/option&gt;
+    &lt;option value=&quot;window&quot;&gt;By the window&lt;/option&gt;
+    &lt;option value=&quot;indoor&quot;&gt;Indoor&lt;/option&gt;
+    &lt;option value=&quot;terrace&quot;&gt;On the terrace&lt;/option&gt;
+  &lt;/select&gt;
+  &lt;button type=&quot;submit&quot;&gt;Find a table&lt;/button&gt;
+&lt;/form&gt;
+</code></pre></figure>
+<p>Listing 8.2 makes it a tool. The changes are three attributes on the <code>&lt;form&gt;</code> element and one on the time input.</p>
+<figure class="code"><figcaption>Listing 8.2 — The same form as a declarative tool (index.html)</figcaption>
+<pre><code class="language-html">&lt;form id=&quot;search-form&quot; class=&quot;search&quot; action=&quot;results.html&quot; method=&quot;get&quot;
+      toolname=&quot;search_availability&quot;
+      tooldescription=&quot;Find open tables at Fjord Table for a date, time and party size. Returns up to five nearby time slots. Does not make a booking.&quot;
+      toolautosubmit&gt;
+  &lt;label for=&quot;search-date&quot;&gt;Date&lt;/label&gt;
+  &lt;input id=&quot;search-date&quot; name=&quot;date&quot; type=&quot;date&quot; required&gt;
+  &lt;label for=&quot;search-time&quot;&gt;Preferred time&lt;/label&gt;
+  &lt;input id=&quot;search-time&quot; name=&quot;time&quot; type=&quot;time&quot;
+         toolparamdescription=&quot;Preferred time, 24h HH:MM. Leave out for any time.&quot;&gt;
+  &lt;label for=&quot;search-party&quot;&gt;Guests&lt;/label&gt;
+  &lt;input id=&quot;search-party&quot; name=&quot;partySize&quot; type=&quot;number&quot; min=&quot;1&quot; max=&quot;12&quot; required&gt;
+  &lt;label for=&quot;search-seating&quot;&gt;Seating&lt;/label&gt;
+  &lt;select id=&quot;search-seating&quot; name=&quot;seating&quot;&gt;
+    &lt;option value=&quot;&quot;&gt;No preference&lt;/option&gt;
+    &lt;option value=&quot;window&quot;&gt;By the window&lt;/option&gt;
+    &lt;option value=&quot;indoor&quot;&gt;Indoor&lt;/option&gt;
+    &lt;option value=&quot;terrace&quot;&gt;On the terrace&lt;/option&gt;
+  &lt;/select&gt;
+  &lt;button type=&quot;submit&quot;&gt;Find a table&lt;/button&gt;
+&lt;/form&gt;
+</code></pre></figure>
+<p><strong><code>toolname</code></strong> is the tool’s name. It plays the role of <code>name</code> in <code>registerTool()</code>, and the explainer calls the two analogous.<sup class="footnote-ref"><a href="#fn1" id="fnref1:3">1:3</a></sup> Use the same naming rules as Chapter 5: ASCII letters, digits, underscores, hyphens and dots, unique within the document. That isn’t just good style. In Chromium 156, a form whose <code>toolname</code> was <code>bad name!</code>, or which reused a name another tool already had, simply was not registered (observed).<sup class="footnote-ref"><a href="#fn4" id="fnref4:1">4:1</a></sup> Nothing told the page. With <code>registerTool()</code> the same mistakes reject with an <code>InvalidStateError</code> you can catch (Chapter 5). For forms, how registration failures should be reported is still an open question, issue #182, which suggests a future <code>toolerror</code> event.<sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup> Until then, check <code>getTools()</code> in development, as the tests for this chapter do.</p>
+<p><strong><code>tooldescription</code></strong> plays the role of <code>description</code>, and everything Chapter 5 said about descriptions applies: say what the tool does, what it returns, and what it does not do. Chrome’s guide says that removing either <code>toolname</code> or <code>tooldescription</code> unregisters the tool.<sup class="footnote-ref"><a href="#fn2" id="fnref2:2">2:2</a></sup> Chromium 156 behaved that way when I removed <code>toolname</code>. It did not when I set <code>tooldescription</code> to an empty string. A form with <code>tooldescription=&quot;&quot;</code> stayed registered (observed), even though <code>registerTool()</code> rejects an empty description.<sup class="footnote-ref"><a href="#fn4" id="fnref4:2">4:2</a></sup> Don’t rely on either behaviour. Write a real description.</p>
+<p><strong><code>toolautosubmit</code></strong> is a boolean attribute. It lets the browser submit the form after filling it in. We come back to it below, because it is the most important decision in this chapter.</p>
+<p><strong><code>toolparamdescription</code></strong> goes on an individual control and becomes that parameter’s <code>description</code> in the generated schema.<sup class="footnote-ref"><a href="#fn1" id="fnref1:4">1:4</a></sup> You rarely need it, because the browser reuses what the form already says. Chrome’s guide says that without the attribute, the browser uses the text of the control’s <code>&lt;label&gt;</code>, and if there is no label, its <code>aria-description</code>.<sup class="footnote-ref"><a href="#fn2" id="fnref2:3">2:3</a></sup> Chromium 156 followed that order (observed): <code>toolparamdescription</code> first, then the label, then <code>aria-description</code>. It ignored <code>placeholder</code> and <code>title</code>.<sup class="footnote-ref"><a href="#fn4" id="fnref4:3">4:3</a></sup> In Listing 8.2 the date, guests and seating fields are described by their labels. The time field gets an explicit description because the label “Preferred time” doesn’t tell an agent the format, or that the field can be left out.</p>
+<p>That is the whole registration API. There is no script and no <code>await</code>, and nothing needs feature detection. A browser without WebMCP ignores attributes it doesn’t know, and the form behaves exactly as before. The demo’s tests check that in a plain Chromium build: the page loads with no errors, <code>'agentInvoked' in SubmitEvent.prototype</code> is <code>false</code>, and a person can search and book as usual.<sup class="footnote-ref"><a href="#fn4" id="fnref4:4">4:4</a></sup></p>
+<p>Because the tool is the form, its lifetime is the form’s lifetime. Insert a form with the attributes and a tool appears. Remove the form, or remove one of its attributes, and the tool goes away. Chrome’s best-practices guide presents this as the declarative version of dynamic registration: you manage which tools exist “by adding or removing the tool attributes on a form.”<sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup> In Chromium 156, adding and removing tool forms also fired the <code>toolchange</code> event on <code>document.modelContext</code> that Chapter 6 uses to keep agents in sync (observed).<sup class="footnote-ref"><a href="#fn4" id="fnref4:5">4:5</a></sup></p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: titles and names</p>
+<p>The tool definitions Chromium 156 built from forms had an empty <code>title</code> (observed). Chapter 5 introduced <code>title</code> as the human-readable label for a tool. The explainer and Chrome’s guide define no attribute for it. In my tests, Chromium also read an undocumented <code>tooltitle</code> attribute into the title.<sup class="footnote-ref"><a href="#fn4" id="fnref4:6">4:6</a></sup> Because nothing documents it, I haven’t used it in Fjord Table. Early proposals spelled the attributes <code>tool-name</code> and <code>tool-description</code>, with hyphens.<sup class="footnote-ref"><a href="#fn7" id="fnref7:1">7:1</a></sup><sup class="footnote-ref"><a href="#fn8" id="fnref8:1">8:1</a></sup> The explainer and Chrome use <code>toolname</code> and <code>tooldescription</code>.<sup class="footnote-ref"><a href="#fn1" id="fnref1:5">1:5</a></sup><sup class="footnote-ref"><a href="#fn2" id="fnref2:4">2:4</a></sup></p></aside>
+<h2 id="schema-synthesis-what-the-agent-actually-sees"><a class="anchor-link" href="#schema-synthesis-what-the-agent-actually-sees">Schema synthesis: what the agent actually sees</a></h2>
+<p>An agent never sees your HTML. It sees a name, a description and a JSON Schema, the same shape it gets from <code>registerTool()</code>. For a declarative tool, the browser writes the schema. This is the part of the API the explainer calls “TBD,” so the only way to know what agents receive is to ask the browser.<sup class="footnote-ref"><a href="#fn1" id="fnref1:6">1:6</a></sup> <code>document.modelContext.getTools()</code> returns declarative tools alongside imperative ones, with <code>inputSchema</code> as an object, so the check takes one line in DevTools. Listing 8.3 is what Chromium 156 produced for Listing 8.2, unedited.</p>
+<figure class="code"><figcaption>Listing 8.3 — The input schema Chromium 156 synthesized for Listing 8.2 (from <code>getTools()</code>)</figcaption>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;properties&quot;: {
+    &quot;date&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;format&quot;: &quot;date&quot;,
+      &quot;description&quot;: &quot;Date (Dates MUST be provided in 'YYYY-MM-DD' format.)&quot;
+    },
+    &quot;time&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;format&quot;: &quot;^([01][0-9]|2[0-3]):[0-5][0-9]$&quot;,
+      &quot;description&quot;: &quot;Preferred time, 24h HH:MM. Leave out for any time.&quot;
+    },
+    &quot;partySize&quot;: {
+      &quot;type&quot;: &quot;number&quot;,
+      &quot;minimum&quot;: 1,
+      &quot;maximum&quot;: 12,
+      &quot;multipleOf&quot;: 1,
+      &quot;description&quot;: &quot;Guests&quot;
+    },
+    &quot;seating&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;,
+          &quot;const&quot;: &quot;&quot;,
+          &quot;title&quot;: &quot;No preference&quot;
+        },
+        {
+          &quot;type&quot;: &quot;string&quot;,
+          &quot;const&quot;: &quot;window&quot;,
+          &quot;title&quot;: &quot;By the window&quot;
+        },
+        {
+          &quot;type&quot;: &quot;string&quot;,
+          &quot;const&quot;: &quot;indoor&quot;,
+          &quot;title&quot;: &quot;Indoor&quot;
+        },
+        {
+          &quot;type&quot;: &quot;string&quot;,
+          &quot;const&quot;: &quot;terrace&quot;,
+          &quot;title&quot;: &quot;On the terrace&quot;
+        }
+      ],
+      &quot;enum&quot;: [
+        &quot;&quot;,
+        &quot;window&quot;,
+        &quot;indoor&quot;,
+        &quot;terrace&quot;
+      ],
+      &quot;description&quot;: &quot;Seating&quot;
+    }
+  },
+  &quot;required&quot;: [
+    &quot;date&quot;,
+    &quot;partySize&quot;
+  ]
+}
+</code></pre></figure>
+<figure class="book-figure"><img decoding="async" src="08-declarative-api/images/figure-8-1.png" alt="Figure 8.1 — How a form becomes a tool: each part of the HTML on the left and what Chromium 156 put into the tool definition on the right." /><figcaption>Figure 8.1 — From form to tool. The attribute and HTML constraints on the left become the name, description and JSON Schema on the right. The notes under each row record what else Chromium 156 did with similar controls.</figcaption></figure>
+<p>Most of this is what you would hope for. The <code>required</code> attributes became the schema’s <code>required</code> list. <code>min</code> and <code>max</code> became <code>minimum</code> and <code>maximum</code>. The <code>&lt;select&gt;</code> became an <code>enum</code> of its option values plus an <code>anyOf</code> list that pairs each value with its visible text as a <code>title</code>. Chapter 11 returns to that pattern for enums, because the agent sees both what to send and what it means. The labels became descriptions. Table 8.1 summarizes what I observed for other controls.</p>
+<p><strong>Table 8.1 — How Chromium 156 mapped form controls to JSON Schema (observed, 14 October 2026)</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>In the form</th>
+<th>In the synthesized schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>type=&quot;text&quot;</code>, <code>email</code>, <code>url</code>, <code>tel</code>, <code>&lt;textarea&gt;</code></td>
+<td><code>&quot;type&quot;: &quot;string&quot;</code>. <code>pattern</code> is copied; <code>minlength</code>, <code>maxlength</code> and the email/URL type are not</td>
+</tr>
+<tr>
+<td><code>type=&quot;date&quot;</code></td>
+<td><code>&quot;type&quot;: &quot;string&quot;, &quot;format&quot;: &quot;date&quot;</code>, plus “(Dates MUST be provided in 'YYYY-MM-DD' format.)” added to the description</td>
+</tr>
+<tr>
+<td><code>type=&quot;time&quot;</code>, <code>datetime-local</code>, <code>color</code></td>
+<td><code>&quot;type&quot;: &quot;string&quot;</code> with a regular expression in <code>&quot;format&quot;</code></td>
+</tr>
+<tr>
+<td><code>type=&quot;number&quot;</code>, <code>type=&quot;range&quot;</code></td>
+<td><code>&quot;type&quot;: &quot;number&quot;</code> with <code>minimum</code>, <code>maximum</code>, and <code>multipleOf</code> from <code>step</code> (1 by default)</td>
+</tr>
+<tr>
+<td><code>type=&quot;checkbox&quot;</code> (single)</td>
+<td><code>&quot;type&quot;: &quot;boolean&quot;</code></td>
+</tr>
+<tr>
+<td>Checkboxes sharing a name; <code>&lt;select multiple&gt;</code></td>
+<td><code>&quot;type&quot;: &quot;array&quot;</code> of an enum, with <code>&quot;uniqueItems&quot;: true</code></td>
+</tr>
+<tr>
+<td>Radio group; <code>&lt;select&gt;</code></td>
+<td><code>enum</code> of the values plus <code>anyOf</code> with each value’s label or option text as <code>title</code></td>
+</tr>
+<tr>
+<td><code>required</code></td>
+<td>Listed in <code>required</code></td>
+</tr>
+<tr>
+<td>A control outside the form with <code>form=&quot;…&quot;</code></td>
+<td>Included</td>
+</tr>
+<tr>
+<td><code>disabled</code>, <code>readonly</code>, <code>type=&quot;hidden&quot;</code>, <code>type=&quot;file&quot;</code>, form-associated custom elements</td>
+<td>Left out</td>
+</tr>
+</tbody>
+</table></div>
+<p>Source: the probes and tests in this chapter’s folder of the companion repository.<sup class="footnote-ref"><a href="#fn4" id="fnref4:7">4:7</a></sup></p>
+<p>A few of these details matter in practice.</p>
+<p><em>Times end up in the wrong keyword.</em> In JSON Schema, <code>format</code> takes the name of a defined format such as <code>date</code>, <code>time</code> or <code>date-time</code>, and a regular expression belongs in <code>pattern</code>.<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup> For <code>time</code>, <code>datetime-local</code> and <code>color</code> inputs, Chromium 156 put the regular expression in <code>format</code>. A model reading the schema will probably still understand it, but a validator will not. It is one reason Listing 8.2 describes the time format in words with <code>toolparamdescription</code>.</p>
+<p><em>Numbers are numbers.</em> A <code>type=&quot;number&quot;</code> input becomes <code>&quot;type&quot;: &quot;number&quot;</code> with <code>&quot;multipleOf&quot;: 1</code>, not <code>&quot;type&quot;: &quot;integer&quot;</code>. That means the same thing, but it is not how you would write it by hand. The browser also accepted the string <code>&quot;4&quot;</code> for <code>partySize</code> (observed), which makes sense because every form field holds a string in the end. Your submit handler should convert values itself, as Listing 8.5 does with <code>Number()</code>.</p>
+<p><em>Your empty option is part of the enum.</em> The “No preference” option has the value <code>&quot;&quot;</code>, so <code>&quot;&quot;</code> is a valid seating value in the schema. That is accurate: it is how a person says “no preference” in this form. Chapter 11 would probably make the parameter optional and leave the empty value out. A declarative tool can’t, because the schema always follows the form.</p>
+<p><em>Lengths are lost.</em> <code>maxlength=&quot;200&quot;</code> on the booking form’s notes field doesn’t appear in its schema. The browser still enforces it when the form is submitted, because every constraint the form has is checked then, whether or not the schema shows it.<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup></p>
+<p>One difference from the imperative API is worth knowing. For imperative tools, Chapter 5 found that the browser passes arguments to your <code>execute</code> callback without checking them against your schema. For declarative tools, Chromium checks arguments against what the form can hold before it fills anything in (observed).<sup class="footnote-ref"><a href="#fn4" id="fnref4:8">4:8</a></sup> A parameter the form doesn’t have was rejected with <code>Input contains a parameter &quot;guests&quot; but there is no such parameter for the tool</code>. A value that is not one of a select’s options was rejected with <code>Invalid value &quot;rooftop&quot; for parameter seating</code>, and a date the date input couldn’t parse was rejected the same way. That is useful, but it is not validation of your business rules, as the section on validation below shows.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: schema synthesis</p>
+<p>Everything in Table 8.1 is Chromium’s current behaviour. The explainer says that precisely how controls “reduce to a JSON Schema that includes <code>anyOf</code>, <code>oneOf</code>, and <code>maximum</code>/<code>minimum</code> declarations” has yet to be specified.<sup class="footnote-ref"><a href="#fn1" id="fnref1:7">1:7</a></sup> Expect it to change, check <code>getTools()</code> after each Chrome update, and keep any test that compares a synthesized schema with a stored copy, like the one behind Listing 8.3, in your test suite. It is the earliest warning you will get.</p></aside>
+<h2 id="the-life-of-a-declarative-call"><a class="anchor-link" href="#the-life-of-a-declarative-call">The life of a declarative call</a></h2>
+<p>With the tool registered, here is what happens when an agent calls it. Figure 8.2 shows the steps, and the rest of the chapter takes them one at a time.</p>
+<figure class="book-figure"><img decoding="async" src="08-declarative-api/images/figure-8-2.png" alt="Figure 8.2 — A declarative tool call in Chromium 156, from discovery to result, including the two ways a call can be canceled." /><figcaption>Figure 8.2 — The person, the page, the browser and the agent during one declarative call. Solid arrows are the normal path; dashed arrows are alternatives: the browser submitting on its own with <code>toolautosubmit</code>, and cancellation by the agent or by the page.</figcaption></figure>
+<ol>
+<li><strong>Discover.</strong> The agent sees the tool’s name, description and synthesized schema, like any other tool. Chrome’s DevTools Protocol also shows tools to debugging clients, and there declarative tools have an <code>autosubmit</code> annotation when the form has <code>toolautosubmit</code>.<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup></li>
+<li><strong>Call.</strong> The agent sends arguments. The browser checks them against the form, as described above, and rejects anything the form can’t hold.</li>
+<li><strong>Fill.</strong> The browser writes the values into the controls. Chrome’s guide says it “brings the form into focus and populates its field” and that “the form remains visible to the user.”<sup class="footnote-ref"><a href="#fn2" id="fnref2:5">2:5</a></sup> In Chromium 156, each filled field fired trusted <code>input</code> and <code>change</code> events, so code that listens for user input sees the agent’s input the same way (observed). The browser then fires <code>toolactivated</code> at <code>document.modelContext</code>, starts matching <code>:tool-form-active</code> and <code>:tool-submit-active</code>, and moves focus to the submit button.<sup class="footnote-ref"><a href="#fn4" id="fnref4:9">4:9</a></sup></li>
+<li><strong>Submit.</strong> Without <code>toolautosubmit</code>, nothing else happens until the person presses Submit. With it, the browser submits the form, first running the form’s constraint validation.</li>
+<li><strong>Respond.</strong> Your <code>submit</code> handler runs with <code>event.agentInvoked === true</code>. Either it calls <code>preventDefault()</code> and passes the result to <code>event.respondWith()</code>, or the form navigates and the agent gets structured data from the next page.</li>
+<li><strong>Or cancel.</strong> The agent can cancel the call. The page can cancel it too, by resetting the form or removing it.</li>
+</ol>
+<p>The rest of this chapter follows those steps for Fjord Table.</p>
+<h2 id="submitting-the-persons-click-or-toolautosubmit"><a class="anchor-link" href="#submitting-the-persons-click-or-toolautosubmit">Submitting: the person’s click or <code>toolautosubmit</code></a></h2>
+<p>The explainer describes <code>toolautosubmit</code> as letting the agent “submit the form on the user’s behalf after filling it out, without requiring the user to check it manually before submitting.” Without the attribute, “the browser brings the submit button into focus, and the agent should then tell the user to check the form contents, and submit it manually.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:8">1:8</a></sup></p>
+<p>Chrome’s own declarative demo, a restaurant called Le Petit Bistro, leaves the attribute off by default and offers <code>toolautosubmit</code> as a variation.<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup> That gives the declarative API a confirmation step built in. A form without <code>toolautosubmit</code> can’t complete a call until a person presses its submit button. The rule for choosing is short. Use <code>toolautosubmit</code> for forms that only read: search, filter, look up. Leave it off any form that changes something, such as booking, buying, sending or deleting. In Chapter 5, <code>book_table</code> needed a confirmation dialog in the site’s own UI. Here the booking form itself does that job.</p>
+<figure class="code"><figcaption>Listing 8.4 — The booking form as a declarative tool, without <code>toolautosubmit</code> (index.html)</figcaption>
+<pre><code class="language-html">&lt;form id=&quot;book-form&quot; class=&quot;booking&quot;
+      toolname=&quot;book_table&quot;
+      tooldescription=&quot;Fill in a table booking at Fjord Table for the signed-in guest. The guest checks the details and presses Book table to confirm. Nothing is booked until they do.&quot;&gt;
+  &lt;label for=&quot;book-date&quot;&gt;Date&lt;/label&gt;
+  &lt;input id=&quot;book-date&quot; name=&quot;date&quot; type=&quot;date&quot; required&gt;
+  &lt;label for=&quot;book-time&quot;&gt;Time&lt;/label&gt;
+  &lt;input id=&quot;book-time&quot; name=&quot;time&quot; type=&quot;time&quot; required
+         toolparamdescription=&quot;A time returned by search_availability, 24h HH:MM.&quot;&gt;
+  &lt;label for=&quot;book-party&quot;&gt;Guests&lt;/label&gt;
+  &lt;input id=&quot;book-party&quot; name=&quot;partySize&quot; type=&quot;number&quot; min=&quot;1&quot; max=&quot;12&quot; required&gt;
+  &lt;label for=&quot;book-seating&quot;&gt;Seating&lt;/label&gt;
+  &lt;select id=&quot;book-seating&quot; name=&quot;seating&quot;&gt;
+    &lt;option value=&quot;&quot;&gt;No preference&lt;/option&gt;
+    &lt;option value=&quot;window&quot;&gt;By the window&lt;/option&gt;
+    &lt;option value=&quot;indoor&quot;&gt;Indoor&lt;/option&gt;
+    &lt;option value=&quot;terrace&quot;&gt;On the terrace&lt;/option&gt;
+  &lt;/select&gt;
+  &lt;label for=&quot;book-notes&quot;&gt;Notes for the kitchen&lt;/label&gt;
+  &lt;textarea id=&quot;book-notes&quot; name=&quot;notes&quot; maxlength=&quot;200&quot;
+            toolparamdescription=&quot;Allergies or the occasion, in the guest's own words. Optional.&quot;&gt;&lt;/textarea&gt;
+  &lt;button type=&quot;submit&quot;&gt;Book table&lt;/button&gt;
+&lt;/form&gt;
+</code></pre></figure>
+<p>The description tells the agent how the tool works: it fills in a booking, the guest confirms, and nothing is booked until they do. An agent that reads it knows to tell the user to check the form rather than report a booking that hasn’t happened. The <code>time</code> field’s <code>toolparamdescription</code> points the agent to <code>search_availability</code>, so the two tools work as a pair.</p>
+<p>What the person sees is Fjord Table’s own booking form, filled in, highlighted, with focus on “Book table.” They can change the time, add a note or leave. In the demo’s tests, an agent’s <code>book_table</code> call stayed pending, and nothing was booked, until the test clicked the button as the person would (observed).<sup class="footnote-ref"><a href="#fn4" id="fnref4:10">4:10</a></sup></p>
+<p>There is one surprise in the order of events. With <code>toolautosubmit</code>, Chromium 156 dispatched the <code>submit</code> event <em>before</em> <code>toolactivated</code> (observed). Without it, <code>toolactivated</code> came first, and <code>submit</code> came later when the person clicked.<sup class="footnote-ref"><a href="#fn4" id="fnref4:11">4:11</a></sup> If you use <code>toolactivated</code> to prepare a form, for example to run your own checks, that only works for forms the person submits. For forms the browser submits, put the checks where the browser will run them: in the form’s constraints, as described in the section on validation.</p>
+<h2 id="answering-the-agent-agentinvoked-and-respondwith"><a class="anchor-link" href="#answering-the-agent-agentinvoked-and-respondwith">Answering the agent: <code>agentInvoked</code> and <code>respondWith()</code></a></h2>
+<p>If a form submission reloads or navigates the page, the agent loses its context, so Fjord Table handles both forms in script. The explainer adds two members to <code>SubmitEvent</code>: a boolean <code>agentInvoked</code>, true when the submission comes from an agent’s tool call, and <code>respondWith(Promise&lt;any&gt;)</code>, which takes the result the agent will receive. Calling it overrides the form’s default action, and “<code>preventDefault()</code> must be called before this method is called.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:9">1:9</a></sup> Chrome’s guide says the resolved value “is then serialized and returned to the model as the tool’s output.”<sup class="footnote-ref"><a href="#fn2" id="fnref2:6">2:6</a></sup></p>
+<p>Listing 8.5 is the search form’s handler. One handler serves both people and agents. It always keeps the person on the page and shows the results, and when an agent called the tool it also returns them.</p>
+<figure class="code"><figcaption>Listing 8.5 — One submit handler for people and agents (search-form.js)</figcaption>
+<pre><code class="language-js">// search-form.js: one submit handler for people and agents alike.
+import { availability } from './availability.js';
+import { showSlots } from './booking-ui.js';
+
+const form = document.querySelector('#search-form');
+const dateInput = form.elements.date;
+
+// A rule HTML attributes can't express: Fjord Table is closed on Mondays.
+// The custom validity message is what an agent sees if the check fails.
+dateInput.addEventListener('input', () =&gt; {
+  const monday = dateInput.value !== '' &amp;&amp;
+    new Date(`${dateInput.value}T12:00:00`).getDay() === 1;
+  dateInput.setCustomValidity(monday ? 'Fjord Table is closed on Mondays.' : '');
+});
+
+form.addEventListener('submit', (event) =&gt; {
+  event.preventDefault();                      // stay on this page
+  const data = new FormData(form);
+  const date = data.get('date');
+  const partySize = Number(data.get('partySize'));
+  const seating = data.get('seating');
+
+  const result = availability.search({
+    date, partySize, time: data.get('time') || undefined
+  }).then((slots) =&gt; {
+    const open = seating ? slots.filter((s) =&gt; s.seating.includes(seating)) : slots;
+    showSlots(open);                           // the person sees the result...
+    return {                                   // ...and so does the agent
+      date, partySize,
+      slots: open.map((s) =&gt; ({ time: s.time, seating: s.seating }))
+    };
+  });
+
+  if (event.agentInvoked) event.respondWith(result);
+});
+</code></pre></figure>
+<p>Three details make this work.</p>
+<p><em><code>respondWith()</code> is called during the event.</em> The handler starts the search, gets a promise and passes it to <code>respondWith()</code> before returning. The search finishes later. Calling <code>respondWith()</code> inside an <code>await</code> or a <code>.then()</code> callback, after the event has finished dispatching, is not something the explainer or Chrome describes, and I didn’t test it. Follow the pattern above.</p>
+<p><em>The guard is <code>if (event.agentInvoked)</code>.</em> Chromium 156 threw an <code>InvalidStateError</code> when <code>respondWith()</code> was called for an ordinary human submission: “You can only call respondWith on an submit event that has agentInvoked == true.” It also threw when <code>preventDefault()</code> had not been called first (observed).<sup class="footnote-ref"><a href="#fn4" id="fnref4:12">4:12</a></sup> In a browser without WebMCP, <code>event.agentInvoked</code> is <code>undefined</code>, so the same line works everywhere and no feature detection is needed.</p>
+<p><em>The person sees what the agent gets.</em> <code>showSlots()</code> runs on both paths. This is the same principle as Chapter 5’s <code>bookingPanel.showSlots()</code>: the human watching should see what the agent found.</p>
+<p>Listing 8.6 is the booking handler. The structure is the same, but here the submission is the person’s confirmation.</p>
+<figure class="code"><figcaption>Listing 8.6 — Booking on the guest’s click, and answering the agent (book-form.js)</figcaption>
+<pre><code class="language-js">// book-form.js: the guest's click on &quot;Book table&quot; is the confirmation.
+import { availability } from './availability.js';
+import { showConfirmation, showProblem } from './booking-ui.js';
+
+const form = document.querySelector('#book-form');
+
+form.addEventListener('submit', (event) =&gt; {
+  event.preventDefault();
+  const data = Object.fromEntries(new FormData(form));
+  const request = {
+    ...data,
+    partySize: Number(data.partySize),
+    seating: data.seating || undefined,
+    guest: 'Ingrid Hansen'                     // the signed-in demo user
+  };
+
+  const outcome = availability.find(request).then(async (slot) =&gt; {
+    if (!slot) {
+      // A refusal (Chapter 11): another time is the guest's choice to make.
+      const reason =
+        `No table for ${request.partySize} at ${request.time} on ${request.date}.`;
+      showProblem(reason);
+      return { status: 'refused', code: 'SLOT_UNAVAILABLE',
+               message: `${reason} Call search_availability and ask the guest ` +
+                        'which other time they want.' };
+    }
+    const { reference, seating } = await availability.book(request);
+    showConfirmation(reference, request);
+    return { status: 'booked', reference, date: request.date, time: request.time,
+             partySize: request.partySize, seating };
+  });
+
+  if (event.agentInvoked) event.respondWith(outcome);
+
+  // Clear the form only after the agent has its answer: resetting a form
+  // while its tool call is still open cancels the call (Chromium 156).
+  outcome.then((result) =&gt; {
+    if (result.status === 'booked') setTimeout(() =&gt; form.reset());
+  });
+});
+</code></pre></figure>
+<p><code>agentInvoked</code> stays true for the whole call, including when the person presses the button after the agent has filled in the form. In Chromium 156, a person’s click on the submit button of an agent-filled form produced a <code>submit</code> event with <code>agentInvoked === true</code> (observed).<sup class="footnote-ref"><a href="#fn4" id="fnref4:13">4:13</a></sup> That is what lets Listing 8.6 send the reference number back to the agent that started the booking. A booking the person starts on their own takes the same path without the <code>respondWith()</code> call.</p>
+<p>As in Chapter 5, a failure the agent should hear about is a value, not an exception. If the sitting is gone, the agent receives <code>{ status: 'refused', code: 'SLOT_UNAVAILABLE', message }</code>. That is Chapter 11’s status for “a rule says no”: another time would work, but choosing it is the guest’s decision, so the message tells the agent to search again and ask. If the promise passed to <code>respondWith()</code> rejects instead, the agent gets an error with the generic text “respondWith promise was rejected” (observed). Your error message is not passed on, so the agent learns nothing it can act on.<sup class="footnote-ref"><a href="#fn4" id="fnref4:14">4:14</a></sup></p>
+<p>The last lines of Listing 8.6 come from a bug the tests found. The first version reset the booking form inside <code>showConfirmation()</code>, before the promise passed to <code>respondWith()</code> had resolved. In Chromium 156, resetting a form while its tool call is open cancels the call. The agent got <code>Canceled: Tool execution cancelled by a form reset</code>, even though the booking had gone through (observed).<sup class="footnote-ref"><a href="#fn4" id="fnref4:15">4:15</a></sup> Waiting for the promise wasn’t enough either: a reset in the promise’s own <code>.then()</code> still canceled the call. The browser handles the response asynchronously, so the reset has to wait one more task, which is what the <code>setTimeout()</code> does. Don’t reset, remove or rename a tool’s form until the agent has its answer.</p>
+<p>Table 8.2 collects what the agent receives in each case.</p>
+<p><strong>Table 8.2 — What the agent receives after a declarative call (Chromium 156, observed)</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>What the page does</th>
+<th>What the agent receives</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>preventDefault()</code>, then <code>respondWith()</code> with a promise for an object</td>
+<td>The object. An in-page agent calling <code>executeTool()</code> gets it as a JSON string (Chapter 5)</td>
+</tr>
+<tr>
+<td><code>respondWith()</code> with a plain value instead of a promise</td>
+<td>The value, as if it were an already-resolved promise</td>
+</tr>
+<tr>
+<td>The promise resolves to a string</td>
+<td>The string, without JSON quotes</td>
+</tr>
+<tr>
+<td>The promise resolves to <code>undefined</code></td>
+<td>The string <code>&quot;undefined&quot;</code></td>
+</tr>
+<tr>
+<td>The promise rejects</td>
+<td>An error: “respondWith promise was rejected”</td>
+</tr>
+<tr>
+<td><code>preventDefault()</code> without <code>respondWith()</code></td>
+<td>An error: “The site has a programming error: it called preventDefault() on the 'submit' event, without also calling respondWith() with the tool result”</td>
+</tr>
+<tr>
+<td>No handler; the form navigates</td>
+<td>The JSON-LD on the next page, as an array (empty if there is none)</td>
+</tr>
+<tr>
+<td>The form is reset or removed before the answer</td>
+<td>The call is canceled</td>
+</tr>
+</tbody>
+</table></div>
+<p>Source: this chapter’s tests and probes.<sup class="footnote-ref"><a href="#fn4" id="fnref4:16">4:16</a></sup></p>
+<p>Every failure in my tests reached an in-page agent as an <code>UnknownError</code>, except a cancellation the agent asked for itself, which was an <code>AbortError</code> (observed).<sup class="footnote-ref"><a href="#fn4" id="fnref4:17">4:17</a></sup> For imperative tools, the spec replaced <code>UnknownError</code> with more specific <code>DOMException</code> types on 8 October 2026, but that change covers only what the spec defines, and declarative tools are not part of it.<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup> Chromium 156 still returns <code>UnknownError</code> for the imperative cases too; that is the browser lagging the draft, not a bug (Chapter 5).</p>
+<h2 id="answering-across-a-navigation-json-ld"><a class="anchor-link" href="#answering-across-a-navigation-json-ld">Answering across a navigation: JSON-LD</a></h2>
+<p>Sometimes the form does navigate, either because that is how the site works or because the script that would intercept the submission hasn’t loaded. The explainer’s original idea was to answer the agent from the page the form navigates to: “the first <code>&lt;script type=application/ld+json&gt;</code> tag on the target page is used as the cross-document tool’s ‘response’.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:10">1:10</a></sup> That proposal has since been moved into a collapsed section of the explainer. The open issue #135 asks the larger question, “Should the agent receive a response from the next page, after a declarative <code>&lt;form&gt;</code> tool navigates?”, and discusses alternatives, including a purpose-built element and a simple “the navigation succeeded” message.<sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup></p>
+<p>Chromium 156 implements a version of the JSON-LD idea. When an agent submitted a GET form with <code>toolautosubmit</code> and no handler, the browser followed the navigation and returned the JSON-LD from the new page to the agent: all of the page’s JSON-LD blocks, as an array, not only the first. A page with no JSON-LD produced an empty array (observed).<sup class="footnote-ref"><a href="#fn4" id="fnref4:18">4:18</a></sup> Fjord Table’s search form keeps <code>action=&quot;results.html&quot;</code> for exactly this case. Listing 8.7 is that page.</p>
+<figure class="code"><figcaption>Listing 8.7 — A results page that answers the agent that navigated to it (results.html)</figcaption>
+<pre><code class="language-html">&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;title&gt;Fjord Table · Open tables&lt;/title&gt;
+  &lt;script type=&quot;module&quot;&gt;
+    import { availability } from './availability.js';
+
+    const query = new URLSearchParams(location.search);
+    const date = query.get('date');
+    const partySize = Number(query.get('partySize'));
+    // No await before the JSON-LD is in place: Chromium 156 reads it
+    // when the page finishes parsing, and anything added later is missed.
+    const slots = availability.searchNow({
+      date, partySize, time: query.get('time') || undefined
+    });
+
+    // What a person reads...
+    document.querySelector('#slots').innerHTML = slots.length
+      ? slots.map((s) =&gt; `&lt;li&gt;${s.time}&lt;/li&gt;`).join('')
+      : '&lt;li&gt;No open tables. Try another date.&lt;/li&gt;';
+
+    // ...and what the agent that submitted the form receives (Chromium 156).
+    const data = document.createElement('script');
+    data.type = 'application/ld+json';
+    data.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: `Open tables at Fjord Table on ${date} for ${partySize}`,
+      itemListElement: slots.map((s, i) =&gt;
+        ({ '@type': 'ListItem', position: i + 1, name: s.time }))
+    });
+    document.head.append(data);
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Open tables&lt;/h1&gt;
+  &lt;ul id=&quot;slots&quot;&gt;&lt;/ul&gt;
+  &lt;p&gt;&lt;a href=&quot;index.html&quot;&gt;Back to booking&lt;/a&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></figure>
+<p>The comment in the middle records the other finding. Chromium read the JSON-LD as the page finished parsing (observed). Data added after an <code>await</code>, a timer or the <code>load</code> event was missed, and the agent got <code>[]</code>.<sup class="footnote-ref"><a href="#fn4" id="fnref4:19">4:19</a></sup> Fjord Table’s backend is a fake that answers after 250 milliseconds, so the first version of this page, which awaited it, always returned an empty array. In production the fix is to render the JSON-LD on the server, which most sites that publish JSON-LD already do. The demo uses a synchronous <code>searchNow()</code> to stand in for server rendering.</p>
+<p>The tests check this path by blocking <code>search-form.js</code> and calling the tool: the browser navigates to <code>results.html</code>, and the agent receives an <code>ItemList</code> with the open times.<sup class="footnote-ref"><a href="#fn4" id="fnref4:20">4:20</a></sup> An in-page agent can’t see this result, because the navigation unloads it. Chapter 5 noted that Chrome’s <code>executeTool()</code> resolves to <code>null</code> when a navigation is triggered.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: cross-document responses</p>
+<p>Issue #135 is open, and the JSON-LD proposal is the explainer’s second-choice, collapsed text.<sup class="footnote-ref"><a href="#fn17" id="fnref17:1">17:1</a></sup><sup class="footnote-ref"><a href="#fn1" id="fnref1:11">1:11</a></sup> The details I observed, an array of every block read when parsing ends, are Chromium’s current choices. The explainer’s collapsed proposal also floats sending the page’s entire contents to the model when no JSON-LD is present. Chromium 156 sent an empty array. Prefer <code>respondWith()</code>. Treat the JSON-LD path as a fallback, and keep the data in it small and factual: it is untrusted content that goes straight into a model’s context, as the DevTools Protocol’s own documentation for tool output warns.<sup class="footnote-ref"><a href="#fn14" id="fnref14:1">14:1</a></sup></p></aside>
+<h2 id="events-toolactivated-and-toolcancel"><a class="anchor-link" href="#events-toolactivated-and-toolcancel">Events: <code>toolactivated</code> and <code>toolcancel</code></a></h2>
+<p>The declarative explainer introduced two events, fired at the <code>ModelContext</code> object: one when a tool runs, and one when the agent cancels a call. Their main use is in the page’s UI: to bring the filled form “to the user’s attention” and to tell the user when the agent gives up.<sup class="footnote-ref"><a href="#fn1" id="fnref1:12">1:12</a></sup> They have since moved into the specification for every tool. Pull request #245, merged on 17 September 2026, added the <code>ToolActivatedEvent</code> and <code>ToolCancelEvent</code> interfaces, each with a <code>toolName</code>, and the current draft fires them for imperative calls as well. Chapter 6 covers the imperative side.<sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup><sup class="footnote-ref"><a href="#fn5" id="fnref5:1">5:1</a></sup> Chrome’s guide notes that <code>window.ontoolactivated</code> and <code>window.ontoolcancel</code>, an earlier way to listen, “are not supported from Chrome 156”: listen on <code>document.modelContext</code>.<sup class="footnote-ref"><a href="#fn2" id="fnref2:7">2:7</a></sup></p>
+<p>Listing 8.8 uses them for the confirmation step that <code>book_table</code> depends on. When the agent fills in the booking form, a banner tells the person what happened and what to do next.</p>
+<figure class="code"><figcaption>Listing 8.8 — Telling the person what the agent just did (agent-feedback.js)</figcaption>
+<pre><code class="language-js">// agent-feedback.js: tell the person what the agent just did to a form.
+const banner = document.querySelector('#agent-banner');
+
+if ('modelContext' in document) {
+  document.modelContext.addEventListener('toolactivated', ({ toolName }) =&gt; {
+    if (toolName !== 'book_table') return;
+    banner.textContent = 'Your assistant filled in this booking. ' +
+      'Check the details, then press “Book table” to confirm.';
+    banner.hidden = false;
+    banner.scrollIntoView({ block: 'nearest' });
+  });
+
+  document.modelContext.addEventListener('toolcancel', ({ toolName }) =&gt; {
+    if (toolName !== 'book_table') return;
+    banner.textContent = 'Your assistant stopped this booking. Nothing was booked.';
+  });
+}
+</code></pre></figure>
+<p>Here the feature detection matters: in a browser without WebMCP, <code>document.modelContext</code> doesn’t exist. The handlers check <code>toolName</code> because these events fire for every tool on the page, declarative or imperative.</p>
+<p>The cancel event needs care, because the documentation and Chromium disagree. Chrome’s guide says <code>toolcancel</code> is triggered “if a user cancels the agentic operation or the <code>reset()</code> method is invoked.”<sup class="footnote-ref"><a href="#fn2" id="fnref2:8">2:8</a></sup> The explainer says the opposite about the page’s own actions: the event “does not fire when the site itself cancels the tool, due to removing the form element or changing its name or description.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:13">1:13</a></sup> Chromium 156 followed the explainer (observed). When the agent canceled a pending <code>book_table</code> call, through the DevTools Protocol’s <code>cancelInvocation</code> or through the signal passed to <code>executeTool()</code>, <code>toolcancel</code> fired, the highlight cleared and nothing was booked. The values already filled in stayed in the form. When the page called <code>reset()</code>, the agent’s call ended with <code>Canceled: Tool execution cancelled by a form reset</code>, but no <code>toolcancel</code> event fired. Removing the form ended it with <code>Tool execution cancelled, since tool definition was updated</code>, also without an event.<sup class="footnote-ref"><a href="#fn4" id="fnref4:21">4:21</a></sup> If you need to know about cancellations the page caused, track them yourself. You started them, after all.</p>
+<p>One more observation: <code>toolactivated</code> is not proof that the form was filled. A call with an invalid value (<code>date: &quot;tomorrow&quot;</code>) fired <code>toolactivated</code> and was then rejected before any field changed (observed).<sup class="footnote-ref"><a href="#fn4" id="fnref4:22">4:22</a></sup></p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: event names and targets</p>
+<p>The explainer still calls the cancel event <code>toolcanceled</code>. The spec and Chrome use <code>toolcancel</code>.<sup class="footnote-ref"><a href="#fn1" id="fnref1:14">1:14</a></sup><sup class="footnote-ref"><a href="#fn5" id="fnref5:2">5:2</a></sup><sup class="footnote-ref"><a href="#fn2" id="fnref2:9">2:9</a></sup> Issue #126 discussed whether the events should fire at the <code>&lt;form&gt;</code> or at <code>ModelContext</code>. It was closed on 24 September 2026, after #245 settled on <code>ModelContext</code>.<sup class="footnote-ref"><a href="#fn18" id="fnref18:1">18:1</a></sup></p></aside>
+<h2 id="css-hooks-tool-form-active-and-tool-submit-active"><a class="anchor-link" href="#css-hooks-tool-form-active-and-tool-submit-active">CSS hooks: <code>:tool-form-active</code> and <code>:tool-submit-active</code></a></h2>
+<p>The explainer adds two pseudo-classes so authors can highlight a form an agent has filled in and the person still has to check. <code>:tool-form-active</code> matches the form while its tool is running, and <code>:tool-submit-active</code> matches that form’s submit button.<sup class="footnote-ref"><a href="#fn1" id="fnref1:15">1:15</a></sup> Chrome’s guide lists its default styles, a dashed outline on each, and says the states clear when the form submits, the agent cancels or the user resets the form.<sup class="footnote-ref"><a href="#fn2" id="fnref2:10">2:10</a></sup> Listing 8.9 gives Fjord Table its own style.</p>
+<figure class="code"><figcaption>Listing 8.9 — Showing which form the agent is working on (tool-styles.css)</figcaption>
+<pre><code class="language-css">/* tool-styles.css: show the person which form an agent is working on. */
+@supports selector(:tool-form-active) {
+  form:tool-form-active {
+    outline: 2px dashed #1f5f7a;
+    outline-offset: 6px;
+    background: #eef6f9;
+  }
+  button:tool-submit-active {
+    box-shadow: 0 0 0 4px #f2c94c;
+  }
+}
+</code></pre></figure>
+<p>The <code>@supports selector(…)</code> block is not just tidiness. In a browser that doesn’t know these pseudo-classes, a selector containing one is invalid. In plain Chromium, <code>document.querySelector(':tool-form-active')</code> threw a <code>SyntaxError</code> (observed). In CSS, an unknown pseudo-class makes a selector invalid, and a selector list containing an invalid selector is invalid as a whole, so the browser drops the entire rule.<sup class="footnote-ref"><a href="#fn4" id="fnref4:23">4:23</a></sup><sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup> The <code>selector()</code> function in <code>@supports</code> tests whether the browser can parse the selector.<sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup> <code>CSS.supports('selector(:tool-form-active)')</code> was <code>true</code> in Chromium with WebMCP enabled and <code>false</code> without it (observed), so the block applies only where it can work.<sup class="footnote-ref"><a href="#fn4" id="fnref4:24">4:24</a></sup> For the same reason, never combine a <code>:tool-*</code> selector with your normal styles in one selector list.</p>
+<p>In Fjord Table, the highlight and the banner from Listing 8.8 tell the person the same thing: this form was filled in by your assistant, check it. The highlight covers every form automatically. The banner explains what to do. Chrome’s guide stresses that a visible focus indicator “is critical to inform users and agents where they’re on a page,” and a confirmation step only helps if the person can see what they are confirming.<sup class="footnote-ref"><a href="#fn2" id="fnref2:11">2:11</a></sup></p>
+<h2 id="validation-feedback-to-agents"><a class="anchor-link" href="#validation-feedback-to-agents">Validation feedback to agents</a></h2>
+<p>Forms already have a validation system, and the declarative API uses it. With <code>toolautosubmit</code>, Chromium 156 ran the form’s constraint validation before submitting, and if it failed, the agent got an error listing each failing field with the browser’s message (observed). For a party of 20:</p>
+<pre><code class="language-text">Form validation failed: partySize: Value must be less than or equal to 12..
+</code></pre>
+<p>The doubled full stop is in the original. An agent can correct that.<sup class="footnote-ref"><a href="#fn4" id="fnref4:25">4:25</a></sup></p>
+<p>The useful part is that this includes your own messages. The HTML constraint validation API lets script set a custom validity message with <code>setCustomValidity()</code>, and an element with a non-empty message is invalid until it is cleared.<sup class="footnote-ref"><a href="#fn13" id="fnref13:1">13:1</a></sup> Listing 8.5 uses it for the rule an attribute can’t express: Fjord Table is closed on Mondays. The listener runs on <code>input</code>, which fires both when a person picks a date and when the browser fills one in, so it covers both. An agent that asks for a Monday gets:</p>
+<pre><code class="language-text">Form validation failed: date: Fjord Table is closed on Mondays..
+</code></pre>
+<p>The person gets the same message in the browser’s validation bubble if they try to submit. One rule in one place serves both. It follows Chrome’s advice to “validate strictly in code, loosely in schema”: the schema says “a date,” and the code says which dates.<sup class="footnote-ref"><a href="#fn11" id="fnref11:1">11:1</a></sup></p>
+<p>Two limits apply. First, this works because the check runs while the form is filled in and before it is submitted. A check that needs the server, such as whether the 19:00 sitting is still free, can’t run there, so it belongs in the submit handler, which reports the result as a value (Listing 8.6).</p>
+<p>Second, a failed validation ends the call even when the person is the one submitting. I expected the agent to keep waiting while the person fixed the form. It didn’t. When an agent filled in the booking form for a party of 20 and the person pressed “Book table,” the browser showed the person the error, and the agent’s call ended at the same moment with <code>Form validation failed: partySize: Value must be less than or equal to 12..</code> (observed). When the person then corrected the number and pressed the button again, that was an ordinary submission with <code>agentInvoked</code> false, so the agent never heard about the booking.<sup class="footnote-ref"><a href="#fn4" id="fnref4:26">4:26</a></sup> The agent learns what was wrong and can try again, but it can’t learn what the person did next unless it asks. That is another reason to put the clearest possible constraints in the schema, so that the agent gets the values right the first time.</p>
+<h2 id="limits-when-javascript-owns-the-form"><a class="anchor-link" href="#limits-when-javascript-owns-the-form">Limits: when JavaScript owns the form</a></h2>
+<p>Declarative tools work best on forms that HTML already describes completely. The less of the form HTML describes, the less the browser can do.</p>
+<figure class="code"><figcaption>Listing 8.10 — A form the declarative API can’t drive (fragment)</figcaption>
+<pre><code class="language-html">&lt;!-- Looks like a form, but JavaScript does the submitting. --&gt;
+&lt;form id=&quot;waitlist-form&quot; toolname=&quot;join_waitlist&quot;
+      tooldescription=&quot;Put the guest on the waitlist for a fully booked evening.&quot;&gt;
+  &lt;label for=&quot;wait-date&quot;&gt;Date&lt;/label&gt;
+  &lt;input id=&quot;wait-date&quot; name=&quot;date&quot; type=&quot;date&quot; required&gt;
+  &lt;button type=&quot;button&quot; id=&quot;join-waitlist&quot;&gt;Join the waitlist&lt;/button&gt;
+&lt;/form&gt;
+</code></pre></figure>
+<p>This form looks fine, and Chromium registered <code>join_waitlist</code> without complaint. But it has no submit button, because JavaScript does the work from a <code>click</code> handler. Every call to it failed at once with <code>No submit button was found, but for a form without </code>toolautosubmit<code>, there must be a submit button</code> (observed).<sup class="footnote-ref"><a href="#fn4" id="fnref4:27">4:27</a></sup> Adding <code>toolautosubmit</code> would not help much either: the browser would submit the form, and the click handler that does the real work would never run. The fix is to make the form a real form, with a submit button and a <code>submit</code> handler. Many forms built in single-page apps would benefit from that anyway.</p>
+<p>Other limits I found:</p>
+<ul>
+<li><strong>Custom controls are invisible.</strong> A form-associated custom element inside the form was left out of the schema (observed). So were controls the user can’t edit (<code>disabled</code>, <code>readonly</code>) and file inputs.<sup class="footnote-ref"><a href="#fn4" id="fnref4:28">4:28</a></sup> A date picker built from <code>&lt;div&gt;</code>s with a hidden input carrying the value gives the agent nothing to fill in.</li>
+<li><strong>Controlled components need trusted events.</strong> Frameworks that keep form state in JavaScript, like React’s controlled inputs, update their state from <code>input</code> events. Chromium 156 dispatched trusted <code>input</code> and <code>change</code> events for each filled field (observed), which is what those frameworks listen to.<sup class="footnote-ref"><a href="#fn4" id="fnref4:29">4:29</a></sup> Whether a particular framework’s state updates correctly is something to test in that framework. Chapter 10 covers framework integration.</li>
+<li><strong>One form, one step.</strong> A tool is one form and one submission. A multi-step wizard is several forms that appear one after another, which means several tools that appear and disappear. That can work, but the agent has to discover each step as it appears. One imperative tool that takes everything at once is usually better.</li>
+<li><strong>No annotations, no output schema.</strong> Neither the explainer nor Chrome’s guide defines an attribute for <code>readOnlyHint</code>, <code>untrustedContentHint</code> or <code>consequentialHint</code>, and the only hint Chromium reported for a declarative tool was <code>autosubmit</code>.<sup class="footnote-ref"><a href="#fn1" id="fnref1:16">1:16</a></sup><sup class="footnote-ref"><a href="#fn2" id="fnref2:12">2:12</a></sup><sup class="footnote-ref"><a href="#fn14" id="fnref14:2">14:2</a></sup><sup class="footnote-ref"><a href="#fn4" id="fnref4:30">4:30</a></sup> The explainer leaves open whether an <code>outputSchema</code> would apply to declarative tools.<sup class="footnote-ref"><a href="#fn1" id="fnref1:17">1:17</a></sup> If an agent should know that a tool is read-only or consequential, register it imperatively.</li>
+<li><strong>Silent failures.</strong> Bad names and duplicate names produced no error my code could catch. Issue #182 puts a disabled Permissions Policy in the same category and is still open.<sup class="footnote-ref"><a href="#fn10" id="fnref10:1">10:1</a></sup><sup class="footnote-ref"><a href="#fn4" id="fnref4:31">4:31</a></sup></li>
+</ul>
+<p>Table 8.3 summarizes when the declarative API is a good fit.</p>
+<p><strong>Table 8.3 — Declarative or imperative?</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>The declarative API fits when…</th>
+<th>Use the imperative API when…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A real <code>&lt;form&gt;</code> with native controls already does the job</td>
+<td>The action lives in JavaScript, not a form</td>
+</tr>
+<tr>
+<td>One submission completes the task</td>
+<td>The task spans steps, views or several requests</td>
+</tr>
+<tr>
+<td>The form reads, or a person should confirm by pressing Submit</td>
+<td>You need annotations such as <code>readOnlyHint</code> or <code>consequentialHint</code></td>
+</tr>
+<tr>
+<td>HTML constraints plus a few <code>setCustomValidity()</code> rules cover validation</td>
+<td>Inputs need structure a form can’t express: nested objects, arrays of objects</td>
+</tr>
+<tr>
+<td>You want the person to see the same form the agent fills in</td>
+<td>The tool has no visible form, or must run without changing the UI</td>
+</tr>
+<tr>
+<td>You can accept behaviour defined by one browser’s implementation</td>
+<td>You need the behaviour the specification defines</td>
+</tr>
+</tbody>
+</table></div>
+<p>Most real sites will use both. The two kinds of tool live in the same registry: <code>getTools()</code> returns them together, and the events and <code>toolchange</code> cover both. Fjord Table could reasonably keep its search as a declarative form and register <code>book_table</code> imperatively, with the confirmation dialog from Chapter 5. This chapter makes both declarative to show how far the attributes go.</p>
+<h2 id="testing-declarative-tools"><a class="anchor-link" href="#testing-declarative-tools">Testing declarative tools</a></h2>
+<p>You can’t unit-test a declarative tool against a mock. Everything worth testing is the browser’s behaviour: the schema it synthesizes, the arguments it accepts, the events it fires and what it returns. So the tests for this chapter run in real Chromium. They use two kinds of agent.</p>
+<p>The first is an in-page agent, using the <code>getTools()</code> and <code>executeTool()</code> methods that Chapter 7 covers. The second behaves like a browser agent. Chrome’s DevTools Protocol has an experimental <code>WebMCP</code> domain with <code>invokeTool</code> and <code>cancelInvocation</code> commands, and with events that report the tools as they are added and removed, each invocation, and each response with its status (<code>Completed</code>, <code>Canceled</code> or <code>Error</code>).<sup class="footnote-ref"><a href="#fn14" id="fnref14:3">14:3</a></sup> A test drives it through Playwright’s CDP session, calls <code>book_table</code> as an agent would, checks that nothing happens until a simulated person clicks “Book table,” and reads the response.</p>
+<p>The tests also check the static parts. Each HTML listing in this chapter is a file in the repository, and a test checks that the files match <code>index.html</code> byte for byte. Another compares the synthesized schema with the stored Listing 8.3. Chapter 14 covers testing and evals in general. The point here is narrower: if your site depends on declarative tools, a schema comparison and a few protocol-level calls in CI will catch Chrome changing its implementation before your users do.</p>
+<h2 id="fjord-table-so-far"><a class="anchor-link" href="#fjord-table-so-far">Fjord Table so far</a></h2>
+<p>Fjord Table now has two ways to be agent-ready. Chapters 4 and 5 built the imperative version: <code>search_availability</code> and <code>book_table</code> registered from JavaScript, with a confirmation dialog in the site’s own UI. This chapter rebuilt the same two tools from the forms the page already had:</p>
+<ul>
+<li><code>search_availability</code> is the search form with three attributes and <code>toolautosubmit</code>. Its submit handler (Listing 8.5) answers people and agents with the same results, and a custom validity rule tells both that the restaurant is closed on Mondays. If the script doesn’t load, the form navigates to <code>results.html</code>, whose JSON-LD answers the agent (Listing 8.7).</li>
+<li><code>book_table</code> is the booking form without <code>toolautosubmit</code>. The agent fills it in, the page highlights it and explains what happened (Listings 8.8 and 8.9), and only the guest’s click books the table. The handler then returns the reference, or a <code>refused</code> result when the sitting is gone (Listing 8.6).</li>
+</ul>
+<p>The complete demo is in the companion repository, in <code>chapters/08-declarative-api/</code>. Its README maps each file to its listing. Chapter 9 brings the pieces together into one app and walks through it end to end with Chrome’s own tools.</p>
+<h2 id="chapter-summary"><a class="anchor-link" href="#chapter-summary">Chapter summary</a></h2>
+<ul>
+<li>The declarative API turns an HTML <code>&lt;form&gt;</code> into a WebMCP tool with <code>toolname</code> and <code>tooldescription</code>, plus <code>toolparamdescription</code> on controls whose label doesn’t say enough. It was removed from the WebMCP specification on 8 October 2026 (PR #338) but still ships in Chrome’s origin trial, so it now lives only in an explainer and in Chrome. The Chrome team says it plans to ship it after the imperative API. Treat it as a progressive enhancement and its details as Chromium 156 behaviour.</li>
+<li>The browser synthesizes the input schema from the form. In Chromium 156: labels become descriptions, <code>required</code>, <code>min</code>, <code>max</code> and options carry over, dates get a format hint, times get a regular expression in the wrong keyword, and length limits are dropped. Check what agents see with <code>getTools()</code> and keep a copy in your tests.</li>
+<li>Unlike imperative calls, Chromium checks declarative arguments against the form: unknown parameters and impossible values are rejected before anything is filled in.</li>
+<li>A call fills the form (with trusted <code>input</code> and <code>change</code> events), fires <code>toolactivated</code>, highlights the form and its submit button, and waits. Without <code>toolautosubmit</code>, the person’s click on Submit completes the call, which is a built-in confirmation step. Use <code>toolautosubmit</code> only for forms that read.</li>
+<li>In the <code>submit</code> handler, <code>event.agentInvoked</code> tells you an agent is waiting. Call <code>preventDefault()</code>, then <code>respondWith()</code> with a promise for the result. Return failures as values in Chapter 11’s shapes, because rejected promises reach the agent as a generic error. Don’t reset or remove the form until the agent has its answer: either cancels the call.</li>
+<li>If the form navigates instead, Chromium returns the next page’s JSON-LD as an array, read when parsing finishes. Render it on the server. How cross-document responses should work is still open (issue #135).</li>
+<li><code>toolactivated</code> and <code>toolcancel</code> fire at <code>document.modelContext</code> and are now in the spec for all tools. <code>toolcancel</code> fired when the agent canceled, but not when the page reset or removed the form. Chrome’s guide says otherwise.</li>
+<li><code>:tool-form-active</code> and <code>:tool-submit-active</code> style the form in use. Wrap them in <code>@supports selector(…)</code>, because in other browsers the selector is invalid.</li>
+<li>Constraint validation, including <code>setCustomValidity()</code> messages, reaches the agent as error text when the browser submits the form. It is the declarative way to validate strictly in code.</li>
+<li>The declarative API needs a real form: a submit button, native controls and one submission per task. For actions that live in JavaScript, tasks with several steps, or tools that need annotations, use the imperative API. Most sites will use both.</li>
+</ul>
+<h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>webmachinelearning/webmcp, “WebMCP declarative API” (Declarative API Explainer), sections “Motivation,” “Form attributes,” “Processing model,” “Pseudo-classes,” “Events” and “Integration with other imperative API bits” (read 14 October 2026). <a href="https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md">https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a> <a href="#fnref1:2" class="footnote-backref">↩︎</a> <a href="#fnref1:3" class="footnote-backref">↩︎</a> <a href="#fnref1:4" class="footnote-backref">↩︎</a> <a href="#fnref1:5" class="footnote-backref">↩︎</a> <a href="#fnref1:6" class="footnote-backref">↩︎</a> <a href="#fnref1:7" class="footnote-backref">↩︎</a> <a href="#fnref1:8" class="footnote-backref">↩︎</a> <a href="#fnref1:9" class="footnote-backref">↩︎</a> <a href="#fnref1:10" class="footnote-backref">↩︎</a> <a href="#fnref1:11" class="footnote-backref">↩︎</a> <a href="#fnref1:12" class="footnote-backref">↩︎</a> <a href="#fnref1:13" class="footnote-backref">↩︎</a> <a href="#fnref1:14" class="footnote-backref">↩︎</a> <a href="#fnref1:15" class="footnote-backref">↩︎</a> <a href="#fnref1:16" class="footnote-backref">↩︎</a> <a href="#fnref1:17" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>Chrome for Developers, “Declarative API” (published 18 May 2026, last updated 25 September 2026), sections “Tool registration,” “Submit the form” and “Modify focus indicator.” <a href="https://developer.chrome.com/docs/ai/webmcp/declarative-api">https://developer.chrome.com/docs/ai/webmcp/declarative-api</a> <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a> <a href="#fnref2:2" class="footnote-backref">↩︎</a> <a href="#fnref2:3" class="footnote-backref">↩︎</a> <a href="#fnref2:4" class="footnote-backref">↩︎</a> <a href="#fnref2:5" class="footnote-backref">↩︎</a> <a href="#fnref2:6" class="footnote-backref">↩︎</a> <a href="#fnref2:7" class="footnote-backref">↩︎</a> <a href="#fnref2:8" class="footnote-backref">↩︎</a> <a href="#fnref2:9" class="footnote-backref">↩︎</a> <a href="#fnref2:10" class="footnote-backref">↩︎</a> <a href="#fnref2:11" class="footnote-backref">↩︎</a> <a href="#fnref2:12" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>webmachinelearning/webmcp pull request #338, “Remove declarative API from spec” (opened 7 October 2026, merged 8 October 2026), its changes to <code>index.bs</code> and <code>README.md</code>, and the PR author’s comment of 13 October 2026. <a href="https://github.com/webmachinelearning/webmcp/pull/338">https://github.com/webmachinelearning/webmcp/pull/338</a> <a href="#fnref3" class="footnote-backref">↩︎</a> <a href="#fnref3:1" class="footnote-backref">↩︎</a> <a href="#fnref3:2" class="footnote-backref">↩︎</a> <a href="#fnref3:3" class="footnote-backref">↩︎</a> <a href="#fnref3:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>Observed in Chromium 156.0.8078.4 (Playwright 1.64 build) with <code>--enable-features=WebMCPTesting</code>, 14 October 2026. The tests are in the companion repository, <code>chapters/08-declarative-api/tests/run-tests.mjs</code>; the one-off probes behind Table 8.1 are summarized in that folder’s README. <a href="https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/08-declarative-api">https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/08-declarative-api</a> <a href="#fnref4" class="footnote-backref">↩︎</a> <a href="#fnref4:1" class="footnote-backref">↩︎</a> <a href="#fnref4:2" class="footnote-backref">↩︎</a> <a href="#fnref4:3" class="footnote-backref">↩︎</a> <a href="#fnref4:4" class="footnote-backref">↩︎</a> <a href="#fnref4:5" class="footnote-backref">↩︎</a> <a href="#fnref4:6" class="footnote-backref">↩︎</a> <a href="#fnref4:7" class="footnote-backref">↩︎</a> <a href="#fnref4:8" class="footnote-backref">↩︎</a> <a href="#fnref4:9" class="footnote-backref">↩︎</a> <a href="#fnref4:10" class="footnote-backref">↩︎</a> <a href="#fnref4:11" class="footnote-backref">↩︎</a> <a href="#fnref4:12" class="footnote-backref">↩︎</a> <a href="#fnref4:13" class="footnote-backref">↩︎</a> <a href="#fnref4:14" class="footnote-backref">↩︎</a> <a href="#fnref4:15" class="footnote-backref">↩︎</a> <a href="#fnref4:16" class="footnote-backref">↩︎</a> <a href="#fnref4:17" class="footnote-backref">↩︎</a> <a href="#fnref4:18" class="footnote-backref">↩︎</a> <a href="#fnref4:19" class="footnote-backref">↩︎</a> <a href="#fnref4:20" class="footnote-backref">↩︎</a> <a href="#fnref4:21" class="footnote-backref">↩︎</a> <a href="#fnref4:22" class="footnote-backref">↩︎</a> <a href="#fnref4:23" class="footnote-backref">↩︎</a> <a href="#fnref4:24" class="footnote-backref">↩︎</a> <a href="#fnref4:25" class="footnote-backref">↩︎</a> <a href="#fnref4:26" class="footnote-backref">↩︎</a> <a href="#fnref4:27" class="footnote-backref">↩︎</a> <a href="#fnref4:28" class="footnote-backref">↩︎</a> <a href="#fnref4:29" class="footnote-backref">↩︎</a> <a href="#fnref4:30" class="footnote-backref">↩︎</a> <a href="#fnref4:31" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, §4.2 ModelContext interface, §4.3 Events (ToolActivatedEvent, ToolCancelEvent). <a href="https://webmachinelearning.github.io/webmcp/">https://webmachinelearning.github.io/webmcp/</a> <a href="#fnref5" class="footnote-backref">↩︎</a> <a href="#fnref5:1" class="footnote-backref">↩︎</a> <a href="#fnref5:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>Chrome for Developers, “WebMCP” overview (published 18 May 2026, last updated 7 October 2026), sections “Use WebMCP APIs” and “Demo.” <a href="https://developer.chrome.com/docs/ai/webmcp">https://developer.chrome.com/docs/ai/webmcp</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>webmachinelearning/webmcp issue #22, “Declarative API Equivalent” (opened 5 September 2025, closed 10 March 2026). <a href="https://github.com/webmachinelearning/webmcp/issues/22">https://github.com/webmachinelearning/webmcp/issues/22</a> <a href="#fnref7" class="footnote-backref">↩︎</a> <a href="#fnref7:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>webmachinelearning/webmcp pull request #26, “Declarative proposal to expose tools via HTML” (opened 17 September 2025, closed unmerged 12 February 2026, superseded by #76). <a href="https://github.com/webmachinelearning/webmcp/pull/26">https://github.com/webmachinelearning/webmcp/pull/26</a> <a href="#fnref8" class="footnote-backref">↩︎</a> <a href="#fnref8:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p>webmachinelearning/webmcp pull request #76, “Declarative API Explainer” (opened 5 February 2026, merged 9 March 2026). <a href="https://github.com/webmachinelearning/webmcp/pull/76">https://github.com/webmachinelearning/webmcp/pull/76</a> <a href="#fnref9" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p>webmachinelearning/webmcp issue #182, “How to expose failed declarative tool registration” (opened 22 May 2026, open on 15 October 2026). <a href="https://github.com/webmachinelearning/webmcp/issues/182">https://github.com/webmachinelearning/webmcp/issues/182</a> <a href="#fnref10" class="footnote-backref">↩︎</a> <a href="#fnref10:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>Chrome for Developers, “WebMCP best practices” (published 18 May 2026), sections “Manage tool registration” and “Prioritize reliability.” <a href="https://developer.chrome.com/docs/ai/webmcp/best-practices">https://developer.chrome.com/docs/ai/webmcp/best-practices</a> <a href="#fnref11" class="footnote-backref">↩︎</a> <a href="#fnref11:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>JSON Schema Validation, draft 2020-12, §6.3.3 “pattern” and §7.3.1 “Dates, Times, and Duration.” <a href="https://json-schema.org/draft/2020-12/json-schema-validation">https://json-schema.org/draft/2020-12/json-schema-validation</a> <a href="#fnref12" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>HTML Living Standard, §4.10.20 “Constraints” (custom validity error message and <code>setCustomValidity()</code>). <a href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html">https://html.spec.whatwg.org/multipage/form-control-infrastructure.html</a> <a href="#fnref13" class="footnote-backref">↩︎</a> <a href="#fnref13:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>Chrome DevTools Protocol, experimental <code>WebMCP</code> domain (<code>enable</code>, <code>invokeTool</code>, <code>cancelInvocation</code>; events <code>toolsAdded</code>, <code>toolsRemoved</code>, <code>toolInvoked</code>, <code>toolResponded</code>; types <code>Annotation</code> and <code>Tool</code>), in <code>json/browser_protocol.json</code> of the ChromeDevTools/devtools-protocol repository (read 14 October 2026). <a href="https://github.com/ChromeDevTools/devtools-protocol/blob/master/json/browser_protocol.json">https://github.com/ChromeDevTools/devtools-protocol/blob/master/json/browser_protocol.json</a> <a href="#fnref14" class="footnote-backref">↩︎</a> <a href="#fnref14:1" class="footnote-backref">↩︎</a> <a href="#fnref14:2" class="footnote-backref">↩︎</a> <a href="#fnref14:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>GoogleChromeLabs/webmcp-tools, “Le Petit Bistro | WebMCP Declarative Demo,” README (read 14 October 2026). <a href="https://github.com/GoogleChromeLabs/webmcp-tools/tree/main/demos/french-bistro">https://github.com/GoogleChromeLabs/webmcp-tools/tree/main/demos/french-bistro</a> <a href="#fnref15" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn16" class="footnote-item"><p>webmachinelearning/webmcp commit b206dae, “Replace UnknownError with specific DOMException types. (#339)” (8 October 2026). <a href="https://github.com/webmachinelearning/webmcp/commit/b206dae8ba">https://github.com/webmachinelearning/webmcp/commit/b206dae8ba</a> <a href="#fnref16" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn17" class="footnote-item"><p>webmachinelearning/webmcp issue #135, “Cross-document tool response mechanism” (opened 9 March 2026, open on 15 October 2026). <a href="https://github.com/webmachinelearning/webmcp/issues/135">https://github.com/webmachinelearning/webmcp/issues/135</a> <a href="#fnref17" class="footnote-backref">↩︎</a> <a href="#fnref17:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn18" class="footnote-item"><p>webmachinelearning/webmcp issue #126, “Where to fire <code>toolactivated</code> and <code>toolcanceled</code> events?” (opened 4 March 2026, closed 24 September 2026), and pull request #245, “Add ToolActivatedEvent and ToolCancelEvent interfaces” (merged 17 September 2026). <a href="https://github.com/webmachinelearning/webmcp/issues/126">https://github.com/webmachinelearning/webmcp/issues/126</a> <a href="#fnref18" class="footnote-backref">↩︎</a> <a href="#fnref18:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn19" class="footnote-item"><p>Selectors Level 4, §3.10 “Invalid Selectors and Error Handling” (Editor’s Draft, read 14 October 2026). <a href="https://drafts.csswg.org/selectors-4/#invalid">https://drafts.csswg.org/selectors-4/#invalid</a> <a href="#fnref19" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn20" class="footnote-item"><p>CSS Conditional Rules Module Level 4, “Extensions to the <code>@supports</code> rule” (the <code>selector()</code> function). <a href="https://drafts.csswg.org/css-conditional-4/">https://drafts.csswg.org/css-conditional-4/</a> <a href="#fnref20" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="07-frames-origins-agents.html">← Chapter 7: Frames, Origins and Page-Embedded Agents</a>
+          <a class="pager-link" rel="next" href="09-first-webmcp-app.html">Chapter 9: Your First WebMCP App, End to End →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

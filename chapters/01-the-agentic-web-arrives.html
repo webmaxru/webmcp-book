@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chapter 1: The Agentic Web Arrives — Tools, Not Clicks</title>
+  <meta name="description" content="Agents now act inside browsers on users’ behalf. This chapter shows why today’s approach, “actuation” through screenshots and DOM scraping, is slow, costly and fragile, and why sites have a stake in fixing it.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Chapter 1: The Agentic Web Arrives — Tools, Not Clicks">
+  <meta property="og:description" content="Agents now act inside browsers on users’ behalf. This chapter shows why today’s approach, “actuation” through screenshots and DOM scraping, is slow, costly and fragile, and why sites have a stake in fixing it.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a class="is-current" aria-current="page" href="01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="../appendices/a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="../appendices/b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="../appendices/c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="../appendices/d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / Chapter 1 <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">chapter:</span> <span class="fm-v">01</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">I — Why the Web Needs an Agent Interface</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">30 min</span></p>
+        <h1>Chapter 1: The Agentic Web Arrives</h1>
+        <p class="lead">Agents now act inside browsers on users’ behalf. This chapter shows why today’s approach, “actuation” through screenshots and DOM scraping, is slow, costly and fragile, and why sites have a stake in fixing it.</p>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#a-tent-a-deadline-and-a-very-patient-robot">A tent, a deadline and a very patient robot</a></li><li><a href="#agents-in-the-browser">Agents in the browser</a></li><li><a href="#actuation-using-the-web-like-a-person">Actuation: using the web like a person</a></li><li><a href="#where-actuation-breaks">Where actuation breaks</a></li><li><a href="#the-bill-cost-latency-and-reliability">The bill: cost, latency and reliability</a></li><li><a href="#why-sites-have-a-stake">Why sites have a stake</a></li><li><a href="#humans-and-agents-in-the-same-tab">Humans and agents in the same tab</a></li><li><a href="#structured-interaction-briefly">Structured interaction, briefly</a></li><li><a href="#the-projects-in-this-book">The projects in this book</a></li><li><a href="#what-this-book-will-and-will-not-cover">What this book will and will not cover</a></li><li><a href="#chapter-summary">Chapter summary</a></li><li><a href="#notes">Notes</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“We view browser-using AI as inevitable: so much work happens in browsers that giving Claude the ability to see what you’re looking at, click buttons, and fill forms will make it substantially more useful.”</em></p>
+<p>— Anthropic, “Piloting Claude in Chrome”<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<h2 id="a-tent-a-deadline-and-a-very-patient-robot"><a class="anchor-link" href="#a-tent-a-deadline-and-a-very-patient-robot">A tent, a deadline and a very patient robot</a></h2>
+<p>Lars has a hiking trip in Jotunheimen in three weeks and no tent. On Tuesday night he opens Trailhead, a Norwegian outdoor-gear store, and instead of clicking through it himself he types into his browser’s assistant panel: “Find me a two-person tent under 4,000 kroner that’s in stock, compare the two best-rated ones, and put the better one in my cart.” Then he goes to make tea.</p>
+<p>The assistant gets to work the only way most of today’s agents can. It takes a screenshot of the Trailhead homepage and sends it to a model, together with a snapshot of the page’s structure. The model decides that the magnifying-glass icon is probably search, so the agent clicks it and types “tent”. Another screenshot. The results page has a filter sidebar: a price slider, a “Capacity” accordion that starts collapsed, and an “In stock only” toggle styled as a little pill. The agent drags the slider, overshoots, takes another screenshot, reads the label (“0 – 4 350 kr”), and nudges it back. It opens the accordion, ticks “2 persons”, and waits while the product grid reloads. On the first attempt it reads the grid before the new results arrive and starts comparing tents that are no longer on the page.</p>
+<p>Eventually it opens two product pages in turn, scrolls each one to find the specifications table, copies weights and pack sizes out of the pixels, and picks a winner. On the product page it meets a size selector, a colour swatch and a quantity stepper. It chooses “Moss”, clicks “Add to cart”, and a slide-in drawer appears, offering a matching footprint at 20 per cent off. Is that a confirmation, or an upsell that needs dismissing before the cart updates? The agent takes another screenshot and thinks about it.</p>
+<p>By the time Lars comes back with his tea, the job is done, probably. It took dozens of model calls, a minute or two of wall-clock time, and a fair amount of luck. If Trailhead had shipped a redesign that afternoon, or if the filter sidebar had loaded a little more slowly, the agent might have put the wrong tent in the cart, or no tent at all, and neither Lars nor Trailhead would have known why.</p>
+<p>This chapter is about that gap: between what browser agents are already being asked to do and the way they currently have to do it. It explains what browser agents are, how they operate websites today, where that approach breaks, what it costs, and why the website, not only the agent, has a stake in fixing it. It ends by introducing the projects you will build throughout the book and by setting out what the book covers and what it does not.</p>
+<h2 id="agents-in-the-browser"><a class="anchor-link" href="#agents-in-the-browser">Agents in the browser</a></h2>
+<p>The WebMCP specification starts its terminology section with a definition worth borrowing. An <em>agent</em> is “an autonomous assistant that can understand a user’s goals and take actions on the user’s behalf to achieve them.” Today, it adds, these are typically built on large language model (LLM) platforms “interacting with users via text-based chat interfaces.”<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup> What makes an agent a <em>browser</em> agent is where it acts. The spec defines a browser agent as an agent “provided by or through the browser that could be built directly into the browser or hosted by it, for example, via an extension or plug-in.”<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">2:1</a></sup></p>
+<p>Two years ago, that would have been a description of a research demo. By the autumn of 2026 it describes products that millions of people can install. They come in three broad shapes, distinguished by where the agent lives relative to the page it acts on (Figure 1.1).</p>
+<figure class="book-figure"><img decoding="async" src="01-the-agentic-web-arrives/images/figure-1-1.png" alt="Figure 1.1 — Three places a browser agent can live. A built-in assistant is part of the browser itself; an extension is installed into it; a page-embedded agent ships inside a website. All three end up acting on the same page the user sees." /><figcaption>Figure 1.1 — Three places a browser agent can live. A built-in assistant is part of the browser itself; an extension is installed into it; a page-embedded agent ships inside a website. All three end up acting on the same page the user sees.</figcaption></figure>
+<h3 id="built-into-the-browser"><a class="anchor-link" href="#built-into-the-browser">Built into the browser</a></h3>
+<p>The most visible shape is the assistant that ships with the browser. In September 2025, Google announced that Gemini in Chrome would act as “an AI browsing assistant”, and said it was developing “more advanced agentic capabilities for Gemini in Chrome that can perform multi-step tasks for you from start to finish, like ordering groceries.” Its stated ambition was to turn “30-minute chores into 3-click user journeys.”<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup> OpenAI went further and built a whole browser around its assistant. It introduced ChatGPT Atlas in October 2025 as “a new web browser built with ChatGPT at its core,” with an <em>agent mode</em> in which “ChatGPT may ask you if it should start opening tabs and clicking in your browser to complete the task.”<sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup> Atlas didn’t last. OpenAI’s help centre now says it “has been retired and no longer receives updates,”<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup> which is as good a reminder as any of how quickly this landscape moves. Perplexity markets its Comet browser, available on desktop and mobile, as “the browser that works for you”.<sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup></p>
+<p>These assistants have a privileged position. They can see every tab, they share the user’s signed-in sessions, and the browser vendor controls the whole stack, from the side panel to the model.</p>
+<h3 id="extensions"><a class="anchor-link" href="#extensions">Extensions</a></h3>
+<p>The second shape is the agent that arrives as a browser extension. Anthropic’s Claude in Chrome is the clearest example. It began in August 2025 as a research preview for 1,000 users, “a Claude extension for Chrome where trusted users can instruct Claude to take actions on their behalf within the browser,” and by December 2025 it was available on all of Anthropic’s paid plans.<sup class="footnote-ref"><a href="#fn1" id="fnref1:1">1:1</a></sup> Extensions are how agent makers who don’t own a browser get into one. They are also how developers build their own agents. Chrome’s WebMCP documentation offers two extensions for exactly that purpose, an example agent and a tool inspector, and it notes plainly that “Chrome Extensions can query and execute WebMCP tools with content scripts.”<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup></p>
+<p>A close cousin is the agent that runs a browser on your behalf somewhere else. OpenAI’s Operator drove a remote browser in the cloud that the user could take over at any point, and it was folded into ChatGPT as “ChatGPT agent” in July 2025.<sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup> The browser is no longer the one on your desk, but the technique for operating websites is the same, and so are its problems.</p>
+<h3 id="in-the-page"><a class="anchor-link" href="#in-the-page">In the page</a></h3>
+<p>The third shape is easy to overlook: an agent that a website ships inside itself. A support assistant in the corner of a SaaS dashboard, a shopping helper on a store’s product pages, a copilot inside a document editor. These agents are part of the site, or embedded in it from a third party, and they act on the page from within. The WebMCP explainer counts them explicitly: tools “can be invoked by AI agents, including those built into the browser, hosted in iframes, or running in extensions.”<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup> A page-embedded agent can even run its model on the user’s device. Chrome’s Prompt API exposes Gemini Nano, a model that runs locally in the browser, and needs no network connection after its first download.<sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup> Chapter 7 builds an agent of this kind, and the book’s Test Agent project uses the same idea to exercise tools.</p>
+<p>All three shapes share one constraint. Whoever built the agent, it ends up in front of a web page that was designed for people, and it has to work out how to use it.</p>
+<h2 id="actuation-using-the-web-like-a-person"><a class="anchor-link" href="#actuation-using-the-web-like-a-person">Actuation: using the web like a person</a></h2>
+<p>Chrome’s documentation has a name for how agents do that today: <em>actuation</em>, “the act of an agent simulating manual mouse clicks and text input, as though it were the human user engaging with your website.”<sup class="footnote-ref"><a href="#fn7" id="fnref7:1">7:1</a></sup> The WebMCP explainer describes the same technique from the agent’s side. General-purpose agents “often rely on observing the browser state through a combination of screenshots, and DOM and accessibility tree snapshots, and then interact with the page by simulating human user input.”<sup class="footnote-ref"><a href="#fn9" id="fnref9:1">9:1</a></sup></p>
+<p>Under the product names, almost every actuating agent runs the same loop.</p>
+<ol>
+<li><em>Observe.</em> Capture the current state of the page: a screenshot, a serialised slice of the DOM, the accessibility tree, or some mix of the three.</li>
+<li><em>Decide.</em> Send that observation, the user’s goal and the history so far to a model, and ask it for the next action.</li>
+<li><em>Act.</em> Turn the model’s answer into a click at some coordinates, a keystroke, a scroll or a navigation.</li>
+<li><em>Repeat</em> until the model decides the task is done, or gives up.</li>
+</ol>
+<p>OpenAI’s description of its Computer-Using Agent is a good summary of how general this is. The model “processes raw pixel data to understand what’s happening on the screen and uses a virtual mouse and keyboard to complete actions.” Because it works through the graphical interface “just as humans do,” it can “perform digital tasks without using OS- or web-specific APIs.”<sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup> Anthropic’s computer use documentation spells out the same loop from the developer’s side: the model asks for a screenshot or an action, your application performs it and returns the result, and the model asks again.<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup></p>
+<p>That generality is actuation’s great strength. It needs nothing from the website. Any page a person can use, an agent can at least attempt to use, today, without anyone’s permission or cooperation. It is the reason browser agents could appear so quickly. It is also the source of almost everything that goes wrong with them.</p>
+<h2 id="where-actuation-breaks"><a class="anchor-link" href="#where-actuation-breaks">Where actuation breaks</a></h2>
+<p>The explainer is blunt about the weakness. Many of the challenges assistive technology faces “also apply to AI agents that struggle to navigate existing human-first interfaces when agent-first ‘tools’ are not available,” and “even when agents succeed, simple operations often require multiple steps and can be slow or unreliable.”<sup class="footnote-ref"><a href="#fn9" id="fnref9:2">9:2</a></sup> Lars’s tent shopping touched most of the failure modes. They fall into four groups.</p>
+<h3 id="layout-changes"><a class="anchor-link" href="#layout-changes">Layout changes</a></h3>
+<p>An actuating agent infers what the site does from how the site looks. Every inference is tied to the presentation of a particular day. Rename “Add to cart” to “Add to bag”, move the filters from a sidebar to a drawer, swap a native <code>&lt;select&gt;</code> for a custom listbox, and the inference has to be made again. Sometimes the model makes it again correctly. Sometimes it doesn’t, and the failure is silent: the agent fills in the wrong field, or reports success when nothing happened.</p>
+<p>The people who caused the breakage have no way of knowing. Trailhead’s designers ran their usability tests with people, not agents. Nothing in their tooling tells them that the redesign that improved human conversion just broke every assistant that used to shop there.</p>
+<h3 id="ambiguous-controls"><a class="anchor-link" href="#ambiguous-controls">Ambiguous controls</a></h3>
+<p>Human interfaces lean on context that people supply without noticing. A field labelled “Name” might want a full name or only a first name. A date picker on a hotel site might be setting check-in or check-out depending on which half of the form you are in. A quantity stepper might add to the cart immediately, or only when you press the button below it. Chrome’s documentation gives the first example as a reason to build tools: a tool can tell an agent whether “a field requires a full name versus a separate first and last name.”<sup class="footnote-ref"><a href="#fn7" id="fnref7:2">7:2</a></sup></p>
+<p>People resolve this kind of ambiguity from experience. Agents resolve it by guessing, and the guesses are only as good as the model’s reading of a screenshot.</p>
+<h3 id="multi-step-forms-and-live-state"><a class="anchor-link" href="#multi-step-forms-and-live-state">Multi-step forms and live state</a></h3>
+<p>Real tasks are rarely one click. Booking, checkout, filing a support ticket and changing a subscription are sequences of steps, each depending on state left by the last: a filtered result list, a selected time slot, an item in a cart, a half-completed form. Single-page applications change that state asynchronously, and much of it is invisible. An agent that reads the page too early sees stale results, as Lars’s agent did. An agent that reads it too late may have missed a toast message that has already faded. Each extra step is another observation, another model call and another chance to drift.</p>
+<h3 id="hostile-content"><a class="anchor-link" href="#hostile-content">Hostile content</a></h3>
+<p>The fourth failure mode is newer, and it is the one that worries browser makers most. An actuating agent reads everything on the page as potential guidance, including text the site’s owner never wrote: a product review, a forum comment, an email in a webmail inbox. In August 2025, Brave’s security team showed how this could be exploited in Perplexity’s Comet. Instructions hidden behind a spoiler tag in a Reddit comment were enough to make the assistant, when a user asked it to summarise the page, open the user’s Perplexity account page to read their email address, trigger a one-time password, read it from their already signed-in Gmail, and post both back as a reply to the comment.<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup> Brave’s conclusion was that “traditional protections such as same-origin policy (SOP) or cross-origin resource sharing (CORS) are all effectively useless” when an agent follows instructions from untrusted content with the user’s full privileges.<sup class="footnote-ref"><a href="#fn13" id="fnref13:1">13:1</a></sup></p>
+<p>Anthropic published its own numbers the same month. In red-team testing of 123 prompt-injection test cases across 29 attack scenarios, browser use without its new mitigations showed “a 23.6% attack success rate”. The mitigations brought that down to 11.2 per cent, and a set of browser-specific attacks, such as form fields hidden in the DOM, went from 35.7 per cent to zero.<sup class="footnote-ref"><a href="#fn1" id="fnref1:2">1:2</a></sup> Better, but not zero across the board, and the company was explicit that it wanted “to get these percentages much closer to zero” before a wide release.<sup class="footnote-ref"><a href="#fn1" id="fnref1:3">1:3</a></sup></p>
+<p>Prompt injection isn’t only a problem for actuation. Any agent that reads untrusted text has it, including agents that call tools, and Chapter 12 deals with it at length. But actuation makes it worse in a specific way: when everything on the page is input to the model, the page’s <em>content</em> and its <em>controls</em> are indistinguishable. A structured interface draws a line between the two.</p>
+<h2 id="the-bill-cost-latency-and-reliability"><a class="anchor-link" href="#the-bill-cost-latency-and-reliability">The bill: cost, latency and reliability</a></h2>
+<p>Suppose actuation worked every time. It would still be expensive, because of the shape of the loop. Every step costs at least one model call, and every call carries an observation.</p>
+<p>Observations are not small. Anthropic’s documentation for its computer use tool notes that long agent loops “accumulate screenshots quickly (roughly 1,000–1,800 input tokens each).”<sup class="footnote-ref"><a href="#fn12" id="fnref12:1">12:1</a></sup> A task like Lars’s, at a few dozen steps, spends tens of thousands of input tokens on screenshots alone, and more if the agent keeps earlier screenshots in its history so the model can see what changed. DOM and accessibility-tree snapshots trade pixels for text but are often no smaller. None of that is the model reasoning about tents. It is the model working out where the buttons are.</p>
+<p>Latency follows from the same arithmetic. Each step is a round trip to a model plus the time for the page to react. Anthropic lists latency first among the limitations of computer use: it “might be too slow compared to regular human-directed computer actions,” so developers should “focus on use cases where speed isn’t critical.”<sup class="footnote-ref"><a href="#fn12" id="fnref12:2">12:2</a></sup> OpenAI, introducing agent mode in Atlas, called it “an early experience” that “may make mistakes on complex workflows,” and said it was improving “reliability, latency and complex task success.”<sup class="footnote-ref"><a href="#fn4" id="fnref4:1">4:1</a></sup></p>
+<p>Reliability is the hardest cost to see, because it shows up as a percentage on a benchmark rather than as a bill. WebArena, a benchmark built from fully functional websites in four common domains (e-commerce, social forums, collaborative software development and content management), gave the field its first sobering number in 2023: the best GPT-4-based agent of the time completed 14.41 per cent of tasks end to end, against 78.24 per cent for humans.<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup> Agents have improved fast since then. OpenAI later reported that its Computer-Using Agent reached 58.1 per cent on WebArena and 87 per cent on WebVoyager, a benchmark of simpler tasks on live websites, while noting that it “still needs more improvements to close the gap with human performance on more complex benchmarks like WebArena.”<sup class="footnote-ref"><a href="#fn11" id="fnref11:1">11:1</a></sup> Those numbers will keep climbing, and you should check current figures rather than trust these. But the structure of the problem won’t change: an agent that has to rediscover the interface on every visit is always one misread away from failure, and the more steps a task takes, the more misreads it can accumulate.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: agent benchmarks</p>
+<p>Benchmark results for browser agents move every few months, and vendors report them on different task sets, step budgets and dates. The figures in this section are the ones published in the cited sources: WebArena’s original 2023 baselines and the results OpenAI published for its Computer-Using Agent. Treat them as illustrations of the gap, not as a current league table.</p></aside>
+<p>Figure 1.2 puts the two styles of interaction side by side. On the left is the loop described above. On the right is the alternative the rest of this book is about: the page tells the agent what it can do, as a named tool with a typed input, and the agent asks for it in one call.</p>
+<figure class="book-figure"><img decoding="async" src="01-the-agentic-web-arrives/images/figure-1-2.png" alt="Figure 1.2 — Actuation versus a structured tool call for the same request. Actuation repeats observe, decide and act once per click or keystroke, sending a fresh screenshot or snapshot each time. A tool call sends one structured request to code the site already runs, and gets one structured result back." /><figcaption>Figure 1.2 — Actuation versus a structured tool call for the same request. Actuation repeats observe, decide and act once per click or keystroke, sending a fresh screenshot or snapshot each time. A tool call sends one structured request to code the site already runs, and gets one structured result back.</figcaption></figure>
+<p>Table 1.1 summarises the difference.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Actuation</th>
+<th>Structured tools</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What the agent sees</td>
+<td>Pixels, DOM or accessibility tree</td>
+<td>Tool names, descriptions and input schemas</td>
+</tr>
+<tr>
+<td>Model calls per task</td>
+<td>One or more per click, keystroke or scroll</td>
+<td>Roughly one per meaningful action</td>
+</tr>
+<tr>
+<td>Effect of a redesign</td>
+<td>Can break silently</td>
+<td>None, as long as the tool contract holds</td>
+</tr>
+<tr>
+<td>Ambiguity</td>
+<td>Resolved by the model’s guess</td>
+<td>Resolved by the site’s description and schema</td>
+</tr>
+<tr>
+<td>Who decides the path</td>
+<td>The agent</td>
+<td>The site, with the agent choosing among offered tools</td>
+</tr>
+<tr>
+<td>Needs site cooperation</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Table 1.1 — Actuation and structured tools compared.</em></p>
+<p>The last row matters. Structured interaction isn’t free: someone has to build the tools, and that someone is the site. That is why the next question is not “how do agents get better at clicking?” but “why would a website bother?”</p>
+<h2 id="why-sites-have-a-stake"><a class="anchor-link" href="#why-sites-have-a-stake">Why sites have a stake</a></h2>
+<p>It is tempting to treat agent reliability as the agent maker’s problem. The agent is theirs, the model is theirs, the bill is theirs. But look at the tent purchase from Trailhead’s side.</p>
+<p><em>The site loses the sale when the agent fails.</em> If the agent gives up on a confusing filter sidebar, it doesn’t file a bug report. It tells the user it couldn’t do it, or it goes to a competitor whose site happened to be easier to operate. A site that agents can use reliably is, quite literally, a better shop for customers who send agents.</p>
+<p><em>The site has no say in how it is used.</em> An actuating agent decides for itself which path to take through your site. It may wander into the account settings to look for a delivery address, or fill in a form your support team would rather it didn’t. The explainer frames this as a matter of control. WebMCP will give agents “an alternative means to interact with the web that give the web developer more control over whether and how an AI-based agent interacts with their site.”<sup class="footnote-ref"><a href="#fn9" id="fnref9:3">9:3</a></sup></p>
+<p><em>The site risks being replaced by an integration.</em> The obvious way to make an agent reliable is to skip the website and call an API. That works for some tasks, and Chapter 3 covers the Model Context Protocol, which makes it easy. But the explainer lists what it costs interactive web applications: the user interface is bypassed and context is lost, state and authentication have to be replicated on a separate server, and the site has to build and run that server.<sup class="footnote-ref"><a href="#fn9" id="fnref9:4">9:4</a></sup> Its goal is the opposite, to “prevent disintermediation of web apps by backend integrations by adapting front-ends for use by agents, rather than replacing them.”<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup> For many businesses, the website is where the brand, the upsell and the relationship live. Chrome’s documentation makes the same point from the user’s side: tools that run visibly on the page mean “users gain trust that tasks are completed as expected,” and this “keeps your brand and human-centered design choices intact.”<sup class="footnote-ref"><a href="#fn7" id="fnref7:3">7:3</a></sup></p>
+<p><em>The site already has the code.</em> Everything an agent needs to search Trailhead’s catalogue, add an item to a cart or read the cart back already exists in Trailhead’s front end, because the human interface needs it too. The explainer’s goal of <em>code reuse</em> says exactly this: “Any task that a user can accomplish through a page’s UI can be turned into a tool by reusing much of the page’s existing client-side code.”<sup class="footnote-ref"><a href="#fn15" id="fnref15:1">15:1</a></sup></p>
+<p>Put together, these points turn agent-readiness from a favour to agent vendors into ordinary product work. Like accessibility, search-engine optimisation or a good mobile layout, it is a way of making your product work for how people now arrive at it.</p>
+<h2 id="humans-and-agents-in-the-same-tab"><a class="anchor-link" href="#humans-and-agents-in-the-same-tab">Humans and agents in the same tab</a></h2>
+<p>There is one more reason to care, and it shapes the whole of WebMCP: in the browser, the user is usually right there.</p>
+<p>The agents in this chapter mostly work in the user’s own browser, in tabs the user can see, with the user’s signed-in sessions. That is a very different setting from an agent working on a server overnight. It allows a kind of cooperation that backend integrations struggle to offer: the agent does the tedious part, the user watches, corrects and approves.</p>
+<p>Agent makers have built their safety stories around this. OpenAI’s Operator asked the user to take over when entering “sensitive information into the browser, such as login credentials or payment information,” and, before “finalizing any significant action, such as submitting an order or sending an email,” it “should ask for approval.”<sup class="footnote-ref"><a href="#fn8" id="fnref8:1">8:1</a></sup> Claude in Chrome asks users “before taking high-risk actions like publishing, purchasing, or sharing personal data,” and lets them grant or revoke access per site.<sup class="footnote-ref"><a href="#fn1" id="fnref1:4">1:4</a></sup> Google described its own goal for Gemini in Chrome as “you’ll remain in control as Chrome handles the tedious work.”<sup class="footnote-ref"><a href="#fn3" id="fnref3:1">3:1</a></sup></p>
+<p>What these safeguards have in common is that the agent decides when to ask. The site, which knows which of its actions are consequential, has no way to say so. Is “Add to cart” reversible? Is “Place order” the point of no return, or is there another confirmation screen? Is the footprint offer in the slide-in drawer an ad or part of the purchase? An actuating agent has to guess, and so does its safety layer.</p>
+<p>The WebMCP explainer puts this cooperation first among its goals. The very first item is to “enable human-in-the-loop workflows,” supporting “cooperative scenarios where users delegate tasks to AI agents while maintaining visibility, history, and control over web pages.”<sup class="footnote-ref"><a href="#fn15" id="fnref15:2">15:2</a></sup> Its non-goals are just as telling. WebMCP is not meant for “fully autonomous workflows” where no browser interface is present, and it is not a “replacement of human interfaces”: “The human web interface remains primary; agent tools augment rather than replace user interaction.”<sup class="footnote-ref"><a href="#fn15" id="fnref15:3">15:3</a></sup> Chrome’s documentation lists the corresponding limitation candidly. While tools may work in headless environments, the API is “primarily designed for local browser workflows with a human in the loop.”<sup class="footnote-ref"><a href="#fn7" id="fnref7:4">7:4</a></sup></p>
+<p>This is the picture to carry through the book. The page stays the user’s page. The agent is a capable assistant sitting beside the user, and the site gives it proper tools instead of leaving it to poke at the buttons. When an action matters, the site can show its own confirmation, in its own interface, and the user clicks it. Fjord Table’s <code>book_table</code> tool does exactly this in Chapter 5.</p>
+<h2 id="structured-interaction-briefly"><a class="anchor-link" href="#structured-interaction-briefly">Structured interaction, briefly</a></h2>
+<p>What would it take for Lars’s agent to do its job without guessing? Trailhead would need a way to tell the agent, in a form a model can use directly, what it offers: “I can search products by query, category, maximum price and stock status. I can compare two to four products. I can add a product to the cart. I can show you the cart.” Each capability would have a name, a plain-language description and a precise description of its inputs, and calling it would run Trailhead’s own code in Lars’s tab, updating the page he is looking at.</p>
+<p>That is a <em>tool</em>, in the sense the AI industry has used the word since 2023. Chapter 2 explains how tools became the common unit of agent capability, from function calling in model APIs to OpenAPI-based plug-ins and agent protocols. Chapter 3 covers the Model Context Protocol, which standardised tools for backend services. Chapter 4 introduces WebMCP, which brings the same idea into the page. Its specification describes the result in one sentence: pages that use WebMCP “can be thought of as Model Context Protocol servers that implement tools in client-side script instead of on the backend.”<sup class="footnote-ref"><a href="#fn2" id="fnref2:2">2:2</a></sup></p>
+<p>WebMCP is not finished, and it is not uncontroversial. Chapter 4 and Chapter 15 cover the politics in detail. For now, two facts are enough. Chrome and Edge are both running origin trials of the API, so you can ship it to real users in those browsers today, and Chrome also offers a flag for local development.<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup><sup class="footnote-ref"><a href="#fn7" id="fnref7:5">7:5</a></sup> And Chrome’s documentation positions it the way this book does: WebMCP “offers higher accuracy for agentic task completion, and it can be added as a progressive enhancement.”<sup class="footnote-ref"><a href="#fn7" id="fnref7:6">7:6</a></sup> Your site keeps working exactly as before for people and for actuating agents. Agents that understand tools get a better way in.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: the agent landscape</p>
+<p>The products named in this chapter change quickly. Assistants gain and lose agent features, extensions move out of preview, and pricing and availability vary by country. WebMCP support among agents is younger still. As of 15 October 2026, the explainer’s implementation status page lists ChatGPT Desktop as supporting WebMCP, experimental support in Brave’s Leo, and Meta Ray-Ban Display as “coming soon”.<sup class="footnote-ref"><a href="#fn16" id="fnref16:1">16:1</a></sup> Check that page, rather than this chapter, before you decide which agents your tools will meet first.</p></aside>
+<h2 id="the-projects-in-this-book"><a class="anchor-link" href="#the-projects-in-this-book">The projects in this book</a></h2>
+<p>Concepts are easier to hold on to when they are attached to something you are building. Four projects run through the book. You will meet them properly in the chapters that use them, but here is the cast, with the chapters where each one does most of its work (Table 1.2 and Figure 1.3).</p>
+<p><em>Fjord Table</em> is a small restaurant in Oslo with a booking page. It is deliberately modest: a date, a time, a party size and a seating preference. It is the book’s first WebMCP site. Chapter 4 uses it to show the idea, and Chapter 5 gives it two tools, <code>search_availability</code> and <code>book_table</code>, the second of which never completes a booking without the guest confirming it in Fjord Table’s own dialog. Chapter 8 rebuilds its form with the experimental declarative API, Chapter 9 takes it end to end, from flag to deployment, and Chapter 14 puts its tools under test.</p>
+<p><em>Trailhead</em> is the outdoor-gear store from this chapter’s opening: a React and TypeScript storefront with prices in Norwegian kroner. It is the book’s main production-shaped app. Its tools are <code>search_products</code>, <code>compare_products</code>, <code>add_to_cart</code>, <code>get_cart</code> and <code>checkout</code>, and the last one is marked as consequential, so the page shows its own confirmation and nothing is bought without the user’s click. Trailhead also gets a companion backend MCP server in Chapter 3, which makes the difference between server-side and in-page tools concrete. It carries the chapters on annotations and errors, frameworks, tool design, security, privacy, testing and the business case.</p>
+<p><em>Helpdesk Widget</em> is a support widget made by a fictional vendor, Supportly, and embedded in a fictional accounting dashboard, Ledgerly. The widget and the dashboard come from different origins, which is exactly the situation where the web’s security model gets interesting. Its tools (<code>search_articles</code>, <code>create_ticket</code> and <code>get_ticket_status</code>) are the book’s test case for cross-origin rules and page-embedded agents in Chapter 7, and for the threat models in Chapter 12.</p>
+<p><em>Test Agent</em> is optional. It is a minimal agent harness, built either as an extension or as an in-page agent using Chrome’s on-device model through the Prompt API, which you can use to call your tools and run evaluations without depending on any particular commercial assistant. It is built in Chapter 9, and Chapter 14 runs it as the in-page counterpart to its eval harness.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Project</th>
+<th>What it is</th>
+<th>What it teaches</th>
+<th>Main chapters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fjord Table</td>
+<td>An Oslo restaurant’s booking page</td>
+<td>First tools, confirmation in the site’s own UI, the declarative API, an end-to-end first app, testing</td>
+<td>4, 5, 8, 9, 14</td>
+</tr>
+<tr>
+<td>Trailhead</td>
+<td>A React + TypeScript outdoor-gear store, prices in NOK</td>
+<td>Annotations, errors, frameworks, tool design, consent, evals, the business case; plus a backend MCP server</td>
+<td>3, 6, 10–14, 16</td>
+</tr>
+<tr>
+<td>Helpdesk Widget</td>
+<td>Supportly’s widget inside the Ledgerly dashboard</td>
+<td>Permissions Policy, cross-origin exposure, in-page agents, cross-origin threats</td>
+<td>7, 11, 12</td>
+</tr>
+<tr>
+<td>Test Agent (optional)</td>
+<td>A minimal agent harness</td>
+<td>Calling tools and running evals without a commercial assistant</td>
+<td>9, 14</td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Table 1.2 — The running projects and where they appear.</em></p>
+<figure class="book-figure"><img decoding="async" src="01-the-agentic-web-arrives/images/figure-1-3.png" alt="Figure 1.3 — The book’s four running projects and the chapters in which each does most of its work. Fjord Table introduces the API, Trailhead carries the production chapters, Helpdesk Widget covers cross-origin embedding, and the optional Test Agent exercises everyone else’s tools." /><figcaption>Figure 1.3 — The book’s four running projects and the chapters in which each does most of its work. Fjord Table introduces the API, Trailhead carries the production chapters, Helpdesk Widget covers cross-origin embedding, and the optional Test Agent exercises everyone else’s tools.</figcaption></figure>
+<p>Every code listing in the book is also in the companion repository, <code>vibeprogrammer/webmcp-book-demos</code> on GitHub, organised by chapter, with tests that run each example against a mock of the API and, where possible, against Chromium with WebMCP enabled.<sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup> This chapter and the next have no code. From Chapter 3 on, almost every chapter does.</p>
+<h2 id="what-this-book-will-and-will-not-cover"><a class="anchor-link" href="#what-this-book-will-and-will-not-cover">What this book will and will not cover</a></h2>
+<p>This is a book for people who build web applications and want to make them work well with AI agents. It assumes you are comfortable with JavaScript, and for some chapters with TypeScript and React. It does not assume you know anything about AI agents, MCP or WebMCP.</p>
+<p>Here is what it covers.</p>
+<ul>
+<li><em>Why.</em> Part I (Chapters 1 to 4) explains the problem, the history of tools as the unit of agent capability, the Model Context Protocol, and where WebMCP came from.</li>
+<li><em>The API.</em> Part II (Chapters 5 to 8) covers WebMCP in depth: registering tools, annotations, the life of a tool call, errors and cancellation, frames and origins, and the declarative form-based API that Chrome still ships but the specification has dropped.</li>
+<li><em>Building.</em> Part III (Chapters 9 to 11) builds real apps: a first app end to end, WebMCP in React and Angular, and how to design tools that agents actually use well.</li>
+<li><em>Trust.</em> Part IV (Chapters 12 and 13) covers threat models, prompt injection, privacy, consent and keeping the human in the loop.</li>
+<li><em>Shipping.</em> Part V (Chapters 14 and 15) covers testing, debugging and evaluations, and an honest map of browser support and the standards process.</li>
+<li><em>Strategy.</em> Part VI (Chapters 16 and 17) is for product managers and technical leaders as much as for developers: what agent-readiness means for a business, and where things are heading.</li>
+</ul>
+<p>If you are a product manager or a tech lead, you can read Part I, the opening of each chapter, Part IV’s discussion of risk, and Part VI without following the code.</p>
+<p>Here is what it does not cover.</p>
+<ul>
+<li><em>How to build an agent.</em> The book is about the site’s side of the conversation. It explains enough about agents to make sense of how your tools will be used, and the optional Test Agent is deliberately small. It is not a guide to prompting, model selection or agent frameworks.</li>
+<li><em>Backend integrations in depth.</em> Chapter 3 teaches enough MCP to build a working server and to understand WebMCP’s vocabulary. For production MCP servers, the protocol’s own documentation goes much further.</li>
+<li><em>Making actuation better.</em> Your site should still work well for agents that click, and much of what makes a site easier for agents to click through (semantic HTML, proper labels, a good accessibility tree) is also good for people. The explainer is explicit that WebMCP “will not conflict with these existing automation techniques.”<sup class="footnote-ref"><a href="#fn9" id="fnref9:5">9:5</a></sup> But this book is about the structured alternative, not about tuning your markup for screenshot readers.</li>
+<li><em>A stable standard.</em> There isn’t one yet. WebMCP is a draft. The current version of the specification, dated 15 October 2026, describes itself as a Draft Community Group Report that “is not a W3C Standard nor is it on the W3C Standards Track.”<sup class="footnote-ref"><a href="#fn2" id="fnref2:3">2:3</a></sup> The book teaches the API as it stands in that draft and in the Chromium origin trials, flags every part that is unsettled with a <em>Still in flux</em> box like the ones in this chapter, and explains the debates so that you can follow them after publication.</li>
+</ul>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: reading a book about a moving target</p>
+<p>Every factual claim about the specification, browsers and vendors in this book carries a footnote to a source, with the date it was checked. Most were checked in mid-October 2026. When a footnote and the live specification disagree, the specification wins. Appendix D collects the API changes that have already happened, so you can recognise older code when you see it.</p></aside>
+<h2 id="chapter-summary"><a class="anchor-link" href="#chapter-summary">Chapter summary</a></h2>
+<ul>
+<li>Browser agents are agents that act on web pages on a user’s behalf. They come built into browsers (Gemini in Chrome, Perplexity’s Comet, and for a while OpenAI’s ChatGPT Atlas), as extensions (Claude in Chrome), and embedded in pages, sometimes running an on-device model.</li>
+<li>Today most of them work by <em>actuation</em>: observing the page through screenshots, DOM and accessibility-tree snapshots, then simulating clicks and keystrokes, one model call per step.</li>
+<li>Actuation needs nothing from the site, which is why it spread so fast. It also breaks on layout changes, ambiguous controls and multi-step flows, and it treats everything on the page, including hostile text, as potential instructions.</li>
+<li>It is expensive and slow. Each screenshot costs roughly a thousand or more input tokens, vendors list latency as a known limitation, and published benchmarks still show a gap between agents and people on complex web tasks.</li>
+<li>Sites have a stake: they lose sales when agents fail, have no say in how agents use them, risk being bypassed by backend integrations, and already have the front-end code that agents need.</li>
+<li>In the browser the user is usually present. WebMCP’s first goal is human-in-the-loop cooperation, not full autonomy, and it lets the site, which knows which of its actions matter, show its own confirmations.</li>
+<li>The alternative is structured interaction: the page offers named, described, schema-typed <em>tools</em>, and the agent calls them. Chapter 2 traces how tools became the industry’s unit of agent capability. Chapter 3 covers MCP, and Chapter 4 introduces WebMCP.</li>
+<li>Four projects run through the book: Fjord Table, Trailhead, Helpdesk Widget and the optional Test Agent. Their code lives in the companion repository.</li>
+</ul>
+<h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>Anthropic, “Piloting Claude in Chrome” (25 August 2025; updates of 24 November and 18 December 2025). <a href="https://www.anthropic.com/news/claude-for-chrome">https://www.anthropic.com/news/claude-for-chrome</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a> <a href="#fnref1:2" class="footnote-backref">↩︎</a> <a href="#fnref1:3" class="footnote-backref">↩︎</a> <a href="#fnref1:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, Status of this document, §1 Introduction and §2 Terminology. <a href="https://webmachinelearning.github.io/webmcp/">https://webmachinelearning.github.io/webmcp/</a> <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a> <a href="#fnref2:2" class="footnote-backref">↩︎</a> <a href="#fnref2:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>Parisa Tabriz, “Chrome: The browser you love, reimagined with AI”, Google Keyword blog (18 September 2025). <a href="https://blog.google/products/chrome/chrome-reimagined-with-ai/">https://blog.google/products/chrome/chrome-reimagined-with-ai/</a> <a href="#fnref3" class="footnote-backref">↩︎</a> <a href="#fnref3:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>OpenAI, “Introducing ChatGPT Atlas” (21 October 2025). <a href="https://openai.com/index/introducing-chatgpt-atlas/">https://openai.com/index/introducing-chatgpt-atlas/</a> <a href="#fnref4" class="footnote-backref">↩︎</a> <a href="#fnref4:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>OpenAI Help Center, “ChatGPT Atlas retirement” (read 15 October 2026: “ChatGPT Atlas has been retired and no longer receives updates”). <a href="https://help.openai.com/en/articles/20001371-chatgpt-atlas-retirement">https://help.openai.com/en/articles/20001371-chatgpt-atlas-retirement</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>Perplexity, “Comet Browser: a Personal AI Assistant” (product page). <a href="https://www.perplexity.ai/comet">https://www.perplexity.ai/comet</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>Chrome for Developers, “WebMCP” (published 18 May 2026, updated 7 October 2026), including “Why WebMCP?”, “Use cases”, “Limitations” and “Imitate an agent to test your tools”. <a href="https://developer.chrome.com/docs/ai/webmcp">https://developer.chrome.com/docs/ai/webmcp</a> <a href="#fnref7" class="footnote-backref">↩︎</a> <a href="#fnref7:1" class="footnote-backref">↩︎</a> <a href="#fnref7:2" class="footnote-backref">↩︎</a> <a href="#fnref7:3" class="footnote-backref">↩︎</a> <a href="#fnref7:4" class="footnote-backref">↩︎</a> <a href="#fnref7:5" class="footnote-backref">↩︎</a> <a href="#fnref7:6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>OpenAI, “Introducing Operator”, including the update of 17 July 2025 (“Operator is now fully integrated into ChatGPT as ChatGPT agent”) and the section on safety. <a href="https://openai.com/index/introducing-operator/">https://openai.com/index/introducing-operator/</a> <a href="#fnref8" class="footnote-backref">↩︎</a> <a href="#fnref8:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p>WebMCP explainer (README), introduction, “Background and Motivation” and “Existing web actuation techniques”, webmachinelearning/webmcp. <a href="https://github.com/webmachinelearning/webmcp">https://github.com/webmachinelearning/webmcp</a> <a href="#fnref9" class="footnote-backref">↩︎</a> <a href="#fnref9:1" class="footnote-backref">↩︎</a> <a href="#fnref9:2" class="footnote-backref">↩︎</a> <a href="#fnref9:3" class="footnote-backref">↩︎</a> <a href="#fnref9:4" class="footnote-backref">↩︎</a> <a href="#fnref9:5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p>Chrome for Developers, “The Prompt API” (published 20 May 2025, updated 26 August 2026). <a href="https://developer.chrome.com/docs/ai/prompt-api">https://developer.chrome.com/docs/ai/prompt-api</a> <a href="#fnref10" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>OpenAI, “Computer-Using Agent”, including “How it works” and the benchmark table. <a href="https://openai.com/index/computer-using-agent/">https://openai.com/index/computer-using-agent/</a> <a href="#fnref11" class="footnote-backref">↩︎</a> <a href="#fnref11:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>Anthropic, “Computer use tool”, Claude API documentation, including “How computer use works”, “Manage screenshot history” and “Limitations”. <a href="https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/computer-use-tool">https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/computer-use-tool</a> <a href="#fnref12" class="footnote-backref">↩︎</a> <a href="#fnref12:1" class="footnote-backref">↩︎</a> <a href="#fnref12:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>Artem Chaikin and Shivan Kaul Sahib, “Agentic Browser Security: Indirect Prompt Injection in Perplexity Comet”, Brave blog (20 August 2025). <a href="https://brave.com/blog/comet-prompt-injection/">https://brave.com/blog/comet-prompt-injection/</a> <a href="#fnref13" class="footnote-backref">↩︎</a> <a href="#fnref13:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>Shuyan Zhou et al., “WebArena: A Realistic Web Environment for Building Autonomous Agents”, arXiv:2307.13854 (v1 25 July 2023; v4 16 April 2024), abstract. <a href="https://arxiv.org/abs/2307.13854">https://arxiv.org/abs/2307.13854</a> <a href="#fnref14" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>WebMCP explainer, “Goals &amp; Non-Goals”. <a href="https://github.com/webmachinelearning/webmcp#goals--non-goals">https://github.com/webmachinelearning/webmcp#goals--non-goals</a> <a href="#fnref15" class="footnote-backref">↩︎</a> <a href="#fnref15:1" class="footnote-backref">↩︎</a> <a href="#fnref15:2" class="footnote-backref">↩︎</a> <a href="#fnref15:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn16" class="footnote-item"><p>WebMCP, “Browser and Agent Implementation Status”, webmachinelearning/webmcp (read 15 October 2026). <a href="https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md">https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md</a> <a href="#fnref16" class="footnote-backref">↩︎</a> <a href="#fnref16:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn17" class="footnote-item"><p>vibeprogrammer/webmcp-book-demos, the companion repository for this book. <a href="https://github.com/vibeprogrammer/webmcp-book-demos">https://github.com/vibeprogrammer/webmcp-book-demos</a> <a href="#fnref17" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <span></span>
+          <a class="pager-link" rel="next" href="02-from-apis-to-tools.html">Chapter 2: From APIs to Tools: A Short History →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

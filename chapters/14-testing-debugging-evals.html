@@ -1,0 +1,970 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chapter 14: Testing, Debugging and Evals — Tools, Not Clicks</title>
+  <meta name="description" content="How to know your tools work when the caller is probabilistic: DevTools support, protocol-level testing, eval suites and measurement in production.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Chapter 14: Testing, Debugging and Evals — Tools, Not Clicks">
+  <meta property="og:description" content="How to know your tools work when the caller is probabilistic: DevTools support, protocol-level testing, eval suites and measurement in production.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a class="is-current" aria-current="page" href="14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="../appendices/a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="../appendices/b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="../appendices/c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="../appendices/d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / Chapter 14 <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">chapter:</span> <span class="fm-v">14</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">V — Shipping and the Ecosystem</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">50 min</span></p>
+        <h1>Chapter 14: Testing, Debugging and Evals</h1>
+        <p class="lead">How to know your tools work when the caller is probabilistic: DevTools support, protocol-level testing, eval suites and measurement in production.</p>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#two-kinds-of-it-works">Two kinds of “it works”</a></li><li><a href="#seeing-your-tools">Seeing your tools</a></li><li><a href="#layer-1-unit-tests-for-execute-callbacks">Layer 1: unit tests for execute callbacks</a></li><li><a href="#layer-2-the-browser-contract">Layer 2: the browser contract</a></li><li><a href="#layer-3-calling-tools-the-way-a-browser-agent-does">Layer 3: calling tools the way a browser agent does</a></li><li><a href="#layer-4-evals">Layer 4: evals</a></li><li><a href="#layer-5-real-user-measurement">Layer 5: real-user measurement</a></li><li><a href="#sending-what-you-learn-back">Sending what you learn back</a></li><li><a href="#chapter-summary">Chapter summary</a></li><li><a href="#notes">Notes</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“When testing systems that use generative AI, you must account for probabilistic outcomes that don't match your expectations.”</em></p>
+<p>— Chrome for Developers, “Build your user’s agentic workflows with WebMCP tools”<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<h2 id="two-kinds-of-it-works"><a class="anchor-link" href="#two-kinds-of-it-works">Two kinds of “it works”</a></h2>
+<p>By now Fjord Table has two tools and Trailhead has five. Each one is a small piece of JavaScript with a name, a description, a schema and an <code>execute</code> callback. You could test them the way you test any function: call it with some input and check what comes back. That is necessary, and this chapter starts there. It is not enough, though, because a WebMCP tool has a second kind of correctness that ordinary functions don’t have.</p>
+<p>The first kind is the one you already know. Given valid input, does <code>book_table</code> open the confirmation dialog and return a reference? Given a date in the wrong format, does it say so in a way an agent can act on? When the agent gives up halfway, does the dialog close and nothing get booked? These questions have yes-or-no answers, and you can check them on every commit.</p>
+<p>The second kind is about the caller. A person who wants a table for two adults and three children on Saturday says so in words. Somewhere between those words and your <code>execute</code> callback, a language model has to pick the right tool, turn “three kids” into part of <code>partySize</code>, and turn “Saturday 28 November” into <code>2026-11-28</code>. You don’t control that model, it may behave differently tomorrow, and it may be a different model on a different user’s machine. Your descriptions and schemas are the only part of that step you own, so they are what you test, by running real models against them many times and counting how often they get it right. That kind of test is called an <em>eval</em>.</p>
+<p>This chapter builds both, in five layers (Figure 14.1). The lower layers are fast, cheap and certain. The upper ones are slower and noisier, and closer to what your users will actually experience. A good test suite uses all five, and it runs the lower ones far more often than the upper ones.</p>
+<figure class="book-figure"><img decoding="async" src="14-testing-debugging-evals/images/figure-14-1.png" alt="Figure 14.1 — Five layers of evidence that a tool works, from unit tests of execute callbacks up to real-user measurement." /><figcaption>Figure 14.1 — Five layers of evidence. Unit tests and browser tests tell you the code is right. Protocol tests tell you it is right when called the way a browser agent calls it. Evals tell you whether models can use it. Real-user measurement tells you whether they do.</figcaption></figure>
+<p>Every API detail below was checked against the WebMCP Draft Community Group Report of 15 October 2026,<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup> and against Chrome’s documentation and the Chrome DevTools Protocol as published that day. All behaviour described as <em>observed</em> was observed in Chromium 156.0.8078.4, launched by Playwright with the <code>WebMCPTesting</code> feature switched on (the switch behind <code>chrome://flags/#enable-webmcp-testing</code>).<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup> Every listing in this chapter is in the book’s companion repository, <code>vibeprogrammer/webmcp-book-demos</code>, under <code>chapters/14-testing-debugging-evals/</code>, and its test script runs every one of them.</p>
+<h2 id="seeing-your-tools"><a class="anchor-link" href="#seeing-your-tools">Seeing your tools</a></h2>
+<p>Before you write a single test, look at what the browser actually received. Most first bugs with WebMCP are not logic bugs. A tool never registered because the code ran before the feature check, or registered twice and the second call rejected, or registered on the wrong view, or has a schema that isn’t quite what you meant. All of these are visible in a few seconds with the right tool.</p>
+<h3 id="the-webmcp-pane-in-chrome-devtools"><a class="anchor-link" href="#the-webmcp-pane-in-chrome-devtools">The WebMCP pane in Chrome DevTools</a></h3>
+<p>Chrome DevTools has a <strong>WebMCP</strong> pane inside the <strong>Application</strong> panel.<sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup> It has two halves. <strong>Available Tools</strong> is a live list of the tools on the current tab, with each tool’s name and description as the agent sees them and an invocation counter. <strong>Invoked Tools</strong> is a log of every call, and selecting an entry shows its status (Completed, Canceled, In Progress or Error), the exact input the agent sent and the output or error your tool returned. You can filter the log by name, by status and by tool type, declarative or imperative.<sup class="footnote-ref"><a href="#fn4" id="fnref4:1">4:1</a></sup></p>
+<p>Two features make the pane more than a viewer. The first is manual testing: click a tool in <strong>Available Tools</strong>, or the play icon next to a logged call, and DevTools opens a form where you can edit the input and press <strong>Run tool</strong>. Starting from a logged call pre-fills the form with the agent’s input, which is the fastest way to reproduce “the agent called it with <em>this</em> and it went wrong”. The second is troubleshooting: according to the documentation, the output pane shows error messages when parameters or return values don’t match the defined schema, and the invocation counter tells you whether an agent ever chose your tool for a given prompt.<sup class="footnote-ref"><a href="#fn4" id="fnref4:2">4:2</a></sup></p>
+<p>Microsoft Edge lists “WebMCP debugging” among the updates Edge 149 took from the Chromium project, so the same pane is available in Edge.<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup></p>
+<blockquote><p><strong>Still in flux: what the pane checks.</strong> Chrome’s page says the output pane reports schema violations. The specification, however, gives the browser no role in validating input against <code>inputSchema</code>, and issue #92, which asks whether the browser should own validation, was still open on 15 October 2026.<sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup> Treat anything the pane flags as a debugging aid, not as a guarantee that the browser will reject bad calls in production. Your <code>execute</code> callback still has to validate.</p></blockquote>
+<h3 id="an-agent-of-your-own-the-inspector-extension-and-devtools-for-agents"><a class="anchor-link" href="#an-agent-of-your-own-the-inspector-extension-and-devtools-for-agents">An agent of your own: the Inspector extension and DevTools for agents</a></h3>
+<p>The pane lets <em>you</em> call tools. To see what a <em>model</em> does with them, you need an agent. Chrome’s documentation points to two. The Model Context Tool Inspector is a Chrome extension that lists a page’s tools, shows their input schemas and lets you try natural-language prompts against them, with Gemini through an API key or, if you enable <code>chrome://flags/#prompt-api-tool-use</code>, with an on-device model through the Prompt API.<sup class="footnote-ref"><a href="#fn3" id="fnref3:1">3:1</a></sup> The Chrome team publishes it alongside a set of demos, a polyfill and the eval tool we use later in this chapter, in the <code>GoogleChromeLabs/webmcp-tools</code> repository.<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup></p>
+<p>The second is aimed at coding agents. Chrome DevTools for agents, published on npm as <code>chrome-devtools-mcp</code> (version 1.10.1 on 15 October 2026), is an MCP server that lets an AI coding assistant drive a Chrome instance. It has two WebMCP tools, <code>list_webmcp_tools</code> and <code>execute_webmcp_tool</code>, which are off by default and turned on with the <code>--categoryExperimentalWebmcp</code> server argument.<sup class="footnote-ref"><a href="#fn4" id="fnref4:3">4:3</a></sup><sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup> With that flag, the assistant you write code with can call the tools you just wrote and read the results, which closes a useful loop while you are still designing a tool. It also tells you what both of these tools are built on: the DevTools Protocol, which we use directly later in this chapter.</p>
+<h3 id="tools-that-exist-only-for-tooling-the-debugging-annotation"><a class="anchor-link" href="#tools-that-exist-only-for-tooling-the-debugging-annotation">Tools that exist only for tooling: the <code>debugging</code> annotation</a></h3>
+<p>Chrome 156 added a fourth annotation alongside <code>readOnlyHint</code>, <code>untrustedContentHint</code> and <code>consequentialHint</code>. When <code>debugging</code> is <code>true</code>, the tool is meant for inspection and developer tooling, such as testing frameworks or DevTools’ own AI assistance, and general-purpose agents can filter it out.<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup> That makes it the right home for helpers you want during development but don’t want a shopper’s assistant to call, for example a tool that seeds Trailhead’s cart with test data or dumps the current view’s state.</p>
+<p>In Chromium 156 the annotation comes back from <code>getTools()</code> with the other three, filled in with defaults. A tool registered with <code>annotations: { readOnlyHint: true, debugging: true }</code> was returned with <code>{ consequentialHint: false, debugging: true, readOnlyHint: true, untrustedContentHint: false }</code>, and the DevTools Protocol reported it as <code>{ readOnly: true, untrustedContent: false, consequential: false, debugging: true }</code>. A tool registered with no annotations had no <code>annotations</code> member at all, in either place.</p>
+<p>The 15 October 2026 draft defines <code>debugging</code> in its <code>ToolAnnotations</code> dictionary next to the other three hints, with a default of <code>false</code>.<sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup></p>
+<blockquote><p><strong>Still in flux: a hint, not a lock.</strong> Like every annotation, <code>debugging</code> is a hint. The draft stores it and hands it to agents, but what an agent does with it is up to the agent, and Chrome’s documentation only says that agents <em>can</em> filter such tools out.<sup class="footnote-ref"><a href="#fn9" id="fnref9:1">9:1</a></sup><sup class="footnote-ref"><a href="#fn10" id="fnref10:1">10:1</a></sup> Never rely on it to hide anything sensitive. A debugging tool should not ship to production at all, or should only be registered behind a development-only check.</p></blockquote>
+<h2 id="layer-1-unit-tests-for-execute-callbacks"><a class="anchor-link" href="#layer-1-unit-tests-for-execute-callbacks">Layer 1: unit tests for <code>execute</code> callbacks</a></h2>
+<h3 id="write-tools-as-data"><a class="anchor-link" href="#write-tools-as-data">Write tools as data</a></h3>
+<p>The easiest WebMCP code to test is code that doesn’t touch <code>document.modelContext</code> at all. A tool is a plain object: name, description, schema, annotations and a function. If you build that object in a factory that takes its dependencies as arguments, a test can build the same object with fakes and call <code>execute()</code> directly in Node, with no browser involved.</p>
+<p>Listing 14.1 does that for two of Trailhead’s tools. Everything the tools need from the rest of the store (the catalogue, the cart and the part of the UI that shows results) arrives as an argument. The schema follows the canonical Trailhead definitions used throughout the book, and the validation in <code>checkSearchInput()</code> repeats every rule the schema states, because nothing else will enforce them. Failures come back in Chapter 11’s shape, <code>{ status, code, message }</code>, with the same codes as Chapter 10’s Trailhead.</p>
+<figure class="code"><figcaption>Listing 14.1 — Trailhead’s tools built by a factory, so tests can inject fakes (trailhead-tools.js)</figcaption>
+<pre><code class="language-js">// Trailhead's tools, built by a factory. Every dependency arrives as an
+// argument, so a unit test can pass fakes and call execute() directly.
+export function createTrailheadTools({ catalog, cart, ui }) {
+  const searchProducts = {
+    name: 'search_products',
+    title: 'Search products',
+    description:
+      'Search the Trailhead catalogue by keyword, with an optional category, ' +
+      'maximum price in NOK and in-stock filter. Returns up to 10 products. ' +
+      'Does not change the cart.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query:       { type: 'string', description: 'Keywords, e.g. &quot;2-person tent&quot;' },
+        category:    { type: 'string', enum: CATEGORIES },
+        maxPrice:    { type: 'number', minimum: 0, description: 'Maximum price in NOK' },
+        inStockOnly: { type: 'boolean', description: 'Only products that are in stock' }
+      },
+      required: ['query']
+    },
+    annotations: { readOnlyHint: true },
+    async execute(input, { signal }) {
+      const problem = checkSearchInput(input);              // the browser won't check
+      if (problem) return { status: 'error', code: 'INVALID_ARGUMENT', message: problem };
+      const hits = await catalog.search(input, { signal });
+      ui.showResults(hits);                                 // the user sees it too
+      return {
+        products: hits.slice(0, 10).map((p) =&gt; ({
+          sku: p.sku, name: p.name,
+          price: { amount: p.price, currency: 'NOK' },
+          rating: p.rating, inStock: p.stock &gt; 0
+        }))
+      };
+    }
+  };
+
+  const addToCart = {
+    name: 'add_to_cart',
+    title: 'Add to cart',
+    description:
+      'Add a product to the cart by its SKU from search_products. ' +
+      'Returns the updated cart line, or a status and code saying why not.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        sku:      { type: 'string', description: 'SKU from search_products' },
+        quantity: { type: 'integer', minimum: 1, maximum: 10 }
+      },
+      required: ['sku', 'quantity']
+    },
+    async execute({ sku, quantity }, { signal }) {
+      if (typeof sku !== 'string' || sku === '')
+        return { status: 'error', code: 'INVALID_ARGUMENT', message: 'sku must be a SKU from search_products.' };
+      if (!Number.isInteger(quantity) || quantity &lt; 1 || quantity &gt; 10)
+        return { status: 'error', code: 'INVALID_ARGUMENT', message: 'quantity must be a whole number from 1 to 10.' };
+      const product = await catalog.get(sku, { signal });
+      if (!product)
+        return { status: 'error', code: 'UNKNOWN_SKU', message: `No product ${sku}. Call search_products first.` };
+      if (product.stock &lt; quantity)
+        return { status: 'refused', code: 'OUT_OF_STOCK',
+                 message: `Only ${product.stock} of ${product.name} in stock. Ask the user before adding fewer.`,
+                 available: product.stock };
+      const line = cart.add(product, quantity);
+      ui.showCart(cart);
+      return { sku, quantity: line.quantity,
+               lineTotal: { amount: line.quantity * product.price, currency: 'NOK' } };
+    }
+  };
+
+  return [searchProducts, addToCart];
+}
+
+export const CATEGORIES = ['tents', 'sleeping-bags', 'backpacks', 'footwear', 'clothing'];
+
+function checkSearchInput({ query, category, maxPrice, inStockOnly }) {
+  if (typeof query !== 'string' || query.trim() === '')
+    return 'query must be a non-empty string, e.g. &quot;tent&quot;.';
+  if (category !== undefined &amp;&amp; !CATEGORIES.includes(category))
+    return `category must be one of: ${CATEGORIES.join(', ')}.`;
+  if (maxPrice !== undefined &amp;&amp; !(typeof maxPrice === 'number' &amp;&amp; maxPrice &gt;= 0))
+    return 'maxPrice must be a number of NOK, 0 or more.';
+  if (inStockOnly !== undefined &amp;&amp; typeof inStockOnly !== 'boolean')
+    return 'inStockOnly must be true or false.';
+  return null;
+}
+</code></pre></figure>
+<p>Registering these tools in the real store is one line per tool, the same pattern as Chapter 5: <code>for (const tool of createTrailheadTools(deps)) await document.modelContext.registerTool(tool, { signal });</code>. The factory is what changes. In Chapter 10’s React version the dependencies come from the component tree; here they could come from anywhere.</p>
+<h3 id="what-to-test"><a class="anchor-link" href="#what-to-test">What to test</a></h3>
+<p>Listing 14.2 is the unit test file. It uses <code>node:test</code>, the test runner built into Node.js, which has been stable since Node 20, so it needs no dependencies.<sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup> The fakes in <code>tests/fixtures/fakes.js</code> are about sixty lines: an in-memory catalogue of six products, a cart and a UI object that records what it was asked to show.</p>
+<figure class="code"><figcaption>Listing 14.2 — Unit tests for the execute callbacks (tests/trailhead-tools.test.js)</figcaption>
+<pre><code class="language-js">// Unit tests for Trailhead's execute callbacks. No browser, no WebMCP:
+// node --test tests/trailhead-tools.test.js
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { createTrailheadTools } from '../trailhead-tools.js';
+import { fakeCatalog, fakeCart, recordingUi } from './fixtures/fakes.js';
+
+function setup() {
+  const catalog = fakeCatalog();
+  const ui = recordingUi();
+  const [search, addToCart] = createTrailheadTools({ catalog, cart: fakeCart(), ui });
+  return { catalog, ui, search, addToCart };
+}
+const run = (tool, input, signal = new AbortController().signal) =&gt;
+  tool.execute(input, { signal });
+
+test('search_products returns NOK prices and shows the same results', async () =&gt; {
+  const { search, ui } = setup();
+  const { products } = await run(search, { query: 'tent', maxPrice: 3000 });
+  assert.ok(products.length &gt; 0);
+  for (const p of products) {
+    assert.equal(p.price.currency, 'NOK');
+    assert.ok(p.price.amount &lt;= 3000);
+  }
+  assert.equal(ui.calls.at(-1)[0], 'showResults');           // the user sees it too
+});
+
+test('input the schema forbids comes back as a value, not a throw', async () =&gt; {
+  const { search, catalog } = setup();
+  for (const input of [{}, { query: '' }, { query: 'tent', maxPrice: '3000' },
+                       { query: 'tent', category: 'kayaks' }]) {
+    const result = await run(search, input);
+    assert.equal(result.status, 'error', JSON.stringify(input));
+    assert.equal(result.code, 'INVALID_ARGUMENT');
+    assert.match(result.message, /must/);                    // tells the agent how to fix it
+  }
+  assert.equal(catalog.searches, 0);                         // never reached the backend
+});
+
+test('add_to_cart explains a stock problem the agent can act on', async () =&gt; {
+  const { addToCart } = setup();
+  const result = await run(addToCart, { sku: 'TH-TENT-2P', quantity: 9 });
+  assert.equal(result.status, 'refused');
+  assert.equal(result.code, 'OUT_OF_STOCK');
+  assert.equal(result.available, 3);
+});
+
+test('an aborted call stops before touching the backend', async () =&gt; {
+  const { search, catalog } = setup();
+  const controller = new AbortController();
+  controller.abort();
+  await assert.rejects(run(search, { query: 'tent' }, controller.signal),
+                       { name: 'AbortError' });
+  assert.equal(catalog.searches, 0);
+});
+</code></pre></figure>
+<p>Each test targets a specific way a tool can let an agent down.</p>
+<p><strong>The result is shaped the way the description promises.</strong> Prices are in NOK, at most ten products come back, and the same results reach the page. The last check matters more than it looks. Chapter 4 argued that a tool should drive the same UI a person uses, so the user can see what the agent sees. A unit test is the cheapest place to keep that promise from quietly breaking.</p>
+<p><strong>Input the schema forbids is answered with a value.</strong> This is the most important test in the file. The browser passes your callback whatever object the agent sent, as long as it parses as a JSON object. It does not check it against <code>inputSchema</code>; the draft’s tool execute steps only reject input that isn’t an object.<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup> Whether the browser <em>should</em> validate is still being debated in issue #92, which was opened in February 2026 and was still open on 15 October.<sup class="footnote-ref"><a href="#fn6" id="fnref6:1">6:1</a></sup> Until that changes, a missing <code>query</code>, a price sent as the string <code>'3000'</code> or a category the store doesn’t have will all reach your code. The test sends each of them and checks two things: the tool returns status <code>'error'</code> with code <code>INVALID_ARGUMENT</code> and a message that says how to fix the call, and the backend was never touched.</p>
+<p><strong>Stock problems are explained, not thrown.</strong> A <code>refused</code> result with code <code>OUT_OF_STOCK</code> that includes <code>available: 3</code> lets an agent offer the user three tents instead of failing. Chapter 6 covered why recoverable failures should be return values, and Chapter 11 why a business rule is a refusal rather than an error. This is where you check that they stay that way.</p>
+<p><strong>An aborted call stops early.</strong> An agent that gives up aborts the signal it passed to your callback. The test hands the tool an already-aborted signal and checks that it rejects with <code>AbortError</code> before reaching the catalogue. In the real page this is what keeps a cancelled search from overwriting the results of the user’s next one.</p>
+<p>Run the file with <code>node --test tests/trailhead-tools.test.js</code>. On the machine used for this chapter the four tests took about 80 milliseconds in total. That speed is the point of this layer. These tests can run on every save, and they cover most of the logic in your tools.</p>
+<blockquote><p><strong>A schema contract test.</strong> Validation code and schemas drift apart. Someone raises the maximum quantity to 20 in the schema and forgets the check, or the other way round. A cheap guard is a test that walks the schema and, for every constraint it declares (<code>required</code>, <code>enum</code>, <code>minimum</code>, <code>maximum</code>), sends one input that breaks it and expects status <code>'error'</code> with code <code>INVALID_ARGUMENT</code>. The second test in Listing 14.2 is a hand-written version of that idea for <code>search_products</code>.</p></blockquote>
+<h2 id="layer-2-the-browser-contract"><a class="anchor-link" href="#layer-2-the-browser-contract">Layer 2: the browser contract</a></h2>
+<p>Unit tests stop at the edge of your code. The next layer checks the part between your code and the agent: that the tool actually registers, that <code>getTools()</code> lists it with the schema and annotations you meant, and that a call made through the browser comes back the way you expect.</p>
+<p>There are two ways to get a <code>document.modelContext</code> into a test browser, and the companion repository uses both. The first is a mock: a small script injected before the page loads that implements <code>registerTool()</code>, <code>getTools()</code> and <code>executeTool()</code> in plain JavaScript. It works in any browser and on any CI machine, and it lets you test pages long before the browsers you care about ship the API. The second is the real thing: Chromium launched with <code>--enable-features=WebMCPTesting</code>. Playwright’s bundled Chromium 156 accepts the switch, so the same test file can run against either, chosen by an environment variable.</p>
+<p>The test for Listing 14.8, later in this chapter, is written that way. <code>tests/rum.test.js</code> loads a page that registers Trailhead’s tools, calls them with <code>getTools()</code> and <code>executeTool()</code> from inside the page, and runs once with the mock and once with Chromium’s own implementation. Running both is not redundant. The mock tells you that your page uses the API as specified. Chromium tells you what will actually happen today, and the two disagree in more places than you might expect.</p>
+<p><strong>Table 14.1 — Things a browser contract test should pin down, as observed in Chromium 156, against the 15 October 2026 draft</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Behaviour</th>
+<th>Draft (15 October 2026)</th>
+<th>Chromium 156 (observed)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A tool returns a plain string</td>
+<td>JSON-serialized, so it arrives quoted</td>
+<td>Arrives as the bare string</td>
+</tr>
+<tr>
+<td>A tool returns <code>undefined</code></td>
+<td><code>OperationError</code></td>
+<td>The string <code>&quot;undefined&quot;</code></td>
+</tr>
+<tr>
+<td>A tool throws</td>
+<td><code>OperationError</code></td>
+<td><code>UnknownError</code></td>
+</tr>
+<tr>
+<td>Calling a tool that was unregistered</td>
+<td><code>NotFoundError</code></td>
+<td><code>UnknownError</code></td>
+</tr>
+<tr>
+<td>What <code>executeTool()</code> resolves to</td>
+<td>A string (<code>Promise&lt;DOMString&gt;</code>)</td>
+<td>A string; parse it with <code>JSON.parse()</code></td>
+</tr>
+<tr>
+<td>Invalid name, empty description, duplicate name</td>
+<td><code>InvalidStateError</code></td>
+<td><code>InvalidStateError</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Sources: the specification’s IDL, execute steps and table of tool execution errors;<sup class="footnote-ref"><a href="#fn12" id="fnref12:1">12:1</a></sup> the Chromium observations come from the Fjord Table test suite in the companion repository, run against Chromium 156 with WebMCPTesting on 14 October 2026 and again on 15 October 2026.<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup></p>
+<p>Some of these differences are history catching up. The draft replaced its generic <code>UnknownError</code> rejections with specific <code>DOMException</code> types on 8 October 2026, in pull request #339. The Chromium 156 build used here still reports <code>UnknownError</code>.<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup> The practical rule is to assert on the shape your <em>page</em> controls, a JSON object with a <code>status</code> field (Chapter 11’s convention), and to avoid tests that depend on how the browser wraps strings, <code>undefined</code> or exceptions. Those are exactly the details most likely to change before WebMCP ships anywhere.</p>
+<h3 id="what-the-web-platform-tests-already-cover"><a class="anchor-link" href="#what-the-web-platform-tests-already-cover">What the web-platform-tests already cover</a></h3>
+<p>The browsers have their own contract tests, and they are worth reading. The specification names its test suite in its header: the <code>webmcp/</code> directory of web-platform-tests (WPT), with results on wpt.fyi.<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">2:1</a></sup> On 15 October 2026 that directory held an IDL test, tests for the <code>toolactivated</code> and <code>toolcancel</code> events, a <code>declarative/</code> folder and an <code>imperative/</code> folder with 49 HTML test files.<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup> Their names read like a list of edge cases you would otherwise discover in production: <code>executeTool-abort</code>, <code>unregister-during-executeTool</code>, <code>executeTool-target-navigation</code>, <code>exposedTo-cross-origin-child</code>, <code>register_tool_name_validation</code>, <code>non-secure</code>.</p>
+<p>The tests use <code>testharness.js</code>, so each one is a short page you can open and read. They are often the most precise description of a behaviour you will find anywhere. The <code>toolcancel</code> event test, for example, carries a comment explaining that aborting the caller’s signal rejects the <code>executeTool()</code> promise first and only then cancels the tool’s own execution, which queues the task that fires <code>toolcancel</code>, so awaiting the rejection alone isn’t enough to observe the event.<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup> If your page listens for <code>toolcancel</code> to clean up, that ordering is exactly what your own tests need to wait for.</p>
+<p>When you find a behaviour the WPT suite doesn’t cover, and the observations in this chapter include a few, a WPT-style test page is also the most useful bug report you can write. We come back to that at the end of the chapter.</p>
+<h2 id="layer-3-calling-tools-the-way-a-browser-agent-does"><a class="anchor-link" href="#layer-3-calling-tools-the-way-a-browser-agent-does">Layer 3: calling tools the way a browser agent does</a></h2>
+<p>A test that calls <code>executeTool()</code> from inside the page is calling your tool the way an <em>in-page</em> agent would (Chapter 7). Chrome’s built-in agent and agent extensions don’t live in your page. They reach your tools through the browser. If you want a test that exercises that path, including the part where a person clicks a button in your UI halfway through a call, you need to stand where the browser agent stands. The Chrome DevTools Protocol lets you do that.</p>
+<h3 id="the-webmcp-domain"><a class="anchor-link" href="#the-webmcp-domain">The WebMCP domain</a></h3>
+<p>The DevTools Protocol (CDP) is the interface Chrome DevTools uses to inspect and control the browser, and the one that automation libraries such as Playwright and Puppeteer let you talk to directly. Its tip-of-tree version has an experimental <code>WebMCP</code> domain with four commands and four events (Table 14.2).<sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup> DevTools’ WebMCP pane is, in effect, a user interface for this domain.</p>
+<p><strong>Table 14.2 — The WebMCP domain of the Chrome DevTools Protocol (experimental, tip-of-tree, 15 October 2026)</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Kind</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WebMCP.enable</code></td>
+<td>command</td>
+<td>Starts sending events, and fires <code>toolsAdded</code> for every tool already registered</td>
+</tr>
+<tr>
+<td><code>WebMCP.disable</code></td>
+<td>command</td>
+<td>Stops sending events</td>
+</tr>
+<tr>
+<td><code>WebMCP.invokeTool</code></td>
+<td>command</td>
+<td>Calls a tool by <code>frameId</code> and <code>toolName</code> with an <code>input</code> object; returns an <code>invocationId</code></td>
+</tr>
+<tr>
+<td><code>WebMCP.cancelInvocation</code></td>
+<td>command</td>
+<td>Cancels a pending invocation by <code>invocationId</code></td>
+</tr>
+<tr>
+<td><code>WebMCP.toolsAdded</code></td>
+<td>event</td>
+<td>Tools were registered: name, description, <code>inputSchema</code>, annotations, <code>frameId</code>, and the registration’s stack trace</td>
+</tr>
+<tr>
+<td><code>WebMCP.toolsRemoved</code></td>
+<td>event</td>
+<td>Tools were unregistered: name and <code>frameId</code></td>
+</tr>
+<tr>
+<td><code>WebMCP.toolInvoked</code></td>
+<td>event</td>
+<td>A call started: tool name, frame, <code>invocationId</code> and the input as a JSON string</td>
+</tr>
+<tr>
+<td><code>WebMCP.toolResponded</code></td>
+<td>event</td>
+<td>A call ended with status <code>Completed</code>, <code>Canceled</code> or <code>Error</code>, plus <code>output</code>, <code>errorText</code> or the thrown exception</td>
+</tr>
+</tbody>
+</table></div>
+<p>Source: the protocol definition.<sup class="footnote-ref"><a href="#fn17" id="fnref17:1">17:1</a></sup></p>
+<p>Two details in the definition are worth noticing. The <code>invokeTool</code> response, which carries the <code>invocationId</code>, “is sent before tool events”, so a client always learns the ID before the result arrives. And the description of <code>output</code> warns that it is untrusted and “poses a prompt injection risk”, so clients should treat it as potentially malicious input.<sup class="footnote-ref"><a href="#fn17" id="fnref17:2">17:2</a></sup> Your test harness is a client too. If you ever feed tool output back into a model, as the eval runner later in this chapter does, that warning applies to you.</p>
+<h3 id="a-small-driver"><a class="anchor-link" href="#a-small-driver">A small driver</a></h3>
+<p>Listing 14.3 wraps the domain in about fifty lines. It keeps a live map of tools from <code>toolsAdded</code> and <code>toolsRemoved</code>, records every call, and turns the asynchronous <code>invokeTool</code> + <code>toolResponded</code> pair into something a test can <code>await</code>. It works with any CDP session that has <code>send()</code> and <code>on()</code>, which includes Playwright’s <code>CDPSession</code> (created with <code>page.context().newCDPSession(page)</code>)<sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup> and Puppeteer’s.</p>
+<figure class="code"><figcaption>Listing 14.3 — A driver for the WebMCP DevTools Protocol domain (webmcp-cdp.js)</figcaption>
+<pre><code class="language-js">// A small driver for the WebMCP domain of the Chrome DevTools Protocol
+// (experimental). Takes any CDP session with send() and on(), such as
+// Playwright's CDPSession or Puppeteer's CDPSession.
+export async function attachWebMCP(cdp) {
+  const tools = new Map();        // name -&gt; Tool, as DevTools reports it
+  const calls = [];               // one record per invocation, for reports
+  const waiting = new Map();      // invocationId -&gt; resolve()
+  const early = new Map();        // responses that beat the waiter
+
+  cdp.on('WebMCP.toolsAdded', (e) =&gt; { for (const t of e.tools) tools.set(t.name, t); });
+  cdp.on('WebMCP.toolsRemoved', (e) =&gt; { for (const t of e.tools) tools.delete(t.name); });
+  cdp.on('WebMCP.toolInvoked', (e) =&gt; calls.push({ ...e, input: JSON.parse(e.input) }));
+  cdp.on('WebMCP.toolResponded', (e) =&gt; {
+    Object.assign(calls.find((c) =&gt; c.invocationId === e.invocationId) ?? {}, e);
+    const resolve = waiting.get(e.invocationId);
+    if (resolve) resolve(e); else early.set(e.invocationId, e);
+  });
+  await cdp.send('WebMCP.enable');  // replays toolsAdded for tools already registered
+
+  async function start(name, input = {}, { timeout = 15_000 } = {}) {
+    const tool = tools.get(name);
+    if (!tool) throw new Error(`No WebMCP tool named &quot;${name}&quot;`);
+    const { invocationId } = await cdp.send('WebMCP.invokeTool',
+      { frameId: tool.frameId, toolName: name, input });
+    const response = early.has(invocationId)
+      ? Promise.resolve(early.get(invocationId))
+      : new Promise((resolve, reject) =&gt; {
+          const timer = setTimeout(() =&gt; reject(new Error(`${name}: no response`)), timeout);
+          waiting.set(invocationId, (e) =&gt; { clearTimeout(timer); resolve(e); });
+        });
+    return { invocationId, response };   // response: { status, output?, errorText?, exception? }
+  }
+
+  return {
+    tools,
+    calls,
+    start,
+    async invoke(name, input, options) {
+      return (await start(name, input, options)).response;
+    },
+    cancel: (invocationId) =&gt; cdp.send('WebMCP.cancelInvocation', { invocationId }),
+    async waitForTool(name, { timeout = 5_000 } = {}) {
+      for (const end = Date.now() + timeout; !tools.has(name); ) {
+        if (Date.now() &gt; end) throw new Error(`Tool &quot;${name}&quot; never appeared`);
+        await new Promise((r) =&gt; setTimeout(r, 50));
+      }
+      return tools.get(name);
+    }
+  };
+}
+</code></pre></figure>
+<p>There are two ways to call a tool. <code>invoke()</code> waits for the result, which suits most tests. <code>start()</code> returns as soon as the browser has accepted the call, with the <code>invocationId</code> and a promise for the response, so a test can do something in the middle: click a button, check the screen, or cancel the call.</p>
+<p>The <code>early</code> map is defensive. The protocol promises that the <code>invokeTool</code> response comes before the tool’s events, but a fast tool can finish before the test’s own code has registered its waiter, and the map makes sure that response isn’t lost.</p>
+<h3 id="fjord-table-under-test"><a class="anchor-link" href="#fjord-table-under-test">Fjord Table under test</a></h3>
+<p>Listing 14.4 uses the driver to test Fjord Table’s booking flow end to end. It serves the Fjord Table demo from the companion repository, launches Chromium with WebMCP on and attaches the driver to each new page <em>before</em> navigating, so that <code>toolsAdded</code> reports both tools as the page registers them.</p>
+<figure class="code"><figcaption>Listing 14.4 — Fjord Table driven over the DevTools Protocol, with a human click in the middle (tests/fjord-table.cdp.test.js)</figcaption>
+<pre><code class="language-js">// Fjord Table, driven the way a browser agent drives it: over the WebMCP
+// DevTools Protocol domain, with a human click in the site's own dialog.
+// Needs Chromium with WebMCP on:  node --test tests/fjord-table.cdp.test.js
+import { test, before, after } from 'node:test';
+import assert from 'node:assert/strict';
+import { chromium } from 'playwright';
+import { attachWebMCP } from '../webmcp-cdp.js';
+import { serve, nextOpenDate } from './fixtures/serve.js';
+
+let browser, site;
+before(async () =&gt; {
+  site = await serve(new URL('../../../fjord-table/', import.meta.url));
+  browser = await chromium.launch({ args: ['--enable-features=WebMCPTesting'] });
+});
+after(async () =&gt; { await browser?.close(); await site?.close(); });
+
+async function openBookingView() {
+  const page = await browser.newPage();
+  const webmcp = await attachWebMCP(await page.context().newCDPSession(page));
+  await page.goto(`${site.url}#/book`);
+  await webmcp.waitForTool('search_availability');
+  await webmcp.waitForTool('book_table');      // registered only on this view
+  return { page, webmcp };
+}
+const DATE = nextOpenDate();
+
+test('agent books, person confirms in the site dialog', async () =&gt; {
+  const { page, webmcp } = await openBookingView();
+  const found = await webmcp.invoke('search_availability', { date: DATE, partySize: 2 });
+  assert.equal(found.status, 'Completed');
+  const time = found.output.slots[0];
+
+  const call = await webmcp.start('book_table', { date: DATE, time, partySize: 2 });
+  await page.waitForSelector('#confirm-dialog[open]');    // Fjord Table's own UI
+  await page.click('#confirm-submit');                     // the human's decision
+  const { status, output } = await call.response;
+
+  assert.equal(status, 'Completed');
+  assert.equal(output.status, 'booked');
+  assert.match(output.reference, /^FT-\d+$/);
+  assert.equal(webmcp.calls.at(-1).input.partySize, 2);    // what the agent sent
+});
+
+test('bad input is answered with a value the agent can fix', async () =&gt; {
+  const { webmcp } = await openBookingView();
+  const { status, output } =
+    await webmcp.invoke('book_table', { date: '20/11/2026', time: '19:00', partySize: 2 });
+  assert.equal(status, 'Completed');                       // not an Error
+  assert.equal(output.status, 'error');
+  assert.equal(output.code, 'INVALID_INPUT');
+  assert.match(output.message, /YYYY-MM-DD/);
+});
+
+test('cancelling a call aborts the tool and closes the dialog', async () =&gt; {
+  const { page, webmcp } = await openBookingView();
+  const { output } = await webmcp.invoke('search_availability', { date: DATE, partySize: 4 });
+  const call = await webmcp.start('book_table',
+    { date: DATE, time: output.slots[0], partySize: 4 });
+  await page.waitForSelector('#confirm-dialog[open]');
+  await webmcp.cancel(call.invocationId);                  // the agent gives up
+
+  assert.equal((await call.response).status, 'Canceled');
+  await page.waitForFunction(() =&gt; !document.querySelector('#confirm-dialog').open);
+  assert.equal(await page.isHidden('#confirmation'), true); // nothing was booked
+});
+</code></pre></figure>
+<p>The first test is the whole of Figure 14.2 in a dozen lines. The agent searches, starts a booking, and the test waits for Fjord Table’s own confirmation dialog to open before playing the person who presses <strong>Confirm booking</strong>. Only then does <code>toolResponded</code> arrive, with status <code>Completed</code> and Fjord Table’s result as the output. The second test checks that a malformed date comes back as a <em>successful</em> call whose output has status <code>'error'</code> and code <code>INVALID_INPUT</code>, which is what Chapter 6 asked for: from the protocol’s point of view, a recoverable failure is not an error. The third starts a booking, cancels it from the agent’s side while the dialog is open, and checks three things: the protocol reports <code>Canceled</code>, the dialog closes because the tool’s own <code>signal</code> was aborted, and nothing was booked.</p>
+<figure class="book-figure"><img decoding="async" src="14-testing-debugging-evals/images/figure-14-2.png" alt="Figure 14.2 — Testing a tool the way a browser agent calls it: the test attaches to the WebMCP domain, invokes a tool, plays the person who confirms, and reads the result." /><figcaption>Figure 14.2 — The sequence behind the first test in Listing 14.4, as observed in Chromium 156. Solid arrows are calls; dashed arrows are protocol events.</figcaption></figure>
+<p>All three tests passed against Chromium 156. Writing them also turned up a few behaviours that the protocol definition doesn’t spell out, which are worth knowing before you rely on them.</p>
+<p><strong><code>toolsAdded</code> arrives once per registration.</strong> Fjord Table registers two tools, and the driver saw two separate <code>toolsAdded</code> events, each with one tool. Because <code>book_table</code> is registered as soon as the booking view opens, while <code>search_availability</code> waits for its module’s top-level <code>await</code>, <code>book_table</code> was reported first. A first version of the test waited only for <code>book_table</code> and then failed to find <code>search_availability</code>. Wait for each tool you are about to call by name, as <code>openBookingView()</code> does, rather than for “some tools”.</p>
+<p><strong>Calling a tool that doesn’t exist fails the command itself.</strong> <code>invokeTool</code> with an unknown name was rejected with the protocol error <code>Tool not found</code>, rather than returning an <code>invocationId</code> and reporting an error later.</p>
+<p><strong>A throw arrives with the exception.</strong> A tool that threw <code>new Error('kaput')</code> produced a <code>toolResponded</code> with status <code>Error</code>, an empty <code>errorText</code>, and an <code>exception</code> object whose description was the error’s message and stack trace, pointing at the line in the page that threw. That is far more useful in a test log than the <code>UnknownError</code> an in-page caller gets (Table 14.1).</p>
+<p><strong>Cancelling aborts the tool’s signal and fires <code>toolcancel</code>.</strong> After <code>cancelInvocation</code>, the tool’s <code>signal</code> fired <code>abort</code>, <code>toolcancel</code> was dispatched on the page’s <code>document.modelContext</code>, and the protocol reported <code>Canceled</code>.</p>
+<p><strong>Object results arrive as objects.</strong> For a tool that returned <code>{ got: { x: 3 } }</code>, the <code>output</code> field of <code>toolResponded</code> was that object, not a JSON string. The protocol declares <code>output</code> as type <code>any</code>, so a different build could send a string. The driver passes it through unchanged.</p>
+<p><strong><code>toolactivated</code> fired after <code>execute</code> had started.</strong> The draft’s tool execute steps fire <code>toolactivated</code> at the page before the execute callback is invoked.<sup class="footnote-ref"><a href="#fn12" id="fnref12:2">12:2</a></sup> In Chromium 156, the synchronous start of an <code>async execute</code> function ran <em>before</em> the page’s <code>toolactivated</code> listener. If you use the event to set up state that <code>execute</code> relies on, you will hit that difference. Use it for logging and UI hints, not for setup.</p>
+<blockquote><p><strong>Still in flux: the protocol domain.</strong> The <code>WebMCP</code> domain is marked experimental and lives only in the tip-of-tree version of the protocol, which changes with Chrome.<sup class="footnote-ref"><a href="#fn17" id="fnref17:3">17:3</a></sup> Its annotation names (<code>readOnly</code>, <code>consequential</code>) already differ from the page API’s (<code>readOnlyHint</code>, <code>consequentialHint</code>), and its <code>Annotation</code> type still has an <code>autosubmit</code> field for declarative tools, which the specification removed on 8 October 2026 (pull request #338).<sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup> Keep protocol access in one module, as Listing 14.3 does, so that a rename costs you one file. And keep a small set of in-page tests next to the protocol tests, because only those use a surface the specification defines.</p></blockquote>
+<p>The same driver works for tools registered inside frames, at least on paper: every <code>Tool</code> in <code>toolsAdded</code> carries the <code>frameId</code> of the frame that registered it, and <code>invokeTool</code> takes that ID.<sup class="footnote-ref"><a href="#fn17" id="fnref17:4">17:4</a></sup> The Helpdesk Widget of Chapter 7 registers its tools inside a cross-origin iframe. We haven’t yet tested that combination through the protocol, so treat it as the next experiment rather than a known result.</p>
+<h2 id="layer-4-evals"><a class="anchor-link" href="#layer-4-evals">Layer 4: evals</a></h2>
+<p>Everything so far has been deterministic. Each test calls a tool with input <em>you</em> chose. An eval hands that choice to a model. You give the model a user’s request and your page’s tools, let it decide what to call, run those calls against the real page, and score what happened. Chrome’s guidance on building tools puts it in one sentence: evals can help you verify consistent tool selection, parameter extraction, and state management.<sup class="footnote-ref"><a href="#fn1" id="fnref1:1">1:1</a></sup> Those three phrases are a good checklist for what a suite should cover.</p>
+<ul>
+<li><strong>Tool selection.</strong> Given “is there a table for two on Friday?”, does the model call <code>search_availability</code>, not <code>book_table</code>?</li>
+<li><strong>Parameter extraction.</strong> Does “two adults and three kids” become <code>partySize: 5</code>? Does “21 November” become <code>2026-11-21</code>, not <code>21/11/2026</code>?</li>
+<li><strong>State management.</strong> After a search, does the model book the slot the user asked for, and does the page end up showing a booking?</li>
+</ul>
+<h3 id="a-task-suite"><a class="anchor-link" href="#a-task-suite">A task suite</a></h3>
+<p>You don’t have to invent a format. The Chrome team’s <code>webmcp-evals</code> tool, published in <code>GoogleChromeLabs/webmcp-tools</code> and on npm (version 0.0.4, marked experimental), reads test cases from an <code>evals.json</code> file.<sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup> Each case has a name, the conversation so far and the tool calls you expect, with argument values that can be exact or constraints such as <code>$pattern</code>, <code>$contains</code>, <code>$gte</code> or <code>$type</code>. Expected calls can be marked <code>optional</code>.<sup class="footnote-ref"><a href="#fn20" id="fnref20:1">20:1</a></sup> Listing 14.5 is Fjord Table’s first suite in that format.</p>
+<figure class="code"><figcaption>Listing 14.5 — A task suite for Fjord Table (evals/fjord-table.evals.json)</figcaption>
+<pre><code class="language-json">[
+  {
+    &quot;name&quot;: &quot;Find a table for two on a named date&quot;,
+    &quot;messages&quot;: [
+      { &quot;role&quot;: &quot;user&quot;, &quot;type&quot;: &quot;message&quot;,
+        &quot;content&quot;: &quot;Is there a table for two at Fjord Table on Friday 20 November 2026, around 7 in the evening?&quot; }
+    ],
+    &quot;expectedCall&quot;: [
+      { &quot;functionName&quot;: &quot;search_availability&quot;,
+        &quot;arguments&quot;: { &quot;date&quot;: &quot;2026-11-20&quot;, &quot;partySize&quot;: 2,
+                       &quot;time&quot;: { &quot;$pattern&quot;: &quot;^(18|19|20):\\d{2}$&quot; } } }
+    ]
+  },
+  {
+    &quot;name&quot;: &quot;Search, then book the slot the user asked for&quot;,
+    &quot;messages&quot;: [
+      { &quot;role&quot;: &quot;user&quot;, &quot;type&quot;: &quot;message&quot;,
+        &quot;content&quot;: &quot;Book us a window table for four at 19:30 on 21 November 2026. It's my mum's birthday.&quot; }
+    ],
+    &quot;expectedCall&quot;: [
+      { &quot;functionName&quot;: &quot;search_availability&quot;,
+        &quot;arguments&quot;: { &quot;date&quot;: &quot;2026-11-21&quot;, &quot;partySize&quot;: 4 }, &quot;optional&quot;: true },
+      { &quot;functionName&quot;: &quot;book_table&quot;,
+        &quot;arguments&quot;: { &quot;date&quot;: &quot;2026-11-21&quot;, &quot;time&quot;: &quot;19:30&quot;, &quot;partySize&quot;: 4,
+                       &quot;seating&quot;: &quot;window&quot;, &quot;notes&quot;: { &quot;$contains&quot;: &quot;birthday&quot; } } }
+    ],
+    &quot;assertions&quot;: [
+      { &quot;type&quot;: &quot;dom&quot;, &quot;selector&quot;: &quot;#confirmation&quot;,
+        &quot;expect&quot;: { &quot;text&quot;: { &quot;$contains&quot;: &quot;Booked: FT-&quot; } } }
+    ]
+  },
+  {
+    &quot;name&quot;: &quot;Children count as guests&quot;,
+    &quot;messages&quot;: [
+      { &quot;role&quot;: &quot;user&quot;, &quot;type&quot;: &quot;message&quot;,
+        &quot;content&quot;: &quot;Two adults and three kids, Saturday 28 November 2026 at 17:30 please. Any table is fine.&quot; }
+    ],
+    &quot;expectedCall&quot;: [
+      { &quot;functionName&quot;: &quot;search_availability&quot;,
+        &quot;arguments&quot;: { &quot;date&quot;: &quot;2026-11-28&quot;, &quot;partySize&quot;: 5 }, &quot;optional&quot;: true },
+      { &quot;functionName&quot;: &quot;book_table&quot;,
+        &quot;arguments&quot;: { &quot;date&quot;: &quot;2026-11-28&quot;, &quot;time&quot;: &quot;17:30&quot;, &quot;partySize&quot;: 5 } }
+    ],
+    &quot;assertions&quot;: [
+      { &quot;type&quot;: &quot;dom&quot;, &quot;selector&quot;: &quot;#my-bookings li&quot;, &quot;expect&quot;: { &quot;count&quot;: 1 } }
+    ]
+  }
+]
+</code></pre></figure>
+<p>The three cases follow the three phrases above. The first is pure tool selection and extraction, with a regular expression that accepts any time between 18:00 and 20:59 for “around 7 in the evening”. The second and third test the full search-then-book flow, with the search marked <code>optional</code> because a model that books directly from an unambiguous request isn’t wrong. The <code>assertions</code> arrays are explained in a moment; they are the lesson of the first run.</p>
+<p><code>webmcp-evals</code> can run a suite like this in several ways. Its <code>local</code> mode sends static tool schemas to a model without a browser. Its <code>browser</code> mode runs the model against tools on a live page through Puppeteer. Its <code>smoke</code> mode needs no model at all: it executes the expected calls directly against the page, which makes it a deterministic check that the suite and the page still agree. And its <code>simulate</code> mode lets a second model play the user over several turns, then checks the final page with DOM assertions, a judge model, or both.<sup class="footnote-ref"><a href="#fn20" id="fnref20:2">20:2</a></sup> The README is clear about what to rely on: conversations driven by a simulated user “remain non-deterministic, so keep <code>smoke</code> as the fully deterministic, API-key-free CI signal”.<sup class="footnote-ref"><a href="#fn20" id="fnref20:3">20:3</a></sup></p>
+<h3 id="a-minimal-runner"><a class="anchor-link" href="#a-minimal-runner">A minimal runner</a></h3>
+<p>To show what is going on inside such a tool, and to have something you can run against any model with an OpenAI-compatible endpoint, the companion repository has a small runner of its own. It reads the same <code>evals.json</code> format, executes calls over the driver from Listing 14.3, and scores the results. Listing 14.6 is the argument matcher. It deliberately follows the semantics of <code>webmcp-evals</code>’ own matcher: objects match as subsets, so a model that adds an extra field isn’t penalized; arrays match strictly by position; and an object whose keys all start with <code>$</code> is a constraint.<sup class="footnote-ref"><a href="#fn21" id="fnref21">21</a></sup></p>
+<figure class="code"><figcaption>Listing 14.6 — Matching expected arguments (evals/matcher.js)</figcaption>
+<pre><code class="language-js">// Argument matching for evals.json suites, with the semantics of
+// webmcp-evals' matcher: objects match as subsets, arrays match strictly,
+// and an object whose keys all start with &quot;$&quot; is a constraint.
+export function matchesArgument(expected, actual) {
+  if (isConstraint(expected)) return matchesConstraint(expected, actual);
+  if (expected === actual) return true;
+  if (typeof expected !== 'object' || expected === null ||
+      typeof actual !== 'object' || actual === null) return false;
+  if (Array.isArray(expected) !== Array.isArray(actual)) return false;
+  if (Array.isArray(expected)) {
+    return expected.length === actual.length &amp;&amp;
+           expected.every((e, i) =&gt; matchesArgument(e, actual[i]));
+  }
+  return Object.keys(expected).every((key) =&gt;
+    Object.hasOwn(actual, key) &amp;&amp; matchesArgument(expected[key], actual[key]));
+}
+
+const isConstraint = (v) =&gt; typeof v === 'object' &amp;&amp; v !== null &amp;&amp; !Array.isArray(v) &amp;&amp;
+  Object.keys(v).length &gt; 0 &amp;&amp; Object.keys(v).every((k) =&gt; k.startsWith('$'));
+
+function matchesConstraint(c, actual) {
+  const num = typeof actual === 'number';
+  const str = typeof actual === 'string';
+  return Object.entries(c).every(([op, value]) =&gt; {
+    switch (op) {
+      case '$pattern':  return str &amp;&amp; new RegExp(value).test(actual);
+      case '$contains': return str &amp;&amp; actual.includes(value);
+      case '$gt':  return num &amp;&amp; actual &gt; value;
+      case '$gte': return num &amp;&amp; actual &gt;= value;
+      case '$lt':  return num &amp;&amp; actual &lt; value;
+      case '$lte': return num &amp;&amp; actual &lt;= value;
+      case '$type':
+        if (value === 'array') return Array.isArray(actual);
+        if (value === 'null') return actual === null;
+        if (value === 'object') return typeof actual === 'object' &amp;&amp; actual !== null &amp;&amp; !Array.isArray(actual);
+        return typeof actual === value;
+      case '$any':  return true;          // presence was checked by the caller
+      default: throw new Error(`Unknown constraint ${op}`);
+    }
+  });
+}
+</code></pre></figure>
+<p>Listing 14.7 is the runner. For each case and each run it opens a fresh page, asks the agent for its next call, executes it, feeds the result back, and repeats until the agent stops calling tools or runs out of steps. Then it scores the <em>trajectory</em>, the ordered list of calls, against <code>expectedCall</code>, and finally checks the page.</p>
+<figure class="code"><figcaption>Listing 14.7 — Running a suite against a live page (evals/run-evals.js)</figcaption>
+<pre><code class="language-js">// Run an evals.json suite against a live page: an agent proposes tool calls,
+// the page executes them over CDP, and the trajectory is scored.
+import { matchesArgument } from './matcher.js';
+
+export async function runSuite({ suite, openPage, agent, runs = 5, maxSteps = 6 }) {
+  const report = [];
+  for (const testCase of suite) {
+    const result = { name: testCase.name, runs, passed: 0, failures: [] };
+    for (let run = 0; run &lt; runs; run++) {
+      const { page, webmcp, close } = await openPage();    // a fresh page every run
+      const trajectory = [];
+      let verdict;
+      try {
+        const messages = [...testCase.messages];
+        for (let step = 0; step &lt; maxSteps; step++) {
+          const tools = [...webmcp.tools.values()];
+          const { call } = await agent.next({ messages, tools });
+          if (!call) break;                                 // the agent has answered
+          const reply = await webmcp.invoke(call.functionName, call.arguments);
+          trajectory.push({ ...call, status: reply.status, output: reply.output });
+          messages.push({ role: 'tool', name: call.functionName, call,
+                          content: JSON.stringify(reply.output ?? reply.errorText ?? null) });
+        }
+        verdict = scoreTrajectory(testCase.expectedCall, trajectory);
+        if (verdict.ok) verdict = await checkPage(page, testCase.assertions ?? []);
+      } finally {
+        await close();
+      }
+      if (verdict.ok) result.passed++; else result.failures.push(verdict.reason);
+    }
+    report.push({ ...result, passRate: result.passed / runs });
+  }
+  return report;
+}
+
+// Expected calls must appear in order. Optional ones may be missing.
+// Extra calls in between are allowed: agents often look before they leap.
+export function scoreTrajectory(expected, actual) {
+  let from = 0;
+  for (const exp of expected) {
+    const at = actual.findIndex((a, i) =&gt; i &gt;= from &amp;&amp;
+      a.functionName === exp.functionName &amp;&amp; matchesArgument(exp.arguments, a.arguments));
+    if (at === -1) {
+      if (exp.optional) continue;
+      const got = actual.map((a) =&gt; `${a.functionName}(${JSON.stringify(a.arguments)})`);
+      return { ok: false,
+               reason: `expected ${exp.functionName}; got ${got.join(' → ') || 'no calls'}` };
+    }
+    from = at + 1;
+  }
+  return { ok: true };
+}
+
+// The right calls are not enough: did the page end up where the user wanted?
+// Same shape as webmcp-evals' DOM assertions: one expectation per assertion.
+async function checkPage(page, assertions) {
+  for (const { selector, expect } of assertions) {
+    const [key, want] = Object.entries(expect)[0];
+    const seen = await page.$$eval(selector, (els) =&gt; ({
+      exists: els.length &gt; 0, count: els.length, text: els[0]?.textContent.trim() ?? null }));
+    if (!matchesArgument(want, seen[key]))
+      return { ok: false, reason: `${selector}: expected ${key} ${JSON.stringify(want)}, saw ${JSON.stringify(seen[key])}` };
+  }
+  return { ok: true };
+}
+</code></pre></figure>
+<p>The agent is anything with a <code>next({ messages, tools })</code> method that returns <code>{ call }</code> or <code>{ call: null }</code>. The repository has three. Two are scripted stand-ins with no model behind them: a “careful” agent that does what a good agent should, and a “sloppy” one that makes two classic mistakes, a European date format and forgetting the children. They exist to test the runner itself, and <code>tests/evals.test.js</code> checks that the careful one passes, the sloppy one fails with a readable reason, and the matcher and scorer behave as described. The third, <code>evals/chat-agent.js</code>, turns the page’s tools into function definitions for any OpenAI-compatible Chat Completions endpoint, configured through environment variables, so you can run <code>node evals/run.js --agent=chat --runs=5</code> against whichever model you want to measure.</p>
+<p>If you built Chapter 9’s Test Agent, you already have an agent of the same kind that lives <em>inside</em> the page: <code>createTestAgent()</code> with a <code>scripted()</code> planner lists the tools with <code>getTools()</code>, runs each step with <code>executeTool()</code> and keeps a transcript. The companion repository runs it, unchanged, against the same Fjord Table booking view in <code>tests/test-agent.test.js</code>: a two-step script searches and then books the first slot, and the test plays the guest who confirms (the result is <code>booked</code>) or cancels (the result is <code>cancelled_by_user</code> and nothing is booked). The runner in this chapter stands outside the page, over the protocol, because that is where browser agents stand and because it scores every case the same way. The Test Agent stays the quickest way to script a flow during development, and a second check that your tools behave the same for an in-page caller (Chapter 7).</p>
+<h3 id="what-the-first-run-taught-us"><a class="anchor-link" href="#what-the-first-run-taught-us">What the first run taught us</a></h3>
+<p>The first version of Listing 14.5 had no <code>assertions</code>, and the third case asked for 17:00, not 17:30. We ran it five times against one hosted model (OpenAI’s <code>gpt-6-sol</code>, through its Chat Completions API, with reasoning turned off because that endpoint doesn’t accept function tools with reasoning enabled for this model) on 14 October 2026. The first two cases passed five times out of five. The third failed all five times, always the same way: the model searched for a table for five at 17:00 and then stopped without booking.</p>
+<p>The model’s final message explained why: “There’s no 17:00 table for five on Saturday 28 November. The earliest available is <strong>17:30</strong>. Would you like me to open the booking form for that time?” Fjord Table’s demo backend opens at 17:00 but, for that date and party size, had nothing before 17:30. The model was right. The eval was wrong.</p>
+<p>Then we noticed something worse. The scripted “careful” agent had passed that same case. It had called <code>book_table</code> with exactly the expected arguments, Fjord Table had refused with <code>SLOT_UNAVAILABLE</code>, and the scorer, which only compared calls, had counted it as a success. A trajectory can be perfect and the user can still end up with nothing.</p>
+<p>Both problems have the same fix: check the outcome as well as the calls. <code>webmcp-evals</code> does this in its <code>simulate</code> mode with DOM assertions, deterministic checks against the final page, evaluated once after the conversation ends.<sup class="footnote-ref"><a href="#fn20" id="fnref20:4">20:4</a></sup> Listing 14.7’s <code>checkPage()</code> borrows that shape: a CSS selector and one expectation (<code>exists</code>, <code>count</code> or <code>text</code>), with the same constraint operators as the arguments. The second case now requires the confirmation banner to read “Booked: FT-…”, and the third requires exactly one entry in the user’s list of bookings. A new test in <code>tests/evals.test.js</code> runs the careful agent against a page where the simulated person cancels every confirmation, and checks that both booking cases now fail with a message that names the selector.</p>
+<p>With the third case corrected to 17:30 and the assertions in place, the same model passed all three cases five times out of five, 15 runs in total. The raw reports from both runs are in the repository under <code>evals/results/</code>.</p>
+<p>Read those numbers for what they are. Five runs of three cases against one model on one day is a smoke test, not a measurement. It tells you the suite works and the descriptions aren’t obviously broken. It does not tell you that 100 percent of real conversations will succeed.</p>
+<h3 id="designing-suites-that-keep-telling-you-something"><a class="anchor-link" href="#designing-suites-that-keep-telling-you-something">Designing suites that keep telling you something</a></h3>
+<p>A few habits make the difference between an eval suite that guides your work and one that only produces green ticks.</p>
+<p><strong>Write cases from user language, not from your schema.</strong> Real requests contain “tomorrow”, “around seven”, “me and my partner plus the twins”. If every case already says <code>2026-11-20</code> and <code>partySize 2</code>, you are testing the model’s ability to copy.</p>
+<p><strong>Check outcomes, not just calls.</strong> The 17:00 case is the reason. Where the page shows the result of an action, assert on the page. Where it doesn’t, assert on the tool’s returned <code>status</code>.</p>
+<p><strong>Include cases where the right answer is not to act.</strong> A request for fifteen people is outside <code>book_table</code>’s range of 1 to 12, and the tool’s own error message tells the agent to suggest calling the restaurant. A good suite checks that the agent relays that instead of booking two tables. Neither the <code>evals.json</code> format nor the runner here has a first-class way to say “expect no call”; a <code>simulate</code> case with a judge model and prose success criteria is the closer fit.<sup class="footnote-ref"><a href="#fn20" id="fnref20:5">20:5</a></sup></p>
+<p><strong>Run each case many times and report a rate.</strong> One pass proves little and one failure proves little more. Pick a run count you can afford, keep it fixed, and track the pass rate per case over time.</p>
+<p><strong>Run the same suite across models.</strong> Your tools will be called by whatever model sits behind the user’s browser agent, and you won’t get to choose. Running the suite against two or three models of different sizes, including a small on-device model if you can, tells you how much your descriptions depend on a clever caller. Chapter 5’s advice about descriptions and schemas becomes measurable here.</p>
+<p><strong>Treat failing cases as bugs in either place.</strong> Sometimes the model is wrong and your description needs to be clearer. Sometimes, as with 17:00, the eval is wrong. Read the transcript before changing anything.</p>
+<p><strong>Table 14.3 — Where each layer runs</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>When</th>
+<th>What to run</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Every save or commit</td>
+<td>Unit tests (Listing 14.2); browser tests with the mock</td>
+<td>Seconds, free</td>
+</tr>
+<tr>
+<td>Every pull request</td>
+<td>Browser and protocol tests in Chromium with WebMCPTesting (Listing 14.4); the eval harness with scripted agents, Chapter 9’s Test Agent with a scripted planner, or <code>webmcp-evals smoke</code></td>
+<td>A minute or two, free</td>
+</tr>
+<tr>
+<td>Nightly, or when descriptions change</td>
+<td>The eval suite against two or three real models, several runs each</td>
+<td>Minutes, costs tokens</td>
+</tr>
+<tr>
+<td>Before a release</td>
+<td>Multi-turn simulations with DOM assertions and a judge model; a manual session with the Inspector extension</td>
+<td>Longer, costs tokens and attention</td>
+</tr>
+<tr>
+<td>Continuously, in production</td>
+<td>Real-user measurement (Listing 14.8)</td>
+<td>Small, ongoing</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="layer-5-real-user-measurement"><a class="anchor-link" href="#layer-5-real-user-measurement">Layer 5: real-user measurement</a></h2>
+<p>Evals tell you whether models <em>can</em> use your tools. Only production tells you whether they <em>do</em>, which tools they reach for, how often a call comes back with an error the agent has to recover from, and how long users wait. Chrome’s guidance makes the same point: role-playing is good for a first prototype, but in production you should add real-world telemetry, analyze the interaction logs to find where agents struggle or deviate from the expected paths, and use what you learn to update your evals and tool definitions.<sup class="footnote-ref"><a href="#fn1" id="fnref1:2">1:2</a></sup></p>
+<p>WebMCP makes this easier than measuring agents usually is. An agent that drives your page by clicking looks almost exactly like a person, so analytics can only guess at it. An agent that uses your tools calls your code, so you know exactly when that happens and what came of it.</p>
+<h3 id="wrapping-execute"><a class="anchor-link" href="#wrapping-execute">Wrapping <code>execute</code></a></h3>
+<p>Listing 14.8 wraps a tool so that every call reports one small event: which tool, how it ended, the result’s code when it fell short, and how many milliseconds it took. A call that returned is recorded as <code>ok</code>, or under its Chapter 11 status when it returned <code>error</code>, <code>refused</code>, <code>needs_input</code> or <code>cancelled_by_user</code> (a failure returned as a value, such as <code>refused</code> with <code>OUT_OF_STOCK</code>). A call that never returned is <code>aborted</code> (the caller gave up) or <code>threw</code> (a bug). Chapter 16’s <code>measure.ts</code> uses the same seven words.</p>
+<figure class="code"><figcaption>Listing 14.8 — Measuring real tool calls without recording their contents (instrument-tool.js)</figcaption>
+<pre><code class="language-js">// Real-user measurement for WebMCP tools: wrap execute() to record how each
+// call ended and how long it took. No inputs or outputs leave the page.
+
+// Chapter 11's statuses for a call that returned without doing what was asked.
+const FELL_SHORT = ['error', 'refused', 'needs_input', 'cancelled_by_user'];
+
+export function instrumentTool(tool, report) {
+  const execute = tool.execute;
+  return {
+    ...tool,
+    async execute(input, options) {
+      const started = performance.now();
+      const event = { tool: tool.name, outcome: 'ok', page: location.pathname };
+      try {
+        const result = await execute.call(tool, input, options);
+        if (FELL_SHORT.includes(result?.status))           // a failure returned as a value
+          Object.assign(event, { outcome: result.status, code: result.code ?? null });
+        return result;
+      } catch (err) {
+        event.outcome = options.signal.aborted ? 'aborted' : 'threw';
+        event.code = err?.name ?? 'Error';
+        throw err;
+      } finally {
+        event.ms = Math.round(performance.now() - started);
+        report(event);
+      }
+    }
+  };
+}
+
+// One way to report: batch events and send them when the page is hidden.
+export function beaconReporter(url) {
+  const queue = [];
+  addEventListener('visibilitychange', () =&gt; {
+    if (document.visibilityState === 'hidden' &amp;&amp; queue.length)
+      navigator.sendBeacon(url, JSON.stringify(queue.splice(0)));
+  });
+  return (event) =&gt; queue.push({ ...event, at: Date.now() });
+}
+</code></pre></figure>
+<p>Registering an instrumented tool is a one-word change: <code>registerTool(instrumentTool(tool, report), { signal })</code>. The wrapper keeps the tool’s name, description, schema and annotations, so agents see exactly the same tool. Because every tool in this book follows Chapter 11’s result convention, one rule reads them all: a domain word such as Fjord Table’s <code>booked</code> counts as <code>ok</code>, and the four statuses for a call that fell short are recorded as they are, with their <code>code</code>. A site with its own result shape would change only the <code>FELL_SHORT</code> check.</p>
+<p><code>beaconReporter()</code> batches events and sends them with <code>navigator.sendBeacon()</code> when the page is hidden. The Beacon API exists for this job: delivering analytics without blocking the page, including when the user is leaving.<sup class="footnote-ref"><a href="#fn22" id="fnref22">22</a></sup></p>
+<p>The test for this listing, <code>tests/rum.test.js</code>, registers instrumented Trailhead tools on a test page and runs a successful search, an out-of-stock <code>add_to_cart</code>, an <code>add_to_cart</code> with a quantity of 0, and a slow search that the caller aborts after 100 milliseconds. It checks that the events read <code>ok</code>, <code>refused</code> with code <code>OUT_OF_STOCK</code>, <code>error</code> with code <code>INVALID_ARGUMENT</code>, and <code>aborted</code>, and that the search term never appears in any event. It passed with the mock and with Chromium 156. Against Chromium it also checks that <code>toolactivated</code> fired once for each call, in order.</p>
+<h3 id="what-to-record-and-what-not-to"><a class="anchor-link" href="#what-to-record-and-what-not-to">What to record, and what not to</a></h3>
+<p>Notice what the wrapper leaves out: the input and the output. Tool inputs are whatever the user told their agent, often in their own words. Fjord Table’s <code>notes</code> field exists to carry allergies, and a booking carries names and dates. The specification’s privacy section warns about tools that ask for more than they need,<sup class="footnote-ref"><a href="#fn23" id="fnref23">23</a></sup> and the same discipline applies to what you log about a call. The outcome, the error code and the duration are enough to answer the questions that matter:</p>
+<ul>
+<li><strong>Which tools are used, and how often?</strong> A tool no agent calls is either badly described or not needed.</li>
+<li><strong>How often does each tool return a recoverable failure, and with which code?</strong> A high rate of <code>error</code> with <code>INVALID_ARGUMENT</code> on one tool almost always means its schema or description is misleading models. Turn the most common bad inputs into new eval cases.</li>
+<li><strong>How often are calls aborted?</strong> Frequent aborts on a slow tool mean agents, or users, are giving up waiting.</li>
+<li><strong>How long do calls take?</strong> For a consequential tool, the duration includes the time the person spent looking at your confirmation dialog, which is worth tracking on its own.</li>
+<li><strong>What happens after an agent call?</strong> Joining tool events with your existing funnel (did a search lead to a booking, a cart to a checkout?) is the start of measuring agent-driven conversion, which Chapter 16 picks up.</li>
+</ul>
+<p>The page can also count activations without wrapping anything, by listening for <code>toolactivated</code> on <code>document.modelContext</code>.<sup class="footnote-ref"><a href="#fn24" id="fnref24">24</a></sup> That is a reasonable way to count calls from code you don’t control, but it only tells you that a call started. The wrapper tells you how it ended.</p>
+<blockquote><p><strong>Still in flux: knowing who called.</strong> Nothing in the 15 October 2026 draft tells your <code>execute</code> callback which agent is calling, or whether the caller is a browser agent, an extension or an in-page agent from another frame.<sup class="footnote-ref"><a href="#fn2" id="fnref2:2">2:2</a></sup> Your measurements will count calls, not callers, until that changes. Don’t try to infer the agent from the user agent string or timing; you will be wrong often enough to mislead yourself.</p></blockquote>
+<h2 id="sending-what-you-learn-back"><a class="anchor-link" href="#sending-what-you-learn-back">Sending what you learn back</a></h2>
+<p>WebMCP is in an origin trial so that its designers can learn from sites like yours. Almost everything in this chapter produces findings that are useful to them: a behaviour that differs from the specification, a DevTools gap, an eval that shows models misreading a pattern the specification encourages. The channels are specific, and using the right one makes it far more likely that your report leads to a change.</p>
+<p><strong>Table 14.4 — Where to send what</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>What you found</th>
+<th>Where it goes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The API shape itself: a missing feature, a confusing name, an unclear algorithm</td>
+<td>An issue on the explainer and specification repository, <code>webmachinelearning/webmcp</code><sup class="footnote-ref"><a href="#fn25" id="fnref25">25</a></sup></td>
+</tr>
+<tr>
+<td>Chrome behaving differently from the specification, or a crash</td>
+<td>A Chromium bug, component <code>Blink&gt;Agentic Platform&gt;WebMCP</code><sup class="footnote-ref"><a href="#fn25" id="fnref25:1">25:1</a></sup><sup class="footnote-ref"><a href="#fn26" id="fnref26">26</a></sup></td>
+</tr>
+<tr>
+<td>Feedback on Chrome’s trial and early access to changes</td>
+<td>Chrome’s early preview program and its mailing list<sup class="footnote-ref"><a href="#fn25" id="fnref25:2">25:2</a></sup></td>
+</tr>
+<tr>
+<td>Feedback on Edge’s trial</td>
+<td>Edge’s trial page and the surveys Microsoft sends to registered participants<sup class="footnote-ref"><a href="#fn27" id="fnref27">27</a></sup></td>
+</tr>
+<tr>
+<td>A behaviour that should be tested in every browser</td>
+<td>A test in the <code>webmcp/</code> directory of web-platform-tests<sup class="footnote-ref"><a href="#fn15" id="fnref15:1">15:1</a></sup></td>
+</tr>
+</tbody>
+</table></div>
+<p>Commenting on an issue is open to anyone. Making substantive contributions to the specification itself, such as pull requests with normative text, requires joining the W3C Web Machine Learning Community Group and agreeing to its contributor license agreement.<sup class="footnote-ref"><a href="#fn28" id="fnref28">28</a></sup></p>
+<p>A good report has the same parts wherever it goes: the browser and version, the flag or trial token, a minimal page that shows the problem, what you expected with a link to the specification text that says so, and what you observed. For browser behaviour, the best minimal page is a WPT-style test. Here is what a report of one of this chapter’s observations could say:</p>
+<blockquote class="epigraph"><p><em>Chromium 156.0.8078.4, <code>--enable-features=WebMCPTesting</code>. When a tool is invoked through <code>WebMCP.invokeTool</code> or <code>executeTool()</code>, the synchronous part of an <code>async</code> execute callback runs before a <code>toolactivated</code> listener on <code>document.modelContext</code>. The tool execute steps fire <code>toolactivated</code> before invoking the callback (link). Test page attached; it logs the order of the two.</em></p></blockquote>
+<p>Reports like this are short, can be checked in a minute, and point at exactly one sentence of the specification. They are also what turns a team’s private test suite into something that improves the platform for everyone else.</p>
+<h2 id="chapter-summary"><a class="anchor-link" href="#chapter-summary">Chapter summary</a></h2>
+<ul>
+<li>A WebMCP tool has two kinds of correctness: the code does what it promises, and models can work out how to use it. The first is tested with ordinary deterministic tests, the second with evals.</li>
+<li>Chrome’s DevTools has a WebMCP pane in the Application panel that lists available tools, logs every call with its input, output and status, and lets you run a tool by hand. Edge 149 includes the same Chromium feature. The Model Context Tool Inspector extension and Chrome DevTools for agents (<code>--categoryExperimentalWebmcp</code>) put a model in front of your tools during development.</li>
+<li>The <code>debugging</code> annotation, available from Chrome 156 and defined in the 15 October 2026 draft, marks tools meant for developer tooling. It is a hint, not access control.</li>
+<li>Write tools as data, built by factories that take their dependencies as arguments, and unit-test <code>execute</code> directly in Node. Test every input the schema forbids, because the browser doesn’t validate input against <code>inputSchema</code> and issue #92 on that question is still open.</li>
+<li>Browser contract tests should run against both a mock and Chromium with WebMCPTesting, and should assert on the result shapes your page controls rather than on how the browser wraps strings, <code>undefined</code> and exceptions, where Chromium 156 and the draft differ.</li>
+<li>The web-platform-tests <code>webmcp/</code> directory is both the browsers’ contract and a precise reference. A WPT-style test page is the best bug report.</li>
+<li>The experimental <code>WebMCP</code> domain of the DevTools Protocol lets a test call tools the way a browser agent does, cancel calls, and read results and exceptions. Combined with Playwright, it can test a consequential flow end to end, including the person’s click in your own dialog.</li>
+<li>Evals score a model’s tool calls, and should also score the outcome. The first run of Fjord Table’s suite found a broken case, not a broken model, and showed that a perfect-looking trajectory can still book nothing. Run cases many times, across several models, and treat five runs as a smoke test.</li>
+<li>In production, wrap <code>execute</code> to record each call’s outcome and duration, never its content. The <code>code</code> of each <code>error</code> or <code>refused</code> result is the most useful signal you have for improving descriptions and schemas.</li>
+<li>Send API feedback to the <code>webmachinelearning/webmcp</code> issues, Chrome bugs to the <code>Blink&gt;Agentic Platform&gt;WebMCP</code> component, and tests to web-platform-tests.</li>
+</ul>
+<p>Chapter 15 steps back from your own code to the platform it runs on: which browsers implement WebMCP, what the origin trials promise and don’t, and how a Community Group draft does or doesn’t become a standard.</p>
+<h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>Chrome for Developers, “Build your user’s agentic workflows with WebMCP tools” (published 26 August 2026), sections “Evaluate your tools” and “Deploy to production”. <a href="https://developer.chrome.com/docs/ai/webmcp/build-tools">https://developer.chrome.com/docs/ai/webmcp/build-tools</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a> <a href="#fnref1:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>WebMCP, Draft Community Group Report, 15 October 2026, header (editors, test suite link) and “Status of this document” (“not a W3C Standard nor … on the W3C Standards Track”). <a href="https://webmachinelearning.github.io/webmcp/">https://webmachinelearning.github.io/webmcp/</a> <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a> <a href="#fnref2:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>Chrome for Developers, “WebMCP” (published 18 May 2026, updated 7 October 2026), sections “Local WebMCP” (the <code>chrome://flags/#enable-webmcp-testing</code> flag) and the Model Context Tool Inspector and Prompt API tool-use instructions. <a href="https://developer.chrome.com/docs/ai/webmcp">https://developer.chrome.com/docs/ai/webmcp</a> <a href="#fnref3" class="footnote-backref">↩︎</a> <a href="#fnref3:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>Chrome DevTools documentation, “Debug WebMCP tools” (last updated 12 May 2026), sections “Open the WebMCP pane”, “Test tools manually”, “Troubleshoot integration issues” and “Command-line flags”. <a href="https://developer.chrome.com/docs/devtools/application/webmcp">https://developer.chrome.com/docs/devtools/application/webmcp</a> <a href="#fnref4" class="footnote-backref">↩︎</a> <a href="#fnref4:1" class="footnote-backref">↩︎</a> <a href="#fnref4:2" class="footnote-backref">↩︎</a> <a href="#fnref4:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>Microsoft Edge documentation, “What’s new in DevTools (Microsoft Edge 149)” (dated 4 June 2026, last updated 2 September 2026), listing “WebMCP debugging” among the updates from the Chromium project. <a href="https://learn.microsoft.com/en-us/microsoft-edge/devtools/whats-new/149">https://learn.microsoft.com/en-us/microsoft-edge/devtools/whats-new/149</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>webmachinelearning/webmcp issue #92, “Who owns the validation layer?” (opened 17 February 2026; open on 15 October 2026). <a href="https://github.com/webmachinelearning/webmcp/issues/92">https://github.com/webmachinelearning/webmcp/issues/92</a> <a href="#fnref6" class="footnote-backref">↩︎</a> <a href="#fnref6:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>GoogleChromeLabs/webmcp-tools, README (read 15 October 2026; latest commit 15 October 2026): the Model Context Tool Inspector, WebMCP Evals, WebMCP Skills and the WebMCP polyfill. <a href="https://github.com/GoogleChromeLabs/webmcp-tools">https://github.com/GoogleChromeLabs/webmcp-tools</a> <a href="#fnref7" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>chrome-devtools-mcp on npm, version 1.10.1 (published 23 September 2026), and its GitHub releases. <a href="https://github.com/ChromeDevTools/chrome-devtools-mcp">https://github.com/ChromeDevTools/chrome-devtools-mcp</a> <a href="#fnref8" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p>Chrome for Developers, “Imperative API” (published 18 May 2026, updated 21 September 2026), section on annotations: <code>readOnlyHint</code>, <code>untrustedContentHint</code>, <code>consequentialHint</code> and <code>debugging</code> (“available from Chrome 156”). <a href="https://developer.chrome.com/docs/ai/webmcp/imperative-api">https://developer.chrome.com/docs/ai/webmcp/imperative-api</a> <a href="#fnref9" class="footnote-backref">↩︎</a> <a href="#fnref9:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p>WebMCP specification (15 October 2026), §4.2.1, the <code>ToolAnnotations</code> dictionary (<code>readOnlyHint</code>, <code>untrustedContentHint</code>, <code>consequentialHint</code>, <code>debugging</code>, each defaulting to <code>false</code>); the <code>debugging</code> member was added by pull request #253, merged 17 September 2026. <a href="https://webmachinelearning.github.io/webmcp/#dictdef-toolannotations">https://webmachinelearning.github.io/webmcp/#dictdef-toolannotations</a> <a href="#fnref10" class="footnote-backref">↩︎</a> <a href="#fnref10:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>Node.js documentation, “Test runner” (<code>node:test</code>; stable since Node.js 20.0.0). <a href="https://nodejs.org/api/test.html">https://nodejs.org/api/test.html</a> <a href="#fnref11" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>WebMCP specification (15 October 2026), §3.1, the “tool execute steps” (input that is not an object is rejected as invalid input; <code>toolactivated</code> is fired before the execute callback is invoked); §3, the table of tool execution errors; and the <code>executeTool()</code> IDL (<code>Promise&lt;DOMString&gt;</code>). <a href="https://webmachinelearning.github.io/webmcp/#tool-execute-steps">https://webmachinelearning.github.io/webmcp/#tool-execute-steps</a> <a href="#fnref12" class="footnote-backref">↩︎</a> <a href="#fnref12:1" class="footnote-backref">↩︎</a> <a href="#fnref12:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>vibeprogrammer/webmcp-book-demos, <code>fjord-table/tests/run-tests.mjs</code> and <code>fjord-table/README.md</code> (“Chromium 156 vs the draft”), run with <code>npm run test:chrome</code> on 14 and 15 October 2026. <a href="https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/fjord-table">https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/fjord-table</a> <a href="#fnref13" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>webmachinelearning/webmcp pull request #339, “Replace UnknownError with specific DOMException types.” (merged 8 October 2026). <a href="https://github.com/webmachinelearning/webmcp/pull/339">https://github.com/webmachinelearning/webmcp/pull/339</a> <a href="#fnref14" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>web-platform-tests, <code>webmcp/</code> directory (read 15 October 2026): <code>META.yml</code>, <code>idlharness.https.window.js</code>, <code>tool-activated-event.https.html</code>, <code>tool-cancel-event.https.html</code>, <code>declarative/</code> and <code>imperative/</code> (49 HTML test files). <a href="https://github.com/web-platform-tests/wpt/tree/master/webmcp">https://github.com/web-platform-tests/wpt/tree/master/webmcp</a> <a href="#fnref15" class="footnote-backref">↩︎</a> <a href="#fnref15:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn16" class="footnote-item"><p>web-platform-tests, <code>webmcp/tool-cancel-event.https.html</code>, the comment inside the final <code>promise_test</code>, above <code>executeAndCancelTool</code>. <a href="https://github.com/web-platform-tests/wpt/blob/master/webmcp/tool-cancel-event.https.html">https://github.com/web-platform-tests/wpt/blob/master/webmcp/tool-cancel-event.https.html</a> <a href="#fnref16" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn17" class="footnote-item"><p>Chrome DevTools Protocol, tip-of-tree, <code>WebMCP</code> domain (experimental): types <code>Annotation</code>, <code>InvocationStatus</code>, <code>Tool</code>, <code>RemovedTool</code>; commands <code>enable</code>, <code>disable</code>, <code>invokeTool</code>, <code>cancelInvocation</code>; events <code>toolsAdded</code>, <code>toolsRemoved</code>, <code>toolInvoked</code>, <code>toolResponded</code>. Definition read from <code>json/browser_protocol.json</code> in ChromeDevTools/devtools-protocol on 15 October 2026. <a href="https://chromedevtools.github.io/devtools-protocol/tot/WebMCP/">https://chromedevtools.github.io/devtools-protocol/tot/WebMCP/</a> <a href="#fnref17" class="footnote-backref">↩︎</a> <a href="#fnref17:1" class="footnote-backref">↩︎</a> <a href="#fnref17:2" class="footnote-backref">↩︎</a> <a href="#fnref17:3" class="footnote-backref">↩︎</a> <a href="#fnref17:4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn18" class="footnote-item"><p>Playwright documentation, “CDPSession” (<code>page.context().newCDPSession(page)</code>, <code>send()</code>, <code>on()</code>). <a href="https://playwright.dev/docs/api/class-cdpsession">https://playwright.dev/docs/api/class-cdpsession</a> <a href="#fnref18" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn19" class="footnote-item"><p>webmachinelearning/webmcp pull request #338, “Remove declarative API from spec” (merged 8 October 2026); the declarative API now lives in <code>declarative-api-explainer.md</code>. <a href="https://github.com/webmachinelearning/webmcp/pull/338">https://github.com/webmachinelearning/webmcp/pull/338</a> <a href="#fnref19" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn20" class="footnote-item"><p>GoogleChromeLabs/webmcp-tools, <code>webmcp-evals/README.md</code> (read 15 October 2026): commands <code>local</code>, <code>browser</code>, <code>smoke</code>, <code>simulate</code> and <code>analyze</code>; the <code>evals.json</code> and <code>simulations.json</code> schemas; argument matching operators; DOM assertions. Published on npm as <code>webmcp-evals</code> 0.0.4. <a href="https://github.com/GoogleChromeLabs/webmcp-tools/tree/main/webmcp-evals">https://github.com/GoogleChromeLabs/webmcp-tools/tree/main/webmcp-evals</a> <a href="#fnref20" class="footnote-backref">↩︎</a> <a href="#fnref20:1" class="footnote-backref">↩︎</a> <a href="#fnref20:2" class="footnote-backref">↩︎</a> <a href="#fnref20:3" class="footnote-backref">↩︎</a> <a href="#fnref20:4" class="footnote-backref">↩︎</a> <a href="#fnref20:5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn21" class="footnote-item"><p>GoogleChromeLabs/webmcp-tools, <code>webmcp-evals/src/matcher.ts</code> (<code>matchesArgument</code>, subset matching for objects, strict matching for arrays, <code>$</code>-prefixed constraint objects). <a href="https://github.com/GoogleChromeLabs/webmcp-tools/blob/main/webmcp-evals/src/matcher.ts">https://github.com/GoogleChromeLabs/webmcp-tools/blob/main/webmcp-evals/src/matcher.ts</a> <a href="#fnref21" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn22" class="footnote-item"><p>W3C, “Beacon” (Editor’s Draft, 11 March 2026), the <code>sendBeacon()</code> method and its use for analytics when the page’s visibility state becomes hidden. <a href="https://w3c.github.io/beacon/">https://w3c.github.io/beacon/</a> <a href="#fnref22" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn23" class="footnote-item"><p>WebMCP specification (15 October 2026), §6, Security and Privacy Considerations, including §6.3.3, “Privacy Leakage Through Over-Parameterization”. <a href="https://webmachinelearning.github.io/webmcp/#privacy-leakage-over-parameterization">https://webmachinelearning.github.io/webmcp/#privacy-leakage-over-parameterization</a> <a href="#fnref23" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn24" class="footnote-item"><p>WebMCP specification (15 October 2026), §4.3, event handlers on <code>ModelContext</code> and the <code>ToolActivatedEvent</code> interface. <a href="https://webmachinelearning.github.io/webmcp/#tool-activated-event">https://webmachinelearning.github.io/webmcp/#tool-activated-event</a> <a href="#fnref24" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn25" class="footnote-item"><p>Chrome for Developers blog, “Join the WebMCP origin trial” (Alexandra Klepper, 9 June 2026), section “Share your feedback”: issues on the WebMCP explainer repository for the API shape, Chromium bugs for Chrome’s implementation, and the early preview program. <a href="https://developer.chrome.com/blog/ai-webmcp-origin-trial">https://developer.chrome.com/blog/ai-webmcp-origin-trial</a> <a href="#fnref25" class="footnote-backref">↩︎</a> <a href="#fnref25:1" class="footnote-backref">↩︎</a> <a href="#fnref25:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn26" class="footnote-item"><p>Chrome Platform Status, “WebMCP” (feature 5117755740913664, updated 28 September 2026): Blink component <code>Blink&gt;Agentic Platform&gt;WebMCP</code>, tracking bug crbug.com/445637567. <a href="https://chromestatus.com/feature/5117755740913664">https://chromestatus.com/feature/5117755740913664</a> <a href="#fnref26" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn27" class="footnote-item"><p>Microsoft Edge Origin Trials, “WebMCP” (trial expiration 30 March 2027), terms of use on feedback surveys. <a href="https://developer.microsoft.com/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a">https://developer.microsoft.com/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a</a> <a href="#fnref27" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn28" class="footnote-item"><p>webmachinelearning/webmcp, <code>CONTRIBUTING.md</code> (substantive contributions require joining the W3C Web Machine Learning Community Group under the W3C Community Contributor License Agreement). <a href="https://github.com/webmachinelearning/webmcp/blob/main/CONTRIBUTING.md">https://github.com/webmachinelearning/webmcp/blob/main/CONTRIBUTING.md</a> <a href="#fnref28" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="13-privacy-consent-human-in-the-loop.html">← Chapter 13: Privacy, Consent and the Human in the Loop</a>
+          <a class="pager-link" rel="next" href="15-browser-support-and-standards.html">Chapter 15: Browser Support and the Standards Road →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

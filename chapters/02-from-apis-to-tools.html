@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chapter 2: From APIs to Tools: A Short History — Tools, Not Clicks</title>
+  <meta name="description" content="The path from REST and OpenAPI to LLM function calling, ChatGPT Actions and agent-to-agent protocols, which explains why “tools” became the unit of agent capability.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Chapter 2: From APIs to Tools: A Short History — Tools, Not Clicks">
+  <meta property="og:description" content="The path from REST and OpenAPI to LLM function calling, ChatGPT Actions and agent-to-agent protocols, which explains why “tools” became the unit of agent capability.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a class="is-current" aria-current="page" href="02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a href="07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="../appendices/a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="../appendices/b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="../appendices/c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="../appendices/d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / Chapter 2 <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">chapter:</span> <span class="fm-v">02</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">I — Why the Web Needs an Agent Interface</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">26 min</span></p>
+        <h1>Chapter 2: From APIs to Tools: A Short History</h1>
+        <p class="lead">The path from REST and OpenAPI to LLM function calling, ChatGPT Actions and agent-to-agent protocols, which explains why “tools” became the unit of agent capability.</p>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#one-capability-many-descriptions">One capability, many descriptions</a></li><li><a href="#before-tools-apis-for-programs">Before tools: APIs for programs</a></li><li><a href="#teaching-models-to-use-tools">Teaching models to use tools</a></li><li><a href="#function-calling-json-schema-becomes-the-lingua-franca">Function calling: JSON Schema becomes the lingua franca</a></li><li><a href="#openapi-meets-the-chatbot-plug-ins-and-actions">OpenAPI meets the chatbot: plug-ins and actions</a></li><li><a href="#the-description-is-the-new-documentation">The description is the new documentation</a></li><li><a href="#why-one-integration-per-platform-doesnt-scale">Why one integration per platform doesn’t scale</a></li><li><a href="#agents-talking-to-agents">Agents talking to agents</a></li><li><a href="#where-the-browser-fits">Where the browser fits</a></li><li><a href="#what-the-history-teaches">What the history teaches</a></li><li><a href="#chapter-summary">Chapter summary</a></li><li><a href="#notes">Notes</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“Every new data source requires its own custom implementation, making truly connected systems difficult to scale.”</em></p>
+<p>— Anthropic, “Introducing the Model Context Protocol”<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<h2 id="one-capability-many-descriptions"><a class="anchor-link" href="#one-capability-many-descriptions">One capability, many descriptions</a></h2>
+<p>Trailhead, the outdoor-gear store from Chapter 1, has one capability that every agent wants: product search. Give it a query, an optional category, a maximum price in kroner and an “in stock only” flag, and it returns a list of products. Trailhead’s own React front end calls it dozens of times an hour.</p>
+<p>Now imagine the requests arriving at Trailhead’s engineering team over a few years. In 2023, someone asks for a ChatGPT plug-in, which means an OpenAPI description and a manifest file. Later that year, the plug-in becomes a GPT action. The mobile team wants their in-app assistant to call search through OpenAI’s function calling, then a second assistant uses Anthropic’s API, which describes the same function with a slightly different envelope. In 2025, someone asks for an MCP server so that desktop assistants can find Trailhead’s products. A partner wants Trailhead’s “gear advisor” agent to be discoverable by other companies’ agents over A2A. And in 2026, the product team asks why the browser’s built-in assistant still clicks through the filter sidebar instead of just searching.</p>
+<p>Each request is reasonable. Each one describes the same capability, a name, a sentence about what it does and a schema for its inputs, in a slightly different place. That repetition is the story of this chapter. It explains how the <em>tool</em> (a named, described, schema-typed capability that a model can choose to call) became the common unit of agent capability, why the industry kept reinventing the envelope around it, and why the browser tab was the last major place left without one.</p>
+<p>The chapter has no code, but it introduces the vocabulary the rest of the book relies on. If you have built with function calling or MCP before, you can skim it. If you haven’t, it is the shortest path to understanding why WebMCP looks the way it does.</p>
+<h2 id="before-tools-apis-for-programs"><a class="anchor-link" href="#before-tools-apis-for-programs">Before tools: APIs for programs</a></h2>
+<p>Long before anyone asked a language model to book a table, the web had a well-developed way for one program to use another: the web API. Roy Fielding’s 2000 doctoral dissertation gave the dominant style its name, Representational State Transfer (REST), and the idea of resources addressed by URLs and manipulated with a small set of HTTP methods.<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup> By the 2010s almost every serious web product had an HTTP API alongside its user interface.</p>
+<p>APIs designed for programs come with an assumption that matters later in this story: the caller is a developer who reads the documentation once, writes code against it, and then runs that code many times. The documentation can be long and the conventions can be subtle, because a human reads it and a compiler enforces the result.</p>
+<p>That assumption pushed the industry towards machine-readable API descriptions, so that client code, documentation and tests could be generated rather than written by hand. The one that won is the <em>OpenAPI Specification</em>. It began as the Swagger Specification, which SmartBear Software donated to what became the OpenAPI Initiative, an open governance project under the Linux Foundation.<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup> An OpenAPI document lists an API’s operations, their parameters, request bodies and responses. The latest published version at the time of writing is 3.2.1, dated 10 September 2026.<sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup></p>
+<p>Inside OpenAPI documents, the shapes of request and response bodies are described with <em>JSON Schema</em>, a vocabulary for saying what a JSON value must look like: its type, its properties, which ones are required, which strings are allowed. JSON Schema has its own specification, and its current version is called 2020-12.<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup> Remember that name. JSON Schema is the thread that runs through every stage of this chapter, and WebMCP’s <code>inputSchema</code> is a JSON Schema too.</p>
+<p>By the early 2020s, then, the web already had a common language for describing capabilities to programs. What it didn’t have was a caller that could read a description and decide, on its own, when to use it.</p>
+<h2 id="teaching-models-to-use-tools"><a class="anchor-link" href="#teaching-models-to-use-tools">Teaching models to use tools</a></h2>
+<p>Large language models changed who the caller could be. In October 2022, the ReAct paper showed that a model could interleave “reasoning traces and task-specific actions”, so that the actions let it “interface with external sources” and the reasoning helped it plan and handle exceptions.<sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup> In February 2023, the Toolformer paper showed that a model could “teach themselves to use external tools via simple APIs”, deciding “which APIs to call, when to call them, what arguments to pass, and how to best incorporate the results”.<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup></p>
+<p>Those two sentences describe the loop that every agent in this book runs. The model gets a goal and a list of things it can do. It decides whether to do one of them, and with what arguments. Something outside the model performs the action and hands back the result. The model reads the result and decides what to do next.</p>
+<p>Research prototypes taught models to emit tool calls in ad hoc text formats that the surrounding program had to parse. That worked in papers. It didn’t work well enough for products, because a model that is almost right about the format produces a call that a parser rejects, or worse, one that it accepts with the wrong arguments. What products needed was a contract: a way for the developer to declare the available tools, and for the model to answer with a call that matched the declaration.</p>
+<h2 id="function-calling-json-schema-becomes-the-lingua-franca"><a class="anchor-link" href="#function-calling-json-schema-becomes-the-lingua-franca">Function calling: JSON Schema becomes the lingua franca</a></h2>
+<p>That contract arrived in model APIs in 2023. In June of that year, OpenAI announced that developers could “describe functions” to two new model versions and “have the model intelligently choose to output a JSON object containing arguments to call those functions.”<sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup> The models had been “fine-tuned to both detect when a function needs to be called (depending on the user’s input) and to respond with JSON that adheres to the function signature,” and developers described the functions “via JSON Schema”.<sup class="footnote-ref"><a href="#fn8" id="fnref8:1">8:1</a></sup> OpenAI’s examples are a good summary of what tools are for. A request like “Email Anya to see if she wants to get coffee next Friday” becomes a call to <code>send_email(to: string, body: string)</code>, and “Who are my top ten customers this month?” becomes an internal API call.<sup class="footnote-ref"><a href="#fn8" id="fnref8:2">8:2</a></sup></p>
+<p>The idea spread across the industry because it was simple and because JSON Schema was already familiar. Anthropic’s API defines a tool with a <code>name</code>, a <code>description</code> and an <code>input_schema</code>, and Claude answers with a <code>tool_use</code> block that your code executes.<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup> Google’s Gemini API offers function calling too, with schemas written in “a subset of the OpenAPI schema”.<sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup> The field names differ slightly from one vendor to the next. The substance is the same everywhere: a name, a natural-language description, and a JSON Schema for the arguments.</p>
+<p>Reliability came next. A model that produces JSON “that adheres to the function signature” most of the time still produces broken calls some of the time. In August 2024, OpenAI introduced <em>Structured Outputs</em>, which constrains generation so that outputs “reliably adhere to developer-supplied JSON Schemas.” For function calling it is enabled “by setting <code>strict: true</code> within your function definition,” and on OpenAI’s own evaluation of complex schema following, the new model scored 100 per cent against less than 40 per cent for the June 2023 model.<sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup> The schema had become more than documentation for the model. It was a hard constraint on its output.</p>
+<h3 id="the-round-trip-step-by-step"><a class="anchor-link" href="#the-round-trip-step-by-step">The round trip, step by step</a></h3>
+<p>It is worth slowing down to see what actually happens in a function call, because WebMCP keeps the same shape. Take Trailhead’s mobile assistant, built on a model API with function calling, and a customer who types “any two-person tents under 4,000 kroner in stock?”</p>
+<ol>
+<li><em>The application declares its tools.</em> Along with the conversation, it sends the model a list of tool definitions. One of them is <code>search_products</code>, with a description (“Search Trailhead’s catalogue by keyword, category, maximum price in NOK and stock status”) and a JSON Schema saying that <code>query</code> is a required string, <code>category</code> is one of five values, <code>maxPrice</code> is a number and <code>inStockOnly</code> is a boolean.</li>
+<li><em>The model decides.</em> It reads the request and the tool descriptions and concludes that this question needs a search. Instead of answering in prose, it returns a structured call: the tool’s name and a JSON object of arguments, <code>query</code> set to “two-person tent”, <code>category</code> to “tents”, <code>maxPrice</code> to 4000 and <code>inStockOnly</code> to true.</li>
+<li><em>The application acts.</em> The app’s code, not the model, checks the arguments, calls Trailhead’s search API with them, and gets back a list of products.</li>
+<li><em>The result goes back to the model.</em> The app sends the products to the model as the result of that call.</li>
+<li><em>The model answers, or calls again.</em> It might summarise three tents for the customer, or call a second tool to compare two of them.</li>
+</ol>
+<p>Notice what the model never does: it never touches Trailhead’s systems directly. It only proposes calls. Everything that has an effect happens in code the developer controls, which is also where checks, logging and confirmations go. Notice, too, that the model’s choice depends almost entirely on two pieces of text, the tool’s name and its description, plus the schema. Those three things are the whole interface between the model and the capability.</p>
+<p>Three properties of function calling carry straight through to WebMCP, and it is worth naming them now.</p>
+<ul>
+<li><em>The description is written for a model.</em> It is not API reference documentation for a developer. It has to tell a model, in a sentence or two, when this tool is the right choice and when it isn’t. Chapter 11 is about writing these well.</li>
+<li><em>The schema is the contract.</em> It tells the model what arguments are valid, and it gives the receiving code a way to check them. In WebMCP, as Chapter 5 shows, the browser passes the schema to the agent but does not validate calls against it, so your code still has to.</li>
+<li><em>The model chooses, and your code acts.</em> Function calling never executes anything by itself. The model proposes a call; the application decides whether and how to run it. That separation is what makes it possible to put a human confirmation step in the middle, which WebMCP relies on.</li>
+</ul>
+<p>Function calling solved the problem of <em>expressing</em> a tool call. It didn’t solve the problem of <em>distributing</em> tools. In the original design, the developer of each application wrote the tool definitions into their own code. If Trailhead wanted its search to be usable by someone else’s assistant, it needed a way to publish the definition and have that assistant pick it up.</p>
+<h2 id="openapi-meets-the-chatbot-plug-ins-and-actions"><a class="anchor-link" href="#openapi-meets-the-chatbot-plug-ins-and-actions">OpenAPI meets the chatbot: plug-ins and actions</a></h2>
+<p>The first big attempt to solve distribution came before function calling was even public in the API. On 23 March 2023, OpenAI announced “experimental support for AI plugins in ChatGPT — tools designed specifically for language models.”<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup> The design reused the web’s existing description format. To build a plug-in, a developer would “build an API with endpoints you’d like a language model to call,” then “create an OpenAPI specification documenting your API, and a manifest file that links to the OpenAPI spec and includes some plugin-specific metadata.”<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup> The manifest carried fields such as <code>name_for_model</code> and <code>description_for_model</code>, separate from the names and descriptions shown to people, and when a user enabled a plug-in, its documentation was “shown to the language model as part of the conversation.”<sup class="footnote-ref"><a href="#fn13" id="fnref13:1">13:1</a></sup> OpenTable, Instacart, Wolfram and Zapier were among the launch partners.<sup class="footnote-ref"><a href="#fn13" id="fnref13:2">13:2</a></sup></p>
+<p>This was a significant moment for anyone who builds websites, for two reasons. It confirmed that an existing, widely used API description format could be repurposed as a tool description with very little extra work. And it showed the separation of audiences that WebMCP later formalises: a name and description for the model, and a different presentation for the human.</p>
+<p>The plug-in beta did not last in that form. In November 2023, OpenAI introduced GPTs, custom versions of ChatGPT, and with them <em>actions</em>: developers “can also define custom actions by making one or more APIs available to the GPT. Like plugins, actions allow GPTs to integrate external data or interact with the real-world.”<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup><sup class="footnote-ref"><a href="#fn12" id="fnref12:1">12:1</a></sup> The envelope changed; the idea of an API described for a model stayed.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: the word “plugin”</p>
+<p>Product names in this space are recycled freely. In 2026 the word “plugin” is back in ChatGPT, now for packages that bundle skills, connected apps and interactive extensions, and OpenAI’s release notes describe supported plugins using MCP events to trigger automations.<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup><sup class="footnote-ref"><a href="#fn12" id="fnref12:2">12:2</a></sup> These have little in common with the 2023 plug-ins beyond the name. When you read about “plugins”, “actions”, “apps” or “connectors”, check the date and the vendor before assuming you know what is meant.</p></aside>
+<p>Plug-ins and actions had one more property that matters for the next section: they were specific to one platform. An OpenAPI document was portable, but the manifest, the review process, the authentication flow and the user experience belonged to ChatGPT. A company that wanted to reach users of several assistants had to repeat the exercise for each of them.</p>
+<h2 id="the-description-is-the-new-documentation"><a class="anchor-link" href="#the-description-is-the-new-documentation">The description is the new documentation</a></h2>
+<p>Plug-ins made one lesson explicit that function calling had left implicit. An API has two audiences now. The manifest’s <code>name_for_human</code> and <code>description_for_human</code> were for the person browsing a plug-in store; <code>name_for_model</code> and <code>description_for_model</code> were for the model deciding whether to call it.<sup class="footnote-ref"><a href="#fn13" id="fnref13:3">13:3</a></sup> Those are different jobs, and they need different writing.</p>
+<p>Documentation for developers can be long, because developers read it once and then write code. A tool description is read by a model every time it decides what to do, often alongside dozens of other descriptions, and it has a sentence or two to say when this tool is the right one. It is closer to a prompt than to reference documentation. Get it wrong and the model calls the tool when it shouldn’t, doesn’t call it when it should, or fills in the arguments badly. No compiler will tell you.</p>
+<p>The same advice has turned up in every generation of the technology, and Chrome’s WebMCP guidance states the current version of it clearly. “A clear description should describe what the tool does and when to use it,” it says, and it recommends positive language over prohibitions: rather than “Don’t use this tool for weather,” write “This tool can create a calendar event, scheduled for a specific date and time.”<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup> It also warns against names that hide what a tool does, contrasting a <code>create-event</code> tool that creates an event immediately with a <code>start-event-creation-process</code> tool that only redirects the user to a form.<sup class="footnote-ref"><a href="#fn16" id="fnref16:1">16:1</a></sup></p>
+<p>The point for this chapter is that the description travelled with the tool through every envelope. Function definitions, plug-in manifests, GPT actions, MCP tools and WebMCP tools all carry one, and in each of them it does the same job. A team that learns to write good tool descriptions for one of these formats has learned it for all of them. Chapter 11 is devoted to doing it well for WebMCP.</p>
+<h2 id="why-one-integration-per-platform-doesnt-scale"><a class="anchor-link" href="#why-one-integration-per-platform-doesnt-scale">Why one integration per platform doesn’t scale</a></h2>
+<p>Step back from the vendor names and look at the arithmetic. Suppose there are <em>N</em> AI applications that want to use tools, and <em>M</em> services that want to offer them. If every pairing needs its own integration, someone has to build and maintain up to <em>N × M</em> of them. Ten assistants and a thousand services is ten thousand integrations, each with its own manifest format, authentication flow, review process and quirks. Most will never be built. The ones that are will drift out of date.</p>
+<p>A shared protocol changes the sum. If every assistant speaks the protocol as a client, and every service speaks it as a server, the work is <em>N + M</em>: each side implements the protocol once. Figure 2.1 shows the difference. This is the same argument that made HTTP, USB and the Language Server Protocol worth standardising, and it is the argument Anthropic made when it open-sourced the Model Context Protocol on 25 November 2024. “Every new data source requires its own custom implementation,” the announcement said, “making truly connected systems difficult to scale.” MCP was offered as “a universal, open standard for connecting AI systems with data sources, replacing fragmented integrations with a single protocol.”<sup class="footnote-ref"><a href="#fn1" id="fnref1:1">1:1</a></sup></p>
+<figure class="book-figure"><img decoding="async" src="02-from-apis-to-tools/images/figure-2-1.png" alt="Figure 2.1 — Why bespoke integrations don’t scale. With one integration per pairing, N AI applications and M services need up to N × M connectors. With a shared protocol, each side implements it once: N + M." /><figcaption>Figure 2.1 — Why bespoke integrations don’t scale. With one integration per pairing, N AI applications and M services need up to N × M connectors. With a shared protocol, each side implements it once: N + M.</figcaption></figure>
+<p>Chapter 3 covers MCP in depth, so here are only the facts this chapter needs. MCP defines hosts (the AI applications), clients (connectors inside a host) and servers (the services that offer capabilities), and they communicate with JSON-RPC 2.0 messages.<sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup> Among the things a server can offer are <em>tools</em>, and an MCP tool definition will look very familiar by now: a <code>name</code>, an optional <code>title</code>, a <code>description</code> and an <code>inputSchema</code>, which is a JSON Schema.<sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup> The current version of the protocol is dated 2026-07-28.<sup class="footnote-ref"><a href="#fn17" id="fnref17:1">17:1</a></sup></p>
+<p>What changed with MCP was not the shape of a tool. It was who owned the envelope. Function definitions belonged to whoever wrote the application. Plug-in manifests belonged to one platform. MCP belonged to nobody in particular, and on 9 December 2025 Anthropic made that formal by donating it to the Agentic AI Foundation, a directed fund under the Linux Foundation “co-founded by Anthropic, Block and OpenAI, with support from Google, Microsoft, Amazon Web Services (AWS), Cloudflare, and Bloomberg.”<sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup> The foundation launched with three founding projects: MCP, Block’s goose and OpenAI’s AGENTS.md.<sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup></p>
+<p>For Trailhead, MCP collapses most of the list of requests at the start of this chapter into one: build an MCP server once, and every assistant that speaks MCP can search the catalogue. Chapter 3 builds exactly that server.</p>
+<h2 id="agents-talking-to-agents"><a class="anchor-link" href="#agents-talking-to-agents">Agents talking to agents</a></h2>
+<p>Tools assume a particular relationship: an agent in charge, calling capabilities that do what they are told and return a result. Not every interaction fits. Sometimes the thing on the other end is itself an agent, with its own model, its own judgment and its own long-running work. A travel agent might hand a hotel search to a hotel chain’s booking agent and wait for it to negotiate dates; Trailhead’s gear advisor might be asked by a hiking app’s agent to recommend a tent and come back an hour later when stock arrives.</p>
+<p>On 9 April 2025, Google announced the Agent2Agent protocol (A2A) for this case, “with support and contributions from more than 50 technology partners.”<sup class="footnote-ref"><a href="#fn21" id="fnref21">21</a></sup> Google described it as “an open protocol that complements Anthropic’s Model Context Protocol (MCP), which provides helpful tools and context to agents.”<sup class="footnote-ref"><a href="#fn21" id="fnref21:1">21:1</a></sup> Its specification describes A2A as “an open standard designed to facilitate communication and interoperability between independent, potentially opaque AI agent systems.”<sup class="footnote-ref"><a href="#fn22" id="fnref22">22</a></sup> <em>Opaque</em> is the key word. Where an MCP server exposes individual tools with schemas, an A2A agent exposes itself: it publishes an <em>Agent Card</em>, a JSON document describing what it can do and how to reach it, which other agents can fetch from a well-known location such as <code>/.well-known/agent-card.json</code>.<sup class="footnote-ref"><a href="#fn22" id="fnref22:1">22:1</a></sup><sup class="footnote-ref"><a href="#fn21" id="fnref21:2">21:2</a></sup> The calling agent delegates a task; the remote agent decides how to carry it out.</p>
+<p>A2A followed the same path to neutral governance as MCP, only faster. The Linux Foundation launched the A2A project on 23 June 2025.<sup class="footnote-ref"><a href="#fn23" id="fnref23">23</a></sup> The specification reached version 1.0.0.<sup class="footnote-ref"><a href="#fn22" id="fnref22:2">22:2</a></sup> And in August 2026, A2A was accepted as a Growth Stage project at the same Agentic AI Foundation that hosts MCP.<sup class="footnote-ref"><a href="#fn24" id="fnref24">24</a></sup> The announcement described the division of labour neatly: MCP “serves as the vertical integration layer connecting agents to internal tools and databases,” while A2A “acts as the horizontal protocol enabling peer-to-peer collaboration.”<sup class="footnote-ref"><a href="#fn24" id="fnref24:1">24:1</a></sup></p>
+<p>A2A is not the only proposal for agents talking to agents, and this book doesn’t go further into the category. It matters here for what it shares with everything else in this chapter. A2A connects agents running on servers, over the network, each authenticated in its own way. Like MCP servers, OpenAPI plug-ins and function calls, it assumes the capability lives somewhere an agent can reach without a user’s browser.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: protocol governance</p>
+<p>Both MCP and A2A now sit under the Agentic AI Foundation, and both continue to version their specifications: MCP by date (the current version is 2026-07-28) and A2A by number (1.0.0 at the time of writing).<sup class="footnote-ref"><a href="#fn17" id="fnref17:2">17:2</a></sup><sup class="footnote-ref"><a href="#fn22" id="fnref22:3">22:3</a></sup> Membership, project stages and the relationship between the two protocols are likely to keep changing. Check the foundation’s and the projects’ own pages for the current picture.</p></aside>
+<h2 id="where-the-browser-fits"><a class="anchor-link" href="#where-the-browser-fits">Where the browser fits</a></h2>
+<p>Put the whole history on one line, as in Figure 2.2, and a pattern appears. Every stage moved tools further from any particular application and closer to a shared, neutral description. Every stage also kept tools on the server side.</p>
+<figure class="book-figure"><img decoding="async" src="02-from-apis-to-tools/images/figure-2-2.png" alt="Figure 2.2 — From APIs to tools, 2000–2026. Each step kept the same core (a name, a description for the model, a JSON Schema for inputs) and changed who owns the envelope. Every step until WebMCP connects an agent to a server; WebMCP puts tools in the page." /><figcaption>Figure 2.2 — From APIs to tools, 2000–2026. Each step kept the same core (a name, a description for the model, a JSON Schema for inputs) and changed who owns the envelope. Every step until WebMCP connects an agent to a server; WebMCP puts tools in the page.</figcaption></figure>
+<p>That server-side bias is not an accident. It follows from who the callers were: model APIs running in data centres, chat assistants running in the cloud, agents talking to agents over the network. For those callers, the natural place for a capability is an HTTP endpoint.</p>
+<p>But Chapter 1 showed where a growing share of agent work actually happens: in the user’s browser, in a tab where the user is already signed in, looking at a page that already holds the state they care about. For that kind of work, every integration in this chapter has the same three weaknesses. The WebMCP explainer groups MCP and OpenAPI together as <em>backend integrations</em> and lists them.<sup class="footnote-ref"><a href="#fn25" id="fnref25">25</a></sup></p>
+<ul>
+<li><em>The interface is bypassed.</em> The agent talks to the service’s backend, and the page the user is looking at doesn’t change. Trailhead’s cart, filled through an MCP server, doesn’t update the cart badge in the tab the user has open until something reloads it.</li>
+<li><em>State and authentication have to be duplicated.</em> The user is signed in to the tab. The backend integration needs its own credentials and its own idea of what the user is doing.</li>
+<li><em>There is a second thing to build.</em> Trailhead’s front end already knows how to search, filter and add to the cart. A backend integration means writing and operating a separate server to do the same things.</li>
+</ul>
+<p>Chrome’s documentation puts the contrast in one sentence. WebMCP “accesses live session data, cookies, and DOM elements that are available only in a live browser tab. Instead of your application being a guest within an agent, the agent is a guest on your platform.”<sup class="footnote-ref"><a href="#fn26" id="fnref26">26</a></sup></p>
+<p>That is the gap WebMCP fills. It keeps everything this chapter built up (a tool with a name, a description written for a model, a JSON Schema for its inputs, a model that chooses and code that acts) and moves the code into the page. The WebMCP explainer describes pages that use it as “in-page Model Context Protocol (MCP) servers that implement tools exposing client-side logic and DOM interaction rather than server-side APIs.”<sup class="footnote-ref"><a href="#fn25" id="fnref25:1">25:1</a></sup> The explainer’s repository was created on 5 August 2025, a little over eight months after MCP’s launch.<sup class="footnote-ref"><a href="#fn27" id="fnref27">27</a></sup></p>
+<h3 id="why-not-just-run-mcp-in-the-browser"><a class="anchor-link" href="#why-not-just-run-mcp-in-the-browser">Why not just run MCP in the browser?</a></h3>
+<p>If WebMCP is “in-page MCP”, why not simply put an MCP server in the page and let the browser’s agent connect to it as an MCP client? The WebMCP explainer considered exactly that and gives two reasons for not doing it.<sup class="footnote-ref"><a href="#fn28" id="fnref28">28</a></sup> First, “MCP was built primarily for server-to-client and stdio/SSE process communication. It lacks native web concepts like origins, standard browser permissions, DOM integration, and tab-level lifecycle management.” Second, “coupling a web API directly to an actively evolving backend protocol would hinder backward compatibility and platform stability.”<sup class="footnote-ref"><a href="#fn28" id="fnref28:1">28:1</a></sup> Web APIs, once shipped, are very hard to change; MCP has published several dated versions and is still evolving.</p>
+<p>So WebMCP takes MCP’s <em>vocabulary</em> and leaves its <em>protocol</em> behind. In the explainer’s words, it “shares a common vocabulary with MCP (e.g., tools, schemas, parameters), but provides a form-fitting, client-safe solution designed natively for the web platform.”<sup class="footnote-ref"><a href="#fn28" id="fnref28:2">28:2</a></sup> The explainer’s list of prior art reads like a summary of this chapter: MCP; the community MCP-B project, which built “browser tab and extension transports for local in-page communication”; OpenAPI, “used in platform-specific extensions like ChatGPT Actions”; and A2A, “focused on connecting distinct autonomous AI agents to one another.”<sup class="footnote-ref"><a href="#fn28" id="fnref28:3">28:3</a></sup></p>
+<p>Chapter 4 tells the rest of that story, including the other alternatives the editors rejected. For now, the important point is the continuity. A developer who has written a function definition or an MCP tool will find a WebMCP tool immediately familiar: the same name, the same kind of description, the same JSON Schema. What is new is where the <code>execute</code> function runs and what it can reach.</p>
+<h3 id="five-approaches-side-by-side"><a class="anchor-link" href="#five-approaches-side-by-side">Five approaches side by side</a></h3>
+<p>Table 2.1 lines up the approaches.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Function calling</th>
+<th>OpenAPI plug-ins and actions</th>
+<th>MCP</th>
+<th>A2A</th>
+<th>WebMCP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What is described</td>
+<td>Functions in your own app</td>
+<td>An HTTP API</td>
+<td>Tools, resources and prompts on a server</td>
+<td>A whole agent, via its Agent Card</td>
+<td>Tools in a web page</td>
+</tr>
+<tr>
+<td>Who owns the envelope</td>
+<td>Each model vendor</td>
+<td>One assistant platform</td>
+<td>An open protocol (AAIF)</td>
+<td>An open protocol (AAIF)</td>
+<td>A W3C Community Group draft</td>
+</tr>
+<tr>
+<td>Where the code runs</td>
+<td>Your application</td>
+<td>Your backend</td>
+<td>Your server or local process</td>
+<td>The remote agent</td>
+<td>The user’s tab</td>
+</tr>
+<tr>
+<td>Uses the user’s live session</td>
+<td>Only if your app does</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Typical caller</td>
+<td>Your own app’s model</td>
+<td>One assistant</td>
+<td>Any MCP host</td>
+<td>Another agent</td>
+<td>A browser agent</td>
+</tr>
+<tr>
+<td>Schema language</td>
+<td>JSON Schema (vendor subsets)</td>
+<td>OpenAPI / JSON Schema</td>
+<td>JSON Schema</td>
+<td>Agent Card (JSON)</td>
+<td>JSON Schema</td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Table 2.1 — Five ways to give an agent a capability. All but A2A describe tools with a name, a description and a JSON Schema; they differ in who owns the format and where the code runs.</em></p>
+<p>None of these replaces the others. A store like Trailhead might reasonably use all five: function calling inside its own support chatbot, an MCP server for desktop assistants and back-office agents, an A2A agent card for its gear advisor, and WebMCP tools on its storefront for the browser agents its customers already use. The rest of the book is about the last one, but it borrows freely from the others. The vocabulary of tools comes from function calling, the shape of a tool definition comes from MCP, and the hard-won lessons about descriptions, schemas and confirmation steps apply everywhere.</p>
+<h2 id="what-the-history-teaches"><a class="anchor-link" href="#what-the-history-teaches">What the history teaches</a></h2>
+<p>Three lessons from this short history shape the rest of the book.</p>
+<p><em>The core of a tool is stable; the envelope is not.</em> A name, a description for a model and a JSON Schema for the inputs have survived every generation since 2023, while the formats wrapped around them (functions, plug-in manifests, actions, MCP tool lists) came and went. The practical consequence is that time spent designing good tools is never wasted. If WebMCP changes shape again before it settles, and Chapter 4 explains why it might, your names, descriptions and schemas will move to the new shape with little change.</p>
+<p><em>Distribution is the hard part.</em> Expressing a tool call turned out to be easy once JSON Schema was in place. Getting the right tools in front of the right agent, with the right authentication, without building an integration per platform, is what took years and several false starts. WebMCP’s answer to distribution is unusual: the tools are discovered by visiting the page, so the page itself is the distribution channel. That has real limits, which Chrome lists honestly (“Clients and browsers must visit a site directly to know if it has callable tools”), and real advantages, which Part III explores.<sup class="footnote-ref"><a href="#fn29" id="fnref29">29</a></sup></p>
+<p><em>Someone has to own the decision to act.</em> From function calling onward, the model proposes and code disposes. The question each generation had to answer was whose code, and who gets asked before something irreversible happens. For server-side integrations, the answer is usually the assistant platform. For WebMCP, it is the site, in its own interface, with the user watching. That shift is the subject of Part IV.</p>
+<h2 id="chapter-summary"><a class="anchor-link" href="#chapter-summary">Chapter summary</a></h2>
+<ul>
+<li>Web APIs, described with OpenAPI and JSON Schema, gave programs a common way to use services long before language models arrived. OpenAPI began as Swagger and is now governed under the Linux Foundation; JSON Schema’s current version is 2020-12.</li>
+<li>Research such as ReAct (2022) and Toolformer (2023) showed that models could decide when to call tools and with what arguments. Products needed a stricter contract than free-text formats.</li>
+<li>Function calling, introduced by OpenAI in June 2023 and adopted across vendors, made the tool a first-class concept: a name, a description written for a model, and a JSON Schema for the arguments. Structured Outputs (August 2024) turned the schema into a hard constraint.</li>
+<li>ChatGPT plug-ins (March 2023) and then GPT actions (November 2023) used OpenAPI to distribute tools to an assistant, but each such integration belonged to one platform.</li>
+<li>One integration per pairing means N × M connectors. MCP, open-sourced by Anthropic in November 2024 and donated to the Linux Foundation’s Agentic AI Foundation in December 2025, reduces that to N + M. Its tools have a name, a description and an <code>inputSchema</code>.</li>
+<li>A2A, announced by Google in April 2025 and now also under the Agentic AI Foundation, connects opaque agents to each other through Agent Cards rather than exposing individual tools.</li>
+<li>Every one of these integrations runs on the server side, which bypasses the page, duplicates state and authentication, and means building a second system. WebMCP keeps the tool and moves it into the user’s tab. Chapter 3 now covers MCP properly, because WebMCP borrows its vocabulary.</li>
+</ul>
+<h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>Anthropic, “Introducing the Model Context Protocol” (25 November 2024). <a href="https://www.anthropic.com/news/model-context-protocol">https://www.anthropic.com/news/model-context-protocol</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>Roy Thomas Fielding, <em>Architectural Styles and the Design of Network-based Software Architectures</em>, doctoral dissertation, University of California, Irvine (2000). <a href="https://ics.uci.edu/~fielding/pubs/dissertation/top.htm">https://ics.uci.edu/~fielding/pubs/dissertation/top.htm</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>OpenAPI Initiative, “About”. <a href="https://www.openapis.org/about">https://www.openapis.org/about</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>OpenAPI Specification v3.2.1 (10 September 2026). <a href="https://spec.openapis.org/oas/latest.html">https://spec.openapis.org/oas/latest.html</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>JSON Schema, “Specification” (current version 2020-12). <a href="https://json-schema.org/specification">https://json-schema.org/specification</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>Shunyu Yao et al., “ReAct: Synergizing Reasoning and Acting in Language Models”, arXiv:2210.03629 (v1 6 October 2022), abstract. <a href="https://arxiv.org/abs/2210.03629">https://arxiv.org/abs/2210.03629</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>Timo Schick et al., “Toolformer: Language Models Can Teach Themselves to Use Tools”, arXiv:2302.04761 (9 February 2023), abstract. <a href="https://arxiv.org/abs/2302.04761">https://arxiv.org/abs/2302.04761</a> <a href="#fnref7" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>OpenAI, “Function calling and other API updates” (June 2023, with an update of 20 July 2023). <a href="https://openai.com/index/function-calling-and-other-api-updates/">https://openai.com/index/function-calling-and-other-api-updates/</a> <a href="#fnref8" class="footnote-backref">↩︎</a> <a href="#fnref8:1" class="footnote-backref">↩︎</a> <a href="#fnref8:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p>Anthropic, “Tool use with Claude”, Claude API documentation. <a href="https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/overview">https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/overview</a> <a href="#fnref9" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p>Google AI for Developers, “Function calling with the Gemini API”, including “Notes and limitations”. <a href="https://ai.google.dev/gemini-api/docs/function-calling">https://ai.google.dev/gemini-api/docs/function-calling</a> <a href="#fnref10" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>OpenAI, “Introducing Structured Outputs in the API” (6 August 2024). <a href="https://openai.com/index/introducing-structured-outputs-in-the-api/">https://openai.com/index/introducing-structured-outputs-in-the-api/</a> <a href="#fnref11" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>OpenAI Help Center, “ChatGPT — Release Notes”, entries for 23 March 2023 (“Introducing plugins in ChatGPT”), 6 November 2023 (“Introducing GPTs”) and September–October 2026 (plugins). <a href="https://help.openai.com/en/articles/6825453-chatgpt-release-notes">https://help.openai.com/en/articles/6825453-chatgpt-release-notes</a> <a href="#fnref12" class="footnote-backref">↩︎</a> <a href="#fnref12:1" class="footnote-backref">↩︎</a> <a href="#fnref12:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>OpenAI, “ChatGPT plugins” (23 March 2023), as archived by the Internet Archive on 31 December 2023 (the original page did not load when checked). <a href="https://web.archive.org/web/20231231002503/https://openai.com/blog/chatgpt-plugins">https://web.archive.org/web/20231231002503/https://openai.com/blog/chatgpt-plugins</a> <a href="#fnref13" class="footnote-backref">↩︎</a> <a href="#fnref13:1" class="footnote-backref">↩︎</a> <a href="#fnref13:2" class="footnote-backref">↩︎</a> <a href="#fnref13:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>OpenAI, “Introducing GPTs” (6 November 2023). <a href="https://openai.com/index/introducing-gpts/">https://openai.com/index/introducing-gpts/</a> <a href="#fnref14" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>OpenAI Help Center, “Plugins in ChatGPT”. <a href="https://help.openai.com/en/articles/20001256">https://help.openai.com/en/articles/20001256</a> <a href="#fnref15" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn16" class="footnote-item"><p>Chrome for Developers, “WebMCP best practices” (published 18 May 2026). <a href="https://developer.chrome.com/docs/ai/webmcp/best-practices">https://developer.chrome.com/docs/ai/webmcp/best-practices</a> <a href="#fnref16" class="footnote-backref">↩︎</a> <a href="#fnref16:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn17" class="footnote-item"><p>Model Context Protocol, Specification, version 2026-07-28 (latest), Overview. <a href="https://modelcontextprotocol.io/specification/2026-07-28">https://modelcontextprotocol.io/specification/2026-07-28</a> <a href="#fnref17" class="footnote-backref">↩︎</a> <a href="#fnref17:1" class="footnote-backref">↩︎</a> <a href="#fnref17:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn18" class="footnote-item"><p>Model Context Protocol, Specification 2026-07-28, “Tools” (server features). <a href="https://modelcontextprotocol.io/specification/2026-07-28/server/tools">https://modelcontextprotocol.io/specification/2026-07-28/server/tools</a> <a href="#fnref18" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn19" class="footnote-item"><p>Anthropic, “Donating the Model Context Protocol and establishing the Agentic AI Foundation” (9 December 2025). <a href="https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation">https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation</a> <a href="#fnref19" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn20" class="footnote-item"><p>Agentic AI Foundation, “Linux Foundation Announces the Formation of the Agentic AI Foundation (AAIF), Anchored by New Project Contributions Including Model Context Protocol (MCP), goose and AGENTS.md” (9 December 2025). <a href="https://aaif.io/news/linux-foundation-announces-formation-of-aaif">https://aaif.io/news/linux-foundation-announces-formation-of-aaif</a> <a href="#fnref20" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn21" class="footnote-item"><p>Rao Surapaneni et al., “Announcing the Agent2Agent Protocol (A2A)”, Google Developers Blog (9 April 2025). <a href="https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/">https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/</a> <a href="#fnref21" class="footnote-backref">↩︎</a> <a href="#fnref21:1" class="footnote-backref">↩︎</a> <a href="#fnref21:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn22" class="footnote-item"><p>Agent2Agent (A2A) Protocol Specification, latest released version 1.0.0, §1 Introduction and the Agent Card discovery example. <a href="https://a2a-protocol.org/latest/specification/">https://a2a-protocol.org/latest/specification/</a> <a href="#fnref22" class="footnote-backref">↩︎</a> <a href="#fnref22:1" class="footnote-backref">↩︎</a> <a href="#fnref22:2" class="footnote-backref">↩︎</a> <a href="#fnref22:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn23" class="footnote-item"><p>The Linux Foundation, “Linux Foundation Launches the Agent2Agent Protocol Project to Enable Secure, Intelligent Communication Between AI Agents” (23 June 2025). <a href="https://www.linuxfoundation.org/press/linux-foundation-launches-the-agent2agent-protocol-project-to-enable-secure-intelligent-communication-between-ai-agents">https://www.linuxfoundation.org/press/linux-foundation-launches-the-agent2agent-protocol-project-to-enable-secure-intelligent-communication-between-ai-agents</a> <a href="#fnref23" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn24" class="footnote-item"><p>A2A Protocol blog, “A New Chapter for A2A: Joining the Agentic AI Foundation” (27 August 2026). <a href="https://a2a-protocol.org/latest/blog/2026/08/27/a-new-chapter-for-a2a-joining-the-agentic-ai-foundation/">https://a2a-protocol.org/latest/blog/2026/08/27/a-new-chapter-for-a2a-joining-the-agentic-ai-foundation/</a> <a href="#fnref24" class="footnote-backref">↩︎</a> <a href="#fnref24:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn25" class="footnote-item"><p>WebMCP explainer (README), “Backend Integrations vs. In-browser WebMCP Tools”, webmachinelearning/webmcp. <a href="https://github.com/webmachinelearning/webmcp">https://github.com/webmachinelearning/webmcp</a> <a href="#fnref25" class="footnote-backref">↩︎</a> <a href="#fnref25:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn26" class="footnote-item"><p>Chrome for Developers, “WebMCP and MCP compared” (published 11 March 2026, updated 19 May 2026). <a href="https://developer.chrome.com/docs/ai/webmcp/compare-mcp">https://developer.chrome.com/docs/ai/webmcp/compare-mcp</a> <a href="#fnref26" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn27" class="footnote-item"><p>GitHub REST API, repository metadata for webmachinelearning/webmcp (<code>created_at</code>: 2025-08-05T13:10:14Z), read 15 October 2026. <a href="https://api.github.com/repos/webmachinelearning/webmcp">https://api.github.com/repos/webmachinelearning/webmcp</a> <a href="#fnref27" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn28" class="footnote-item"><p>WebMCP explainer, “Alternatives Considered” and “Prior Art”. <a href="https://github.com/webmachinelearning/webmcp#alternatives-considered">https://github.com/webmachinelearning/webmcp#alternatives-considered</a> <a href="#fnref28" class="footnote-backref">↩︎</a> <a href="#fnref28:1" class="footnote-backref">↩︎</a> <a href="#fnref28:2" class="footnote-backref">↩︎</a> <a href="#fnref28:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn29" class="footnote-item"><p>Chrome for Developers, “WebMCP” (published 18 May 2026, updated 7 October 2026), “Limitations”. <a href="https://developer.chrome.com/docs/ai/webmcp">https://developer.chrome.com/docs/ai/webmcp</a> <a href="#fnref29" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="01-the-agentic-web-arrives.html">← Chapter 1: The Agentic Web Arrives</a>
+          <a class="pager-link" rel="next" href="03-mcp-in-practice.html">Chapter 3: MCP in Practice →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

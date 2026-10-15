@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chapter 7: Frames, Origins and Page-Embedded Agents — Tools, Not Clicks</title>
+  <meta name="description" content="WebMCP beyond the top-level page: Permissions Policy gating, exposing tools to specific origins, and discovering and executing tools from an agent that lives in the page or in an extension.">
+  <meta name="author" content="Maxim Salnikov">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="Chapter 7: Frames, Origins and Page-Embedded Agents — Tools, Not Clicks">
+  <meta property="og:description" content="WebMCP beyond the top-level page: Permissions Policy gating, exposing tools to specific origins, and discovering and executing tools from an agent that lives in the page or in an extension.">
+  <script>(function(){try{var t=localStorage.getItem('aw-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/book.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="../assets/app.js"></script>
+</head>
+<body class="chapter-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="sidebar-toggle" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Chapters</button>
+
+  <div class="page-shell">
+    <aside id="chapter-sidebar" class="sidebar" aria-label="Book chapters">
+      <div class="sidebar-inner">
+        <div class="sidebar-top">
+          <a class="site-title" href="../index.html">Tools, Not Clicks: Building Agent-Ready Websites with WebMCP</a>
+          <div class="theme-toggle" role="group" aria-label="Reading theme">
+        <button type="button" class="theme-opt" data-theme-value="light" aria-pressed="false" title="Light"><span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="sepia" aria-pressed="false" title="Sepia"><span aria-hidden="true">◑</span><span class="visually-hidden">Sepia theme</span></button>
+        <button type="button" class="theme-opt" data-theme-value="dark" aria-pressed="false" title="Dark"><span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span></button>
+      </div>
+        </div>
+        <nav class="chapter-nav" aria-label="Chapter navigation">
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-I">Part I · Why the Web Needs an Agent Interface</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-I">
+            <li><a href="01-the-agentic-web-arrives.html"><span class="chapter-number">01</span><span>The Agentic Web Arrives</span></a></li><li><a href="02-from-apis-to-tools.html"><span class="chapter-number">02</span><span>From APIs to Tools: A Short History</span></a></li><li><a href="03-mcp-in-practice.html"><span class="chapter-number">03</span><span>MCP in Practice</span></a></li><li><a href="04-enter-webmcp.html"><span class="chapter-number">04</span><span>Enter WebMCP</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-II">Part II · The WebMCP API in Depth</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-II">
+            <li><a href="05-registering-tools.html"><span class="chapter-number">05</span><span>Registering Tools with document.modelContext</span></a></li><li><a href="06-annotations-lifecycle-errors.html"><span class="chapter-number">06</span><span>Annotations, Lifecycle and Errors</span></a></li><li><a class="is-current" aria-current="page" href="07-frames-origins-agents.html"><span class="chapter-number">07</span><span>Frames, Origins and Page-Embedded Agents</span></a></li><li><a href="08-declarative-api.html"><span class="chapter-number">08</span><span>The Declarative API: Forms as Tools</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-III">Part III · Building Agent-Ready Apps</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-III">
+            <li><a href="09-first-webmcp-app.html"><span class="chapter-number">09</span><span>Your First WebMCP App, End to End</span></a></li><li><a href="10-webmcp-in-frameworks.html"><span class="chapter-number">10</span><span>WebMCP in Frameworks</span></a></li><li><a href="11-designing-tools.html"><span class="chapter-number">11</span><span>Designing Tools Agents Can Actually Use</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-IV">Part IV · Trust: Security, Privacy and Consent</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-IV">
+            <li><a href="12-threat-models.html"><span class="chapter-number">12</span><span>Threat Models for Tool-Exposing Pages</span></a></li><li><a href="13-privacy-consent-human-in-the-loop.html"><span class="chapter-number">13</span><span>Privacy, Consent and the Human in the Loop</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-V">Part V · Shipping and the Ecosystem</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-V">
+            <li><a href="14-testing-debugging-evals.html"><span class="chapter-number">14</span><span>Testing, Debugging and Evals</span></a></li><li><a href="15-browser-support-and-standards.html"><span class="chapter-number">15</span><span>Browser Support and the Standards Road</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-VI">Part VI · Strategy and the Future</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-VI">
+            <li><a href="16-product-and-business-implications.html"><span class="chapter-number">16</span><span>Product and Business Implications</span></a></li><li><a href="17-the-road-ahead.html"><span class="chapter-number">17</span><span>The Road Ahead</span></a></li>
+          </ol>
+        </div>
+        <div class="nav-part">
+          <p class="nav-part-title" id="navpart-appendices">Appendices</p>
+          <ol class="nav-chapters" aria-labelledby="navpart-appendices">
+            <li><a href="../appendices/a-api-reference.html"><span class="chapter-number">A</span><span>API quick reference (IDL, attributes, events, errors)</span></a></li><li><a href="../appendices/b-glossary.html"><span class="chapter-number">B</span><span>Glossary (agent, browser agent, actuation, tool, annotation, origin trial)</span></a></li><li><a href="../appendices/c-resources.html"><span class="chapter-number">C</span><span>Resource directory and how to track changes</span></a></li><li><a href="../appendices/d-migration.html"><span class="chapter-number">D</span><span>Migration notes: navigator.modelContext and provideContext() to document.modelContext</span></a></li>
+          </ol>
+        </div>
+        </nav>
+        <div class="sidebar-cta">
+          <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the book as a PDF ↗</a>
+          <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov ↗</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="chapter-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / Chapter 7 <span class="fm-sep">·</span> <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> <span class="fm-sep">·</span> <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact the author</a></nav>
+        <p class="fm"><span class="fm-k">chapter:</span> <span class="fm-v">07</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">II — The WebMCP API in Depth</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">37 min</span></p>
+        <h1>Chapter 7: Frames, Origins and Page-Embedded Agents</h1>
+        <p class="lead">WebMCP beyond the top-level page: Permissions Policy gating, exposing tools to specific origins, and discovering and executing tools from an agent that lives in the page or in an extension.</p>
+      </header>
+
+      <main id="main-content" class="chapter-main" tabindex="-1">
+        <div class="chapter-meta">
+          <nav class="metadata-card" aria-labelledby="section-nav-heading">
+            <h2 id="section-nav-heading">On this page</h2>
+            <ol><li><a href="#a-page-is-more-than-one-document">A page is more than one document</a></li><li><a href="#two-kinds-of-agent-two-ways-to-see-tools">Two kinds of agent, two ways to see tools</a></li><li><a href="#gate-1-the-tools-permissions-policy">Gate 1: the tools Permissions Policy</a></li><li><a href="#gates-2-and-3-exposedto-and-fromorigins">Gates 2 and 3: exposedTo and fromOrigins</a></li><li><a href="#gettools-and-executetool-building-an-in-page-agent">getTools() and executeTool(): building an in-page agent</a></li><li><a href="#extensions-as-agents">Extensions as agents</a></li><li><a href="#design-note-is-this-really-a-general-communication-primitive">Design note: is this really a general communication primitive?</a></li><li><a href="#the-helpdesk-widget-so-far">The Helpdesk Widget so far</a></li><li><a href="#chapter-summary">Chapter summary</a></li><li><a href="#notes">Notes</a></li></ol>
+          </nav>
+        </div>
+
+        <article class="chapter-body section-content">
+<blockquote class="epigraph"><p><em>“I wonder if it would be better to reposition this idea as a general way to call functions in other environments.”</em></p>
+<p>— Jake Archibald, webmachinelearning/webmcp issue #236<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p></blockquote>
+<h2 id="a-page-is-more-than-one-document"><a class="anchor-link" href="#a-page-is-more-than-one-document">A page is more than one document</a></h2>
+<p>Chapters 4 to 6 treated a WebMCP site as a single page: Fjord Table registers its tools on <code>document.modelContext</code>, and an agent in the browser finds and calls them. That is the common case, but plenty of real pages aren't one document. A SaaS dashboard embeds a payments form from its processor, a chat bubble from a support vendor, a map, a video player and two analytics frames. Every <code>&lt;iframe&gt;</code> holds a document of its own, often from a different origin, and every document has its own <code>ModelContext</code>.<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup></p>
+<p>This chapter is about what happens to tools in that tree of documents. It answers three questions:</p>
+<ul>
+<li><strong>Who may register tools?</strong> The <code>tools</code> Permissions Policy decides which frames get to use the API at all.</li>
+<li><strong>Who may see and call them?</strong> <code>exposedTo</code> on the provider’s side and <code>fromOrigins</code> on the consumer’s side decide whether tools cross an origin boundary.</li>
+<li><strong>Who is the agent?</strong> Besides the browser’s own agent, the specification has room for agents written in JavaScript that live in the page (<code>getTools()</code> and <code>executeTool()</code>) and, in practice, for agents that live in browser extensions.</li>
+</ul>
+<p>The running example is the book’s third project, the <strong>Helpdesk Widget</strong>. Supportly, a fictional support-software vendor, serves an embeddable help widget from <code>https://widget.supportly.example</code>. Ledgerly, a fictional invoicing dashboard at <code>https://app.ledgerly.example</code>, embeds it. The widget registers three tools: <code>search_articles</code> and <code>get_ticket_status</code>, which only read, and <code>create_ticket</code>, which opens a ticket with Supportly’s staff. Ledgerly has an assistant of its own, a small in-page agent that should be able to use Supportly’s tools as well as Ledgerly’s. Nobody else on the page should be able to.</p>
+<p>Everything below was checked against the WebMCP Draft Community Group Report dated 15 October 2026, Chrome’s developer documentation and the open issues and pull requests in the <code>webmachinelearning/webmcp</code> repository, all read on 14 October 2026 and re-checked on 15 October 2026.<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup> Every behaviour marked “tested” was observed in Chromium 156.0.8078.4 with the <code>WebMCPTesting</code> feature switched on (the switch behind <code>chrome://flags/#enable-webmcp-testing</code><sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup>), with Ledgerly and Supportly served from two different local origins. The tests are in the book’s demos repository, in <code>chapters/07-frames-origins-agents/</code>, and all 29 of them pass. Where Chromium and the draft disagree, the text says so.</p>
+<figure class="book-figure"><img decoding="async" src="07-frames-origins-agents/images/figure-7-1.png" alt="Figure 7.1 — Ledgerly’s frame tree. The top-level document and Supportly’s widget frame each have their own ModelContext. Three independent opt-ins stand between the widget’s tools and Ledgerly’s agent." /><figcaption>Figure 7.1 — The Helpdesk Widget’s frame tree. Ledgerly (top-level) delegates the <code>tools</code> feature to Supportly’s iframe (gate 1). Supportly registers its tools with <code>exposedTo: ['https://app.ledgerly.example']</code> (gate 2). Ledgerly’s agent asks for them with <code>getTools({ fromOrigins: ['https://widget.supportly.example'] })</code> (gate 3). The analytics frame has no delegation, so it can’t use WebMCP at all.</figcaption></figure>
+<p>Figure 7.1 shows the shape of the whole chapter. A cross-origin tool reaches an agent only if three different parties have each said yes: the embedder, the tool provider and the tool consumer. If any of them says nothing, the answer is no.</p>
+<h2 id="two-kinds-of-agent-two-ways-to-see-tools"><a class="anchor-link" href="#two-kinds-of-agent-two-ways-to-see-tools">Two kinds of agent, two ways to see tools</a></h2>
+<p>Before the gates, it helps to be precise about who is looking.</p>
+<p>The specification describes a <strong>browser agent</strong>: the assistant built into the browser, which “does not run JavaScript on the page.” It gets a view of the page by performing an <em>observation</em>, an implementation-defined snapshot that includes, at minimum, a tool map. The observation algorithm walks every document in the tab’s frame tree and records, for each document, an <em>observed tool collection</em> holding that document’s origin and its tools. A note in the draft adds that user agents “are expected to include the origin field to avoid confusion that could be exploited by an attacker.”<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup> In other words, the browser agent sees the tools of every frame, labelled by origin. The <code>exposedTo</code> and <code>fromOrigins</code> options described below don’t apply to it, because it isn’t a document; only the Permissions Policy decides which frames can register tools in the first place.</p>
+<p>The second kind is an <strong>in-page agent</strong>: an agent written in JavaScript that runs inside a document, “and possibly living in iframes,” in the draft’s words.<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">2:1</a></sup> It uses two methods that Chapter 5 set aside: <code>getTools()</code> to discover tools and <code>executeTool()</code> to call one. Because an in-page agent is just script in some origin, it is subject to the same-origin policy like any other script, and that is what the two-sided opt-in is for.</p>
+<p>A third kind, the extension agent, sits between the two. It runs JavaScript, but with the privileges of a browser extension. It gets its own section later in this chapter.</p>
+<h2 id="gate-1-the-tools-permissions-policy"><a class="anchor-link" href="#gate-1-the-tools-permissions-policy">Gate 1: the <code>tools</code> Permissions Policy</a></h2>
+<h3 id="the-default-is-self"><a class="anchor-link" href="#the-default-is-self">The default is <code>'self'</code></a></h3>
+<p>Access to the whole API is gated behind a policy-controlled feature called <code>&quot;tools&quot;</code>, “which has a default allowlist of <code>'self'</code>.”<sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup> Every method checks it first. <code>registerTool()</code>, <code>getTools()</code> and <code>executeTool()</code> each begin by asking whether the calling document “is allowed to use the <code>tools</code> feature” and, if not, return a promise rejected with a <code>NotAllowedError</code> <code>DOMException</code>.<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup> <code>getTools()</code> also skips any document in the tree that isn’t allowed to use the feature, and the tool-change notification skips them too.<sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup></p>
+<p>With the default allowlist, that means:</p>
+<ul>
+<li>the top-level document can use WebMCP;</li>
+<li>same-origin iframes can use it, with no markup needed;</li>
+<li>cross-origin iframes can’t, unless the embedder delegates the feature to them.</li>
+</ul>
+<p>Chrome’s Imperative API guide puts it the same way: “Tool registration is disabled by default in cross-origin iframes. A page must delegate access using the <code>tools</code> Permissions Policy.”<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup></p>
+<h3 id="delegating-to-one-frame-with-allowtools"><a class="anchor-link" href="#delegating-to-one-frame-with-allowtools">Delegating to one frame with <code>allow=&quot;tools&quot;</code></a></h3>
+<p>Ledgerly delegates the feature to Supportly’s frame with the iframe’s <code>allow</code> attribute. Listing 7.1 is Ledgerly’s whole page.</p>
+<figure class="code"><figcaption>Listing 7.1 — Ledgerly embeds Supportly’s widget and delegates <code>tools</code> to it (ledgerly/index.html)</figcaption>
+<pre><code class="language-html">&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;title&gt;Ledgerly · Invoices&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;ledgerly.css&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;header&gt;&lt;strong&gt;Ledgerly&lt;/strong&gt; · Invoices&lt;/header&gt;
+  &lt;main id=&quot;dashboard&quot;&gt;…&lt;/main&gt;
+
+  &lt;aside id=&quot;assistant&quot; aria-label=&quot;Ledgerly Assistant&quot;&gt;
+    &lt;form id=&quot;ask&quot;&gt;&lt;input name=&quot;goal&quot; placeholder=&quot;Ask the assistant&quot;&gt;&lt;button&gt;Ask&lt;/button&gt;&lt;/form&gt;
+    &lt;ol id=&quot;transcript&quot;&gt;&lt;/ol&gt;
+  &lt;/aside&gt;
+
+  &lt;!-- Supportly's help widget, from a third-party origin. --&gt;
+  &lt;iframe id=&quot;supportly&quot;
+          title=&quot;Supportly help&quot;
+          src=&quot;https://widget.supportly.example/embed.html?customer=ledgerly&quot;
+          allow=&quot;tools&quot;&gt;&lt;/iframe&gt;
+
+  &lt;script type=&quot;module&quot; src=&quot;agent/assistant.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></figure>
+<p>In an <code>allow</code> attribute, a feature name with no allowlist uses the default value <code>src</code>: the feature is allowed in this iframe “as long as the document loaded into it comes from the same origin as the URL in its <code>src</code> attribute.”<sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup> So <code>allow=&quot;tools&quot;</code> here means “Supportly’s documents in this frame may use WebMCP.” If the widget navigates somewhere else, the delegation doesn’t follow it.</p>
+<h3 id="setting-the-policy-for-the-whole-page"><a class="anchor-link" href="#setting-the-policy-for-the-whole-page">Setting the policy for the whole page</a></h3>
+<p>The <code>allow</code> attribute delegates, but it doesn’t restrict. Any other iframe on the page with <code>allow=&quot;tools&quot;</code> would get the same power, and a marketing team’s tag manager can add iframes. The <code>Permissions-Policy</code> response header sets the ceiling for the document and everything inside it. Listing 7.2 is the header Ledgerly sends with its HTML.</p>
+<figure class="code"><figcaption>Listing 7.2 — Ledgerly’s response header (ledgerly/permissions-policy.txt)</figcaption>
+<pre><code class="language-http">Permissions-Policy: tools=(self &quot;https://widget.supportly.example&quot;)
+</code></pre></figure>
+<p>The header’s allowlist uses quoted origins, <code>self</code> and <code>*</code>; an empty list, <code>()</code>, disables the feature in the top-level document and in every nested frame.<sup class="footnote-ref"><a href="#fn10" id="fnref10:1">10:1</a></sup> With Listing 7.2 in place, only Ledgerly itself and Supportly’s origin can ever be granted <code>tools</code>, whatever iframes appear later. The iframe still needs its own <code>allow=&quot;tools&quot;</code>: the header says who <em>may</em> be granted the feature, and the attribute grants it to a particular frame.</p>
+<p>For pages that shouldn’t expose tools at all, the specification lists the empty allowlist as a mitigation in its own right. A <code>Permissions-Policy: tools=()</code> header makes the feature “unavailable to the document and its descendants,” it applies “to every descendant frame, including both same-origin and cross-origin ones,” and the user agent “enforces this before script runs on the page, protecting against malicious scripts or dependencies from using WebMCP APIs.”<sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup> Ledgerly’s settings pages, where nobody needs an agent, are good candidates.</p>
+<p>Table 7.1 shows what Supportly’s widget experienced under each configuration in the tests.</p>
+<p><strong>Table 7.1 — Can Supportly’s cross-origin iframe register tools? (tested, Chromium 156)</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ledgerly’s header</th>
+<th><code>allow</code> on the iframe</th>
+<th>Result inside the widget</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>none</td>
+<td>none</td>
+<td><code>registerTool()</code> rejects with <code>NotAllowedError</code></td>
+</tr>
+<tr>
+<td>none</td>
+<td><code>allow=&quot;tools&quot;</code></td>
+<td>Registers</td>
+</tr>
+<tr>
+<td><code>tools=(self &quot;https://widget.supportly.example&quot;)</code> (Listing 7.2)</td>
+<td><code>allow=&quot;tools&quot;</code></td>
+<td>Registers</td>
+</tr>
+<tr>
+<td><code>tools=(self)</code></td>
+<td><code>allow=&quot;tools&quot;</code></td>
+<td><code>NotAllowedError</code>: the header wins over the attribute</td>
+</tr>
+<tr>
+<td><code>tools=()</code></td>
+<td><code>allow=&quot;tools&quot;</code></td>
+<td><code>NotAllowedError</code> in the widget, and Ledgerly’s own <code>getTools()</code> rejects with <code>NotAllowedError</code> too</td>
+</tr>
+</tbody>
+</table></div>
+<p>The error message Chromium gives is: <code>Access to the feature &quot;tools&quot; is disallowed by permissions policy.</code> A same-origin iframe with no <code>allow</code> attribute registered its tools without complaint, as the <code>'self'</code> default predicts.</p>
+<h3 id="feature-detection-doesnt-see-the-policy"><a class="anchor-link" href="#feature-detection-doesnt-see-the-policy">Feature detection doesn’t see the policy</a></h3>
+<p>One result in those tests deserves its own paragraph. In every blocked case, <code>'modelContext' in document</code> was still <code>true</code> inside the widget. The <code>modelContext</code> attribute exists on every <code>Document</code> in a secure context where the browser supports WebMCP;<sup class="footnote-ref"><a href="#fn2" id="fnref2:2">2:2</a></sup> the policy is checked when you call a method, not when you look for the attribute. Chapter 5 recommended detecting the API, then awaiting registration and catching errors. In an embeddable widget that advice is no longer optional. A widget is embedded by customers you don’t control, and some of them will forget <code>allow=&quot;tools&quot;</code>. Listing 7.3 returns <code>'blocked'</code> in that case instead of throwing, so the widget can still work as an ordinary help widget for humans.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: one switch or two?</p>
+<p>Today one feature, <code>tools</code>, covers both providing tools and consuming them. On 23 September 2026 issue #317 described a host that composes several cross-origin apps and one agent in iframes, and wants the apps to provide tools but not use each other’s. It asked whether the policy should be split into two independently delegatable features, “conceptually” <code>allow=&quot;tools-provide&quot;</code> and <code>allow=&quot;tools-consume&quot;</code>.<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup> The issue was still open on 15 October 2026. If it lands, Listing 7.1’s single <code>allow=&quot;tools&quot;</code> may need to become something more specific.</p></aside>
+<h2 id="gates-2-and-3-exposedto-and-fromorigins"><a class="anchor-link" href="#gates-2-and-3-exposedto-and-fromorigins">Gates 2 and 3: <code>exposedTo</code> and <code>fromOrigins</code></a></h2>
+<p>Getting past the Permissions Policy only means the widget can register tools. By default nobody outside Supportly’s origin can see them. Chrome’s security guide says it directly: “By default, other websites or cross-origin iframes can’t observe or interact with your tools.”<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup> Crossing that line takes one opt-in from each side.</p>
+<h3 id="the-providers-side-exposedto"><a class="anchor-link" href="#the-providers-side-exposedto">The provider’s side: <code>exposedTo</code></a></h3>
+<p><code>registerTool()</code> takes a second argument, the <code>ModelContextRegisterToolOptions</code> dictionary. Chapter 5 used its <code>signal</code> member. The other member is <code>exposedTo</code>, “an array of origins that control which documents this tool is exposed to, in the current document’s tree.”<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup> Listing 7.3 is the widget’s registration code.</p>
+<figure class="code"><figcaption>Listing 7.3 — Supportly registers three tools for the embedding page’s agent (supportly/widget-tools.js)</figcaption>
+<pre><code class="language-js">// Supportly help widget: tools for the embedding page's agent.
+// Runs inside https://widget.supportly.example/embed.html.
+import { helpdesk } from './helpdesk-api.js';
+import { confirmTicket } from './widget-ui.js';
+
+// Which origins each customer has registered with Supportly.
+const CUSTOMER_ORIGINS = {
+  ledgerly: ['https://app.ledgerly.example'],
+};
+
+export async function registerWidgetTools(signal) {
+  if (!('modelContext' in document)) return 'unsupported';
+
+  const customer = new URLSearchParams(location.search).get('customer');
+  const exposedTo = CUSTOMER_ORIGINS[customer] ?? [];   // ①
+  const mc = document.modelContext;
+
+  try {
+    await mc.registerTool({
+      name: 'search_articles',
+      title: 'Search help articles',
+      description:
+        'Search the Supportly help centre for articles that answer a ' +
+        'question about the product. Returns titles, links and a short excerpt.',
+      inputSchema: {
+        type: 'object',
+        properties: { query: { type: 'string', maxLength: 200 } },
+        required: ['query'],
+      },
+      annotations: { readOnlyHint: true },
+      async execute({ query }) {
+        if (typeof query !== 'string' || !query.trim()) {
+          return { status: 'error', code: 'INVALID_INPUT',
+                   message: 'Provide &quot;query&quot; as a non-empty string.' };
+        }
+        return { articles: await helpdesk.search(query.slice(0, 200)) };
+      },
+    }, { signal, exposedTo });                                   // ②
+
+    await mc.registerTool({
+      name: 'create_ticket',
+      title: 'Open a support ticket',
+      description:
+        'Open a support ticket with the Supportly team on the user\'s behalf. ' +
+        'The user reviews and sends it in the help widget. Returns the ticket ID.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          subject: { type: 'string', maxLength: 120 },
+          body: { type: 'string', maxLength: 4000 },
+          priority: { type: 'string', enum: ['low', 'normal', 'high'] },
+        },
+        required: ['subject', 'body', 'priority'],
+      },
+      annotations: { consequentialHint: true },
+      async execute({ subject, body, priority }, { signal }) {
+        if (!subject?.trim() || !body?.trim()) {
+          return { status: 'error', code: 'INVALID_INPUT',
+                   message: 'Provide a non-empty &quot;subject&quot; and &quot;body&quot;.' };
+        }
+        if (!['low', 'normal', 'high'].includes(priority)) {
+          return { status: 'error', code: 'INVALID_INPUT',
+                   message: '&quot;priority&quot; must be low, normal or high.' };
+        }
+        const draft = { subject: subject.slice(0, 120), body: body.slice(0, 4000), priority };
+        const sent = await confirmTicket(draft, signal);          // ③
+        if (!sent) {
+          return { status: 'cancelled_by_user',
+                   message: 'The user closed the ticket form without sending it.' };
+        }
+        const ticket = await helpdesk.createTicket(draft);
+        return { status: 'created', ticketId: ticket.id };
+      },
+    }, { signal, exposedTo });
+
+    await mc.registerTool({
+      name: 'get_ticket_status',
+      title: 'Check a support ticket',
+      description:
+        'Get the status and latest reply of a Supportly ticket by its ID ' +
+        '(for example SUP-1042).',
+      inputSchema: {
+        type: 'object',
+        properties: { ticketId: { type: 'string', pattern: '^SUP-[0-9]+$' } },
+        required: ['ticketId'],
+      },
+      annotations: { readOnlyHint: true, untrustedContentHint: true },  // ④
+      async execute({ ticketId }) {
+        if (!/^SUP-[0-9]+$/.test(ticketId ?? '')) {
+          return { status: 'error', code: 'INVALID_INPUT',
+                   message: '&quot;ticketId&quot; looks like SUP-1042.' };
+        }
+        const ticket = await helpdesk.getTicket(ticketId);
+        if (!ticket) {
+          return { status: 'error', code: 'TICKET_NOT_FOUND',
+                   message: `No ticket ${ticketId} on this account.` };
+        }
+        // The ticket's own state is ticketState, so status stays free for outcomes.
+        return { ticketId, ticketState: ticket.status, latestReply: ticket.latestReply };
+      },
+    }, { signal, exposedTo });
+
+    return 'registered';
+  } catch (err) {
+    if (err.name === 'NotAllowedError') return 'blocked';         // ⑤
+    throw err;
+  }
+}
+</code></pre></figure>
+<p>The markers point at the parts that matter for this chapter.</p>
+<p>① <strong>Who gets the tools.</strong> The widget doesn’t trust the page that embeds it to say who it is. It reads a customer ID from its own URL and looks up the origins that customer registered with Supportly. In a real product the table would come from Supportly’s server, keyed by the customer’s account. If someone embeds the widget with <code>?customer=ledgerly</code> on a site that isn’t Ledgerly, nothing leaks: <code>exposedTo</code> names the origin that may <em>consume</em> the tools, and the browser checks it against the caller’s actual origin. An unknown customer gets an empty list, which exposes the tools to nobody outside Supportly. The tests cover that case: the widget still registers its tools, and Ledgerly’s agent sees none of them.</p>
+<p>② <strong>One option per registration.</strong> Each <code>registerTool()</code> call gets the same <code>signal</code> and the same <code>exposedTo</code>. Exposure is per tool, so a vendor could expose <code>search_articles</code> widely and keep <code>create_ticket</code> for a shorter list.</p>
+<p>③ <strong>The provider confirms.</strong> <code>create_ticket</code> has consequences, so it carries <code>consequentialHint</code> (Chapter 6) and asks the user in the widget’s own UI before anything is sent. Who should ask is a real design question once two companies are involved. Here the answer is the tool’s owner: Supportly can’t know whether Ledgerly’s agent asked the user, but it can always ask in its own frame. The confirmation card is wired to the call’s <code>signal</code>, so if the agent cancels, the card disappears.</p>
+<p>④ <strong>Content Supportly doesn’t vouch for.</strong> Ticket replies are typed by people, and a customer can type anything, including text written to steer an agent. <code>untrustedContentHint</code> tells the consumer that this output shouldn’t be read as instructions (Chapters 6 and 12).</p>
+<p>⑤ <strong>The policy failure is a value.</strong> As discussed above, a missing <code>allow=&quot;tools&quot;</code> surfaces as <code>NotAllowedError</code> from the first <code>registerTool()</code> call. The widget reports <code>'blocked'</code> and carries on as a widget for humans.</p>
+<p>The draft is strict about the origins themselves. Each entry is run through the URL parser, and if parsing fails “or its origin is not potentially trustworthy,” registration rejects with a <code>SecurityError</code>.<sup class="footnote-ref"><a href="#fn7" id="fnref7:1">7:1</a></sup> “Potentially trustworthy” means, roughly, HTTPS or a local origin such as <code>http://localhost</code>, which is why the tests can run on two local ports. In Chromium 156 both a plain-HTTP origin and a string that isn’t a URL at all were refused with <code>SecurityError: Only secure origins are allowed in the exposedTo list.</code> (tested).</p>
+<h3 id="the-consumers-side-fromorigins"><a class="anchor-link" href="#the-consumers-side-fromorigins">The consumer’s side: <code>fromOrigins</code></a></h3>
+<p>The second opt-in belongs to the agent. <code>getTools()</code> takes a <code>ModelContextGetToolOptions</code> dictionary with one member, <code>fromOrigins</code>: “Documents whose origin appears in this list, or are same-origin with the caller, have their tools queried. An empty list only includes same-origin documents.”<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup> Its entries are validated like <code>exposedTo</code>’s, and an insecure origin rejects with <code>SecurityError</code>.</p>
+<p>The rule fits in a sentence from the method steps. For each document in the tree, a tool is included only if the document is allowed to use <code>tools</code>, the document is same-origin with the caller <em>or</em> listed in <code>fromOrigins</code>, and the tool “is exposed to” the caller’s origin.<sup class="footnote-ref"><a href="#fn8" id="fnref8:1">8:1</a></sup> The last check is a four-line algorithm: return true if the tool’s owner is same-origin with the caller, or if the caller’s origin is in the tool’s exposed origins; otherwise return false.<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup></p>
+<p>Chrome’s guide sums up the effect for developers: “Even if a tool is exposed to your origin, you must still explicitly request it from the hosting origin using the <code>fromOrigins</code> option in <code>getTools()</code>.”<sup class="footnote-ref"><a href="#fn9" id="fnref9:1">9:1</a></sup> Table 7.2 lists the three opt-ins side by side.</p>
+<p><strong>Table 7.2 — The three opt-ins for a cross-origin tool</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>Who decides</th>
+<th>Mechanism</th>
+<th>Default</th>
+<th>Failure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Delegation</td>
+<td>The embedder (Ledgerly)</td>
+<td><code>Permissions-Policy</code> header and <code>allow=&quot;tools&quot;</code> on the iframe</td>
+<td><code>'self'</code>: top-level and same-origin frames only</td>
+<td><code>NotAllowedError</code> from any method</td>
+</tr>
+<tr>
+<td>2. Exposure</td>
+<td>The tool provider (Supportly)</td>
+<td><code>registerTool(tool, { exposedTo })</code></td>
+<td>Same-origin callers only</td>
+<td>The tool is silently absent from the consumer’s list</td>
+</tr>
+<tr>
+<td>3. Request</td>
+<td>The tool consumer (Ledgerly’s agent)</td>
+<td><code>getTools({ fromOrigins })</code></td>
+<td>Same-origin documents only</td>
+<td>The document’s tools are silently absent</td>
+</tr>
+</tbody>
+</table></div>
+<p>Two things about the table are easy to miss. First, gates 2 and 3 fail silently. A tool you didn’t expose, or an origin you didn’t ask for, simply isn’t in the list; no error tells you why. When a cross-origin tool is missing, check all three gates in order. Second, gate 3 exists so that a page isn’t flooded with tools it never asked for. A pull request that would document all of this in the specification’s security section says the mutual consent “prevents unsolicited tool-list pollution and unauthorized cross-origin tool invocation.”<sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup></p>
+<p>Both directions work. Exposure is about origins, not about who embeds whom. In the tests, Ledgerly registered a tool with <code>exposedTo: [Supportly’s origin]</code>, and the widget, asking with <code>fromOrigins: [Ledgerly’s origin]</code>, found and called it. A vendor widget could use that to ask the host for context (“which invoice is the user looking at?”) without a custom <code>postMessage</code> protocol. A tool Ledgerly registered without <code>exposedTo</code> stayed invisible to the widget.</p>
+<p><code>exposedTo</code> also drives events. When a tool is registered, the browser notifies every document in the tree that is allowed to use <code>tools</code> and to which the tool is exposed, by firing <code>toolchange</code> at its <code>ModelContext</code>.<sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup> In the tests, Ledgerly’s <code>toolchange</code> listener fired when the widget registered its exposed tools. The event carries no details, so a listener has to call <code>getTools()</code> again to find out what changed. Listing 7.5 does exactly that.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: the security section is still a TODO</p>
+<p>In the 15 October 2026 draft, §6.3.4, “Violation of Same-Origin Boundaries,” reads in full: “TODO: Document risks and implications of agents carrying state from one origin to another,” followed by a note that the section “should probably talk about the WebMCP permissions policy and other cross-origin opt in mechanisms.”<sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup> Pull request #326, opened on 28 September 2026, would fill it in with the two-sided opt-in model described here and with the residual risk that an agent itself may carry state from one origin to another. A reviewer has asked for the section to be retitled “Cross-origin tool exposure.”<sup class="footnote-ref"><a href="#fn17" id="fnref17:1">17:1</a></sup> The pull request was still open on 15 October. The mechanism is in the normative algorithms already; the rationale and the threat discussion are what is pending.</p></aside>
+<h2 id="gettools-and-executetool-building-an-in-page-agent"><a class="anchor-link" href="#gettools-and-executetool-building-an-in-page-agent"><code>getTools()</code> and <code>executeTool()</code>: building an in-page agent</a></h2>
+<p>With the gates open, Ledgerly can build its assistant. The two methods are small. Listing 7.4 shows their shape from the specification’s IDL.</p>
+<figure class="code"><figcaption>Listing 7.4 — Discovery and execution, from the specification’s IDL (15 October 2026, abridged)</figcaption>
+<pre><code class="language-webidl">partial interface ModelContext {
+  Promise&lt;sequence&lt;RegisteredTool&gt;&gt; getTools(optional ModelContextGetToolOptions options = {});
+  Promise&lt;DOMString&gt; executeTool(RegisteredTool tool,
+                                 optional object inputObject,
+                                 optional ModelContextExecuteToolOptions options = {});
+};
+
+dictionary ModelContextGetToolOptions { sequence&lt;USVString&gt; fromOrigins; };
+dictionary ModelContextExecuteToolOptions { AbortSignal signal; };
+
+dictionary RegisteredTool {
+  required DOMString name;
+  DOMString title;
+  required DOMString description;
+  object inputSchema;
+  required Window window;
+  required USVString origin;
+  ToolAnnotations annotations;
+};
+</code></pre></figure>
+<p>(The real IDL declares both methods on <code>ModelContext</code> itself; <code>partial</code> here just leaves out what Chapter 5 already covered.)<sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup></p>
+<h3 id="what-gettools-returns"><a class="anchor-link" href="#what-gettools-returns">What <code>getTools()</code> returns</a></h3>
+<p><code>getTools()</code> resolves to a list of <code>RegisteredTool</code> dictionaries.<sup class="footnote-ref"><a href="#fn21" id="fnref21">21</a></sup> Most members repeat what the tool’s owner registered: <code>name</code>, <code>title</code>, <code>description</code>, a deep copy of <code>inputSchema</code>, and the four annotation hints. Two members are new:</p>
+<ul>
+<li><code>window</code> is the <code>Window</code> of the document that registered the tool. In the tests it was strictly equal to the iframe’s <code>contentWindow</code>.</li>
+<li><code>origin</code> is the serialized origin of that document. The draft explains that it matters for cross-origin tools, because the consumer “cannot otherwise get the tool’s origin from its window.”<sup class="footnote-ref"><a href="#fn21" id="fnref21:1">21:1</a></sup></li>
+</ul>
+<p>The list covers every document in the caller’s <em>top-level</em> frame tree: the method walks the inclusive descendants of the tab’s top-level document, not just the caller’s own descendants.<sup class="footnote-ref"><a href="#fn8" id="fnref8:2">8:2</a></sup> That is why the widget, a child frame, could find Ledgerly’s tools above it. Documents in other tabs, popups and openers aren’t included; issue #227, open since 21 July 2026, argues that discovery should cover the whole browsing context group.<sup class="footnote-ref"><a href="#fn22" id="fnref22">22</a></sup> The list is sorted by tool name across all frames, which the tests confirmed: Ledgerly’s <code>find_invoice</code> came back between Supportly’s <code>create_ticket</code> and <code>get_ticket_status</code>. Don’t rely on list position to tell frames apart.</p>
+<p>That last point leads to a practical problem. Two frames can register tools with the same name. Supportly has <code>search_articles</code>; a documentation widget from another vendor might have one too. Names are unique only within one document’s tool map. A consumer that hands tools to a language model needs names that are unique across the page, so Listing 7.5 keys each tool by vendor and name.</p>
+<figure class="code"><figcaption>Listing 7.5 — Ledgerly’s agent discovers the tools it may use (ledgerly/agent/discover.js)</figcaption>
+<pre><code class="language-js">// Ledgerly's in-page agent: find the tools it is allowed to use.
+const SUPPORTLY = 'https://widget.supportly.example';
+
+export async function discoverTools() {
+  // Same-origin tools come back by default; Supportly's only if we ask
+  // for its origin AND Supportly exposed them to us.
+  const tools = await document.modelContext.getTools({ fromOrigins: [SUPPORTLY] });
+
+  // Key every tool by origin + name: two frames may both register &quot;search&quot;.
+  const catalog = new Map();
+  for (const tool of tools) {
+    const vendor = tool.origin === location.origin ? 'ledgerly' : 'supportly';
+    catalog.set(`${vendor}__${tool.name}`, tool);
+  }
+  return catalog;
+}
+
+export function watchTools(onChange, signal) {
+  let pending = null;
+  document.modelContext.addEventListener('toolchange', () =&gt; {
+    // toolchange carries no details, and frames register tools one by one,
+    // so coalesce bursts and re-read the whole list.
+    clearTimeout(pending);
+    pending = setTimeout(async () =&gt; onChange(await discoverTools()), 50);
+  }, { signal });
+}
+</code></pre></figure>
+<p><code>watchTools()</code> debounces <code>toolchange</code>. In the tests the widget registered its three tools one after another, and Ledgerly received a separate event for each. Re-reading the list once after the burst is cheaper than three times, and the draft itself warns that the timing of <code>toolchange</code> relative to other tasks “cannot be relied upon.”<sup class="footnote-ref"><a href="#fn18" id="fnref18:1">18:1</a></sup></p>
+<h3 id="what-executetool-does"><a class="anchor-link" href="#what-executetool-does">What <code>executeTool()</code> does</a></h3>
+<p><code>executeTool(tool, input, { signal })</code> runs a tool “on the document it was registered on” and resolves to “the stringified result of the tool’s execution.”<sup class="footnote-ref"><a href="#fn20" id="fnref20:1">20:1</a></sup> Chapter 6 followed a call from the agent’s side; the cross-origin details are what is new here.</p>
+<p><strong>It takes a dictionary, not a handle.</strong> The first argument is a <code>RegisteredTool</code> dictionary. Because it’s a dictionary, any object with the right members will do. In Chromium a shallow copy of a tool from <code>getTools()</code> executed normally (tested). What the browser checks is that <code>window</code> is a real <code>Window</code> in the same tab, that the target document’s origin matches <code>origin</code>, that a tool with that <code>name</code> exists there, and that it is exposed to the caller.<sup class="footnote-ref"><a href="#fn23" id="fnref23">23</a></sup> You can only get a cross-origin <code>Window</code> reference from the frame tree, so in practice the dictionary comes from <code>getTools()</code>.</p>
+<p><strong>It doesn’t let you probe.</strong> If any of those last three checks fails, the draft rejects with the same <code>NotFoundError</code>, on purpose. A note explains that this “prevents a cross-origin caller from using fabricated <code>RegisteredTool</code> dictionaries to probe” the target’s current origin or to “enumerate private tools not exposed” to the caller.<sup class="footnote-ref"><a href="#fn23" id="fnref23:1">23:1</a></sup> Chromium 156 gives the same answer for all of them too, but the name is different: a copy with a made-up <code>name</code>, and a copy with a forged <code>origin</code>, both rejected with <code>UnknownError</code> and the same message, “The operation failed for an unknown transient reason” (tested). The spirit of the rule holds; the exception name doesn’t match the draft yet. That is spec lag, not a different design: the draft itself used <code>UnknownError</code> for these cases until 8 October 2026, when pull request #339 (commit b206dae) replaced it with <code>NotFoundError</code> and the other specific names, and Chromium 156 still implements the older text.<sup class="footnote-ref"><a href="#fn24" id="fnref24">24</a></sup></p>
+<p><strong>Only a name crosses back.</strong> When a tool fails, the caller sees a <code>DOMException</code> whose name comes from a small table of platform failures. The draft says that passing only the error’s name, rather than “any internal JavaScript exception object or message thrown in targetDocument,” prevents “leaking provider implementation details or stack traces across origins.”<sup class="footnote-ref"><a href="#fn23" id="fnref23:2">23:2</a></sup> The tests checked this from the attacker’s side: the widget registered a tool that threw <code>new Error('db password is hunter2')</code>, and Ledgerly’s agent got <code>UnknownError: Tool was executed but the invocation failed…</code> with no trace of the message. Recoverable failures still belong in the return value, as Listing 7.3 does with <code>{ status: 'error', code: 'INVALID_INPUT', message: '&quot;priority&quot; must be low, normal or high.' }</code>, using the result vocabulary Chapter 11 sets out.</p>
+<p><strong>Cancellation crosses origins.</strong> The caller’s <code>signal</code> is wired to the target. In the tests, aborting Ledgerly’s controller rejected <code>executeTool()</code> with an <code>AbortError</code> in Ledgerly, aborted the <code>signal</code> that Supportly’s <code>execute</code> callback received, and fired <code>toolcancel</code> at the widget’s <code>ModelContext</code>. The widget’s confirmation card disappeared, as Listing 7.3 intended. This matches the draft’s cancellation steps exactly.<sup class="footnote-ref"><a href="#fn25" id="fnref25">25</a></sup> Chapter 6 covers cancellation in full, including why a cancelled tool may still finish its work.</p>
+<p>Listing 7.6 wraps all of that into one function the agent loop can call.</p>
+<figure class="code"><figcaption>Listing 7.6 — Running a tool with a deadline, a stop button and honest errors (ledgerly/agent/run-tool.js)</figcaption>
+<pre><code class="language-js">// Run one tool for the in-page agent, with a deadline and a stop button.
+export async function runTool(tool, input, { stop, timeoutMs = 15000 } = {}) {
+  const signal = AbortSignal.any([stop, AbortSignal.timeout(timeoutMs)]);
+  const hints = tool.annotations ?? {};
+  try {
+    const text = await document.modelContext.executeTool(tool, input, { signal });
+    let value = text;
+    try { value = JSON.parse(text); } catch { /* plain string result */ }
+    return {
+      ok: true,
+      origin: tool.origin,
+      // Content the tool owner itself doesn't vouch for: label it, never obey it.
+      untrusted: hints.untrustedContentHint === true,
+      value,
+    };
+  } catch (err) {
+    // Across origins you only ever get an exception name, never the message
+    // or stack from the other document.
+    const reason = signal.aborted
+      ? (stop.aborted ? 'stopped by user' : 'timed out')
+      : err.name;
+    return {
+      ok: false,
+      origin: tool.origin,
+      reason,
+      // Never retry something with real-world effects on your own.
+      retryable: !hints.consequentialHint &amp;&amp; reason !== 'stopped by user',
+    };
+  }
+}
+</code></pre></figure>
+<p><code>AbortSignal.any()</code> combines the user’s stop button with a timeout, so one signal covers both. When the call fails, the code checks the signal first: a timeout and a user’s stop both reject with an abort-type error, and the agent needs to know which. Results flagged with <code>untrustedContentHint</code> are labelled so the planner can treat them as data rather than instructions, and tools flagged as consequential are never retried automatically: if <code>create_ticket</code> timed out, the user may have clicked Send a moment too late, and a retry could open a second ticket.</p>
+<p>Table 7.3 collects what the tests observed when cross-origin calls went wrong, next to what the draft specifies.</p>
+<p><strong>Table 7.3 — Cross-origin call failures: the 15 October draft and Chromium 156 (tested)</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Draft</th>
+<th>Chromium 156</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The tool’s <code>execute</code> throws</td>
+<td><code>OperationError</code> (“tool rejected”)</td>
+<td><code>UnknownError</code>, generic message</td>
+</tr>
+<tr>
+<td>Forged <code>name</code> or forged <code>origin</code></td>
+<td><code>NotFoundError</code></td>
+<td><code>UnknownError</code> (same message for both)</td>
+</tr>
+<tr>
+<td>Caller aborts its signal</td>
+<td>Rejects with the signal’s reason; target gets <code>toolcancel</code></td>
+<td><code>AbortError</code>; target’s signal aborted; <code>toolcancel</code> fired</td>
+</tr>
+<tr>
+<td>Target iframe navigates away mid-call</td>
+<td><code>AbortError</code> (“target document unloaded”)</td>
+<td><code>UnknownError</code></td>
+</tr>
+<tr>
+<td>Target iframe removed mid-call</td>
+<td><code>AbortError</code> (“target document unloaded”)</td>
+<td><code>UnknownError</code></td>
+</tr>
+<tr>
+<td>Non-secure origin in <code>exposedTo</code> / <code>fromOrigins</code></td>
+<td><code>SecurityError</code></td>
+<td><code>SecurityError</code></td>
+</tr>
+<tr>
+<td>Calling document blocked by policy</td>
+<td><code>NotAllowedError</code></td>
+<td><code>NotAllowedError</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Sources: the draft’s tool execution error table and method steps;<sup class="footnote-ref"><a href="#fn26" id="fnref26">26</a></sup> Chromium results from this chapter’s tests, re-run on 15 October 2026. Every <code>UnknownError</code> in the Chromium column is a case the draft named <code>UnknownError</code> until 8 October 2026.<sup class="footnote-ref"><a href="#fn24" id="fnref24:1">24:1</a></sup></p>
+<p>Chrome’s guide adds one more case: <code>executeTool()</code> returns “null when a navigation is triggered.”<sup class="footnote-ref"><a href="#fn9" id="fnref9:2">9:2</a></sup> In this chapter’s test, where the <em>widget’s</em> tool navigated the widget’s own frame, the caller got <code>UnknownError</code>, not <code>null</code>. Treat both as “the call didn’t complete; check the page,” and design consequential tools so that a lost answer can be checked afterwards: <code>create_ticket</code> returns a ticket ID, and <code>get_ticket_status</code> can confirm it.</p>
+<h3 id="the-loop"><a class="anchor-link" href="#the-loop">The loop</a></h3>
+<p>An in-page agent is a loop: show the model the tools, let it choose, run the choice, feed the result back, repeat. Listing 7.7 is Ledgerly’s. The planner is deliberately abstract. It could be a server-side model, Chrome’s built-in Prompt API (whose tool-use mode the Chrome team’s example extension can use behind a flag<sup class="footnote-ref"><a href="#fn27" id="fnref27">27</a></sup>), or, as in the demos repository, a rule-based stand-in that makes the tests deterministic. Chapter 14 builds a real test agent.</p>
+<figure class="code"><figcaption>Listing 7.7 — A minimal in-page agent loop (ledgerly/agent/agent-loop.js)</figcaption>
+<pre><code class="language-js">// A minimal in-page agent loop. The planner (a model) chooses; this code acts.
+import { discoverTools } from './discover.js';
+import { runTool } from './run-tool.js';
+
+export function toFunctionDeclarations(catalog) {
+  return [...catalog].map(([alias, tool]) =&gt; ({
+    name: alias,
+    description: `${tool.description} (provided by ${tool.origin})`,
+    parameters: tool.inputSchema ?? { type: 'object', properties: {} },
+  }));
+}
+
+export async function runAgent(goal, planner, { stop, maxSteps = 6, onStep = () =&gt; {} }) {
+  const history = [{ role: 'user', text: goal }];
+  for (let step = 0; step &lt; maxSteps &amp;&amp; !stop.aborted; step++) {
+    const catalog = await discoverTools();          // tools can change between steps
+    const decision = await planner.next({ history, tools: toFunctionDeclarations(catalog) });
+
+    if (decision.answer !== undefined) {
+      history.push({ role: 'agent', text: decision.answer });
+      onStep({ type: 'answer', text: decision.answer });
+      return history;
+    }
+
+    const tool = catalog.get(decision.call);
+    const result = tool
+      ? await runTool(tool, decision.args ?? {}, { stop })
+      : { ok: false, reason: `no tool called ${decision.call}`, retryable: false };
+    history.push({ role: 'tool', name: decision.call, result });
+    onStep({ type: 'tool', name: decision.call, result });
+  }
+  return history;
+}
+</code></pre></figure>
+<p>Three choices in Listing 7.7 are worth copying. The catalog is rebuilt on every step, because frames come and go and tools appear after navigations. The tool’s origin is appended to the description the model sees, so a tool called <code>delete_everything</code> from an unexpected origin at least looks unexpected. And the planner never touches <code>executeTool()</code> itself: it returns a decision, and code that knows the rules about consequential tools and timeouts carries it out.</p>
+<figure class="book-figure"><img decoding="async" src="07-frames-origins-agents/images/figure-7-2.png" alt="Figure 7.2 — The Helpdesk Widget at runtime: Ledgerly’s in-page agent discovers tools in two origins, runs create_ticket in Supportly’s frame, and the user confirms inside the widget." /><figcaption>Figure 7.2 — One run of the in-page agent. ① <code>getTools({ fromOrigins })</code> returns Ledgerly’s tool and Supportly’s three exposed tools, each with its <code>origin</code> and <code>window</code>. ② The loop hands the planner the tool declarations, and ③ the planner chooses <code>supportly__create_ticket</code>. ④ <code>executeTool()</code> runs the callback in Supportly’s frame, which ⑤ shows its own confirmation card. ⑥ The user clicks Send. ⑦ The result comes back to Ledgerly as a JSON string, and ⑧ goes to the planner for an answer. If the user presses Stop instead, the abort reaches the widget as <code>toolcancel</code>.</figcaption></figure>
+<p>The demos repository runs exactly this flow. A test asks Ledgerly’s agent to “open a ticket: CSV export is missing the VAT column,” waits for the confirmation card to appear inside Supportly’s frame, clicks Send there and checks that the agent got back <code>{ status: 'created' }</code> with a ticket ID such as <code>SUP-1043</code>.</p>
+<h2 id="extensions-as-agents"><a class="anchor-link" href="#extensions-as-agents">Extensions as agents</a></h2>
+<p>The specification names two consumers: the browser agent and in-page agents. The explainer names a third. Its opening says that tools “can be invoked by AI agents, including those built into the browser, hosted in iframes, or running in extensions.”<sup class="footnote-ref"><a href="#fn28" id="fnref28">28</a></sup> The extension is the shape most early WebMCP agents have taken, including the Chrome team’s own example: an agent in a side panel that “reads <code>document.modelContext.getTools()</code> and listens for <code>ontoolchange</code>, in the top page and in same-origin and cross-origin iframes.”<sup class="footnote-ref"><a href="#fn27" id="fnref27:1">27:1</a></sup></p>
+<h3 id="content-scripts-can-already-use-the-api"><a class="anchor-link" href="#content-scripts-can-already-use-the-api">Content scripts can already use the API</a></h3>
+<p>There is no extension-specific WebMCP API yet. An extension uses the page API through a content script. Content scripts “live in an isolated world,” a private JavaScript environment that shares the page’s DOM but not its globals, and a manifest can inject them into every frame with <code>&quot;all_frames&quot;: true</code>.<sup class="footnote-ref"><a href="#fn29" id="fnref29">29</a></sup> Whether <code>document.modelContext</code> works from an isolated world wasn’t stated in any source I could find, so I tested it. It does: in Chromium 156, a content script of an unpacked Manifest V3 extension called <code>getTools()</code> and <code>executeTool()</code> successfully, from the top frame and from inside Supportly’s cross-origin frame (tested).</p>
+<p>Listings 7.8 to 7.10 are a minimal tool inspector built that way.</p>
+<figure class="code"><figcaption>Listing 7.8 — The extension’s manifest (extension/manifest.json)</figcaption>
+<pre><code class="language-json">{
+  &quot;manifest_version&quot;: 3,
+  &quot;name&quot;: &quot;Tool Inspector&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;description&quot;: &quot;Lists and runs the WebMCP tools of every frame on a page.&quot;,
+  &quot;background&quot;: { &quot;service_worker&quot;: &quot;background.js&quot; },
+  &quot;content_scripts&quot;: [{
+    &quot;matches&quot;: [&quot;https://app.ledgerly.example/*&quot;, &quot;https://widget.supportly.example/*&quot;],
+    &quot;js&quot;: [&quot;content-script.js&quot;],
+    &quot;all_frames&quot;: true,
+    &quot;run_at&quot;: &quot;document_idle&quot;
+  }]
+}
+</code></pre></figure>
+<figure class="code"><figcaption>Listing 7.9 — The content script, one instance per frame (extension/content-script.js)</figcaption>
+<pre><code class="language-js">// Runs in every matching frame, in the extension's isolated world.
+// It shares the frame's DOM and origin, so it sees the frame's own tools.
+async function report() {
+  if (!('modelContext' in document)) return;
+  try {
+    const tools = await document.modelContext.getTools();
+    chrome.runtime.sendMessage({
+      type: 'tools',
+      origin: location.origin,
+      tools: tools
+        .filter((t) =&gt; t.window === window)      // this frame's tools only
+        .map(({ name, description, inputSchema, annotations }) =&gt;
+          ({ name, description, inputSchema, annotations })),
+    });
+  } catch (err) {
+    chrome.runtime.sendMessage({ type: 'tools', origin: location.origin, error: err.name });
+  }
+}
+
+chrome.runtime.onMessage.addListener((msg, _sender, reply) =&gt; {
+  if (msg.type !== 'execute') return;
+  (async () =&gt; {
+    const tools = await document.modelContext.getTools();
+    const tool = tools.find((t) =&gt; t.name === msg.name &amp;&amp; t.window === window);
+    if (!tool) return reply({ error: 'NotFound' });
+    try {
+      reply({ result: await document.modelContext.executeTool(tool, msg.args) });
+    } catch (err) {
+      reply({ error: err.name });
+    }
+  })();
+  return true;   // we will reply asynchronously
+});
+
+document.modelContext?.addEventListener('toolchange', report);
+report();
+</code></pre></figure>
+<figure class="code"><figcaption>Listing 7.10 — The service worker keeps the catalog and runs tools (extension/background.js)</figcaption>
+<pre><code class="language-js">// Service worker: keeps the latest tool list per frame, runs tools on request.
+const frames = new Map();   // &quot;tabId:frameId&quot; -&gt; { origin, tools }
+
+chrome.runtime.onMessage.addListener((msg, sender) =&gt; {
+  if (msg.type !== 'tools') return;
+  frames.set(`${sender.tab.id}:${sender.frameId}`, {
+    origin: msg.origin, tools: msg.tools ?? [], error: msg.error,
+  });
+});
+
+// Called by the extension's own UI (a side panel, say) with a user's request.
+async function runTool(tabId, frameId, name, args) {
+  return chrome.tabs.sendMessage(tabId, { type: 'execute', name, args }, { frameId });
+}
+
+self.toolInspector = { frames, runTool };
+</code></pre></figure>
+<p>The design runs one content script in each frame and has each script report only its own frame’s tools, filtered with <code>tool.window === window</code>. That comparison works across the isolated world: the <code>window</code> member of a tool from the content script’s own frame was strictly equal to the content script’s <code>window</code> (tested). The service worker then knows every frame’s tools, keyed by tab and frame ID, and can run a tool in a specific frame with <code>chrome.tabs.sendMessage(…, { frameId })</code>. In the test, the worker’s catalog showed Ledgerly’s frame with <code>find_invoice</code> and Supportly’s frame with its three tools, and a <code>search_articles</code> call routed to Supportly’s frame came back with the article about bank feeds.</p>
+<h3 id="notice-what-that-bypassed"><a class="anchor-link" href="#notice-what-that-bypassed">Notice what that bypassed</a></h3>
+<p>Look again at what the content script in Supportly’s frame did. It called <code>getTools()</code> with no <code>fromOrigins</code>, and it saw Supportly’s tools anyway. A content script runs with the origin of the frame it’s injected into, so to the browser it is a same-origin caller, and same-origin callers see every tool in the document, exposed or not. Gates 2 and 3 are about origins on the page; an extension with access to both origins simply stands on both sides. Gate 1 still applies, because a frame that isn’t allowed to use <code>tools</code> can’t register anything for the extension to find.</p>
+<p>This isn’t a hole in WebMCP. Chrome’s security guide points out that extensions with host permissions “can manipulate the page by running custom JavaScript, even without WebMCP.”<sup class="footnote-ref"><a href="#fn13" id="fnref13:1">13:1</a></sup> An extension that can inject scripts into Supportly’s frame could click Supportly’s buttons too. But it changes what <code>exposedTo</code> means: it limits which <em>web origins</em> can use your tools, not which <em>software on the user’s machine</em> can. Treat it as an access-control list for in-page agents, not as a secret. The consequential parts of your tools, such as Listing 7.3’s confirmation card, are what protect the user from any agent.</p>
+<h3 id="a-webextensions-api-maybe"><a class="anchor-link" href="#a-webextensions-api-maybe">A WebExtensions API, maybe</a></h3>
+<p>Issue #74, opened on 3 February 2026, suggests that the specification’s authors work with the WebExtensions Community Group on “an API exposed to browser extensions that allows them to enumerate and invoke tools defined with WebMCP.” A later comment asks whether such an API is still needed, given that an extension can already run script that calls <code>executeTool()</code> in the page.<sup class="footnote-ref"><a href="#fn30" id="fnref30">30</a></sup> The issue was still open on 15 October 2026. Listing 7.9 is the answer to that comment in practice: it works, but every extension has to reinvent per-frame bookkeeping and cross-world messaging, and the browser can’t tell an extension’s calls apart from the page’s own.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: extension agents</p>
+<p>Nothing in the 15 October 2026 draft mentions extensions. Whether content scripts keep their access, whether extension calls will be labelled or permission-gated, and whether a dedicated <code>chrome.*</code> or <code>browser.*</code> API appears are all open (issue #74).<sup class="footnote-ref"><a href="#fn30" id="fnref30:1">30:1</a></sup> The behaviour described above was observed in Chromium 156 only.</p></aside>
+<h2 id="design-note-is-this-really-a-general-communication-primitive"><a class="anchor-link" href="#design-note-is-this-really-a-general-communication-primitive">Design note: is this really a general communication primitive?</a></h2>
+<p>Strip away the language-model vocabulary and look at what this chapter built. One document registers named functions with JSON-described inputs. Another document, in a different origin, lists them, calls one with a JSON object, can cancel the call, and gets a string back. Both sides opt in by origin, and the embedder holds a veto. That is a cross-origin remote procedure call mechanism, with better access control than most hand-written <code>postMessage</code> protocols.</p>
+<p>Jake Archibald made that observation in issue #236 on 3 August 2026. Calling functions across windows and workers is “a pain,” he wrote, which is why libraries such as Comlink exist; WebMCP’s registration plus per-origin exposure is most of a built-in Comlink, and the language-model use could “just fall out of the other capabilities.” He went further: service workers could register tools without any window open, and tools could be exposed “to the browser,” and through it to WebDriver and other tooling.<sup class="footnote-ref"><a href="#fn1" id="fnref1:1">1:1</a></sup> The issue was still open on 15 October 2026, last updated on 24 September.</p>
+<p>There are good arguments both ways. In favour: a general primitive would get more scrutiny and more users, the same cross-origin rules would serve the Helpdesk Widget whether or not a model is involved, and Ledgerly’s widget-to-host context tool from earlier in this chapter is already a non-agent use. Against: everything about WebMCP’s design is shaped by the fact that a probabilistic model is choosing the calls. Natural-language descriptions, annotations such as <code>untrustedContentHint</code> and <code>consequentialHint</code>, and the security section’s long discussion of prompt injection make little sense for a plain RPC library, and a general primitive would invite developers to expose functions that were never written with an agent in mind.</p>
+<p>My view, for what it’s worth to a reader in 2026: build your tools as if the general reading might win, because good practice is the same either way. Validate every input in code, make consequential actions confirm in your own UI, return errors as values, and expose tools to as few origins as you can. Those habits hold up whether the caller is Chrome’s assistant, Ledgerly’s agent, an extension or a test harness.</p>
+<aside class="callout callout--warning flux"><p class="callout-title">Still in flux: the scope of discovery and exposure</p>
+<p>Three open issues could change this chapter’s API surface: #236 (reposition WebMCP as a general cross-environment call mechanism),<sup class="footnote-ref"><a href="#fn1" id="fnref1:2">1:2</a></sup> #227 (discover tools across the whole browsing context group, not just one tab’s frame tree)<sup class="footnote-ref"><a href="#fn22" id="fnref22:1">22:1</a></sup> and #317 (let the host, rather than providers and consumers, decide which frames may expose and use tools).<sup class="footnote-ref"><a href="#fn12" id="fnref12:1">12:1</a></sup> All three were still open on 15 October 2026.</p></aside>
+<h2 id="the-helpdesk-widget-so-far"><a class="anchor-link" href="#the-helpdesk-widget-so-far">The Helpdesk Widget so far</a></h2>
+<p>The demos repository folder <code>chapters/07-frames-origins-agents/</code> contains everything in this chapter as runnable code. <code>npm start</code> serves Ledgerly on <code>http://localhost:47101</code> and Supportly on <code>http://127.0.0.1:47102</code>, two different origins that are both potentially trustworthy, and rewrites the production origins in the listings to those local ones as it serves them. The files themselves are byte-for-byte the listings. A few small files that the book doesn’t print fill the gaps: the widget’s page and its in-memory helpdesk backend, the confirmation card, Ledgerly’s assistant wiring and its rule-based planner, and a dev-only <code>document.modelContext</code> mock. The folder’s README maps every file to its listing.</p>
+<p><code>npm test</code> runs 30 checks: syntax checks for every script, a unit test of the agent loop against the mock, 17 behavioural tests in Chromium 156 with WebMCP enabled across the two origins (Tables 7.1 and 7.3 come from them), and one test that loads Listings 7.8 to 7.10 as an unpacked extension in full Chromium.</p>
+<p>Chapter 11 returns to the widget to ask how its tools should be designed and described, Chapter 12 uses it to model cross-origin threats, and Chapter 14 tests it.</p>
+<h2 id="chapter-summary"><a class="anchor-link" href="#chapter-summary">Chapter summary</a></h2>
+<ul>
+<li>A page is a tree of documents, each with its own <code>ModelContext</code>. The browser agent observes the tools of every frame, labelled by origin. In-page agents use <code>getTools()</code> and <code>executeTool()</code> and are bound by the same-origin rules below.</li>
+<li><strong>Gate 1, delegation.</strong> The <code>tools</code> Permissions Policy defaults to <code>'self'</code>. Cross-origin iframes need <code>allow=&quot;tools&quot;</code>, and the <code>Permissions-Policy</code> header sets the ceiling for the whole page: <code>tools=(self &quot;https://widget.supportly.example&quot;)</code> limits delegation to one vendor, and <code>tools=()</code> turns WebMCP off for the page and every frame. A blocked call rejects with <code>NotAllowedError</code>, while <code>'modelContext' in document</code> stays <code>true</code>, so catch the error.</li>
+<li><strong>Gate 2, exposure.</strong> <code>registerTool(tool, { exposedTo })</code> lists the origins that may see and call a tool. Same-origin callers always can. Non-secure origins reject with <code>SecurityError</code>.</li>
+<li><strong>Gate 3, request.</strong> <code>getTools({ fromOrigins })</code> lists the origins the caller wants tools from. Gates 2 and 3 fail silently: a missing tool just isn’t in the list.</li>
+<li><code>getTools()</code> covers the whole top-level frame tree, sorted by name, and each <code>RegisteredTool</code> carries <code>window</code> and <code>origin</code>. Key tools by origin and name, because names are unique only per document. <code>toolchange</code> tells you to re-read the list, not what changed.</li>
+<li><code>executeTool()</code> returns a string, passes cancellation through to the target (<code>toolcancel</code>), and lets only an exception name cross origins. The draft uses one <code>NotFoundError</code> for forged names, forged origins and unexposed tools; Chromium 156 uses <code>UnknownError</code> for those and for thrown errors, navigations and removed frames, because it still follows the draft as it was before 8 October 2026.</li>
+<li>Extensions can use the page API from content scripts, in every frame. A content script counts as same-origin with its frame, so it sees tools whatever their <code>exposedTo</code>. <code>exposedTo</code> limits web origins, not installed software.</li>
+<li>Still open: a dedicated WebExtensions API (#74), discovery beyond one tab (#227), splitting the policy into provide and consume (#317), the security section on cross-origin exposure (PR #326), and whether WebMCP becomes a general cross-environment call mechanism (#236).</li>
+</ul>
+<p>Chapter 8 turns from JavaScript to HTML: the declarative API, which lets a form become a tool.</p>
+<h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+
+<section class="footnotes" aria-labelledby="notes"><h2 id="notes"><a class="anchor-link" href="#notes">Notes</a></h2>
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>Jake Archibald, “Reposition feature as a generic communication tool?”, webmachinelearning/webmcp issue #236, opened 3 August 2026, open and last updated 24 September 2026 (read 15 October 2026). <a href="https://github.com/webmachinelearning/webmcp/issues/236">https://github.com/webmachinelearning/webmcp/issues/236</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a> <a href="#fnref1:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>WebMCP specification, Draft Community Group Report, 15 October 2026, §4.1 Extensions to Document and §4.2 ModelContext interface (including the non-normative descriptions of <code>getTools()</code> and <code>executeTool()</code>). <a href="https://webmachinelearning.github.io/webmcp/#model-context-container">https://webmachinelearning.github.io/webmcp/#model-context-container</a> <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a> <a href="#fnref2:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>WebMCP specification, Draft Community Group Report dated 15 October 2026, editors Brandon Walderman (Microsoft), Khushal Sagar and Dominic Farolino (Google), published by the W3C Web Machine Learning Community Group. Read 14 October 2026; re-checked 15 October 2026. <a href="https://webmachinelearning.github.io/webmcp/">https://webmachinelearning.github.io/webmcp/</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>Chrome for Developers, “WebMCP” overview (published 18 May 2026, last updated 7 October 2026), section “Local WebMCP”: the <code>chrome://flags/#enable-webmcp-testing</code> flag. <a href="https://developer.chrome.com/docs/ai/webmcp">https://developer.chrome.com/docs/ai/webmcp</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>WebMCP specification, §5.2 Page observations (non-normative): the browser agent “does not run JavaScript on the page”, the observation walks the inclusive descendant navigables, and each observed tool collection carries an origin. <a href="https://webmachinelearning.github.io/webmcp/#observations">https://webmachinelearning.github.io/webmcp/#observations</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>WebMCP specification, §4.4 Permissions policy integration. <a href="https://webmachinelearning.github.io/webmcp/#permissions-policy">https://webmachinelearning.github.io/webmcp/#permissions-policy</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p>WebMCP specification, §4.2, the <code>registerTool()</code>, <code>getTools()</code> and <code>executeTool()</code> method steps (<code>NotAllowedError</code> when the document is not allowed to use “tools”; <code>SecurityError</code> for origins that fail to parse or are not potentially trustworthy). <a href="https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool">https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool</a> <a href="#fnref7" class="footnote-backref">↩︎</a> <a href="#fnref7:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p>WebMCP specification, §4.2, <code>getTools()</code> method steps: traversal of the top-level traversable’s inclusive descendant navigables, the “tools” check per document, the same-origin-or-<code>fromOrigins</code> check, the exposure check, and sorting by name. <a href="https://webmachinelearning.github.io/webmcp/#dom-modelcontext-gettools">https://webmachinelearning.github.io/webmcp/#dom-modelcontext-gettools</a> <a href="#fnref8" class="footnote-backref">↩︎</a> <a href="#fnref8:1" class="footnote-backref">↩︎</a> <a href="#fnref8:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p>Chrome for Developers, “WebMCP Imperative API” (published 18 May 2026, last updated 21 September 2026), sections “Discover tools”, “Execute tool” and “Cross-origin iframes”. <a href="https://developer.chrome.com/docs/ai/webmcp/imperative-api">https://developer.chrome.com/docs/ai/webmcp/imperative-api</a> <a href="#fnref9" class="footnote-backref">↩︎</a> <a href="#fnref9:1" class="footnote-backref">↩︎</a> <a href="#fnref9:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p>MDN Web Docs, “Permissions-Policy header”: syntax, allowlist values (<code>*</code>, <code>()</code>, <code>self</code>, <code>src</code>, quoted origins), and <code>src</code> as the default allowlist in an <code>&lt;iframe&gt;</code> <code>allow</code> attribute. Read 14 October 2026. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy">https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy</a> <a href="#fnref10" class="footnote-backref">↩︎</a> <a href="#fnref10:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p>WebMCP specification, §6.4.1 Disabling WebMCP with Permissions Policy. <a href="https://webmachinelearning.github.io/webmcp/#mitigation-disable-permissions-policy">https://webmachinelearning.github.io/webmcp/#mitigation-disable-permissions-policy</a> <a href="#fnref11" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p>“Host-controlled WebMCP access between iframes”, webmachinelearning/webmcp issue #317, opened 23 September 2026, open on 15 October 2026. <a href="https://github.com/webmachinelearning/webmcp/issues/317">https://github.com/webmachinelearning/webmcp/issues/317</a> <a href="#fnref12" class="footnote-backref">↩︎</a> <a href="#fnref12:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>Chrome for Developers, “Secure your WebMCP tools” (published 9 June 2026, last updated 1 September 2026), section “Expose your tools carefully” and its note on Chrome Extensions. <a href="https://developer.chrome.com/docs/ai/webmcp/secure-tools">https://developer.chrome.com/docs/ai/webmcp/secure-tools</a> <a href="#fnref13" class="footnote-backref">↩︎</a> <a href="#fnref13:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p>WebMCP specification, §4.2.3 ModelContextRegisterToolOptions Dictionary. <a href="https://webmachinelearning.github.io/webmcp/#model-context-register-tool-options">https://webmachinelearning.github.io/webmcp/#model-context-register-tool-options</a> <a href="#fnref14" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn15" class="footnote-item"><p>WebMCP specification, §4.2.4 ModelContextGetToolOptions Dictionary. <a href="https://webmachinelearning.github.io/webmcp/#model-context-get-tool-options">https://webmachinelearning.github.io/webmcp/#model-context-get-tool-options</a> <a href="#fnref15" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn16" class="footnote-item"><p>WebMCP specification, §4.2, “determine if a tool is exposed to an origin”. <a href="https://webmachinelearning.github.io/webmcp/#tool-is-exposed-to-an-origin">https://webmachinelearning.github.io/webmcp/#tool-is-exposed-to-an-origin</a> <a href="#fnref16" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn17" class="footnote-item"><p>Julia Pagnucco, “Document cross-origin tool exposure and two-sided opt-in in Section 6.3.4”, webmachinelearning/webmcp pull request #326, opened 28 September 2026, open on 15 October 2026, with review comments. <a href="https://github.com/webmachinelearning/webmcp/pull/326">https://github.com/webmachinelearning/webmcp/pull/326</a> <a href="#fnref17" class="footnote-backref">↩︎</a> <a href="#fnref17:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn18" class="footnote-item"><p>WebMCP specification, §4.2, “notify documents of a tool change”, including the note on <code>toolchange</code> timing. <a href="https://webmachinelearning.github.io/webmcp/#notify-documents-of-a-tool-change">https://webmachinelearning.github.io/webmcp/#notify-documents-of-a-tool-change</a> <a href="#fnref18" class="footnote-backref">↩︎</a> <a href="#fnref18:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn19" class="footnote-item"><p>WebMCP specification, §6.3.4 Violation of Same-Origin Boundaries (15 October 2026 draft). <a href="https://webmachinelearning.github.io/webmcp/#violation-same-origin-boundaries">https://webmachinelearning.github.io/webmcp/#violation-same-origin-boundaries</a> <a href="#fnref19" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn20" class="footnote-item"><p>WebMCP specification, §4.2 ModelContext Interface (IDL) and §4.2.4–§4.2.6. <a href="https://webmachinelearning.github.io/webmcp/#model-context-container">https://webmachinelearning.github.io/webmcp/#model-context-container</a> <a href="#fnref20" class="footnote-backref">↩︎</a> <a href="#fnref20:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn21" class="footnote-item"><p>WebMCP specification, §4.2.6 RegisteredTool Dictionary. <a href="https://webmachinelearning.github.io/webmcp/#registered-tool">https://webmachinelearning.github.io/webmcp/#registered-tool</a> <a href="#fnref21" class="footnote-backref">↩︎</a> <a href="#fnref21:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn22" class="footnote-item"><p>“Tool discovery should not be limited to a single traversable navigable”, webmachinelearning/webmcp issue #227, opened 21 July 2026, open on 15 October 2026. <a href="https://github.com/webmachinelearning/webmcp/issues/227">https://github.com/webmachinelearning/webmcp/issues/227</a> <a href="#fnref22" class="footnote-backref">↩︎</a> <a href="#fnref22:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn23" class="footnote-item"><p>WebMCP specification, §4.2, <code>executeTool()</code> method steps and their notes on fabricated <code>RegisteredTool</code> dictionaries and on passing only a tool execution error across origins. <a href="https://webmachinelearning.github.io/webmcp/#dom-modelcontext-executetool">https://webmachinelearning.github.io/webmcp/#dom-modelcontext-executetool</a> <a href="#fnref23" class="footnote-backref">↩︎</a> <a href="#fnref23:1" class="footnote-backref">↩︎</a> <a href="#fnref23:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn24" class="footnote-item"><p>webmachinelearning/webmcp pull request #339, “Replace UnknownError with specific DOMException types.” (merged 8 October 2026 as commit b206dae). <a href="https://github.com/webmachinelearning/webmcp/pull/339">https://github.com/webmachinelearning/webmcp/pull/339</a> <a href="#fnref24" class="footnote-backref">↩︎</a> <a href="#fnref24:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn25" class="footnote-item"><p>WebMCP specification, §3.1 Pending tool executions (“cancel a pending tool execution”) and §4.3.2 ToolCancelEvent Interface. <a href="https://webmachinelearning.github.io/webmcp/#pending-tool-executions">https://webmachinelearning.github.io/webmcp/#pending-tool-executions</a> <a href="#fnref25" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn26" class="footnote-item"><p>WebMCP specification, §3 Supporting concepts, the tool execution error table, and §3.1 unloading document cleanup steps. <a href="https://webmachinelearning.github.io/webmcp/#supporting-concepts">https://webmachinelearning.github.io/webmcp/#supporting-concepts</a> <a href="#fnref26" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn27" class="footnote-item"><p>GoogleChromeLabs, “Example Agentic Chrome Extension to test WebMCP”, README (read 14 October 2026), including the on-device backend’s <code>chrome://flags/#prompt-api-tool-use</code> requirement. <a href="https://github.com/GoogleChromeLabs/webmcp-extension">https://github.com/GoogleChromeLabs/webmcp-extension</a> <a href="#fnref27" class="footnote-backref">↩︎</a> <a href="#fnref27:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn28" class="footnote-item"><p>WebMCP explainer, README of webmachinelearning/webmcp (read 14 October 2026). <a href="https://github.com/webmachinelearning/webmcp">https://github.com/webmachinelearning/webmcp</a> <a href="#fnref28" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn29" class="footnote-item"><p>Chrome for Developers, “Content scripts” (Chrome Extensions documentation), sections “Work in isolated worlds” and “Specify frames” (<code>all_frames</code>). Read 14 October 2026. <a href="https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts">https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts</a> <a href="#fnref29" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn30" class="footnote-item"><p>“WebExtensions API to enumerate and invoke tools”, webmachinelearning/webmcp issue #74, opened 3 February 2026, open on 15 October 2026, with comments. <a href="https://github.com/webmachinelearning/webmcp/issues/74">https://github.com/webmachinelearning/webmcp/issues/74</a> <a href="#fnref30" class="footnote-backref">↩︎</a> <a href="#fnref30:1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+        </article>
+
+        
+        <section class="cta-band cta-band--compact" aria-label="Get the PDF or contact the author">
+      <div class="cta-grid">
+        <div class="cta-card cta-card--publisher">
+          <p class="cta-kicker">For publishers</p>
+          <p class="cta-title">If you represent a publishing house, contact Maxim Salnikov.</p>
+          <p class="cta-text">Interested in publishing this book? Get in touch with the author directly.</p>
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Contact Maxim Salnikov ↗</a>
+        </div>
+        <div class="cta-card cta-card--newsletter">
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          <a class="btn btn-primary" href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF ↗</a>
+        </div>
+      </div>
+    </section>
+
+        <nav class="pager" aria-label="Chapter pagination">
+          <a class="pager-link" rel="prev" href="06-annotations-lifecycle-errors.html">← Chapter 6: Annotations, Lifecycle and Errors</a>
+          <a class="pager-link" rel="next" href="08-declarative-api.html">Chapter 8: The Declarative API: Forms as Tools →</a>
+        </nav>
+      </main>
+
+      <footer class="site-footer chapter-footer">
+        <p>By <strong>Maxim Salnikov</strong> · <a href="https://www.linkedin.com/in/webmax/" target="_blank" rel="noopener">Publishers: contact Maxim Salnikov</a> · <a href="https://isainative.substack.com/subscribe" target="_blank" rel="noopener">Get the PDF</a> · <a href="../outline.html">Detailed outline</a> · <a href="https://github.com/vibeprogrammer/webmcp-book" target="_blank" rel="noopener">Book repository on GitHub ↗</a> · <a href="https://github.com/vibeprogrammer/webmcp-book-demos" target="_blank" rel="noopener">Demos ↗</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>
