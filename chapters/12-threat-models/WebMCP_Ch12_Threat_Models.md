@@ -14,7 +14,7 @@ WebMCP does not give a page any power it didn't have before. A tool's `execute` 
 
 That section, §6 “Security and Privacy Considerations”, is the backbone of this chapter.[^2] It is non-normative, and its authors say plainly that the document “cannot define precise mitigation strategies that agents or user agents must provide”. Instead it names the responsibilities of each party, lists common mitigations as recommendations, and uses them to decide what belongs in the API.[^2] Chrome's developer documentation adds two practical guides on top: one for people building tools, one for people building agents.[^1][^3] We'll use all three, and we'll check each claim about the browser against Chromium 156 rather than taking it on faith.
 
-Everything below was checked against the WebMCP Draft Community Group Report dated **14 October 2026**, one day newer than the draft Chapters 4 and 5 were checked against.[^2] The new draft didn't change any section this chapter relies on. Browser behaviour was observed in Chromium 156.0.8078.4 with the `WebMCPTesting` feature switched on, on 15 October 2026. Every test mentioned here is in the chapter's folder in the demos repository, and all twenty-five of them pass.
+Everything below was checked against the WebMCP Draft Community Group Report dated **15 October 2026**.[^2] The drafts of 14 and 15 October changed only registration algorithms, not any section this chapter relies on. Browser behaviour was observed in Chromium 156.0.8078.4 with the `WebMCPTesting` feature switched on, on 15 October 2026. Every test mentioned here is in the chapter's folder in the demos repository, and all twenty-six of them pass.
 
 ![Figure 12.1 — Where the attacks come from. The parties in a WebMCP call and the seven attack paths this chapter follows, mapped to the sections of the specification that describe them.](images/figure-12-1.png)
 
@@ -40,11 +40,11 @@ And your page can look like the **attacker**. Agents “must assume good faith f
 
 ### Where the line is drawn, and the argument about it
 
-Not everyone agrees that §6 goes far enough. In September 2026, issue #313 asked why mitigations for what it called “profound privacy and security issues” were missing, describing a malicious site that could pull a user's data from other origins and take consequential actions “without any user involvement or awareness”.[^7] The editors' reply was that an agent with broad authority creates those risks whether or not WebMCP exists, and that the defences belong at the level of the agent and the browser. A member of the Chrome team pointed to Chrome's site-author and agent-author guidance as the place where that work is happening.[^7] Critics answered that WebMCP still creates new, hard-to-see surface for prompt injection, and that design choices at the spec level could reduce it. In October the same Chrome engineer opened issue #334 to revise §6 and to point to a proposed W3C Agentic Web Working Group as the venue for the wider agent-security discussion.[^7][^8]
+Not everyone agrees that §6 goes far enough. In September 2026, issue #313 asked why mitigations for what it called “profound privacy and security issues” were missing, describing a malicious site that could pull a user's data from other origins and take consequential actions “without any user involvement or awareness”.[^7] The editors' reply was that an agent with broad authority creates those risks whether or not WebMCP exists, and that the defences belong at the level of the agent and the browser. A member of the Chrome team pointed to Chrome's site-author and agent-author guidance as the place where that work is happening.[^7] Critics answered that WebMCP still creates new, hard-to-see surface for prompt injection, and that design choices at the spec level could reduce it. In October the same Chrome engineer opened pull request #334 to revise §6 and to point to a proposed W3C Agentic Web Working Group as the venue for the wider agent-security discussion.[^7][^8]
 
 For a site author the practical upshot is simple. The browser will not save you from an agent that believes the wrong text, and the agent will not save you from a tool that does the wrong thing. You own your half.
 
-> **Still in flux: the scope of §6.** Whether the specification should define mitigations for agent-level risks, or only describe them and defer to agent and browser vendors, is under active debate (issues #313 and #334, both open on 15 October 2026). Expect §6 to be rewritten at least once before any shipping decision.[^7][^8]
+> **Still in flux: the scope of §6.** Whether the specification should define mitigations for agent-level risks, or only describe them and defer to agent and browser vendors, is under active debate (issue #313 and pull request #334, both open on 15 October 2026). Expect §6 to be rewritten at least once before any shipping decision.[^7][^8]
 
 ## ①② Prompt injection through your tools
 
@@ -142,7 +142,7 @@ export function checkArgs(input, spec) {
 }
 ```
 
-`checkArgs()` is deliberately small; in a real project you would use your existing validation library. What matters is the three checks it makes. It rejects fields the tool didn't ask for, which guards against over-parameterisation from the agent's side as well as against bugs. It enforces length limits that match the schema. And it returns a clean object containing only the declared fields, so nothing unexpected reaches the business logic. The widget turns a `ToolInputError` into a returned `{ error }` value, following Chapter 5's advice that a recoverable failure is a result, not an exception.
+`checkArgs()` is deliberately small; in a real project you would use your existing validation library. What matters is the three checks it makes. It rejects fields the tool didn't ask for, which guards against over-parameterisation from the agent's side as well as against bugs. It enforces length limits that match the schema. And it returns a clean object containing only the declared fields, so nothing unexpected reaches the business logic. The widget turns a `ToolInputError` into a returned `{ status: 'error', code, message }` result, Chapter 11's convention, following Chapter 5's advice that a recoverable failure is a result, not an exception.
 
 The best version of this guard is the one your UI already uses. If the form and the tool call the same validated function, the two paths cannot drift apart.
 
@@ -158,7 +158,7 @@ Trailhead's `checkout` tool is the honest version of that example, and Chapter 1
 2. **Declare the consequence.** The `consequentialHint` annotation tells the agent and the browser that a tool's effect is “significant, real-world, or non-reversible”, so they can insist on user confirmation.[^16] The specification lists it as the mitigation for misrepresentation of intent.[^21] The hint grew out of issue #176, which argued that `readOnlyHint` alone was too blunt: drafting an email changes state but rarely needs confirming, while sending it does.[^22]
 3. **Don't rely on the hint.** An honest site sets `consequentialHint` and a dishonest one doesn't, so the hint protects users from your mistakes, not from bad actors. The protection that works regardless of what the agent does is enforced by the page: the action doesn't complete until the user confirms it in your own interface. The Supportly widget's `create_ticket` opens its own dialog and resolves only on a *trusted* click. In the tests, a scripted `button.click()` from inside the page did nothing; a real input event sent the ticket. Chapter 13 explains why a trusted click is weaker evidence of a person than it looks: an agent that can also drive the page produces trusted clicks too.
 
-That third rule is the subject of two open proposals, issues #298 and #333, which ask the editors to add *page-enforced write boundaries* to §6.4 as a mitigation in their own right: preconditions inside the tool, confirmations in the page and, as one implementer suggested, simply not registering a tool in states where it shouldn't be callable.[^23] Neither had been merged on 15 October 2026. You don't need to wait for them.
+That third rule is the subject of two open proposals, issue #298 and pull request #333, which ask the editors to add *page-enforced write boundaries* to §6.4 as a mitigation in their own right: preconditions inside the tool, confirmations in the page and, as one implementer suggested, simply not registering a tool in states where it shouldn't be callable.[^23] Neither had been merged on 15 October 2026. You don't need to wait for them.
 
 > **Still in flux: confirmation is a page pattern, not a platform guarantee.** The specification has no consent or confirmation API. Chrome's tool-security page mentions a `requestUserInteraction()` method, but it is not in the current draft, and a proposed replacement is still under discussion. Chapter 13 covers the state of that debate and what to build in the meantime.[^1][^24]
 
@@ -216,7 +216,7 @@ Two related concerns belong here. First, data can leak through *outputs* as well
 
 ### The section that is still a TODO
 
-The specification's section on “Violation of Same-Origin Boundaries” is, at the time of writing, a single paragraph that begins “TODO”. It says the section should cover agents carrying state from one origin to another and “should probably talk about the WebMCP permissions policy and other cross-origin opt in mechanisms”.[^32] A draft to fill it was proposed in issue #326, and a reviewer suggested retitling it “Cross-origin tool exposure”, because most of what it describes is the design that *prevents* exposure without permission.[^33]
+The specification's section on “Violation of Same-Origin Boundaries” is, at the time of writing, a single paragraph that begins “TODO”. It says the section should cover agents carrying state from one origin to another and “should probably talk about the WebMCP permissions policy and other cross-origin opt in mechanisms”.[^32] A draft to fill it was proposed in pull request #326, and a reviewer suggested retitling it “Cross-origin tool exposure”, because most of what it describes is the design that *prevents* exposure without permission.[^33]
 
 So here, more than anywhere else in the chapter, the browser's behaviour is the best documentation. Chapter 7 covered the APIs in detail; this section looks at them as security controls, using the Helpdesk Widget.
 
@@ -267,6 +267,9 @@ import { helpCenter, tickets, ticketDialog } from './widget-app.js';
 
 const HOST = 'https://app.ledgerly.example';   // the one embedder we trust
 
+// Chapter 11's result shape: a recoverable failure is a value, not a throw.
+const invalid = (err) => ({ status: 'error', code: 'INVALID_ARGUMENT', message: err.message });
+
 export async function registerSupportTools(signal) {
   if (!('modelContext' in document)) return;
   const mc = document.modelContext;
@@ -288,7 +291,7 @@ export async function registerSupportTools(signal) {
         const { query } = checkArgs(input, { query: { required: true, maxLength: 200 } });
         return shapeArticles(await helpCenter.search(query));
       } catch (err) {
-        if (err instanceof ToolInputError) return { error: err.message };
+        if (err instanceof ToolInputError) return invalid(err);
         throw err;
       }
     }
@@ -309,9 +312,13 @@ export async function registerSupportTools(signal) {
       try {
         const { ticketId } = checkArgs(input, { ticketId: { required: true, maxLength: 12 } });
         const t = tickets.get(ticketId);
-        return t ? { ticketId, status: t.status, updated: t.updated } : { error: 'No such ticket' };
+        if (!t) {
+          return { status: 'error', code: 'TICKET_NOT_FOUND',
+                   message: `No ticket ${ticketId} on this account. Check the ID with the user.` };
+        }
+        return { ticketId, ticketState: t.state, updated: t.updated };
       } catch (err) {
-        if (err instanceof ToolInputError) return { error: err.message };
+        if (err instanceof ToolInputError) return invalid(err);
         throw err;
       }
     }
@@ -343,17 +350,19 @@ export async function registerSupportTools(signal) {
           priority: { maxLength: 6, enum: ['low', 'normal', 'high'] }
         });
       } catch (err) {
-        if (err instanceof ToolInputError) return { error: err.message };
+        if (err instanceof ToolInputError) return invalid(err);
         throw err;
       }
       const sent = await ticketDialog.review(args, { signal: call });
-      return sent ? { ticketId: sent.id, status: 'open' } : { cancelled: true };
+      return sent
+        ? { status: 'created', ticketId: sent.id }
+        : { status: 'cancelled_by_user', message: 'The user closed the ticket form without sending it.' };
     }
   }, { signal });
 }
 ```
 
-`search_articles` and `get_ticket_status` are read-only and exposed to Ledgerly. `search_articles` is also marked `untrustedContentHint`, because it carries community text. `create_ticket` is consequential and exposed to nobody: only an agent working with the widget's own document can call it, and even then the user has to press *Send ticket* in the widget's dialog. If Ledgerly's in-page assistant wants to open a ticket, it has to send the user to the widget, which is the right outcome for an action that speaks for the user to a third party.
+`search_articles` and `get_ticket_status` are read-only and exposed to Ledgerly. `search_articles` is also marked `untrustedContentHint`, because it carries community text. All three return Chapter 11's result shapes: a bad argument or an unknown ticket is `status: 'error'` with a `code`, the ticket's own state travels as `ticketState` so that `status` stays free for outcomes, and a person who closes the form gets `cancelled_by_user`. `create_ticket` is consequential and exposed to nobody: only an agent working with the widget's own document can call it, and even then the user has to press *Send ticket* in the widget's dialog. If Ledgerly's in-page assistant wants to open a ticket, it has to send the user to the widget, which is the right outcome for an action that speaks for the user to a third party.
 
 ![Figure 12.2 — Three gates between Ledgerly and the Supportly widget: Ledgerly allows the frame to have tools, Supportly exposes chosen tools to Ledgerly, and Ledgerly asks for them explicitly.](images/figure-12-2.png)
 
@@ -490,13 +499,13 @@ Chapter 13 turns from attackers to the user. It asks who approves a consequentia
 ## Notes
 
 [^1]: Chrome for Developers, “WebMCP tool security” (published 9 June 2026, updated 1 September 2026), sections “Use annotation hints”, “Expose your tools carefully”, “Set character budgets” and “Next steps”. <https://developer.chrome.com/docs/ai/webmcp/secure-tools>
-[^2]: WebMCP specification, Draft Community Group Report, 14 October 2026, §6 Security and Privacy Considerations (non-normative). <https://webmachinelearning.github.io/webmcp/#security-privacy>
+[^2]: WebMCP specification, Draft Community Group Report, 15 October 2026, §6 Security and Privacy Considerations (non-normative). <https://webmachinelearning.github.io/webmcp/#security-privacy>
 [^3]: Chrome for Developers, “Agent security considerations for WebMCP” (published 9 June 2026), sections “Set deterministic guardrails”, “Set probabilistic guardrails”, “Use content classifiers and critics” and “Evaluate your agent's vulnerabilities”. <https://developer.chrome.com/docs/agents/security>
 [^4]: WebMCP specification, §6.1 Approach to Risk Assessment and Mitigations. <https://webmachinelearning.github.io/webmcp/#approach-to-risk-assessment-and-mitigations>
 [^5]: WebMCP specification, §6.2 Agent Baseline Capabilities. <https://webmachinelearning.github.io/webmcp/#agent-baseline-capabilities>
 [^6]: WebMCP specification, §6.3.2 Misrepresentation of Intent and §6.3.2.4 Current Gaps. <https://webmachinelearning.github.io/webmcp/#misrepresentation-of-intent>
 [^7]: webmachinelearning/webmcp issue #313, “Mitigations for profound privacy and security issues seem to be missing?” (opened 21 September 2026; open), including comments by @domfarolino (25 September and 8 October 2026), @npdoty (28 September and 6 October 2026) and @jpagnucco (28 September and 6 October 2026). <https://github.com/webmachinelearning/webmcp/issues/313>
-[^8]: webmachinelearning/webmcp issue #334, “Discuss general agent ecosystem risks and link to agent security guidance” (opened 6 October 2026; open). <https://github.com/webmachinelearning/webmcp/issues/334>
+[^8]: webmachinelearning/webmcp pull request #334, “Discuss general agent ecosystem risks and link to agent security guidance”, by @jpagnucco (opened 6 October 2026; open). <https://github.com/webmachinelearning/webmcp/pull/334>
 [^9]: WebMCP specification, §6.3.1 Prompt Injection Attacks. <https://webmachinelearning.github.io/webmcp/#prompt-injection>
 [^10]: WebMCP specification, §6.3.1.1 Metadata / Description Attacks (Tool Poisoning), including the example attack. <https://webmachinelearning.github.io/webmcp/#metadata-description-attacks>
 [^11]: WebMCP specification, §3 Supporting concepts (tool definition: name length 1–128, allowed code points) and §6.4.2 Restricting maximum input lengths. <https://webmachinelearning.github.io/webmcp/#mitigation-restrict-input-lengths>
@@ -511,7 +520,7 @@ Chapter 13 turns from attackers to the user. It asks who approves a consequentia
 [^20]: WebMCP specification, §6.3.2.3 Scenario: Ambiguous Finalization (Accidental or Malicious). <https://webmachinelearning.github.io/webmcp/#scenario-ambiguous-finalization>
 [^21]: WebMCP specification, §6.4.5 Consequential Annotation for Tool Executions. <https://webmachinelearning.github.io/webmcp/#mitigation-consequential-annotation>
 [^22]: webmachinelearning/webmcp issue #176, “Hint for reversible or consequential actions” (opened 8 May 2026, closed 3 September 2026). <https://github.com/webmachinelearning/webmcp/issues/176>
-[^23]: webmachinelearning/webmcp issue #298, “§6.4: add page-enforced write boundaries as a mitigation for agent over-reach” (opened 6 September 2026; open), including the comments of 6 and 12 September 2026; and issue #333, “Document page-enforced boundaries for write tools” (opened 3 October 2026; open). <https://github.com/webmachinelearning/webmcp/issues/298>
+[^23]: webmachinelearning/webmcp issue #298, “§6.4: add page-enforced write boundaries as a mitigation for agent over-reach” (opened 6 September 2026; open), including the comments of 6 and 12 September 2026; and pull request #333, “Document page-enforced boundaries for write tools” (opened 3 October 2026; open, <https://github.com/webmachinelearning/webmcp/pull/333>). <https://github.com/webmachinelearning/webmcp/issues/298>
 [^24]: webmachinelearning/webmcp issue #165, “WebMCP elicitation via requestUserInteraction()” (opened 16 April 2026; open), and pull request #204, “Replace requestUserInteraction with requestUserInput” (opened 9 June 2026; open). <https://github.com/webmachinelearning/webmcp/issues/165>
 [^25]: WebMCP specification, §6.3.3 Privacy Leakage Through Over-Parameterization and §6.3.3.1 The Privacy Risk. <https://webmachinelearning.github.io/webmcp/#privacy-leakage-over-parameterization>
 [^26]: WebMCP specification, §6.3.3.2 Example Attack. <https://webmachinelearning.github.io/webmcp/#attack-example-overparameterization>
@@ -520,8 +529,8 @@ Chapter 13 turns from attackers to the user. It asks who approves a consequentia
 [^29]: WebKit/standards-positions issue #670, “WebMCP” (position: oppose), position comment by @mwyrzykowski, 3 June 2026. <https://github.com/WebKit/standards-positions/issues/670>
 [^30]: webmachinelearning/webmcp issue #331, “Scope of `consequentialHint` for high-risk read tools” (opened 30 September 2026; open), comments of 30 September to 3 October 2026; and issue #110, “Proposal: `sensitiveHint` annotation for tool outputs and a standardized secret reference content type” (opened 25 February 2026; open). <https://github.com/webmachinelearning/webmcp/issues/331>
 [^31]: WebMCP specification, §6.3.5 Interaction with Private Browsing Modes. <https://webmachinelearning.github.io/webmcp/#interaction-with-private-browsing>
-[^32]: WebMCP specification, §6.3.4 Violation of Same-Origin Boundaries (a TODO in the 14 October 2026 draft). <https://webmachinelearning.github.io/webmcp/#violation-same-origin-boundaries>
-[^33]: webmachinelearning/webmcp issue #326, “Document cross-origin tool exposure and two-sided opt-in in Section 6.3.4” (opened 28 September 2026; open), including the review comment of 30 September 2026. <https://github.com/webmachinelearning/webmcp/issues/326>
+[^32]: WebMCP specification, §6.3.4 Violation of Same-Origin Boundaries (still a TODO in the 15 October 2026 draft). <https://webmachinelearning.github.io/webmcp/#violation-same-origin-boundaries>
+[^33]: webmachinelearning/webmcp pull request #326, “Document cross-origin tool exposure and two-sided opt-in in Section 6.3.4”, by @jpagnucco (opened 28 September 2026; open), including the review comment of 30 September 2026. <https://github.com/webmachinelearning/webmcp/pull/326>
 [^34]: WebMCP specification, §4.4 Permissions policy integration (policy-controlled feature “tools”, default allowlist `'self'`). <https://webmachinelearning.github.io/webmcp/#permissions-policy>
 [^35]: Chrome for Developers, “WebMCP” (published 18 May 2026, updated 7 October 2026), section “Permissions policy”. <https://developer.chrome.com/docs/ai/webmcp>
 [^36]: WebMCP specification, §6.4.1 Disabling WebMCP with Permissions Policy. <https://webmachinelearning.github.io/webmcp/#mitigation-disable-permissions-policy>
