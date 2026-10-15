@@ -174,7 +174,7 @@ Concepts are easier to hold on to when they are attached to something you are bu
 
 *Helpdesk Widget* is a support widget made by a fictional vendor, Supportly, and embedded in a fictional accounting dashboard, Ledgerly. The widget and the dashboard come from different origins, which is exactly the situation where the web’s security model gets interesting. Its tools (`search_articles`, `create_ticket` and `get_ticket_status`) are the book’s test case for cross-origin rules and page-embedded agents in Chapter 7, and for the threat models in Chapter 12.
 
-*Test Agent* is optional. It is a minimal agent harness, built either as an extension or as an in-page agent using Chrome’s on-device model through the Prompt API, which you can use to call your tools and run evaluations without depending on any particular commercial assistant. It appears in Chapter 9 and does its main work in Chapter 14.
+*Test Agent* is optional. It is a minimal agent harness, built either as an extension or as an in-page agent using Chrome’s on-device model through the Prompt API, which you can use to call your tools and run evaluations without depending on any particular commercial assistant. It is built in Chapter 9, and Chapter 14 runs it as the in-page counterpart to its eval harness.
 
 | Project | What it is | What it teaches | Main chapters |
 |---|---|---|---|
