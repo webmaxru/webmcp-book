@@ -219,12 +219,12 @@ export const searchProductsSchema = {
 } as const;
 
 export function searchProductsTool({ query, category, maxPrice, inStockOnly }: Record<string, unknown>) {
-  if (typeof query !== 'string') return { error: 'query must be a string.' };
+  if (typeof query !== 'string') return { status: 'error', code: 'INVALID_ARGUMENT', message: 'query must be a string.' };
   if (category !== undefined && !CATEGORIES.includes(category as Category)) {
-    return { error: `category must be one of: ${CATEGORIES.join(', ')}.` };
+    return { status: 'error', code: 'INVALID_ARGUMENT', message: `category must be one of: ${CATEGORIES.join(', ')}.` };
   }
   if (maxPrice !== undefined && (typeof maxPrice !== 'number' || maxPrice < 0)) {
-    return { error: 'maxPrice must be a non-negative number of NOK.' };
+    return { status: 'error', code: 'INVALID_ARGUMENT', message: 'maxPrice must be a non-negative number of NOK.' };
   }
   const products = searchProducts({
     query,
@@ -238,9 +238,9 @@ export function searchProductsTool({ query, category, maxPrice, inStockOnly }: R
 }
 ```
 
-The schema follows Chapter 5’s advice: plain types, an `enum` for the category, a description for every field, `additionalProperties: false`. The validation repeats the schema’s rules in code, because nothing else enforces them, and returns failures as values the model can act on. The actual work is one call to `searchProducts()`, the function the search box on the shop page calls on every keystroke. The result is trimmed to what an agent needs to choose a product: no weights, no categories, no image URLs.
+The schema follows Chapter 5’s advice: plain types, an `enum` for the category, a description for every field, `additionalProperties: false`. The validation repeats the schema’s rules in code, because nothing else enforces them, and returns failures as values the model can act on, in the `{ status: 'error', code, message }` shape Chapter 6 introduced (Chapter 11 completes the set). The actual work is one call to `searchProducts()`, the function the search box on the shop page calls on every keystroke. The result is trimmed to what an agent needs to choose a product: no weights, no categories, no image URLs.
 
-`compare_products` and `add_to_cart` follow the same pattern in their own files in the repository. `add_to_cart` refuses out-of-stock products and quantities outside 1–10 with a message, then calls `cartStore.add()`, the same method the “Add to cart” buttons call.
+`compare_products` and `add_to_cart` follow the same pattern in their own files in the repository. `add_to_cart` rejects quantities outside 1–10 as an `error` and returns out-of-stock products as `refused` with the code `OUT_OF_STOCK` (Chapter 11 explains the difference), then calls `cartStore.add()`, the same method the “Add to cart” buttons call.
 
 ### Shared state with an external store
 
@@ -331,7 +331,7 @@ export function CartPage() {
   // A view-scoped, consequential tool: it exists only on this page, and only with items in the cart.
   useWebMCP({
     name: 'checkout',
-    description: 'Place the order for everything in the cart. The user must confirm in the page\'s own dialog; nothing is ordered until they click "Place order". Returns the order ID, or status "cancelled" if the user declines.',
+    description: 'Place the order for everything in the cart. The user must confirm in the page\'s own dialog; nothing is ordered until they click "Place order". Returns the order ID, or status "cancelled_by_user" if the user declines.',
     annotations: { consequentialHint: true },
     enabled: cart.itemCount > 0,
     execute: (_input, { signal }) => checkout(signal),
@@ -383,7 +383,7 @@ So the browser won’t break the call. Your app can. If the pending confirmation
 | Typical cause | Component unmounts, route changes, `enabled` turns false | The agent or the person cancels, the agent times out, the caller passes its own signal to `executeTool()` |
 | What happens to running calls | Nothing; they finish | This call should stop and clean up |
 
-Sources: WebMCP specification, Draft Community Group Report, 14 October 2026.[^2] [^15]
+Sources: WebMCP specification, Draft Community Group Report, 15 October 2026.[^2] [^15]
 
 The rule that follows is simple: **anything an in-flight call depends on must outlive the component that registered the tool.** Trailhead puts the checkout flow in a module, not a component (Listing 10.6), and the pending question in a store rendered by the layout (Listing 10.7).
 
@@ -395,14 +395,14 @@ import { requestConfirmation } from './confirm-store';
 
 export type CheckoutResult =
   | { status: 'placed'; orderId: string; total: { amount: number; currency: 'NOK' } }
-  | { status: 'cancelled'; message: string }
-  | { status: 'empty'; message: string };
+  | { status: 'cancelled_by_user'; message: string }
+  | { status: 'error'; code: 'CART_EMPTY'; message: string };
 
 // The one checkout path. The Checkout button and the checkout tool both call it.
 export async function checkout(signal: AbortSignal): Promise<CheckoutResult> {
   const cart = cartStore.getSnapshot();
   if (cart.itemCount === 0) {
-    return { status: 'empty', message: 'The cart is empty. Add products with add_to_cart first.' };
+    return { status: 'error', code: 'CART_EMPTY', message: 'The cart is empty. Add products with add_to_cart first.' };
   }
   const confirmed = await requestConfirmation(
     'Place this order?',
@@ -410,7 +410,7 @@ export async function checkout(signal: AbortSignal): Promise<CheckoutResult> {
     signal,
   );
   if (!confirmed) {
-    return { status: 'cancelled', message: 'The user declined the order in the confirmation dialog.' };
+    return { status: 'cancelled_by_user', message: 'The user declined the order in the confirmation dialog.' };
   }
   const order = cartStore.placeOrder();
   return { status: 'placed', orderId: order.orderId, total: order.total };
@@ -470,7 +470,7 @@ Two smaller points complete the picture. First, the hook’s registration signal
 
 An agent works from snapshots. The specification’s non-normative section on page observations describes the browser agent getting “an observation”, an implementation-defined structure containing at least a tool map, and notes that it “often includes screenshots of the page, not just a DOM serialization”.[^17] Between observations, the agent knows only what it was told. In a component app the page changes constantly, so it’s worth being deliberate about how changes reach the agent. Trailhead uses four channels.
 
-**Return values describe the new state.** `add_to_cart` doesn’t return `"OK"`. It returns what was added and the cart’s new item count and total, so the agent can plan its next step without another call. `checkout` returns a status the agent can act on: `placed` with an order ID, `cancelled` with an explanation, or `empty`.
+**Return values describe the new state.** `add_to_cart` doesn’t return `"OK"`. It returns what was added and the cart’s new item count and total, so the agent can plan its next step without another call. `checkout` returns a status the agent can act on: `placed` with an order ID, `cancelled_by_user` with an explanation, or `error` with the code `CART_EMPTY`. Failures use the `{ status, code, message }` shape that Chapter 11 sets out for the whole book.
 
 **A read-only tool answers “what is the state now?”.** `get_cart` costs little, can be called at any time, and reflects changes the person made by hand. Chrome’s best practices add a related point: agents may rely on the interface to plan their next steps, so “update the interface state after functions are completed”.[^1] Trailhead’s tools change the same store the UI renders, so by the time a tool returns, the screen already matches.
 
@@ -565,9 +565,9 @@ export const appConfig: ApplicationConfig = {
         },
         annotations: { readOnlyHint: true },
         execute: ({ query, category, maxPrice }) => {
-          if (typeof query !== 'string') return { error: 'query must be a string.' };
+          if (typeof query !== 'string') return { status: 'error', code: 'INVALID_ARGUMENT', message: 'query must be a string.' };
           if (category !== undefined && !CATEGORIES.includes(category)) {
-            return { error: `category must be one of: ${CATEGORIES.join(', ')}.` };
+            return { status: 'error', code: 'INVALID_ARGUMENT', message: `category must be one of: ${CATEGORIES.join(', ')}.` };
           }
           return { products: inject(CatalogService).search({ query, category, maxPrice }) };
         },
@@ -709,7 +709,7 @@ Chapter 11 steps back from mechanics to design. Trailhead’s tools work, but ar
 ## Notes
 
 [^1]: Chrome for Developers, “WebMCP best practices” (published 18 May 2026), sections “Create a tool strategy” (“Manage tool registration”, “Reduce complexity”) and “Prioritize reliability” (“Update the interface state after functions are completed”). <https://developer.chrome.com/docs/ai/webmcp/best-practices>
-[^2]: WebMCP specification, Draft Community Group Report, 14 October 2026: §4.2 the `ModelContext` interface (`registerTool()`, `getTools()`, `executeTool()`, `ontoolchange`, `ontoolactivated`, `ontoolcancel`), §4.2.3 `ModelContextRegisterToolOptions` (“An AbortSignal that unregisters the tool when aborted”) and the abort steps in `registerTool()`. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool>
+[^2]: WebMCP specification, Draft Community Group Report, 15 October 2026: §4.2 the `ModelContext` interface (`registerTool()`, `getTools()`, `executeTool()`, `ontoolchange`, `ontoolactivated`, `ontoolcancel`), §4.2.3 `ModelContextRegisterToolOptions` (“An AbortSignal that unregisters the tool when aborted”) and the abort steps in `registerTool()`. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool>
 [^3]: npm registry entries read on 14 October 2026: `usewebmcp` 6.0.3 (published 14 October 2026; 6.0.0 published 8 October, 6.0.1 on 12 October, 6.0.2 on 13 October; repository WebMCP-org/npm-packages; MIT; peer dependency React ^18 || ^19), `@mcp-b/react-webmcp` 6.0.3, `@mcp-b/webmcp-polyfill` 6.0.3, `react` 19.3.1, `react-router` 8.4.0, `vite` 8.3.4, `@vitejs/plugin-react` 6.1.2, `typescript` 7.0.2. <https://www.npmjs.com/package/usewebmcp>
 [^4]: The book’s companion repository, folder `chapters/10-webmcp-in-frameworks/` (`trailhead-react/tests/run-tests.mjs` and `angular/tests/run-tests.mjs`; Playwright 1.64.1 with Chromium 156.0.8078.4). <https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/10-webmcp-in-frameworks>
 [^5]: WebMCP explainer (README), “Best Practices”, “Keeping agent-facing parts of a tool definition updated” (“A tool’s implementation can by dynamic”, “Re-register changed agent-facing metadata”, “Validation at execution time”). <https://github.com/webmachinelearning/webmcp#best-practices>
