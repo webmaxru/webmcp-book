@@ -12,7 +12,7 @@ Chapter 12 looked at people who want to misuse a WebMCP page. This chapter looks
 
 That gap is where this chapter lives. We'll look at how responsibility for consent is split between the agent, the browser and the page; build Trailhead's checkout so that it never completes without a person; follow the long and still unfinished design of an *elicitation* API; deal with signed-in sessions and sensitive data; ask what the page can know about the agent; and finish with accessibility, where WebKit's critique of WebMCP is at its sharpest.
 
-As in Chapter 12, everything was checked against the WebMCP Draft Community Group Report dated 14 October 2026, Chrome's developer documentation and the `webmachinelearning/webmcp` issue tracker, all read on 15 October 2026. Browser behaviour was observed in Chromium 156.0.8078.4 with `WebMCPTesting` switched on. The fifteen tests behind every claim are in the chapter's folder in the demos repository.
+As in Chapter 12, everything was checked against the WebMCP Draft Community Group Report dated 15 October 2026, Chrome's developer documentation and the `webmachinelearning/webmcp` issue tracker, all read on 15 October 2026. Browser behaviour was observed in Chromium 156.0.8078.4 with `WebMCPTesting` switched on. The sixteen tests behind every claim are in the chapter's folder in the demos repository.
 
 ## Three parties, three kinds of consent
 
@@ -135,11 +135,15 @@ export async function registerCheckoutTools({ cart, account, orders, signal }) {
     title: 'Place your order',
     description:
       'Start checkout for the current cart. Trailhead shows the order and the user ' +
-      'places it on the page. Returns "placed" or "declined". Never charges without the user.',
+      'places it on the page. Returns status "placed", or "cancelled_by_user" if the user ' +
+      'backs out. Never charges without the user.',
     inputSchema: { type: 'object', properties: {}, additionalProperties: false },
     annotations: { consequentialHint: true },
     async execute(_input, { signal: call }) {
-      if (cart.lines().length === 0) return { status: 'empty_cart' };
+      if (cart.lines().length === 0) {
+        return { status: 'error', code: 'EMPTY_CART',
+                 message: 'The cart is empty. Add items with add_to_cart first.' };
+      }
       // Stop waiting if the agent cancels OR the user signs out: unregistering a tool
       // does not cancel calls that are already running.
       const stop = AbortSignal.any([call, signal]);
@@ -153,9 +157,13 @@ export async function registerCheckoutTools({ cart, account, orders, signal }) {
         }, { signal: stop });
       } catch (err) {
         if (call.aborted) throw err;
-        return { status: 'cancelled', reason: 'session_ended' };
+        return { status: 'refused', code: 'SESSION_ENDED',
+                 message: 'The user signed out, so nothing was ordered.' };
       }
-      if (outcome !== 'confirmed') return { status: 'declined' };
+      if (outcome !== 'confirmed') {
+        return { status: 'cancelled_by_user',
+                 message: 'The user closed the order without placing it. Nothing was charged.' };
+      }
       const order = await orders.place(cart.snapshot());
       cart.clear();
       return { status: 'placed', orderId: order.id, total: { amount: order.total, currency: 'NOK' } };
@@ -164,11 +172,11 @@ export async function registerCheckoutTools({ cart, account, orders, signal }) {
 }
 ```
 
-`checkout` does not return until the person decides. Its `execute` awaits the sheet, which can take as long as the user needs, and Chapter 6 covered how a long-running call stays well-behaved by honouring its signal. When the person confirms, it places the order and returns `{ status: 'placed', orderId, total }`. When they decline, it returns `{ status: 'declined' }`: a normal result that the agent can report, not an exception. And its description tells the agent up front that the user places the order on the page, so a well-behaved agent will say “I've opened the order for you to confirm” instead of “Done”.
+`checkout` does not return until the person decides. Its `execute` awaits the sheet, which can take as long as the user needs, and Chapter 6 covered how a long-running call stays well-behaved by honouring its signal. When the person confirms, it places the order and returns `{ status: 'placed', orderId, total }`. When they decline, it returns `{ status: 'cancelled_by_user', message }`, Chapter 11's status for a person who said no in the page's own UI: a normal result that the agent can report, not an exception. An empty cart is `status: 'error'` with code `EMPTY_CART`, because the agent can fix it with another tool first. And its description tells the agent up front that the user places the order on the page, so a well-behaved agent will say “I've opened the order for you to confirm” instead of “Done”.
 
-There is one subtle line. The tool combines two signals with `AbortSignal.any()`: the call's own signal, and the signal the tool was registered with. That second signal is aborted when the user signs out (Listing 13.3). The reason is a rule from the specification that Chapter 5 met: unregistering a tool does not cancel executions that are already running.[^9] Without the combined signal, a user who signs out while the sheet is open would leave a pending call waiting for a confirmation that now belongs to nobody. With it, the sheet closes and the call returns `{ status: 'cancelled', reason: 'session_ended' }`. If the abort came from the caller instead, the tool rethrows it so the caller sees its own cancellation.
+There is one subtle line. The tool combines two signals with `AbortSignal.any()`: the call's own signal, and the signal the tool was registered with. That second signal is aborted when the user signs out (Listing 13.4). The reason is a rule from the specification that Chapter 5 met: unregistering a tool does not cancel executions that are already running.[^9] Without the combined signal, a user who signs out while the sheet is open would leave a pending call waiting for a confirmation that now belongs to nobody. With it, the sheet closes and the call returns `{ status: 'refused', code: 'SESSION_ENDED', message }`: a rule (no order without a signed-in user) says no, and only the user can change that by signing in again. If the abort came from the caller instead, the tool rethrows it so the caller sees its own cancellation.
 
-The tests drive every ending through Chromium's real `executeTool()`: placed (order `TH-100200`, 7,297 NOK), declined through *Back*, declined through Esc, cancelled by the caller's `AbortController` (the caller gets `AbortError` and the sheet closes) and cancelled by signing out. In none of the non-placed cases did an order reach the order service.
+The tests drive every ending through Chromium's real `executeTool()`: placed (order `TH-100200`, 7,297 NOK), declined through *Back*, declined through Esc, cancelled by the caller's `AbortController` (the caller gets `AbortError` and the sheet closes), ended by signing out, and an empty cart. In none of the non-placed cases did an order reach the order service.
 
 > **Still in flux: what a long wait looks like to an agent.** The specification lets `execute` take as long as it likes and gives both sides an `AbortSignal`, but it says nothing about how an agent should present a tool that is waiting on the user, or how long it should wait before giving up. Agents will differ. Return a clear outcome either way, and don't assume the agent will keep the call open forever.
 
@@ -198,9 +206,9 @@ Chrome's tool-security page still says that “the spec draft includes `requestU
 
 ### The proposed shape
 
-Listing 13.4 is the IDL from pull request #204, exactly as proposed. It is not in the specification and not in Chromium; it's here so you can recognise it, and so you can design today's code to fit it if it lands.
+Listing 13.3 is the IDL from pull request #204, exactly as proposed. It is not in the specification and not in Chromium; it's here so you can recognise it, and so you can design today's code to fit it if it lands.
 
-**Listing 13.4 — `requestUserInput()` as proposed in pull request #204 (proposal; not in the spec, not implemented)**
+**Listing 13.3 — `requestUserInput()` as proposed in pull request #204 (proposal; not in the spec, not implemented)**
 
 ```webidl
 [Exposed=Window, SecureContext]
@@ -241,12 +249,12 @@ The three modes answer that question differently.[^13] In **interactive** mode t
 You can build all three modes by hand today, and doing so keeps your code ready for whichever version ships.
 
 - **Interactive** is what Listing 13.1 already does: the tool shows the page's own UI and awaits it. If `requestUserInput()` arrives, the change is to call `confirmOrder()` from inside its callback, so the agent knows to step aside.
-- **Form** has no good equivalent today, because the page can't ask the agent to draw anything. Return a structured result that names what's missing, `{ status: 'needs_input', missing: ['size'] }`, and let the agent ask in its own words, as Chapter 11 recommends for recoverable failures.
-- **URL** is the right model for payment and sign-in now. Don't let card numbers, one-time codes or passwords become tool parameters. Return `{ status: 'action_required', url: 'https://shop.trailhead.example/pay/…' }` and let the user complete the step on your page, where your existing payment and authentication flows apply. Issue #316 asks the editors for exactly this kind of guidance on sensitive fields.[^16]
+- **Form** has no good equivalent today, because the page can't ask the agent to draw anything. Return a structured result that names what's missing, Chapter 11's `{ status: 'needs_input', code: 'MISSING_INFORMATION', missing: ['size'], message }`, and let the agent ask the user in its own words, then call again.
+- **URL** is the right model for payment and sign-in now. Don't let card numbers, one-time codes or passwords become tool parameters. Return the same `needs_input` shape with the page to visit, `{ status: 'needs_input', code: 'MISSING_INFORMATION', missing: ['payment'], message, url: 'https://shop.trailhead.example/pay/…' }`, and let the user complete the step on your page, where your existing payment and authentication flows apply. Issue #316 asks the editors for exactly this kind of guidance on sensitive fields.[^16]
 
-Notice that Listing 13.4's result shape, `accept`, `decline` and `cancel`, maps neatly onto Trailhead's `placed`, `declined` and `cancelled`. That's deliberate. If the platform settles on an answer, you want your outcomes to be the same three words.
+Notice that Listing 13.3's result actions, `accept`, `decline` and `cancel`, map directly onto outcomes Trailhead's checkout already has: `placed`, `cancelled_by_user`, and a call cancelled through its signal. If the platform settles on this design, translating between the two is one line of code.
 
-> **Still in flux: elicitation.** There is no elicitation API in the 14 October 2026 draft. `requestUserInteraction()` was removed with `ModelContextClient` on 11 June 2026 (pull request #205); its proposed replacement `requestUserInput()` (pull request #204) and the wider discussion (issue #165) are open. Chrome's tool-security page still refers to the old method.[^12][^13][^14][^15]
+> **Still in flux: elicitation.** There is no elicitation API in the 15 October 2026 draft. `requestUserInteraction()` was removed with `ModelContextClient` on 11 June 2026 (pull request #205); its proposed replacement `requestUserInput()` (pull request #204) and the wider discussion (issue #165) are open. Chrome's tool-security page still refers to the old method.[^12][^13][^14][^15]
 
 ## Signed-in sessions and sensitive data
 
@@ -258,9 +266,9 @@ Two design rules follow. First, tools that act on an account should exist only w
 
 ### Tools that follow the session
 
-Listing 13.3 ties Trailhead's account tools to the session.
+Listing 13.4 ties Trailhead's account tools to the session.
 
-**Listing 13.3 — Registering tools only while someone is signed in (trailhead/session-tools.js)**
+**Listing 13.4 — Registering tools only while someone is signed in (trailhead/session-tools.js)**
 
 ```js
 // Tools exist only while someone is signed in, and vanish the moment they sign out.
@@ -289,7 +297,7 @@ export function bindToolsToSession({ session, cart, account, orders }) {
 
 On every session change the module aborts the current registration and, if someone is signed in, registers fresh tools under a new controller. A signed-out visitor never sees `get_cart` or `checkout`. When the user signs out, the tools vanish, and because `checkout` combines this registration signal with its call signal, any pending checkout ends too. The same pattern handles switching accounts without leaving the previous user's tools behind. The `try` block absorbs the `AbortError` that `registerTool()` throws if the session changes while registration is still in progress.[^19]
 
-The tests confirmed each step in Chromium: no tools before sign-in, exactly two afterwards with `readOnlyHint` and `consequentialHint` intact, none after sign-out, and a pending checkout that returned `{ status: 'cancelled', reason: 'session_ended' }` when the user signed out mid-confirmation.
+The tests confirmed each step in Chromium: no tools before sign-in, exactly two afterwards with `readOnlyHint` and `consequentialHint` intact, none after sign-out, and a pending checkout that returned `status: 'refused'` with code `SESSION_ENDED` when the user signed out mid-confirmation.
 
 ### Summaries, not secrets
 
@@ -364,12 +372,12 @@ The banner is a `<p role="status" aria-live="polite">` in the page's HTML, so sc
 
 **Focus.** When the confirmation sheet opens, Listing 13.1 moves focus to its heading, so a screen-reader user hears “Place this order?” immediately and can read the order in sequence. The test asserts that `document.activeElement` is the heading. Esc declines, *Back to cart* declines, and nothing depends on a pointer.
 
-> **Still in flux: accessibility requirements.** The specification's §7 is empty in the 14 October 2026 draft. Requirements for agent and browser UI built from WebMCP data (#277), the accessibility review (#65) and the self-review checklist (#272) are open, and WebKit's opposition cites accessibility among its main concerns.[^3][^28][^25]
+> **Still in flux: accessibility requirements.** The specification's §7 is empty in the 15 October 2026 draft. Requirements for agent and browser UI built from WebMCP data (#277), the accessibility review (#65) and the self-review checklist (#272) are open, and WebKit's opposition cites accessibility among its main concerns.[^3][^28][^25]
 
 ## Summary
 
 - The explainer promises human-in-the-loop workflows; the specification has no consent API, no confirmation API and an empty accessibility section. Consent is shared between the agent (which can ask before calling), the browser (which carries the call and fires events) and the page (which can make the action wait for a person). None of them currently tells the others what it asked.
-- Trailhead's `checkout` opens the page's own confirmation sheet, shows the exact order with summarised address and payment, enables *Place order* only after a short delay and accepts only trusted clicks. It returns `placed`, `declined` or `cancelled` as values, and honours both the caller's signal and the session's.
+- Trailhead's `checkout` opens the page's own confirmation sheet, shows the exact order with summarised address and payment, enables *Place order* only after a short delay and accepts only trusted clicks. It returns `placed` or Chapter 11's `cancelled_by_user` as values, refuses with `SESSION_ENDED` if the user signs out mid-checkout, and honours both the caller's signal and the session's.
 - A trusted click is not proof of a person. An agent that can automate the page produces trusted events, as issue #288 reports and as this chapter's own Playwright tests show. Page-side confirmation stops mistakes and tool-only agents; a human-only boundary would need the browser, and none is specified.
 - Elicitation is unresolved. `requestUserInteraction()` was removed with `ModelContextClient` in June 2026; its proposed replacement, `requestUserInput()` with interactive, form and url modes, is still an open pull request. Build the equivalents by hand, and keep passwords, codes and card numbers out of tool parameters.
 - Tools that act on an account should exist only while someone is signed in, should vanish on sign-out (ending any pending call) and should return summaries rather than secrets.
@@ -382,7 +390,7 @@ Chapter 14 turns to the question every chapter so far has raised: how do you *kn
 
 [^1]: Chrome for Developers, “Agent security considerations for WebMCP” (published 9 June 2026), section “Confirm actions with the user”. <https://developer.chrome.com/docs/agents/security>
 [^2]: WebMCP explainer (README), “Goals & Non-Goals” (including “Enable human-in-the-loop workflows”, “Improve accessibility through agents” and the non-goal “Fully autonomous workflows”) and the background section on assistive technology. <https://github.com/webmachinelearning/webmcp>
-[^3]: WebMCP specification, Draft Community Group Report, 14 October 2026, §7 Accessibility considerations (no content in this draft). <https://webmachinelearning.github.io/webmcp/#accessibility>
+[^3]: WebMCP specification, Draft Community Group Report, 15 October 2026, §7 Accessibility considerations (no content in this draft). <https://webmachinelearning.github.io/webmcp/#accessibility>
 [^4]: WebMCP specification, §6.4.5 Consequential Annotation for Tool Executions. <https://webmachinelearning.github.io/webmcp/#mitigation-consequential-annotation>
 [^5]: WebMCP specification, §4.3 Events (`toolchange`, `toolactivated`, `toolcancel`) and the tool execute steps in §3 (“Fire an event named toolactivated at targetDocument's associated ModelContext”). <https://webmachinelearning.github.io/webmcp/#supporting-concepts>
 [^6]: webmachinelearning/webmcp issue #155, “`userConsent` communication from User Agent to Web Application” (opened 26 March 2026; open). <https://github.com/webmachinelearning/webmcp/issues/155>
