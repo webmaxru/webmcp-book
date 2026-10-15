@@ -14,9 +14,9 @@ It is the right question for the end of a book about a draft. Everything in the 
 
 This chapter is a map of those questions and a way to build so that your work survives the answers. It looks at the questions in five groups (Figure 17.1): what a tool can declare, what happens during a single call, what happens when the work outlives the document, who gets to see a tool, and what the platform as a whole becomes. For each it gives the state of play as of mid-October 2026 and what to do about it now. It then sets out three competing futures and ends with a checklist and three short listings that Trailhead uses to keep its bets small.
 
-![Figure 17.1: The open questions, by layer, with their status as of 14 October 2026](images/figure-17-1.png)
+![Figure 17.1: The open questions, by layer, with their status as of 15 October 2026](images/figure-17-1.png)
 
-*Figure 17.1: The open questions, by layer. Each chip shows where the question stood on GitHub and in the draft on 14 October 2026; every status was unchanged when rechecked against GitHub and the 15 October draft.*
+*Figure 17.1: The open questions, by layer. Each chip shows where the question stood on GitHub and in the draft on 15 October 2026.*
 
 ## How to read an open question
 
