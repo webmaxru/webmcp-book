@@ -8,11 +8,11 @@
 
 WebMCP will keep moving after this book is printed, so this appendix is less a reading list than a map of where to look. It lists the primary sources the chapters rely on, grouped by who publishes them, with one line on what each is good for. It then maps the folders of the book’s demos repository to the chapters they belong to, and ends with a short routine for tracking changes yourself.
 
-Every URL here was fetched on 14 October 2026 and answered with a working page. Dates in the annotations are the dates printed on the pages themselves. A few npm pages served a bot check to my script; for those I give the npm registry’s own record of the package, which is what `npm install` reads.[^2]
+Every URL here was fetched on 14 October 2026 and fetched again for the technical review on 15 October 2026, and answered with a working page. Dates in the annotations are the dates printed on the pages themselves. A few npm pages served a bot check to my script; for those I give the npm registry’s own record of the package, which is what `npm install` reads.[^2]
 
 ## C.1 The specification and its repository
 
-- **WebMCP specification (Draft Community Group Report).** The normative text: the IDL, the algorithms, the security and privacy sections. Check the date under the title first; it read 14 October 2026 when this appendix was written. *Chapters 4–7; Appendix A.*
+- **WebMCP specification (Draft Community Group Report).** The normative text: the IDL, the algorithms, the security and privacy sections. Check the date under the title first; it read 15 October 2026 when this appendix was last checked. *Chapters 4–7; Appendix A.*
   <https://webmachinelearning.github.io/webmcp/>
 - **The webmcp repository and explainer.** The README is the explainer: goals, use cases, open questions and the “Future Exploration” notes. *Chapters 4 and 17.*
   <https://github.com/webmachinelearning/webmcp>
@@ -20,7 +20,7 @@ Every URL here was fetched on 14 October 2026 and answered with a working page. 
   <https://github.com/webmachinelearning/webmcp/issues>
 - **Pull requests.** Proposed spec changes. A merged pull request is the moment something becomes spec text, or leaves it.
   <https://github.com/webmachinelearning/webmcp/pulls>
-- **Commit history.** The fastest way to date a change. The rename to `document.modelContext` (27 May 2026), the removal of `provideContext()` (5 March 2026) and of the declarative API (8 October 2026) are all single commits here. *Appendix D.*
+- **Commit history.** The fastest way to date a change. The move of the `modelContext` getter from `Navigator` to `Document` (27 May 2026), the removal of `provideContext()` (5 March 2026) and of the declarative API (8 October 2026) are all single commits here. *Appendix D.*
   <https://github.com/webmachinelearning/webmcp/commits/main>
 - **Implementation status.** The project’s own list of browsers and agents that support WebMCP, from Chrome’s origin trial to Brave Leo and ChatGPT Desktop. *Chapter 15.*
   <https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md>
@@ -71,7 +71,7 @@ Every URL here was fetched on 14 October 2026 and answered with a working page. 
   <https://developer.chrome.com/docs/web-platform/origin-trials>
 - **Third-party origin trials.** How an embedded script, such as a widget vendor’s, can register for a trial across the sites that embed it. *Chapter 15.*
   <https://developer.chrome.com/docs/web-platform/third-party-origin-trials>
-- **Chrome Platform Status: WebMCP.** Chrome’s feature entry: status (“Proposed” on 14 October 2026), trial milestones and the reasons for the extension. The page renders in script; the JSON form below is easier to read and to watch. *Chapters 4 and 15.*
+- **Chrome Platform Status: WebMCP.** Chrome’s feature entry: status (“Proposed” on 15 October 2026), trial milestones and the reasons for the extension. The page renders in script; the JSON form below is easier to read and to watch. *Chapters 4 and 15.*
   <https://chromestatus.com/feature/5117755740913664>
   <https://chromestatus.com/api/v0/features/5117755740913664>
 - **The Prompt API** (updated 26 August 2026). Chrome’s on-device model, which the Test Agent and the example extension can use as a planner. *Chapter 9.*
@@ -94,11 +94,11 @@ Every URL here was fetched on 14 October 2026 and answered with a working page. 
 
 ## C.4 Standards positions, reviews and process
 
-- **Mozilla standards position on WebMCP** (issue #1412). Labelled “position: neutral” on 14 October 2026; the thread explains what would move it. *Chapter 15.*
+- **Mozilla standards position on WebMCP** (issue #1412). Labelled “position: neutral” on 15 October 2026; the thread explains what would move it. *Chapter 15.*
   <https://github.com/mozilla/standards-positions/issues/1412>
 - **WebKit standards position on WebMCP** (issue #670). Labelled “position: oppose”, with WebKit’s reasons and its proposed alternative process. *Chapter 15.*
   <https://github.com/WebKit/standards-positions/issues/670>
-- **W3C TAG design review** (issue #1238, “Incubation: WebMCP”). Open on 14 October 2026, labelled “Missing: Multi-stakeholder support”. *Chapters 4 and 15.*
+- **W3C TAG design review** (issue #1238, “Incubation: WebMCP”). Open on 15 October 2026, labelled “Missing: Multi-stakeholder support”. *Chapters 4 and 15.*
   <https://github.com/w3ctag/design-reviews/issues/1238>
 - **TAG design reviews repository.** How the TAG takes and prioritises reviews, useful context for reading #1238.
   <https://github.com/w3ctag/design-reviews>
@@ -106,7 +106,7 @@ Every URL here was fetched on 14 October 2026 and answered with a working page. 
   <https://github.com/w3c/charter-drafts/pull/829>
 - **Web Machine Learning Working Group.** The existing W3C Working Group that pull request targeted.
   <https://www.w3.org/groups/wg/webmachinelearning/>
-- **Draft Agentic Web Working Group charter.** The proposed new group whose one named normative deliverable is WebMCP. On 14 October 2026 many of its fields were still template placeholders. *Chapters 15 and 17.*
+- **Draft Agentic Web Working Group charter.** The proposed new group whose one named normative deliverable is WebMCP. On 15 October 2026 many of its fields were still template placeholders. *Chapters 15 and 17.*
   <https://w3c.github.io/charter-drafts/2026/agenticweb-wg.html>
 - **W3C strategy issue #576, “[wg/agenticweb] Agentic Web Group Charter”.** The W3C’s tracking issue for that charter, with its list of known concerns. *Chapter 15.*
   <https://github.com/w3c/strategy/issues/576>
@@ -119,7 +119,7 @@ Every URL here was fetched on 14 October 2026 and answered with a working page. 
 
 ## C.5 The Model Context Protocol
 
-- **MCP specification, version 2026-07-28.** The revision this book follows: stateless, self-contained requests. The `latest` address redirected here on 14 October 2026. *Chapter 3.*
+- **MCP specification, version 2026-07-28.** The revision this book follows: stateless, self-contained requests. The `latest` address redirected here on 15 October 2026. *Chapter 3.*
   <https://modelcontextprotocol.io/specification/2026-07-28>
 - **Changelog for 2026-07-28.** What changed from the legacy revisions, starting with the removal of the `initialize` handshake. *Chapter 3.*
   <https://modelcontextprotocol.io/specification/2026-07-28/changelog>
@@ -131,7 +131,7 @@ Every URL here was fetched on 14 October 2026 and answered with a working page. 
   <https://modelcontextprotocol.io/specification/2026-07-28/basic/transports>
 - **“The 2026-07-28 Specification”** (MCP blog). The release post, in plain language: MCP becomes “a request/response stateless protocol.” *Chapter 3.*
   <https://blog.modelcontextprotocol.io/posts/2026-07-28/>
-- **Official SDKs.** The list of SDKs by language and support tier; on 14 October 2026 TypeScript, Python, C#, Go, Rust and Ruby were Tier 1.
+- **Official SDKs.** The list of SDKs by language and support tier; on 15 October 2026 TypeScript, Python, C#, Go, Rust and Ruby were Tier 1.
   <https://modelcontextprotocol.io/docs/sdk>
 - **TypeScript SDK, repository and v2 documentation.** The SDK Trailhead’s backend server is built on. *Chapter 3.*
   <https://github.com/modelcontextprotocol/typescript-sdk>
@@ -145,7 +145,7 @@ Every URL here was fetched on 14 October 2026 and answered with a working page. 
 
 ## C.6 Packages the chapters use
 
-Versions are what the npm registry reported as `latest` on 14 October 2026.[^2] Pin them; several of these change weekly.
+Versions are what the npm registry reported as `latest` on 15 October 2026, which is also what the demos pin, except Angular: the demos pin 22.2.2, and 22.2.3 was published late on 14 October.[^2] Pin them; several of these change weekly.
 
 | Package | Version | What it is | Chapters |
 |---|---|---|---|
@@ -160,10 +160,10 @@ Versions are what the npm registry reported as `latest` on 14 October 2026.[^2] 
 | `@mcp-b/webmcp-local-relay` | 6.0.3 | Relay from a tab’s tools to desktop MCP clients | 9 |
 | `usewebmcp` | 6.0.3 | React hooks for `document.modelContext` | 10, 15 |
 | `@mcp-b/react-webmcp` | 6.0.3 | MCP-B’s broader React hooks package | 10 |
-| `@angular/core`, `@angular/forms` | 22.2.2 | Angular, whose WebMCP guide Chapter 10 follows | 10 |
+| `@angular/core`, `@angular/forms` | 22.2.2 (latest: 22.2.3) | Angular, whose WebMCP guide Chapter 10 follows | 10 |
 | `playwright` | 1.64.1 | Browser automation used by every demo’s tests | 6–17 |
 
-*Table C.1 — npm packages used in the chapters and demos, with versions read from the npm registry on 14 October 2026.*
+*Table C.1 — npm packages used in the chapters and demos, with versions read from the npm registry on 15 October 2026.*
 
 The packages’ pages:
 
@@ -225,6 +225,7 @@ Every folder in the demos repository has a README that maps its files to listing
 |---|---|---|
 | `fjord-table/` | 4, 5 | Fjord Table’s booking page in plain HTML and JavaScript modules, with `search_availability` and `book_table` registered through `document.modelContext`, unregistered with an `AbortSignal`, and typed with `webmcp-types`. |
 | `chapters/03-mcp-in-practice/` | 3 | Trailhead’s backend MCP server on the TypeScript SDK v2: `search_products`, `get_order_status`, a returns-policy resource and a `packing_list` prompt, served over stdio and Streamable HTTP in both protocol eras, tested with an SDK client and the Inspector CLI. |
+| `chapters/05-registering-tools/` | 5 | A Chromium 156 probe that backs Chapter 5’s statements about what Chromium does where it differs from the draft: `outputSchema` dropped, no input validation, return values, `UnknownError`. Chapter 5’s listings themselves live in `fjord-table/`. |
 | `chapters/06-annotations-lifecycle-errors/` | 6 | Trailhead’s product, cart and checkout tools with annotations, the call lifecycle, cancellation through the execution signal, tool-level errors versus platform errors, `toolactivated`/`toolcancel` logging, `toolchange` and debugging tools. |
 | `chapters/07-frames-origins-agents/` | 7 | The Helpdesk Widget across two origins: Ledgerly delegating the `tools` policy to Supportly’s iframe, `exposedTo` and `fromOrigins`, an in-page agent built on `getTools()` and `executeTool()`, and an extension that uses the API from a content script. |
 | `chapters/08-declarative-api/` | 8 | Fjord Table’s search and booking forms as declarative tools: `toolname`, `tooldescription`, `toolparamdescription`, `toolautosubmit`, `agentInvoked`, `respondWith()`, the CSS pseudo-classes and validation feedback, tested in Chrome’s trial implementation. |
@@ -263,10 +264,10 @@ Chapter 15’s `standards-watch.mjs`, in the demos repository, automates most of
 - The spec, its issues and its commit history are the primary sources. Chrome’s documentation shows what one implementation does, and the demos repository shows what Chromium 156 actually did.
 - Chrome and Edge both run origin trials; chromestatus and the Edge trial page carry their dates.
 - The standards picture lives in four GitHub threads (Mozilla, WebKit, the TAG and the W3C charter work) plus the W3C’s own announcements.
-- Pin package versions. The ones in Table C.1 were current on 14 October 2026.
+- Pin package versions. The ones in Table C.1 were current on 15 October 2026.
 - Run a monthly check, or Chapter 15’s watcher, to know when the book has drifted.
 
 ## Notes
 
-[^1]: W3C, “Community and Business Groups: Frequently Asked Questions”, answer to “Does the Community Group Process replace the Recommendation Track?” Read 14 October 2026. <https://www.w3.org/community/about/faq/>
-[^2]: Every URL in this appendix was fetched on 14 October 2026 with `curl`, or for npmjs.com pages with a headless Chromium, and returned HTTP 200. Package versions are the `latest` versions in the npm registry’s package records, for example <https://registry.npmjs.org/usewebmcp/latest>.
+[^1]: W3C, “Community and Business Groups: Frequently Asked Questions”, answer to “Does the Community Group Process replace the Recommendation Track?” Read 15 October 2026. <https://www.w3.org/community/about/faq/>
+[^2]: Every URL in this appendix was fetched on 14 October 2026 with `curl`, or for npmjs.com pages with a headless Chromium, and returned HTTP 200. All of them were fetched again on 15 October 2026: every non-npm URL returned HTTP 200, and every npmjs.com page answered a script with a bot check, so the packages and versions were confirmed in the registry records instead. Package versions are the `latest` versions in the npm registry’s package records, for example <https://registry.npmjs.org/usewebmcp/latest>.
