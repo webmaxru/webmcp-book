@@ -14,7 +14,7 @@ This chapter ties up those ends. It moves from the restaurant to the shop: Trail
 
 The chapter takes five topics in order: the four annotation hints; the lifecycle of a single call, including what happens when the page navigates away in the middle of one; cancellation and long-running work; the platform errors and how they differ from the errors your tool reports itself; and the `toolchange` event.
 
-Everything here was checked against the WebMCP Draft Community Group Report dated 14 October 2026, one day newer than the draft Chapter 5 used. It is still a Community Group draft, not a W3C standard.[^2] Chrome’s developer documentation and the open issues in the `webmachinelearning/webmcp` repository were read on the same day. Unlike Chapter 5, this chapter also reports what Chromium actually does: every behaviour marked *observed* was measured in Chromium 156.0.8078.4 with the `WebMCPTesting` feature enabled (the switch behind `chrome://flags/#enable-webmcp-testing`), using the test suite in the book’s demos repository.[^3] Where the draft and Chromium disagree, both are given.
+Everything here was checked against the WebMCP Draft Community Group Report dated 15 October 2026, the same draft Chapter 5 uses. It is still a Community Group draft, not a W3C standard.[^2] Chrome’s developer documentation and the open issues in the `webmachinelearning/webmcp` repository were read on the same day. Like Chapter 5, this chapter also reports what Chromium actually does: every behaviour marked *observed* was measured in Chromium 156.0.8078.4 with the `WebMCPTesting` feature enabled (the switch behind `chrome://flags/#enable-webmcp-testing`), using the test suite in the book’s demos repository.[^3] Where the draft and Chromium disagree, both are given.
 
 ## The four annotation hints
 
@@ -22,7 +22,7 @@ Everything here was checked against the WebMCP Draft Community Group Report date
 
 Annotations live in their own dictionary, separate from the rest of the tool definition. They were moved out of `ModelContextTool` into a separate `ToolAnnotations` object in July 2026, “in preparation for `getTools()`”, which hands them back to in-page callers.[^4] Listing 6.1 shows the current shape.
 
-**Listing 6.1 — `ToolAnnotations`, from the specification’s IDL (14 October 2026)**
+**Listing 6.1 — `ToolAnnotations`, from the specification’s IDL (15 October 2026)**
 
 ```webidl
 dictionary ModelContextTool {
@@ -108,10 +108,12 @@ export async function registerProductTools(signal) {
     annotations: { readOnlyHint: true },                               // ①
     async execute({ query, category, maxPrice, inStockOnly = false }, { signal }) {
       if (typeof query !== 'string' || query.trim() === '') {
-        return { status: 'invalid_input', message: 'Provide "query" as a non-empty string.' };
+        return { status: 'error', code: 'INVALID_INPUT',
+                 message: 'Provide "query" as a non-empty string.' };
       }
       if (category !== undefined && !CATEGORIES.includes(category)) {
-        return { status: 'invalid_input', message: `"category" must be one of: ${CATEGORIES.join(', ')}.` };
+        return { status: 'error', code: 'INVALID_INPUT',
+                 message: `"category" must be one of: ${CATEGORIES.join(', ')}.` };
       }
       const products = await catalog.search({ query, category, maxPrice, inStockOnly }, signal);
       showProducts(products);            // the user sees what the agent found
@@ -134,7 +136,8 @@ export async function registerProductTools(signal) {
     async execute({ sku }, { signal }) {
       const product = catalog.get(sku);
       if (!product) {
-        return { status: 'unknown_sku', message: `No product has SKU "${sku}". Use search_products to find SKUs.` };
+        return { status: 'error', code: 'UNKNOWN_SKU',
+                 message: `No product has SKU "${sku}". Use search_products to find SKUs.` };
       }
       const reviews = await catalog.reviews(sku, signal);
       return {
@@ -169,18 +172,19 @@ export function registerCheckoutTool(signal) {
     description:
       'Check out the current cart. Trailhead shows the order summary and the user ' +
       'must press "Place order" on the page; the tool waits for that. Returns the ' +
-      'order ID, or status "declined" if the user cancels.',
+      'order ID, or status "cancelled_by_user" if the user cancels.',
     inputSchema: { type: 'object', properties: {} },
     annotations: { consequentialHint: true },                          // ①
     async execute(_input, { signal }) {
       const summary = cart.snapshot();
       if (summary.lines.length === 0) {
-        return { status: 'empty_cart', message: 'The cart is empty. Add items with add_to_cart first.' };
+        return { status: 'error', code: 'EMPTY_CART',
+                 message: 'The cart is empty. Add items with add_to_cart first.' };
       }
       // The user decides, in Trailhead's own dialog. Cancelling the call closes it.
       const confirmed = await confirmCheckout(summary, { signal });   // ②
       if (!confirmed) {
-        return { status: 'declined', message: 'The user cancelled checkout. Nothing was ordered.' };
+        return { status: 'cancelled_by_user', message: 'The user cancelled checkout. Nothing was ordered.' };
       }
       signal.throwIfAborted();          // last check before the irreversible step ③
       const order = await orders.place(summary);
@@ -194,7 +198,7 @@ export function registerCheckoutTool(signal) {
 
 > **Still in flux: what browsers do with the hints**
 >
-> The spec and Chrome’s documentation say what each hint means and what a client *may* do with it, but neither says what Chrome’s own agent features do with them today, and I found no primary source that does. Treat the hints as part of your tool’s contract with any agent, not as a feature of one browser. Several proposals would add more hints: semantic side-effect hints (issue #53), declarative human-in-the-loop policies (#198), a `sensitiveHint` for outputs (#110), and the scope of `consequentialHint` for sensitive reads (#331). All four were open on 14 October 2026.[^13]
+> The spec and Chrome’s documentation say what each hint means and what a client *may* do with it, but neither says what Chrome’s own agent features do with them today, and I found no primary source that does. Treat the hints as part of your tool’s contract with any agent, not as a feature of one browser. Several proposals would add more hints: semantic side-effect hints (issue #53), declarative human-in-the-loop policies (#198), a `sensitiveHint` for outputs (#110), and the scope of `consequentialHint` for sensitive reads (#331). All four were still open on 15 October 2026.[^13]
 
 ### The debugging tool
 
@@ -230,7 +234,7 @@ Chapter 5 described the call from the point of view of your `execute` callback. 
 
 ![Figure 6.2 — The life of one tool call, with the platform failure that can end it at each step.](images/figure-6-2.png)
 
-*Figure 6.2 — The life of one call. The happy path runs through the agent, browser and page lanes. Each platform failure exits to the right, labelled with the error name from the 14 October 2026 draft and, after the slash, the name Chromium 156 actually produced in testing.*
+*Figure 6.2 — The life of one call. The happy path runs through the agent, browser and page lanes. Each platform failure exits to the right, labelled with the error name from the draft (the names are the same in the 14 and 15 October 2026 drafts) and, after the slash, the name Chromium 156 actually produced in testing.*
 
 The draft’s algorithms define the steps.[^14]
 
@@ -338,7 +342,7 @@ Chromium 156 behaved exactly as the figure shows (*observed*):[^3]
 
 The last two points are the important ones. Aborting a signal doesn’t stop JavaScript. Your callback is a promise, and promises can’t be cancelled from outside. The only thing that stops your tool is your tool. Chrome’s guide frames the signal accordingly: passing it on “to long-running asynchronous tasks or network operations (such as `fetch()`) helps prevent unnecessary work, improves overall resource management, and avoids potential leaks.”[^26] The explainer says the same: the signal allows a tool “to abort underlying network requests or asynchronous tasks cleanly.”[^27]
 
-This has a consequence that is easy to miss. If the agent cancels while your tool is between “decided to do it” and “did it”, the tool may still do it. The caller has been told `AbortError` and has moved on, perhaps assuming nothing happened. Issue #344, opened and closed on 14 October 2026, made this precise. It showed that a call cancelled just as it was dispatched could still start, with its signal reading `aborted === false`, and proposed spec changes plus a note: “`AbortError` means the caller stopped waiting, not that nothing happened. Tools should check their signal right before side effects. Callers should read the page state again before retrying a tool that isn’t read-only.”[^1] The 14 October draft I read doesn’t yet contain that note,[^2] but the advice holds whatever the final wording.
+This has a consequence that is easy to miss. If the agent cancels while your tool is between “decided to do it” and “did it”, the tool may still do it. The caller has been told `AbortError` and has moved on, perhaps assuming nothing happened. Issue #344, opened and closed on 14 October 2026, made this precise. It showed that a call cancelled just as it was dispatched could still start, with its signal reading `aborted === false`, and proposed spec changes plus a note: “`AbortError` means the caller stopped waiting, not that nothing happened. Tools should check their signal right before side effects. Callers should read the page state again before retrying a tool that isn’t read-only.”[^1] The 15 October draft doesn’t yet contain that note,[^2] but the advice holds whatever the final wording.
 
 I reproduced the race in Chromium 156: aborting a call and then keeping the main thread busy for 30 ms let the tool start with an unaborted signal, and the abort reached it only afterwards (*observed*).[^3] So the rule for tools that change things is short. **Check the signal immediately before the side effect.** Listing 6.3 does it before placing the order. Listing 6.7, below, does it before adding to the cart. `signal.throwIfAborted()` is the idiomatic check: it throws the signal’s reason if the signal is aborted and does nothing otherwise.[^28] Throwing is fine here. Nobody is waiting for the result, and the throw skips the side effect.
 
@@ -346,7 +350,7 @@ The rule for callers is the mirror image, and it is worth stating even though ca
 
 > **Still in flux: partial results on cancellation**
 >
-> Because a cancelled call’s result is discarded, a tool that does work in steps, such as a batch edit applied item by item, can’t tell the caller how far it got. Issue #299 asked for a way to deliver a final result on abort, for example an `AbortError` whose `cause` carries the tool’s result. It was closed on 25 September 2026, and the 14 October draft still says that a cancelled caller “will never observe the tool’s natural resolution/rejection.”[^29][^25] The same issue records that Chrome 152 didn’t pass the per-call signal to `execute` at all, and that Chrome 153 did. If you support older trial builds, a tool that relies on its signal may simply run to completion there.
+> Because a cancelled call’s result is discarded, a tool that does work in steps, such as a batch edit applied item by item, can’t tell the caller how far it got. Issue #299 asked for a way to deliver a final result on abort, for example an `AbortError` whose `cause` carries the tool’s result. It was closed on 25 September 2026, and the 15 October draft still says that a cancelled caller “will never observe the tool’s natural resolution/rejection.”[^29][^25] The same issue records that Chrome 152 didn’t pass the per-call signal to `execute` at all, and that Chrome 153 did. If you support older trial builds, a tool that relies on its signal may simply run to completion there.
 
 ### Unregistering is not cancelling
 
@@ -384,11 +388,12 @@ export function registerCompareTool(signal) {
     annotations: { readOnlyHint: true },
     execute: tracked('compare_products', async ({ skus }, { signal }) => {
       if (!Array.isArray(skus) || skus.length < 2 || skus.length > 4) {
-        return { status: 'invalid_input', message: 'Provide 2 to 4 SKUs in "skus".' };
+        return { status: 'error', code: 'INVALID_INPUT', message: 'Provide 2 to 4 SKUs in "skus".' };
       }
       const unknown = skus.filter((sku) => !catalog.get(sku));
       if (unknown.length) {
-        return { status: 'unknown_sku', unknown, message: 'Use search_products to find valid SKUs.' };
+        return { status: 'error', code: 'UNKNOWN_SKU', unknown,
+                 message: 'Use search_products to find valid SKUs.' };
       }
       // Stop when the caller cancels (signal) or when our own deadline passes.
       const stop = AbortSignal.any([signal, AbortSignal.timeout(PAGE_DEADLINE_MS)]);  // ①
@@ -397,7 +402,8 @@ export function registerCompareTool(signal) {
       const rows = [], missing = [];
       settled.forEach((r, i) => (r.status === 'fulfilled' ? rows.push(r.value) : missing.push(skus[i])));
       if (rows.length === 0) {
-        return { status: 'unavailable', message: 'Product details did not load in time. Try again shortly.' };
+        return { status: 'error', code: 'DETAILS_UNAVAILABLE',
+                 message: 'Product details did not load in time. Try again shortly.' };
       }
       return { status: missing.length ? 'partial' : 'complete', rows, missing };  // ③
     })
@@ -422,7 +428,7 @@ Two more habits help long-running tools:
 
 The draft keeps a short table of *tool execution errors*, the failures the platform itself defines, and maps each to a `DOMException` name.[^32]
 
-**Table 6.1 — Platform errors in the 14 October 2026 draft, and what Chromium 156 produced**
+**Table 6.1 — Platform errors in the 15 October 2026 draft, and what Chromium 156 produced**
 
 | Tool execution error | When | Draft exception | Chromium 156 (observed) |
 |---|---|---|---|
@@ -434,11 +440,11 @@ The draft keeps a short table of *tool execution errors*, the failures the platf
 | target document unloaded | The tool’s page unloaded before the call completed | `AbortError` | `UnknownError` |
 | (cancellation) | The caller’s signal aborted | The abort reason, usually `AbortError` | `AbortError`, or the caller’s custom reason |
 
-Sources: the specification’s tool execution error table and `executeTool()` steps;[^32][^15] Chromium 156.0.8078.4 with WebMCPTesting, tested 14 October 2026.[^3]
+Sources: the specification’s tool execution error table and `executeTool()` steps;[^32][^15] Chromium 156.0.8078.4 with WebMCPTesting, tested 14 October 2026 and re-run on 15 October 2026 with the same results.[^3]
 
 Some notes on the table.
 
-*Chromium reports most failures as `UnknownError`.* Only cancellation and invalid input produced a different name in testing. The `UnknownError` messages did differ: a thrown error came with “Tool was executed but the invocation failed. For example, the script function threw an error,” while a missing tool came with a generic “The operation failed for an unknown transient reason” (*observed*).[^3] Messages aren’t part of any contract, so don’t parse them.
+*Chromium reports most failures as `UnknownError`, which is spec lag.* Until 8 October 2026 the draft itself used `UnknownError` for these failures; pull request #339 replaced it with the specific names in the table, and Chromium 156 hasn’t caught up yet.[^37] It is not a bug in your page. Only cancellation and invalid input produced a different name in testing. The `UnknownError` messages did differ: a thrown error came with “Tool was executed but the invocation failed. For example, the script function threw an error,” while a missing tool came with a generic “The operation failed for an unknown transient reason” (*observed*).[^3] Messages aren’t part of any contract, so don’t parse them.
 
 *Arrays count as objects.* The draft rejects input that isn’t an object, and in JavaScript an array is an object. Chromium passed `[1, 2]` through to `execute` unchanged (*observed*).[^3] Your validation, not the platform’s, has to catch an array where you expected a dictionary.
 
@@ -446,7 +452,7 @@ Some notes on the table.
 
 > **Still in flux: error names**
 >
-> Chromium’s error names differ from the draft’s for four of the five platform errors, and its handling of `undefined` results differs too (Chapter 5 covered that). Chromium is the only implementation being tested, through an origin trial, and the names could change on either side. Write callers that treat any rejection other than `AbortError` as “the call failed; look at the page and decide”, and write tools that never rely on a platform error to tell the agent anything.
+> Chromium’s error names differ from the draft’s for four of the five platform errors, and its handling of `undefined` results differs too (Chapter 5 covered that). The cause is timing, not disagreement: the draft named these failures `UnknownError` until 8 October 2026 (commit b206dae, pull request #339), and Chromium 156 still implements the older text.[^37] Expect the names to converge on the draft’s as Chrome updates, but don’t depend on either set. Write callers that treat any rejection other than `AbortError` as “the call failed; look at the page and decide”, and write tools that never rely on a platform error to tell the agent anything.
 
 ### Tool-level errors
 
@@ -461,6 +467,8 @@ import { cart, catalog } from './store.js';
 
 // A tool-level failure: a stable code to branch on and a sentence to act on.
 const fail = (code, message, details = {}) => ({ status: 'error', code, message, ...details });
+// A rule says no: the call was fine, but other arguments won't help (Chapter 11).
+const refuse = (code, message, details = {}) => ({ status: 'refused', code, message, ...details });
 
 export async function registerCartTools(signal) {
   await document.modelContext.registerTool({
@@ -490,7 +498,9 @@ export async function registerCartTools(signal) {
       }
       const available = await catalog.stock(sku, signal);
       if (available < quantity) {
-        return fail('OUT_OF_STOCK', `Only ${available} of ${product.name} in stock.`, { available });
+        return refuse('OUT_OF_STOCK',
+          `Only ${available} of ${product.name} in stock. Ask the user before adding fewer.`,
+          { available });
       }
       signal.throwIfAborted();          // check right before the side effect
       const line = cart.add(sku, quantity);
@@ -509,17 +519,17 @@ export async function registerCartTools(signal) {
 }
 ```
 
-The `fail()` helper gives every failure the same shape: `status: 'error'`, a `code` from a small fixed set (`INVALID_INPUT`, `INVALID_QUANTITY`, `UNKNOWN_SKU`, `OUT_OF_STOCK`), a sentence that tells the agent what to do next, and any details that help, such as how many units are `available`. The code is for programs: the test suite asserts on it, and an in-page agent or an eval harness can branch on it. The message is for the model. Both reach the caller because they are part of a successful result, not an exception.
+The `fail()` helper gives every failure the agent can fix the same shape: `status: 'error'`, a `code` from a small fixed set (`INVALID_INPUT`, `INVALID_QUANTITY`, `UNKNOWN_SKU`), a sentence that tells the agent what to do next, and any details that help. `refuse()` has the same shape with `status: 'refused'`, for the case where the arguments were fine but a rule says no: here, `OUT_OF_STOCK`, with how many units are `available`. Retrying with other arguments won’t fix a refusal, so the message tells the agent to ask the user. The other Trailhead tools in this chapter use the same vocabulary: `status: 'error'` with a code for bad input, an unknown SKU or an empty cart, and `status: 'cancelled_by_user'` when the person cancels checkout in the page. These are the statuses Chapter 11 sets out as the book’s convention (Table 11.3). The code is for programs: the test suite asserts on it, and an in-page agent or an eval harness can branch on it. The message is for the model. Both reach the caller because they are part of a successful result, not an exception.
 
 The order of the checks matters too. The cheap, local validation comes first, so a bad argument costs no network round trip. The stock check comes next, because it needs the backend and takes the signal. The signal check comes last, immediately before `cart.add()`. The test suite exercises that ordering: with the stock check slowed to 600 ms and the call cancelled after 100 ms, the caller gets `AbortError`, and a `get_cart` call afterwards shows the cart still empty, in both the mock and Chromium.[^3]
 
 Three rules sum up the split between the two kinds of error:
 
-1. **Return what the agent can fix.** Bad arguments, unknown identifiers, business-rule refusals (“only three left”), a user who declined: all of these are results. They should say what happened and what to try next.
+1. **Return what the agent can fix, and what it can’t.** Bad arguments and unknown identifiers (`error`), business-rule refusals such as “only three left” (`refused`), a user who declined (`cancelled_by_user`): all of these are results. They should say what happened and what to try next.
 2. **Throw only for bugs and cancellation.** A thrown error reaches the caller as an opaque name. That is acceptable for “something is broken” and for “nobody is listening any more”, and for nothing else.
 3. **Never let `execute` fall off the end.** Under the draft a missing `return` fails the call; in Chromium it produces the string `"undefined"`. Neither helps an agent. Every path should return a value.
 
-Chapter 11 returns to error design from the model’s side: how to word messages so that a model actually follows them, and when a refusal should look different from a failure.
+Chapter 11 returns to error design from the model’s side: how to word messages so that a model actually follows them, and the full set of result statuses, including `needs_input` for a call only the user can complete.
 
 ## The `toolchange` event and keeping agents in sync
 
@@ -574,7 +584,7 @@ export function countToolChanges({ signal }) {                        // ②
 
 The error handling covers a race. If the cart empties while `registerTool()` is still pending, the registration signal is aborted before registration finishes, and the draft rejects the promise.[^35] The `catch` ignores that `AbortError` and logs anything else.
 
-The `empty_cart` check inside Listing 6.3 stays, even though `checkout` is normally registered only when the cart has items. An agent may hold a stale view of the tools, and a call can arrive just after the cart was emptied. The tool, not the registration logic, is the last line of defence.
+The `EMPTY_CART` check inside Listing 6.3 stays, even though `checkout` is normally registered only when the cart has items. An agent may hold a stale view of the tools, and a call can arrive just after the cart was emptied. The tool, not the registration logic, is the last line of defence.
 
 ② is a development aid. Counting `toolchange` events in the console is a quick way to spot churn. If adding an item to the cart logs anything, the sync logic is registering when it shouldn’t. The demo’s tests check the transition itself: `checkout` appears after the first `add_to_cart` and disappears again when an order empties the cart.[^3]
 
@@ -596,7 +606,7 @@ The `empty_cart` check inside Listing 6.3 stays, even though `checkout` is norma
 | `checkout` | `consequentialHint` | While the cart is non-empty | Confirmed in Trailhead’s own dialog; dialog closes if the call is cancelled |
 | `debug_dump_cart_state` | `readOnlyHint`, `debugging` | Development builds only | Raw store dump for developer tooling |
 
-All of this runs. The chapter’s folder in the demos repository contains every listing as a file, byte-identical to the text above, plus a small Trailhead page, a fake in-memory backend and a test suite. The suite runs the same 31 scenarios twice: once against a development-only mock of `document.modelContext` that follows the draft, and once against Chromium 156 with WebMCPTesting enabled. It then runs a probe that records Chromium’s lifecycle, cancellation and error behaviour to a JSON file. On 14 October 2026 all 73 checks passed, and the probe’s output is the source of every *observed* statement in this chapter.[^3] `get_product_reviews` and `debug_dump_cart_state` are additions in this chapter; the other five tools are the Trailhead tools used throughout the book.
+All of this runs. The chapter’s folder in the demos repository contains every listing as a file, byte-identical to the text above, plus a small Trailhead page, a fake in-memory backend and a test suite. The suite runs the same 31 scenarios twice: once against a development-only mock of `document.modelContext` that follows the draft, and once against Chromium 156 with WebMCPTesting enabled. It then runs a probe that records Chromium’s lifecycle, cancellation and error behaviour to a JSON file. On 15 October 2026, after this chapter’s result shapes were aligned with Chapter 11, all 73 checks passed again, and the probe’s output is the source of every *observed* statement in this chapter.[^3] `get_product_reviews` and `debug_dump_cart_state` are additions in this chapter; the other five tools are the Trailhead tools used throughout the book.
 
 ## Chapter summary
 
@@ -615,38 +625,39 @@ Chapter 7 takes WebMCP beyond the top-level page: the `tools` Permissions Policy
 ## Notes
 
 [^1]: webmachinelearning/webmcp issue #344, “Don’t start a tool whose `executeTool()` call was already cancelled” (opened and closed 14 October 2026), section “Proposal”, point 3. <https://github.com/webmachinelearning/webmcp/issues/344>
-[^2]: WebMCP specification, Draft Community Group Report, 14 October 2026, “Status of this document”. <https://webmachinelearning.github.io/webmcp/>
-[^3]: Tested by the author on 14 October 2026 in Chromium 156.0.8078.4 (Playwright’s Chromium build, launched with `--enable-features=WebMCPTesting`). Test suite and raw results: `chapters/06-annotations-lifecycle-errors/tests/run-tests.mjs` and `tests/results/chromium-observations.json` in the book’s demos repository. <https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/06-annotations-lifecycle-errors>
+[^2]: WebMCP specification, Draft Community Group Report, 15 October 2026 (fetched 15 October 2026), “Status of this document”. <https://webmachinelearning.github.io/webmcp/>
+[^3]: Tested by the author on 14 October 2026 and re-run on 15 October 2026 in Chromium 156.0.8078.4 (Playwright’s Chromium build, launched with `--enable-features=WebMCPTesting`). Test suite and raw results: `chapters/06-annotations-lifecycle-errors/tests/run-tests.mjs` and `tests/results/chromium-observations.json` in the book’s demos repository. <https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/06-annotations-lifecycle-errors>
 [^4]: webmachinelearning/webmcp pull request #225, “Move `annotations` into a separate object, in preparation for `getTools()`” (opened and closed 21 July 2026; the separate `ToolAnnotations` dictionary is in the current draft). <https://github.com/webmachinelearning/webmcp/pull/225>
-[^5]: WebMCP specification, 14 October 2026, §4.2.1 “ModelContextTool Dictionary” (the `ToolAnnotations` IDL and member descriptions) and §3 “Supporting concepts” (the *annotations* struct, each item initially false). <https://webmachinelearning.github.io/webmcp/#dictdef-toolannotations>
-[^6]: WebMCP specification, 14 October 2026, §6.4.4 “Untrusted Annotation for Tool Responses” and §6.4.5 “Consequential Annotation for Tool Executions”. <https://webmachinelearning.github.io/webmcp/#mitigation-untrusted-annotation>
+[^5]: WebMCP specification, 15 October 2026, §4.2.1 “ModelContextTool Dictionary” (the `ToolAnnotations` IDL and member descriptions) and §3 “Supporting concepts” (the *annotations* struct, each item initially false). <https://webmachinelearning.github.io/webmcp/#dictdef-toolannotations>
+[^6]: WebMCP specification, 15 October 2026, §6.4.4 “Untrusted Annotation for Tool Responses” and §6.4.5 “Consequential Annotation for Tool Executions”. <https://webmachinelearning.github.io/webmcp/#mitigation-untrusted-annotation>
 [^7]: Chrome for Developers, “WebMCP Imperative API” (published 18 May 2026, last updated 21 September 2026), sections “Tool annotations (optional)”, “Unregister tools”, “Discover tools”, “Execute tool” and “Events”. <https://developer.chrome.com/docs/ai/webmcp/imperative-api>
 [^8]: Chrome for Developers, “Build secure WebMCP tools” (published 9 June 2026, last updated 1 September 2026), section “Use annotation hints”. <https://developer.chrome.com/docs/ai/webmcp/secure-tools>
 [^9]: webmachinelearning/webmcp issue #291, “readOnlyHint cannot distinguish a reversible write from a commit” (opened and closed 4 September 2026). <https://github.com/webmachinelearning/webmcp/issues/291>
-[^10]: webmachinelearning/webmcp issue #331, “Scope of `consequentialHint` for high-risk read tools” (opened 30 September 2026; open as of 14 October 2026); and pull request #217, “Add consequentialHint to ToolAnnotations” (closed 3 September 2026; the member is in the current draft), fixing issue #176. <https://github.com/webmachinelearning/webmcp/issues/331>
+[^10]: webmachinelearning/webmcp issue #331, “Scope of `consequentialHint` for high-risk read tools” (opened 30 September 2026; open as of 15 October 2026); and pull request #217, “Add consequentialHint to ToolAnnotations” (closed 3 September 2026; the member is in the current draft), fixing issue #176. <https://github.com/webmachinelearning/webmcp/issues/331>
 [^11]: webmachinelearning/webmcp issue #136, “Proposal: Untrusted Annotation for Tool Responses” (opened 11 March 2026, closed 23 April 2026), and pull request #169, “Spec untrustedContentHint” (23 April 2026). <https://github.com/webmachinelearning/webmcp/pull/169>
 [^12]: webmachinelearning/webmcp pull request #253, “Add `debugging` member to ToolAnnotations” (opened 21 August 2026, closed 17 September 2026; the member is in the current draft), following the Web Machine Learning CG resolution of 20 August 2026; fixes issue #207, “Support developer tooling”. <https://github.com/webmachinelearning/webmcp/pull/253>
-[^13]: webmachinelearning/webmcp issues #53, “Introduce semantic hints for side-effects of tools” (opened 10 November 2025); #198, “Add declarative human-in-the-loop policy hints for tool execution” (opened 6 June 2026); #110, “Proposal: `sensitiveHint` annotation for tool outputs and a standardized secret reference content type” (opened 25 February 2026); and #331 (note 10). All open as of 14 October 2026. <https://github.com/webmachinelearning/webmcp/issues/53>
-[^14]: WebMCP specification, 14 October 2026, §3 “Supporting concepts”: the *tool execute steps* and *invoke the execute callback* algorithms. <https://webmachinelearning.github.io/webmcp/#invoke-the-execute-callback>
-[^15]: WebMCP specification, 14 October 2026, §4.2, the `executeTool(tool, inputObject, options)` method steps, including the abort steps added to the caller’s signal. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-executetool>
-[^16]: webmachinelearning/webmcp issue #332, “Fire `toolactivated` after invoking `execute`” (opened 1 October 2026; open as of 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/332>
-[^17]: webmachinelearning/webmcp issue #47, “Should concurrent tool execution be allowed?” (opened 3 November 2025; open as of 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/47>
-[^18]: WebMCP specification, 14 October 2026, §4.3 “Events”, §4.3.1 `ToolActivatedEvent` and §4.3.2 `ToolCancelEvent`. <https://webmachinelearning.github.io/webmcp/#events>
+[^13]: webmachinelearning/webmcp issues #53, “Introduce semantic hints for side-effects of tools” (opened 10 November 2025); #198, “Add declarative human-in-the-loop policy hints for tool execution” (opened 6 June 2026); #110, “Proposal: `sensitiveHint` annotation for tool outputs and a standardized secret reference content type” (opened 25 February 2026); and #331 (note 10). All open as of 15 October 2026. <https://github.com/webmachinelearning/webmcp/issues/53>
+[^14]: WebMCP specification, 15 October 2026, §3 “Supporting concepts”: the *tool execute steps* and *invoke the execute callback* algorithms. <https://webmachinelearning.github.io/webmcp/#invoke-the-execute-callback>
+[^15]: WebMCP specification, 15 October 2026, §4.2, the `executeTool(tool, inputObject, options)` method steps, including the abort steps added to the caller’s signal. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-executetool>
+[^16]: webmachinelearning/webmcp issue #332, “Fire `toolactivated` after invoking `execute`” (opened 1 October 2026; open as of 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/332>
+[^17]: webmachinelearning/webmcp issue #47, “Should concurrent tool execution be allowed?” (opened 3 November 2025; open as of 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/47>
+[^18]: WebMCP specification, 15 October 2026, §4.3 “Events”, §4.3.1 `ToolActivatedEvent` and §4.3.2 `ToolCancelEvent`. <https://webmachinelearning.github.io/webmcp/#events>
 [^19]: webmachinelearning/webmcp pull request #146, “Add ToolActivatedEvent and ToolCancelEvent interfaces” (opened 19 March 2026, closed 14 August 2026; both interfaces are in the current draft), and issue #126, “Where to fire `toolactivated` and `toolcanceled` events?” (closed 24 September 2026). <https://github.com/webmachinelearning/webmcp/pull/146>
-[^20]: webmachinelearning/webmcp issue #85, “Proposal: Tool execution lifecycle events” (opened 14 February 2026; open as of 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/85>
+[^20]: webmachinelearning/webmcp issue #85, “Proposal: Tool execution lifecycle events” (opened 14 February 2026; open as of 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/85>
 [^21]: Chrome for Developers, “WebMCP” overview (published 18 May 2026, last updated 7 October 2026), section “Use WebMCP APIs”; WebMCP explainer (README), use case “Creative & Graphic Design”. <https://developer.chrome.com/docs/ai/webmcp>
-[^22]: WebMCP specification, 14 October 2026, §3.1 “Pending tool executions”: the *unloading document cleanup steps* and the *target document unloaded* error. <https://webmachinelearning.github.io/webmcp/#pending-tool-executions>
-[^23]: webmachinelearning/webmcp issue #135, “Cross-document tool response mechanism” (opened 9 March 2026; open as of 14 October 2026), including the Community Group resolution recorded on 16 April 2026. <https://github.com/webmachinelearning/webmcp/issues/135>
+[^22]: WebMCP specification, 15 October 2026, §3.1 “Pending tool executions”: the *unloading document cleanup steps* and the *target document unloaded* error. <https://webmachinelearning.github.io/webmcp/#pending-tool-executions>
+[^23]: webmachinelearning/webmcp issue #135, “Cross-document tool response mechanism” (opened 9 March 2026; open as of 15 October 2026), including the Community Group resolution recorded on 16 April 2026. <https://github.com/webmachinelearning/webmcp/issues/135>
 [^24]: WebMCP explainer (README), sections “Responding to dynamic tool updates: the `toolchange` event” and the open question “Cross-document tool response”. <https://github.com/webmachinelearning/webmcp>
-[^25]: WebMCP specification, 14 October 2026, §3.1, “cancel a pending tool execution”, and the note in the `executeTool()` steps on passing only a tool execution error across origins. <https://webmachinelearning.github.io/webmcp/#cancel-a-pending-tool-execution>
+[^25]: WebMCP specification, 15 October 2026, §3.1, “cancel a pending tool execution”, and the note in the `executeTool()` steps on passing only a tool execution error across origins. <https://webmachinelearning.github.io/webmcp/#cancel-a-pending-tool-execution>
 [^26]: Chrome for Developers, “WebMCP Imperative API” (last updated 21 September 2026), section “Handle tool cancellation”. <https://developer.chrome.com/docs/ai/webmcp/imperative-api>
 [^27]: WebMCP explainer (README), section on cancelling tool execution with `executeTool()` and `options.signal`. <https://github.com/webmachinelearning/webmcp>
 [^28]: DOM Standard (last updated 9 October 2026), `AbortSignal`: `throwIfAborted()`, `AbortSignal.timeout()` and `AbortSignal.any()`. <https://dom.spec.whatwg.org/#interface-AbortSignal>
 [^29]: webmachinelearning/webmcp issue #299, “Let a tool deliver a final result on caller abort” (opened 6 September 2026, closed 25 September 2026), including the 12 September correction on Chrome 152 and Chrome 153. <https://github.com/webmachinelearning/webmcp/issues/299>
-[^30]: WebMCP specification, 14 October 2026, §3, “unregister a tool”, including the note on executions that have already started. <https://webmachinelearning.github.io/webmcp/#model-context-unregister-a-tool>
+[^30]: WebMCP specification, 15 October 2026, §3, “unregister a tool”, including the note on executions that have already started. <https://webmachinelearning.github.io/webmcp/#model-context-unregister-a-tool>
 [^31]: webmachinelearning/webmcp issue #218, “Should unregistering a tool cancel an in-flight executions?” (opened 1 July 2026, closed 19 August 2026), and pull request #311, “Clarify execution behavior after tool unregistration” (closed 25 September 2026). <https://github.com/webmachinelearning/webmcp/issues/218>
-[^32]: WebMCP specification, 14 October 2026, §3, the tool execution error table and the notes beneath it. <https://webmachinelearning.github.io/webmcp/#tool-execution-error>
+[^32]: WebMCP specification, 15 October 2026, §3, the tool execution error table and the notes beneath it. <https://webmachinelearning.github.io/webmcp/#tool-execution-error>
 [^33]: Chrome for Developers, “WebMCP best practices” (published 18 May 2026), sections “Manage tool registration”, “Reduce complexity” and “Validate strictly in code, loosely in schema”. <https://developer.chrome.com/docs/ai/webmcp/best-practices>
-[^34]: WebMCP specification, 14 October 2026, §3, “notify documents of a tool change”, including the note and example on task ordering. <https://webmachinelearning.github.io/webmcp/#notify-documents-of-a-tool-change>
-[^35]: WebMCP specification, 14 October 2026, §4.2, the `registerTool()` method steps (rejection when the registration signal is aborted). <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool>
-[^36]: webmachinelearning/webmcp issue #312, “Keeping the agent in-sync with the page’s context” (opened 17 September 2026; open as of 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/312>
+[^34]: WebMCP specification, 15 October 2026, §3, “notify documents of a tool change”, including the note and example on task ordering. <https://webmachinelearning.github.io/webmcp/#notify-documents-of-a-tool-change>
+[^35]: WebMCP specification, 15 October 2026, §4.2, the `registerTool()` method steps (rejection when the registration signal is aborted). <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool>
+[^36]: webmachinelearning/webmcp issue #312, “Keeping the agent in-sync with the page’s context” (opened 17 September 2026; open as of 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/312>
+[^37]: webmachinelearning/webmcp pull request #339, “Replace UnknownError with specific DOMException types.” (merged 8 October 2026 as commit b206dae). <https://github.com/webmachinelearning/webmcp/pull/339>
