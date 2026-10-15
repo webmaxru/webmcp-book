@@ -10,13 +10,13 @@
 
 Three weeks after the Monday meeting in Chapter 16, Trailhead’s first release is live behind the origin trial. Agents can search and compare tents, the measurement wrapper is counting outcomes, and Jonas has stopped getting paged about the adapter. Kari has wiped the whiteboard and written a new question: *What are we betting on, and what happens if we lose the bet?*
 
-It is the right question for the end of a book about a draft. Everything in the previous sixteen chapters was checked against the specification as it stood on a particular day and against what one browser actually did. Both will move. The Community Group draft that this chapter reads is dated 14 October 2026.[^2] Chrome’s origin trial now runs to Chrome 162, and Chrome Platform Status still lists the feature as “Proposed”, with no shipping milestone.[^3] Edge’s trial expires on 30 March 2027.[^4] Some of the questions that will decide what WebMCP becomes are being argued in issues opened in the last few weeks, and one of them was opened and closed the day before this chapter was written.
+It is the right question for the end of a book about a draft. Everything in the previous sixteen chapters was checked against the specification as it stood on a particular day and against what one browser actually did. Both will move. The Community Group draft that this chapter reads is dated 15 October 2026.[^2] Chrome’s origin trial now runs to Chrome 162, and Chrome Platform Status still lists the feature as “Proposed”, with no shipping milestone.[^3] Edge’s trial expires on 30 March 2027.[^4] Some of the questions that will decide what WebMCP becomes are being argued in issues opened in the last few weeks, and one of them was opened and closed the day before this chapter was written.
 
 This chapter is a map of those questions and a way to build so that your work survives the answers. It looks at the questions in five groups (Figure 17.1): what a tool can declare, what happens during a single call, what happens when the work outlives the document, who gets to see a tool, and what the platform as a whole becomes. For each it gives the state of play as of mid-October 2026 and what to do about it now. It then sets out three competing futures and ends with a checklist and three short listings that Trailhead uses to keep its bets small.
 
 ![Figure 17.1: The open questions, by layer, with their status as of 14 October 2026](images/figure-17-1.png)
 
-*Figure 17.1: The open questions, by layer. Each chip shows where the question stood on GitHub and in the draft on 14 October 2026.*
+*Figure 17.1: The open questions, by layer. Each chip shows where the question stood on GitHub and in the draft on 14 October 2026; every status was unchanged when rechecked against GitHub and the 15 October draft.*
 
 ## How to read an open question
 
@@ -28,7 +28,7 @@ Two recent events show why the distinction matters. On 8 October 2026 the Commun
 
 Table 17.1 summarises the questions this chapter covers.
 
-*Table 17.1: Open questions that could change your tools, as of 14 October 2026*
+*Table 17.1: Open questions that could change your tools, as of 15 October 2026*
 
 | Question | Where it lives | Status | What to do now |
 |---|---|---|---|
@@ -49,7 +49,7 @@ Table 17.1 summarises the questions this chapter covers.
 
 Every Trailhead tool already returns structured data. `search_products` answers with an object that has a `products` array, each with an SKU, a name, a price in NOK, a rating and a stock flag. What the agent doesn’t get is a description of that shape. It has to infer what `inStock: false` means from the value itself, and it can’t tell in advance whether the tool will return prices at all.
 
-The request for an output schema is one of the oldest in the repository. Issue #9 was opened in August 2025, pointing out that MCP had just added `outputSchema` to its tool definition. On 5 February 2026 the Community Group resolved to “add outputSchema to the imperative API and investigate how to associate outputSchema with declarative WebMCP.”[^8] Pull request #254, opened on 21 August 2026, adds an optional `outputSchema` member to both `ModelContextTool` and `RegisteredTool`, so that the page can declare it and an in-page agent can read it back from `getTools()`. The PR explains that the name was chosen over `responseConstraint`, which is specific to the Prompt API, to align with MCP. It was still open on 14 October. On 11 September its author wrote that he had “started experimenting with `outputSchema` in Chromium” in a code review.[^9]
+The request for an output schema is one of the oldest in the repository. Issue #9 was opened in August 2025, pointing out that MCP had just added `outputSchema` to its tool definition. On 5 February 2026 the Community Group resolved to “add outputSchema to the imperative API and investigate how to associate outputSchema with declarative WebMCP.”[^8] Pull request #254, opened on 21 August 2026, adds an optional `outputSchema` member to both `ModelContextTool` and `RegisteredTool`, so that the page can declare it and an in-page agent can read it back from `getTools()`. The PR explains that the name was chosen over `responseConstraint`, which is specific to the Prompt API, to align with MCP. It was still open on 15 October. On 11 September its author wrote that he had “started experimenting with `outputSchema` in Chromium” in a code review.[^9]
 
 On the MCP side, the 2026-07-28 tools specification already defines `outputSchema` as an optional JSON Schema for the result, and `structuredContent` as the field that carries the conforming value. For backwards compatibility, a tool that returns structured content “SHOULD also return the serialized JSON in a TextContent block.”[^10]
 
@@ -124,7 +124,7 @@ Three choices in Listing 17.1 are deliberate. First, the definition doesn’t to
 
 > **Still in flux: output schemas**
 >
-> PR #254 was open on 14 October 2026, and the draft has no `outputSchema`. Whether a browser will validate results against it, as issue #92 asks for inputs, is undecided.[^12] If the PR lands as written, the schema you write today becomes visible to in-page agents through `getTools()`. If the name or shape changes, it is one field in your catalog.
+> PR #254 was open on 15 October 2026, and the draft has no `outputSchema`. Whether a browser will validate results against it, as issue #92 asks for inputs, is undecided.[^12] If the PR lands as written, the schema you write today becomes visible to in-page agents through `getTools()`. If the name or shape changes, it is one field in your catalog.
 
 ## Multimodal and streaming data
 
@@ -170,7 +170,7 @@ The first is the browser’s own agent. The `exposedTo` array accepts only origi
 
 The second comes from composed applications. Issue #317, opened on 23 September 2026, describes a host page with an agent in one iframe and several cross-origin apps in others. The host wants the agent to use the apps’ tools without the apps being able to see each other’s. Today that requires every app to know the agent’s origin in advance through `exposedTo`, and the agent to name every app in `fromOrigins`. The issue proposes host-controlled roles. Farolino’s first reply pointed at the crux: what the host really wants is for a tool provider “to not have to know which origins to expose tools to explicitly.”[^19]
 
-The third is documentation, and it matters for reviewers. The draft’s §6.3.4, “Violation of Same-Origin Boundaries”, is still a `TODO` in the 14 October draft.[^2] Pull request #326, opened on 28 September, would fill it with a description of the two-sided opt-in model: Permissions Policy delegation by the embedder, `exposedTo` by the provider and `fromOrigins` by the consumer. A reviewer has suggested retitling the section, since most of what it describes is “the careful design that prevents cross-document exposure without permission.”[^20] Until it merges, the explainer and Chapter 7 are your best written account of the model.
+The third is documentation, and it matters for reviewers. The draft’s §6.3.4, “Violation of Same-Origin Boundaries”, is still a `TODO` in the 15 October draft.[^2] Pull request #326, opened on 28 September, would fill it with a description of the two-sided opt-in model: Permissions Policy delegation by the embedder, `exposedTo` by the provider and `fromOrigins` by the consumer. A reviewer has suggested retitling the section, since most of what it describes is “the careful design that prevents cross-document exposure without permission.”[^20] Until it merges, the explainer and Chapter 7 are your best written account of the model.
 
 What to do now: never rely on defaults for exposure. If a tool should be visible to a specific embedding origin, say so in `exposedTo`. If it shouldn’t leave the top-level document, don’t delegate the `tools` policy to frames. Listing 17.2 passes `exposedTo` through only when the caller asks for it, which keeps that decision in one visible place.
 
@@ -186,7 +186,7 @@ Not every open question is a new feature. Some are about the semantics of what a
 
 *Sensitive reads.* `consequentialHint` describes actions that are “significant, real-world, or non-reversible”. Issue #331 points out that this leaves high-risk *read* tools, such as ones that return health or financial records, ambiguous. Participants have proposed a separate `sensitiveHint` that would let an agent say “will read private data” instead of “will do something consequential”, and keep such outputs out of logs and long-term memory.[^24] Until something is decided, treat a sensitive read like a consequential action: ask for confirmation on the page. Don’t invent your own annotation names either. Chromium 156 drops unknown annotations silently, as our probe shows: it registered a tool with `sensitiveHint` and got back only the four annotations the browser knows (`consequentialHint`, `debugging`, `readOnlyHint` and `untrustedContentHint`).[^11]
 
-*Asking the user mid-call.* Elicitation is still unresolved. In June 2026 the group agreed to specify an “interactive” mode first, in pull request #204, which proposes replacing `requestUserInteraction()` with `requestUserInput()`. Both were still open on 14 October.[^25] Meanwhile Chrome’s security guide still says that “the spec draft includes requestUserInteraction()”.[^26] The 14 October draft doesn’t contain that method.[^2] Chapter 13 shows how to confirm on your own page, which works whatever the API becomes.
+*Asking the user mid-call.* Elicitation is still unresolved. In June 2026 the group agreed to specify an “interactive” mode first, in pull request #204, which proposes replacing `requestUserInteraction()` with `requestUserInput()`. Both were still open on 15 October.[^25] Meanwhile Chrome’s security guide still says that “the spec draft includes requestUserInteraction()”.[^26] The 15 October draft doesn’t contain that method.[^2] Chapter 13 shows how to confirm on your own page, which works whatever the API becomes.
 
 *Grouping tools.* Proposals for “skills” (#161) and tool collections with progressive disclosure (#255) would change how many tools a page can sensibly expose. On 3 September 2026 the group resolved to “seek explicit model harness creator feedback and defer the tool collections feature.”[^27] Keep your tool count small, as Chapter 16 recommended, and nothing here will catch you out.
 
@@ -229,8 +229,8 @@ The pattern in Figure 17.2 is the basis of the checklist that follows. Domain co
 Trailhead uses the following list as a release gate. None of it needs WebMCP to win.
 
 1. **Keep tools as data plus functions.** Define each tool’s name, description, schemas and annotations as plain data, and its behaviour as a function over your domain code that doesn’t read the DOM (Listing 17.1). The same definitions can feed WebMCP, a backend MCP server (Chapter 3) or a service worker.
-2. **Put the API shape in one file.** Only the adapter calls `document.modelContext` (Listing 17.2). When `outputSchema`, continuations or a new exposure keyword arrive, or the API is renamed again (Appendix D covers the last rename), one file changes.
-3. **Validate inputs yourself.** The browser doesn’t check calls against `inputSchema`, and native validation is an open question (#92).[^12] Return a recoverable error the agent can act on.
+2. **Put the API shape in one file.** Only the adapter calls `document.modelContext` (Listing 17.2). When `outputSchema`, continuations or a new exposure keyword arrive, or the API moves again (Appendix D covers the last move), one file changes.
+3. **Validate inputs yourself.** The browser doesn’t check calls against `inputSchema`, and native validation is an open question (#92).[^12] Return an error result the agent can act on: `status: 'error'` with a code and a message, as in Chapter 11.
 4. **Write `outputSchema` now, and test results against it.** Browsers that don’t know it ignore it.[^11]
 5. **Finish each call in one document.** Keep cross-page state on the server, keyed by identifiers you return.
 6. **Never rely on exposure defaults.** Set `exposedTo` and the `tools` policy explicitly.
@@ -268,7 +268,7 @@ export async function registerCatalog(catalog, { signal, exposedTo } = {}) {
         // The browser does not check input against inputSchema. We do.
         const problems = checkInput(def.inputSchema, input);
         if (problems.length > 0) {
-          return { error: { code: 'invalid_input', message: problems.join('; ') } };
+          return { status: 'error', code: 'INVALID_ARGUMENT', message: problems.join('; ') };
         }
         return def.run(input, { signal: callSignal });
       },
@@ -282,7 +282,7 @@ export async function registerCatalog(catalog, { signal, exposedTo } = {}) {
 }
 ```
 
-The adapter feature-detects the current entry point and registers nothing if it isn’t there, so the page works the same without WebMCP. It passes `outputSchema` through, even though Chromium 156 drops it today. It wraps each `run()` in input validation, returning `invalid_input` with every problem listed so the agent can correct the call in one go. In our tests, a call with no `query` and a negative `maxPrice` reaches the page untouched in Chromium 156, and the adapter answers with both problems.[^11] One `AbortSignal` unregisters the whole catalog, as in Chapter 5. The input checker, `check-input.js`, is a small subset of JSON Schema written for these tests. In production you would use a full validator.
+The adapter feature-detects the current entry point and registers nothing if it isn’t there, so the page works the same without WebMCP. It passes `outputSchema` through, even though Chromium 156 drops it today. It wraps each `run()` in input validation. A bad call gets Chapter 11’s error shape, `{ status: 'error', code: 'INVALID_ARGUMENT', message }`, with every problem listed in the message so the agent can correct the call in one go. In our tests, a call with no `query` and a negative `maxPrice` reaches the page untouched in Chromium 156, and the adapter answers with both problems.[^11] One `AbortSignal` unregisters the whole catalog, as in Chapter 5. The input checker, `check-input.js`, is a small subset of JSON Schema written for these tests. In production you would use a full validator.
 
 Listing 17.3 is the probe from item 10. It asks the browser what it actually supports: whether the current and the legacy entry points exist, whether the methods from the continuations explainer are there, whether `outputSchema` survives a round trip through `getTools()`, which annotations are kept and which options `execute` receives.
 
@@ -348,7 +348,7 @@ Each `false` in that report is a question from this chapter that the browser has
 
 > **Still in flux: this chapter**
 >
-> This is the chapter most likely to date. Every status here was read on 14 and 15 October 2026. One issue it covers was opened and closed the day before it was written, the Working Group plan it describes was dropped two days before, and the declarative API left the spec a week earlier. Before relying on any row of Table 17.1, open the issue. The book’s companion repository keeps the probe and its expected results up to date.
+> This is the chapter most likely to date. Every status here was read, or read again, on 15 October 2026. One issue it covers was opened and closed the day before it was written, the Working Group plan it describes was dropped two days before, and the declarative API left the spec a week earlier. Before relying on any row of Table 17.1, open the issue. The book’s companion repository keeps the probe and its expected results up to date.
 
 ## Closing the book
 
@@ -358,7 +358,7 @@ Whether that something is called WebMCP in two years, whether it lives on `docum
 
 ## Chapter summary
 
-- WebMCP is a Community Group draft (14 October 2026) in origin trials that run to Chrome 162 and, in Edge, to 30 March 2027. Chrome Platform Status lists it as “Proposed”. Chrome plans to ship the imperative API first. The declarative API left the spec on 8 October and is an explainer again.
+- WebMCP is a Community Group draft (15 October 2026) in origin trials that run to Chrome 162 and, in Edge, to 30 March 2027. Chrome Platform Status lists it as “Proposed”. Chrome plans to ship the imperative API first. The declarative API left the spec on 8 October and is an explainer again.
 - Weigh open questions by where they live: explainer, issue, resolution, pull request or Chromium experiment. Track the spec, the explainers and Chromium separately.
 - Output schemas are resolved in principle and in an open PR (#254), with Chromium experimenting. Chromium 156 accepts and ignores `outputSchema`, so write it now and test results against it.
 - Multimodal results, file inputs, streaming and progress are open (#41, #81, #82). The editor prefers a web-shaped design to MCP’s content model (#86). Return compact JSON and references, and show rich output on the page.
@@ -371,36 +371,36 @@ Whether that something is called WebMCP in two years, whether it lives on `docum
 ## Notes
 
 [^1]: WebMCP explainer, “Open Questions” (multimodal input/output, cross-document tool response, built-in agent exposure by default, transferable/streamable inputs and outputs, schema validation, skills, output schema, user prompting and elicitation, tool progress reporting, service workers integration), webmachinelearning/webmcp, accessed 15 October 2026. <https://github.com/webmachinelearning/webmcp#open-questions>
-[^2]: WebMCP specification, Draft Community Group Report, 14 October 2026: §4.2 ModelContext Interface and its dictionaries, §6.3.4 Violation of Same-Origin Boundaries (a TODO in this draft), and the IDL index. <https://webmachinelearning.github.io/webmcp/>
+[^2]: WebMCP specification, Draft Community Group Report, 15 October 2026: §4.2 ModelContext Interface and its dictionaries, §6.3.4 Violation of Same-Origin Boundaries (a TODO in this draft), and the IDL index. <https://webmachinelearning.github.io/webmcp/>
 [^3]: Chrome Platform Status, “WebMCP” (feature 5117755740913664): Chrome status “Proposed”, developer trial from M146, origin trial M149–M156, extension to M162, seven listed owners; last updated 28 September 2026; accessed 15 October 2026. <https://chromestatus.com/feature/5117755740913664>
 [^4]: Microsoft Edge Origin Trials, “WebMCP” (trial expiration date 30 March 2027), accessed 15 October 2026. <https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a>
 [^5]: Brandon Walderman, “WebMCP for Service Workers” (supplementary explainer, first published 28 August 2025): “TL;DR”, “Discovery and Installation”, “Tool Registration and Use”, “Session Management” and “Security Considerations”. <https://github.com/webmachinelearning/webmcp/blob/main/docs/service-workers.md>
 [^6]: Mark A. Foltz, “Continuation Tokens” (explainer, added by pull request #327, merged 2 October 2026): “Overview”, “Proposal” (token creation and redemption) and “Agent Behaviors”. <https://github.com/webmachinelearning/webmcp/blob/main/continuations-explainer.md>
 [^7]: webmachinelearning/webmcp pull request #338, “Remove declarative API from spec” (opened 7 October 2026, merged 8 October 2026), including the author’s comment on Chrome’s shipping plan. <https://github.com/webmachinelearning/webmcp/pull/338>
-[^8]: webmachinelearning/webmcp issue #9, “Introduce `outputSchema` (was: Should output also have a schema?)” (opened 12 August 2025; open on 14 October 2026), including the Community Group resolution of 5 February 2026. <https://github.com/webmachinelearning/webmcp/issues/9>
-[^9]: webmachinelearning/webmcp pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`” (opened 21 August 2026; open on 14 October 2026), including the author’s comment of 11 September 2026. <https://github.com/webmachinelearning/webmcp/pull/254>
+[^8]: webmachinelearning/webmcp issue #9, “Introduce `outputSchema` (was: Should output also have a schema?)” (opened 12 August 2025; open on 15 October 2026), including the Community Group resolution of 5 February 2026. <https://github.com/webmachinelearning/webmcp/issues/9>
+[^9]: webmachinelearning/webmcp pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`” (opened 21 August 2026; open on 15 October 2026), including the author’s comment of 11 September 2026. <https://github.com/webmachinelearning/webmcp/pull/254>
 [^10]: Model Context Protocol specification, version 2026-07-28, “Server Features › Tools”: tool definition (`outputSchema`), “Structured Content” and “Output Schema”. <https://modelcontextprotocol.io/specification/2026-07-28/server/tools>
 [^11]: Tested by the author on 15 October 2026 with Playwright 1.64 and Chromium 156.0.8078.4, both with a `document.modelContext` mock and with the browser’s own implementation (`--enable-features=WebMCPTesting`). Code and tests: vibeprogrammer/webmcp-book-demos, chapters/17-the-road-ahead. Results describe this build only.
-[^12]: webmachinelearning/webmcp issue #92, “Who owns the validation layer?” (opened 17 February 2026; open on 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/92>
-[^13]: webmachinelearning/webmcp issue #41, “Support multimodal tool input/output” (opened 17 October 2025; open on 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/41>
-[^14]: webmachinelearning/webmcp issue #81, “Proposal: Support file attachments via imperative WebMCP API” (opened 11 February 2026), and issue #82, “Proposal: Stream Tool Arguments” (opened 13 February 2026); both open on 14 October 2026. <https://github.com/webmachinelearning/webmcp/issues/82>
+[^12]: webmachinelearning/webmcp issue #92, “Who owns the validation layer?” (opened 17 February 2026; open on 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/92>
+[^13]: webmachinelearning/webmcp issue #41, “Support multimodal tool input/output” (opened 17 October 2025; open on 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/41>
+[^14]: webmachinelearning/webmcp issue #81, “Proposal: Support file attachments via imperative WebMCP API” (opened 11 February 2026), and issue #82, “Proposal: Stream Tool Arguments” (opened 13 February 2026); both open on 15 October 2026. <https://github.com/webmachinelearning/webmcp/issues/82>
 [^15]: webmachinelearning/webmcp issue #86, “Proposal: Tool result content types beyond text” (opened 14 February 2026, closed 28 September 2026 in favour of #41), closing comment by Dominic Farolino. <https://github.com/webmachinelearning/webmcp/issues/86>
-[^16]: webmachinelearning/webmcp issue #135, “Cross-document tool response mechanism” (opened 9 March 2026; open on 14 October 2026), including the resolutions of 16 April and 1 October 2026 and the comments of 5 and 6 October 2026. <https://github.com/webmachinelearning/webmcp/issues/135>
+[^16]: webmachinelearning/webmcp issue #135, “Cross-document tool response mechanism” (opened 9 March 2026; open on 15 October 2026), including the resolutions of 16 April and 1 October 2026 and the comments of 5 and 6 October 2026. <https://github.com/webmachinelearning/webmcp/issues/135>
 [^17]: Model Context Protocol specification, version 2026-07-28, “Key Changes” (changelog): removal of protocol-level sessions (SEP-2567) and of the initialize handshake (SEP-2575). <https://modelcontextprotocol.io/specification/2026-07-28/changelog>
 [^18]: Chrome for Developers, “WebMCP” (published 18 May 2026, updated 7 October 2026), “Limitations” and “Permissions policy”. <https://developer.chrome.com/docs/ai/webmcp>
-[^19]: webmachinelearning/webmcp issue #317, “Host-controlled WebMCP access between iframes” (opened 23 September 2026; open on 14 October 2026), including Dominic Farolino’s comment of 24 September 2026. <https://github.com/webmachinelearning/webmcp/issues/317>
-[^20]: webmachinelearning/webmcp pull request #326, “Document cross-origin tool exposure and two-sided opt-in in Section 6.3.4” (opened 28 September 2026; open on 14 October 2026), including review comments of 30 September 2026. <https://github.com/webmachinelearning/webmcp/pull/326>
+[^19]: webmachinelearning/webmcp issue #317, “Host-controlled WebMCP access between iframes” (opened 23 September 2026; open on 15 October 2026), including Dominic Farolino’s comment of 24 September 2026. <https://github.com/webmachinelearning/webmcp/issues/317>
+[^20]: webmachinelearning/webmcp pull request #326, “Document cross-origin tool exposure and two-sided opt-in in Section 6.3.4” (opened 28 September 2026; open on 15 October 2026), including review comments of 30 September 2026. <https://github.com/webmachinelearning/webmcp/pull/326>
 [^21]: webmachinelearning/webmcp issue #299, “Let a tool deliver a final result on caller abort” (opened 6 September 2026, closed 25 September 2026), closing comment by Dominic Farolino. <https://github.com/webmachinelearning/webmcp/issues/299>
 [^22]: webmachinelearning/webmcp issue #344, “Don’t start a tool whose `executeTool()` call was already cancelled” (opened and closed 14 October 2026), including Dominic Farolino’s comment. <https://github.com/webmachinelearning/webmcp/issues/344>
-[^23]: webmachinelearning/webmcp issue #332, “Fire `toolactivated` after invoking `execute`” (opened 1 October 2026; open on 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/332>
-[^24]: webmachinelearning/webmcp issue #331, “Scope of `consequentialHint` for high-risk read tools” (opened 30 September 2026; open on 14 October 2026), including the `sensitiveHint` proposals of 1–3 October 2026. <https://github.com/webmachinelearning/webmcp/issues/331>
-[^25]: webmachinelearning/webmcp issue #165, “WebMCP elicitation via requestUserInteraction()” (opened 16 April 2026), including the resolution of 11 June 2026, and pull request #204, “Replace requestUserInteraction with requestUserInput” (opened 9 June 2026); both open on 14 October 2026. <https://github.com/webmachinelearning/webmcp/issues/165>
+[^23]: webmachinelearning/webmcp issue #332, “Fire `toolactivated` after invoking `execute`” (opened 1 October 2026; open on 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/332>
+[^24]: webmachinelearning/webmcp issue #331, “Scope of `consequentialHint` for high-risk read tools” (opened 30 September 2026; open on 15 October 2026), including the `sensitiveHint` proposals of 1–3 October 2026. <https://github.com/webmachinelearning/webmcp/issues/331>
+[^25]: webmachinelearning/webmcp issue #165, “WebMCP elicitation via requestUserInteraction()” (opened 16 April 2026), including the resolution of 11 June 2026, and pull request #204, “Replace requestUserInteraction with requestUserInput” (opened 9 June 2026); both open on 15 October 2026. <https://github.com/webmachinelearning/webmcp/issues/165>
 [^26]: Chrome for Developers, “WebMCP tool security” (published 9 June 2026, updated 1 September 2026), “Next steps”. <https://developer.chrome.com/docs/ai/webmcp/secure-tools>
-[^27]: webmachinelearning/webmcp issue #161, “Proposal: Skills — workflow-level context for tool composition” (opened 3 April 2026), and issue #255, “Tool collections: coarse-grained grouping with progressive disclosure” (opened 22 August 2026), including the resolution of 3 September 2026; both open on 14 October 2026. <https://github.com/webmachinelearning/webmcp/issues/255>
+[^27]: webmachinelearning/webmcp issue #161, “Proposal: Skills — workflow-level context for tool composition” (opened 3 April 2026), and issue #255, “Tool collections: coarse-grained grouping with progressive disclosure” (opened 22 August 2026), including the resolution of 3 September 2026; both open on 15 October 2026. <https://github.com/webmachinelearning/webmcp/issues/255>
 [^28]: WebKit standards-positions issue #670, “WebMCP” (position: oppose; topics include meaningful user consent and forms), accessed 15 October 2026. <https://github.com/WebKit/standards-positions/issues/670>
 [^29]: WebMCP, “Declarative API Explainer”, webmachinelearning/webmcp. <https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md>
-[^30]: webmachinelearning/webmcp issue #236, “Reposition feature as a generic communication tool?” (opened by Jake Archibald, 3 August 2026; open on 14 October 2026), including comments of 27 August, 22 September and 24 September 2026. <https://github.com/webmachinelearning/webmcp/issues/236>
+[^30]: webmachinelearning/webmcp issue #236, “Reposition feature as a generic communication tool?” (opened by Jake Archibald, 3 August 2026; open on 15 October 2026), including comments of 27 August, 22 September and 24 September 2026. <https://github.com/webmachinelearning/webmcp/issues/236>
 [^31]: Mozilla standards-positions issue #1412, “WebMCP” (position: neutral; closed), which names Jake Archibald among the Mozillians who can provide input and refers to webmcp issue #236. <https://github.com/mozilla/standards-positions/issues/1412>
 [^32]: W3C TAG design review #1238, “Incubation: WebMCP” (open on 15 October 2026; labels include “Missing: Multi-stakeholder support” and pending focus areas). <https://github.com/w3ctag/design-reviews/issues/1238>
 [^33]: w3c/charter-drafts pull request #829, “[wg/webmachinelearning] Adds WebMCP in scope” (opened 9 June 2026, closed without merging 13 October 2026), including Marcos Cáceres’s comment of 13 August 2026 and Philippe le Hégaret’s comment of 28 September 2026. <https://github.com/w3c/charter-drafts/pull/829>
-[^34]: W3C, “Agentic Web Working Group Charter” (draft, accessed 15 October 2026), “Scope” and “Deliverables”; w3c/strategy issue #576 (opened 28 September 2026); and Xueyuan Jia, “Start of refinement for a draft Agentic Web Working Group charter”, public-new-work@w3.org, 2 October 2026. <https://w3c.github.io/charter-drafts/2026/agenticweb-wg.html>
+[^34]: W3C, “Agentic Web Working Group Charter” (draft, accessed 15 October 2026), “Scope” and “Deliverables”; w3c/strategy issue #576 (opened 28 September 2026); and Xueyuan Jia, “Start of refinement for a draft Agentic Web Working Group charter”, public-new-work@w3.org, 1 October 2026. <https://w3c.github.io/charter-drafts/2026/agenticweb-wg.html>
