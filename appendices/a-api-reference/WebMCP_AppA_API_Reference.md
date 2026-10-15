@@ -124,7 +124,7 @@ Registers one tool on the current document. It returns a `Promise<undefined>`; t
 | `name` | `DOMString` | yes | 1–128 characters, only ASCII letters and digits, `_`, `-` and `.`; unique per document. Otherwise `InvalidStateError`. |
 | `title` | `USVString` | no | Display name for the browser’s UI. |
 | `description` | `DOMString` | yes | Must not be empty, or `InvalidStateError`. |
-| `inputSchema` | `object` | no | Serialized with `JSON.stringify` at registration. A `toJSON()` that returns `undefined` rejects with a `TypeError`; an error `JSON.stringify` throws (a circular object, for example) is rethrown. Because serializing can run script, the name and fully-active checks run again afterwards. (Tested: when `toJSON()` registers another tool with the same name, Chromium 156’s renderer crashes; see Table A.7.) |
+| `inputSchema` | `object` | no | Serialized with `JSON.stringify` at registration. A `toJSON()` that returns `undefined` rejects with a `TypeError`; an error `JSON.stringify` throws (a circular object, for example) is rethrown. Because serializing can run script, the name and fully-active checks run again afterwards. (Tested: when `toJSON()` registers another tool with the same name, Chromium 156 kills the page’s renderer; see Table A.7.) |
 | `execute` | `ToolExecuteCallback` | yes | `(inputObject, { signal }) => any`, may return a promise. |
 | `annotations` | `ToolAnnotations` | no | See Table A.2. |
 
@@ -231,7 +231,7 @@ The draft names five platform failures for a tool execution and maps each to an 
 | `tools` feature not allowed (header or missing `allow`) | all three | `NotAllowedError` | `NotAllowedError` ✓ |
 | Bad name, empty description, duplicate name | `registerTool()` | `InvalidStateError` | `InvalidStateError` ✓ |
 | `inputSchema` can’t be serialized; `execute` missing | `registerTool()` | `TypeError` (rethrown) | `TypeError` ✓ |
-| Another tool with the same name registered while `inputSchema` is serialized | `registerTool()` | `InvalidStateError` (added 15 October 2026) | **The page’s renderer crashes** |
+| Another tool with the same name registered while `inputSchema` is serialized | `registerTool()` | `InvalidStateError` (added 15 October 2026) | **The browser kills the page’s renderer** (a known bug)[^22] |
 | Already-aborted `signal` | `registerTool()`, `executeTool()` | The signal’s abort reason | The abort reason ✓ (`AbortError`, or your own reason) |
 | Insecure or unparsable origin in `exposedTo` / `fromOrigins` | `registerTool()`, `getTools()` | `SecurityError` | `SecurityError` ✓ |
 | `tool.origin` is opaque (`"null"`) or unparsable | `executeTool()` | `NotSupportedError` | `NotSupportedError` ✓ |
@@ -336,3 +336,4 @@ The rows in Table A.8 are from Chrome’s declarative API page (published 18 May
 [^19]: webmachinelearning/webmcp commit 14ae813, “Remove declarative API from the spec for now (#338)”, by François Beaufort, committed 8 October 2026; it changed `index.bs` and `README.md`. Repository history read 14 October 2026. <https://github.com/webmachinelearning/webmcp/commit/14ae813cc4e9fe0d39313f4b1ee5b231746731ad>
 [^20]: webmachinelearning/webmcp README, section “Future Exploration: Declarative API”, and the Declarative API Explainer, both read 15 October 2026. <https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md>
 [^21]: Chrome for Developers, “Declarative API” (published 18 May 2026, last updated 25 September 2026): `toolname`, `tooldescription`, `toolparamdescription`, `toolautosubmit`, `SubmitEvent.agentInvoked`, `SubmitEvent.respondWith()`, `:tool-form-active` and `:tool-submit-active`. Read 15 October 2026. <https://developer.chrome.com/docs/ai/webmcp/declarative-api>
+[^22]: Chromium issue 573722078, “WebMCP: Renderer killed when `registerTool()`’s `inputSchema` serialization registers a tool with the same name”, filed 14 October 2026 (Blink > Agentic Platform > WebMCP). The browser terminates the renderer for a bad IPC message, reason 345 (`RFHI_WEBMCP_REGISTER_DUPLICATE_TOOL_NAME`). The issue is marked Fixed, but the fix (crrev.com/c/8583183) was reverted on main (crrev.com/c/8575491) and had not relanded as of 15 October 2026, 09:26 UTC. <https://issues.chromium.org/issues/573722078>
