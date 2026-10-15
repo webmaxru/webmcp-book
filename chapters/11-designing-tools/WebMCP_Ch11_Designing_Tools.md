@@ -64,7 +64,7 @@ What should an application with a hundred tools do? WebMCP has no answer yet, bu
 
 > **Still in flux: grouping tools**
 >
-> Neither tool collections (#255) nor skills (#161) is in the 14 October 2026 draft, and both issues are open.[^7][^8] Until something lands, the tools you have for scaling are the ones Chapter 10 used: register by page state, keep the default set small, and remove tools that don’t apply. Notice also that the skills strawman’s sample instructions include lines such as “Always mention 30-day return policy before checkout.” Chapter 12 treats exactly that kind of text, an instruction to the agent placed in tool metadata, as a risk. Whatever form grouping takes, expect agents to read it with the same suspicion they bring to descriptions.
+> Neither tool collections (#255) nor skills (#161) is in the 15 October 2026 draft, and both issues are open.[^7][^8] Until something lands, the tools you have for scaling are the ones Chapter 10 used: register by page state, keep the default set small, and remove tools that don’t apply. Notice also that the skills strawman’s sample instructions include lines such as “Always mention 30-day return policy before checkout.” Chapter 12 treats exactly that kind of text, an instruction to the agent placed in tool metadata, as a risk. Whatever form grouping takes, expect agents to read it with the same suspicion they bring to descriptions.
 
 ## Naming, descriptions and character budgets
 
@@ -464,7 +464,7 @@ Chrome adds one more for a specific case: “If a tool is rate limited, return a
 
 Rule 4 hides an important distinction. Some failures are the agent’s to fix: a malformed date, an unknown SKU, a missing argument. The agent should simply try again with better input. Other outcomes aren’t failures of the call at all. The arguments were fine, but a rule says no: a purchase limit, a sold-out item, a rate limit, an account that isn’t allowed to do this. Retrying with different arguments won’t help, and in most cases the agent *shouldn’t* try, because the obvious workaround changes what the person asked for. An agent told “only 2 per customer” that silently adds 2 instead of 3 has made a decision that belonged to the user.
 
-If both outcomes come back as `status: 'error'`, the agent has to work out from the prose which kind it got. It is better to say so in the status. Listing 11.5 extends Chapter 6’s `fail()` with three siblings, giving four non-success statuses that each answer the question “who acts next?”
+If both outcomes come back as `status: 'error'`, the agent has to work out from the prose which kind it got. It is better to say so in the status. Listing 11.5 puts Chapter 6’s `fail()` and three siblings in one module, giving four non-success statuses that each answer the question “who acts next?” The earlier chapters’ tools already return these shapes; this section explains the reasoning.
 
 **Listing 11.5 — Four ways a call can fall short (shared/results.js)**
 
@@ -489,7 +489,7 @@ export const cancelledByUser = (message) =>
   ({ status: 'cancelled_by_user', message });
 ```
 
-Table 11.3 sums up the vocabulary. Chapter 7’s widget already returned `cancelled_by_user`, and Chapter 13 used a `needs_input` result for a missing size; this listing gives them one home.
+Table 11.3 sums up the vocabulary. Chapter 7’s widget returns `cancelled_by_user`, and Chapter 13 returns a `needs_input` result for a missing size; this listing gives them one home.
 
 **Table 11.3 — Result statuses and who acts next**
 
@@ -505,7 +505,7 @@ Figure 11.2 shows the same thing as the decision an agent faces after each call.
 
 ![Figure 11.2 — Who acts next. Each status tells the agent whether to continue, fix its call, ask the user, or stop.](images/figure-11-2.png)
 
-Reserving `status` for the outcome has a consequence for result design: don’t use the same field name for domain data. Chapter 7’s `get_ticket_status` returned the ticket’s state as `status: 'open'`, which an agent applying Table 11.3 could mistake for an outcome. In this chapter it becomes `ticketState`.
+Reserving `status` for the outcome has a consequence for result design: don’t use the same field name for domain data. A ticket’s state returned as `status: 'open'` could be mistaken for an outcome by an agent applying Table 11.3, which is why Chapter 7’s `get_ticket_status` and this chapter’s both return it as `ticketState`.
 
 Listing 11.6 applies the vocabulary to Trailhead’s `add_to_cart`.
 
@@ -577,7 +577,7 @@ export async function registerCartTools(signal) {
 
 ② The boots come in sizes, and the SKU without a size names the product family, not something you can buy. The agent can’t know the user’s shoe size, so this is `needs_input`, not `error`. The result lists the sizes and shows what a sized SKU looks like, so that after one question to the user the next call succeeds. In Chromium 156 the result was `{"status":"needs_input","code":"MISSING_INFORMATION","missing":["size"],…}` with the sizes 40 to 45 (*observed*).[^3]
 
-③ The limited-edition jacket allows two per customer. A request for three is `refused`, and the message says what the agent should do instead of “fixing” it: ask the user. The sold-out tent takes the same path. Chapter 6 returned `OUT_OF_STOCK` with `status: 'error'` while describing it as a business-rule refusal (“only three left”); with a status for refusals available, it now says what it is.
+③ The limited-edition jacket allows two per customer. A request for three is `refused`, and the message says what the agent should do instead of “fixing” it: ask the user. The sold-out tent takes the same path, and so does Chapter 6’s `OUT_OF_STOCK`, a business-rule refusal (“only three left”) that uses `status: 'refused'` for exactly this reason.
 
 The distinction between `error` and `refused` is a judgment call at the edges. The test I use: *would a good human assistant make this change without checking with the person?* Reformatting a date, yes. Picking a shoe size, buying fewer jackets, or waiting an hour to open a ticket, no.
 
@@ -789,13 +789,13 @@ What the lint can’t tell you is whether a real model now picks the right tool 
 
 The demos folder `chapters/11-designing-tools/` contains every listing in this chapter as a file, byte for byte. A few files that the book doesn’t print fill the gaps: Trailhead’s in-memory catalogue and cart, Supportly’s in-memory help centre, the two demo pages, the metadata of the earlier tool versions used for Table 11.2 and Figure 11.3, and the dev-only `document.modelContext` mock from Chapter 6.
 
-`npm test` runs 99 checks: syntax checks for all 16 scripts, ten unit tests of the validator, the lint and the result helpers in Node, and 36 behavioural checks that run twice, once against the mock and once in Chromium 156.0.8078.4 with `--enable-features=WebMCPTesting` (plus one check that WebMCP is available there). All 99 passed on 14 October 2026.[^3] A separate script, `npm run check-listings`, confirms that the eight listings in this chapter match the files byte for byte. The widget runs on a single origin here; Chapter 7’s folder runs it across two origins inside Ledgerly.
+`npm test` runs 99 checks: syntax checks for all 16 scripts, ten unit tests of the validator, the lint and the result helpers in Node, and 36 behavioural checks that run twice, once against the mock and once in Chromium 156.0.8078.4 with `--enable-features=WebMCPTesting` (plus one check that WebMCP is available there). All 99 passed on 14 October 2026, and again from a fresh clone on 15 October 2026.[^3] A separate script, `npm run check-listings`, confirms that the eight listings in this chapter match the files byte for byte. The widget runs on a single origin here; Chapter 7’s folder runs it across two origins inside Ledgerly.
 
 ## Chapter summary
 
 - A tool has two readers. The browser checks its syntax; the model decides from the name, description, schema and results alone. Tool design is writing for a reader who can’t ask questions.
 - Every registered tool costs context before it is called. Design from user tasks, not endpoints: merge steps that are always chained, split where consequences differ or where the person would want to be asked. Measure your definitions and track the number.
-- Tool collections (#255) and skills (#161) are open proposals, not part of the 14 October 2026 draft. Today’s tools for scale are page-state registration and a small default set.
+- Tool collections (#255) and skills (#161) are open proposals, not part of the 15 October 2026 draft. Today’s tools for scale are page-state registration and a small default set.
 - Name tools as verb and object, in one style per site, with the object in the name. Describe what the tool does, when to use it, what it returns and what it changes, in positive terms. Keep live state and instructions to the agent out of descriptions, and put consequential side effects in the first sentence.
 - Chrome’s budgets (500 characters per description, 150 per parameter description, 30 per name, 1,500 per output) are guidance; enforce them with a lint in your tests rather than a style guide.
 - Use enums with words, no empty options, required only for what the tool can’t work without, bounded arrays, and `oneOf` lists of `{ const, title }` where the meaning of a value matters. Don’t ask for what the page already knows.
@@ -807,25 +807,25 @@ The demos folder `chapters/11-designing-tools/` contains every listing in this c
 ## Notes
 
 [^1]: Anthropic, “Writing effective tools for agents — with agents” (Engineering at Anthropic, published 11 September 2025), sections “Choosing the right tools for agents”, “Namespacing your tools”, “Returning meaningful context from your tools”, “Optimizing tool responses for token efficiency” and “Prompt-engineering your tool descriptions”. <https://www.anthropic.com/engineering/writing-tools-for-agents>
-[^2]: WebMCP specification, Draft Community Group Report, 14 October 2026, §4.2.1 the `ModelContextTool` dictionary: `title` (“used by the user agent to reference the tool in the user interface. It is recommended that this string be localized to the user’s language”) and `description` (“A natural language description of the tool’s functionality. This helps agents understand when and how to use the tool.”). <https://webmachinelearning.github.io/webmcp/#dictdef-modelcontexttool>
+[^2]: WebMCP specification, Draft Community Group Report, 15 October 2026, §4.2.1 the `ModelContextTool` dictionary: `title` (“used by the user agent to reference the tool in the user interface. It is recommended that this string be localized to the user’s language”) and `description` (“A natural language description of the tool’s functionality. This helps agents understand when and how to use the tool.”). <https://webmachinelearning.github.io/webmcp/#dictdef-modelcontexttool>
 [^3]: Tested by the author on 14 October 2026 in Chromium 156.0.8078.4 (Playwright 1.64’s Chromium build, launched with `--enable-features=WebMCPTesting`) and against the dev-only mock. Test suite and raw results: `chapters/11-designing-tools/tests/run-tests.mjs` and `tests/results/observations.json` in the book’s demos repository. <https://github.com/vibeprogrammer/webmcp-book-demos/tree/main/chapters/11-designing-tools>
 [^4]: WebMCP explainer (README), “Best Practices”: “Tool Strategy and Budget”, “Keeping agent-facing parts of a tool definition updated”, “Minimize Cognitive Computing for the Model” and “Reliability and Error Handling”, read 14 October 2026. <https://github.com/webmachinelearning/webmcp#best-practices>
 [^5]: Chrome for Developers, “WebMCP best practices” (published 18 May 2026), sections “Create a tool strategy”, “Use clear language and semantic code”, “Minimize cognitive computing”, “Prioritize reliability” and “Eval testing and debugging”. <https://developer.chrome.com/docs/ai/webmcp/best-practices>
 [^6]: OpenAI API documentation, “Function calling”, best-practices section (“Pass the intern test”, “Use enums and object structure to prevent invalid states”, “Don’t make the model fill arguments you already know”, “Combine functions that are always called in sequence”, “Aim for fewer than 20 functions available at the start of a turn”), read 14 October 2026. <https://platform.openai.com/docs/guides/function-calling>
-[^7]: webmachinelearning/webmcp issue #255, “Tool collections: coarse-grained grouping with progressive disclosure” (opened 22 August 2026; open on 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/255>
-[^8]: webmachinelearning/webmcp issue #161, “Proposal: Skills — workflow-level context for tool composition” (opened 3 April 2026; open on 14 October 2026), section “Strawman API”. <https://github.com/webmachinelearning/webmcp/issues/161>
+[^7]: webmachinelearning/webmcp issue #255, “Tool collections: coarse-grained grouping with progressive disclosure” (opened 22 August 2026; open on 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/255>
+[^8]: webmachinelearning/webmcp issue #161, “Proposal: Skills — workflow-level context for tool composition” (opened 3 April 2026; open on 15 October 2026), section “Strawman API”. <https://github.com/webmachinelearning/webmcp/issues/161>
 [^9]: webmachinelearning/webmcp issue #167, “Proposal: Dynamic Tool Definitions in WebMCP” (opened 17 April 2026; closed). <https://github.com/webmachinelearning/webmcp/issues/167>
 [^10]: Chrome for Developers, “WebMCP tool security” (published 9 June 2026, last updated 1 September 2026), section “Set character budgets”. <https://developer.chrome.com/docs/ai/webmcp/secure-tools>
-[^11]: WebMCP specification, Draft Community Group Report, 14 October 2026, §6.3.2 “Misrepresentation of Intent”: §6.3.2.2 “Misalignment Types” and §6.3.2.3 “Scenario: Ambiguous Finalization”. <https://webmachinelearning.github.io/webmcp/#security-privacy>
-[^12]: WebMCP specification, Draft Community Group Report, 14 October 2026, §6.4.2 “Restricting maximum input lengths”. <https://webmachinelearning.github.io/webmcp/#security-privacy>
-[^13]: webmachinelearning/webmcp issue #73, “Consider restricting maximum input lengths” (opened 30 January 2026; open on 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/73>
-[^14]: WebMCP specification, Draft Community Group Report, 14 October 2026, §3 “Supporting concepts” (a tool definition’s *input schema* is “the stringified representation of the inputSchema passed to registerTool()”) and §4.2 the `registerTool()` and `executeTool()` steps. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool>
+[^11]: WebMCP specification, Draft Community Group Report, 15 October 2026, §6.3.2 “Misrepresentation of Intent”: §6.3.2.2 “Misalignment Types” and §6.3.2.3 “Scenario: Ambiguous Finalization”. <https://webmachinelearning.github.io/webmcp/#security-privacy>
+[^12]: WebMCP specification, Draft Community Group Report, 15 October 2026, §6.4.2 “Restricting maximum input lengths”. <https://webmachinelearning.github.io/webmcp/#security-privacy>
+[^13]: webmachinelearning/webmcp issue #73, “Consider restricting maximum input lengths” (opened 30 January 2026; open on 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/73>
+[^14]: WebMCP specification, Draft Community Group Report, 15 October 2026, §3 “Supporting concepts” (a tool definition’s *input schema* is “the stringified representation of the inputSchema passed to registerTool()”) and §4.2 the `registerTool()` and `executeTool()` steps. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool>
 [^15]: JSON Schema, “Understanding JSON Schema”, “Enumerated values”. <https://json-schema.org/understanding-json-schema/reference/enum>
-[^16]: WebMCP specification, Draft Community Group Report, 14 October 2026, §6.3.3 “Privacy Leakage Through Over-Parameterization” (§6.3.3.1 and the `search-dresses` example in §6.3.3.2). <https://webmachinelearning.github.io/webmcp/#security-privacy>
+[^16]: WebMCP specification, Draft Community Group Report, 15 October 2026, §6.3.3 “Privacy Leakage Through Over-Parameterization” (§6.3.3.1 and the `search-dresses` example in §6.3.3.2). <https://webmachinelearning.github.io/webmcp/#security-privacy>
 [^17]: JSON Schema, “Understanding JSON Schema”, “Schema Composition” (`allOf`, `anyOf`, `oneOf`, `not`). <https://json-schema.org/understanding-json-schema/reference/combining>
 [^18]: JSON Schema, “Understanding JSON Schema”, “Constant values”. <https://json-schema.org/understanding-json-schema/reference/const>
 [^19]: JSON Schema, “Understanding JSON Schema”, “Annotations” (“A ‘title’ will preferably be short, whereas a ‘description’ will provide a more lengthy explanation”). <https://json-schema.org/understanding-json-schema/reference/annotations>
-[^20]: webmachinelearning/webmcp issue #92, “Who owns the validation layer?” (opened 17 February 2026; open on 14 October 2026), including the resolution recorded on 5 March 2026; pull request #289, “Input validation (Fixes #92)”, closed unmerged by its author on 1 October 2026. <https://github.com/webmachinelearning/webmcp/issues/92>
+[^20]: webmachinelearning/webmcp issue #92, “Who owns the validation layer?” (opened 17 February 2026; open on 15 October 2026), including the resolution recorded on 5 March 2026; pull request #289, “Input validation (Fixes #92)”, closed unmerged by its author on 1 October 2026. <https://github.com/webmachinelearning/webmcp/issues/92>
 [^21]: Model Context Protocol specification, revision 2026-07-28, “Server Features: Tools”, sections “Tool” (`outputSchema` defaults to the 2020-12 dialect), “Structured Content”, “Output Schema” and “Error Handling” (“Tool Execution Errors contain actionable feedback…”; “Clients SHOULD provide tool execution errors to language models to enable self-correction”). <https://modelcontextprotocol.io/specification/2026-07-28/server/tools>
-[^22]: webmachinelearning/webmcp issue #9, “Introduce `outputSchema` (was: Should output also have a schema?)” (opened 12 August 2025; open), and pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`” by François Beaufort (opened 21 August 2026; open on 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/9>
-[^23]: WebMCP specification, Draft Community Group Report, 14 October 2026, §3 the tool execution error table and the note beneath it. <https://webmachinelearning.github.io/webmcp/#tool-execution-error>
+[^22]: webmachinelearning/webmcp issue #9, “Introduce `outputSchema` (was: Should output also have a schema?)” (opened 12 August 2025; open), and pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`” by François Beaufort (opened 21 August 2026; open on 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/9>
+[^23]: WebMCP specification, Draft Community Group Report, 15 October 2026, §3 the tool execution error table and the note beneath it. <https://webmachinelearning.github.io/webmcp/#tool-execution-error>
