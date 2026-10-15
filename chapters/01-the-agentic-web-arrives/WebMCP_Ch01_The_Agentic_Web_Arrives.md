@@ -162,13 +162,13 @@ WebMCP is not finished, and it is not uncontroversial. Chapter 4 and Chapter 15 
 
 > **Still in flux: the agent landscape**
 >
-> The products named in this chapter change quickly. Assistants gain and lose agent features, extensions move out of preview, and pricing and availability vary by country. WebMCP support among agents is younger still. As of 14 October 2026, the explainer’s implementation status page lists ChatGPT Desktop as supporting WebMCP, experimental support in Brave’s Leo, and Meta Ray-Ban Display as “coming soon”.[^16] Check that page, rather than this chapter, before you decide which agents your tools will meet first.
+> The products named in this chapter change quickly. Assistants gain and lose agent features, extensions move out of preview, and pricing and availability vary by country. WebMCP support among agents is younger still. As of 15 October 2026, the explainer’s implementation status page lists ChatGPT Desktop as supporting WebMCP, experimental support in Brave’s Leo, and Meta Ray-Ban Display as “coming soon”.[^16] Check that page, rather than this chapter, before you decide which agents your tools will meet first.
 
 ## The projects in this book
 
 Concepts are easier to hold on to when they are attached to something you are building. Four projects run through the book. You will meet them properly in the chapters that use them, but here is the cast, with the chapters where each one does most of its work (Table 1.2 and Figure 1.3).
 
-*Fjord Table* is a small restaurant in Oslo with a booking page. It is deliberately modest: a date, a time, a party size and a seating preference. It is the book’s first WebMCP site. Chapter 4 uses it to show the idea, and Chapter 5 gives it two tools, `search_availability` and `book_table`, the second of which never completes a booking without the guest confirming it in Fjord Table’s own dialog. Chapter 8 rebuilds its form with the experimental declarative API, and Chapter 9 takes it end to end, from flag to deployment.
+*Fjord Table* is a small restaurant in Oslo with a booking page. It is deliberately modest: a date, a time, a party size and a seating preference. It is the book’s first WebMCP site. Chapter 4 uses it to show the idea, and Chapter 5 gives it two tools, `search_availability` and `book_table`, the second of which never completes a booking without the guest confirming it in Fjord Table’s own dialog. Chapter 8 rebuilds its form with the experimental declarative API, Chapter 9 takes it end to end, from flag to deployment, and Chapter 14 puts its tools under test.
 
 *Trailhead* is the outdoor-gear store from this chapter’s opening: a React and TypeScript storefront with prices in Norwegian kroner. It is the book’s main production-shaped app. Its tools are `search_products`, `compare_products`, `add_to_cart`, `get_cart` and `checkout`, and the last one is marked as consequential, so the page shows its own confirmation and nothing is bought without the user’s click. Trailhead also gets a companion backend MCP server in Chapter 3, which makes the difference between server-side and in-page tools concrete. It carries the chapters on annotations and errors, frameworks, tool design, security, privacy, testing and the business case.
 
@@ -178,9 +178,9 @@ Concepts are easier to hold on to when they are attached to something you are bu
 
 | Project | What it is | What it teaches | Main chapters |
 |---|---|---|---|
-| Fjord Table | An Oslo restaurant’s booking page | First tools, confirmation in the site’s own UI, the declarative API, an end-to-end first app | 4, 5, 8, 9 |
-| Trailhead | A React + TypeScript outdoor-gear store, prices in NOK | Annotations, errors, frameworks, tool design, consent, evals, the business case; plus a backend MCP server | 3, 5, 6, 10–14, 16 |
-| Helpdesk Widget | Supportly’s widget inside the Ledgerly dashboard | Permissions Policy, cross-origin exposure, in-page agents, cross-origin threats | 7, 11, 12, 14 |
+| Fjord Table | An Oslo restaurant’s booking page | First tools, confirmation in the site’s own UI, the declarative API, an end-to-end first app, testing | 4, 5, 8, 9, 14 |
+| Trailhead | A React + TypeScript outdoor-gear store, prices in NOK | Annotations, errors, frameworks, tool design, consent, evals, the business case; plus a backend MCP server | 3, 6, 10–14, 16 |
+| Helpdesk Widget | Supportly’s widget inside the Ledgerly dashboard | Permissions Policy, cross-origin exposure, in-page agents, cross-origin threats | 7, 11, 12 |
 | Test Agent (optional) | A minimal agent harness | Calling tools and running evals without a commercial assistant | 9, 14 |
 
 *Table 1.2 — The running projects and where they appear.*
@@ -211,7 +211,7 @@ Here is what it does not cover.
 - *How to build an agent.* The book is about the site’s side of the conversation. It explains enough about agents to make sense of how your tools will be used, and the optional Test Agent is deliberately small. It is not a guide to prompting, model selection or agent frameworks.
 - *Backend integrations in depth.* Chapter 3 teaches enough MCP to build a working server and to understand WebMCP’s vocabulary. For production MCP servers, the protocol’s own documentation goes much further.
 - *Making actuation better.* Your site should still work well for agents that click, and much of what makes a site easier for agents to click through (semantic HTML, proper labels, a good accessibility tree) is also good for people. The explainer is explicit that WebMCP “will not conflict with these existing automation techniques.”[^9] But this book is about the structured alternative, not about tuning your markup for screenshot readers.
-- *A stable standard.* There isn’t one yet. WebMCP is a draft. The current version of the specification, dated 14 October 2026, describes itself as a Draft Community Group Report that “is not a W3C Standard nor is it on the W3C Standards Track.”[^2] The book teaches the API as it stands in that draft and in the Chromium origin trials, flags every part that is unsettled with a *Still in flux* box like the ones in this chapter, and explains the debates so that you can follow them after publication.
+- *A stable standard.* There isn’t one yet. WebMCP is a draft. The current version of the specification, dated 15 October 2026, describes itself as a Draft Community Group Report that “is not a W3C Standard nor is it on the W3C Standards Track.”[^2] The book teaches the API as it stands in that draft and in the Chromium origin trials, flags every part that is unsettled with a *Still in flux* box like the ones in this chapter, and explains the debates so that you can follow them after publication.
 
 > **Still in flux: reading a book about a moving target**
 >
@@ -231,10 +231,10 @@ Here is what it does not cover.
 ## Notes
 
 [^1]: Anthropic, “Piloting Claude in Chrome” (25 August 2025; updates of 24 November and 18 December 2025). <https://www.anthropic.com/news/claude-for-chrome>
-[^2]: WebMCP specification, Draft Community Group Report, 14 October 2026, Status of this document, §1 Introduction and §2 Terminology. <https://webmachinelearning.github.io/webmcp/>
+[^2]: WebMCP specification, Draft Community Group Report, 15 October 2026, Status of this document, §1 Introduction and §2 Terminology. <https://webmachinelearning.github.io/webmcp/>
 [^3]: Parisa Tabriz, “Chrome: The browser you love, reimagined with AI”, Google Keyword blog (18 September 2025). <https://blog.google/products/chrome/chrome-reimagined-with-ai/>
-[^4]: OpenAI, “Introducing ChatGPT Atlas” (October 2025). <https://openai.com/index/introducing-chatgpt-atlas/>
-[^5]: OpenAI Help Center, “ChatGPT Atlas retirement”. <https://help.openai.com/en/articles/20001371-chatgpt-atlas-retirement>
+[^4]: OpenAI, “Introducing ChatGPT Atlas” (21 October 2025). <https://openai.com/index/introducing-chatgpt-atlas/>
+[^5]: OpenAI Help Center, “ChatGPT Atlas retirement” (read 15 October 2026: “ChatGPT Atlas has been retired and no longer receives updates”). <https://help.openai.com/en/articles/20001371-chatgpt-atlas-retirement>
 [^6]: Perplexity, “Comet Browser: a Personal AI Assistant” (product page). <https://www.perplexity.ai/comet>
 [^7]: Chrome for Developers, “WebMCP” (published 18 May 2026, updated 7 October 2026), including “Why WebMCP?”, “Use cases”, “Limitations” and “Imitate an agent to test your tools”. <https://developer.chrome.com/docs/ai/webmcp>
 [^8]: OpenAI, “Introducing Operator”, including the update of 17 July 2025 (“Operator is now fully integrated into ChatGPT as ChatGPT agent”) and the section on safety. <https://openai.com/index/introducing-operator/>
@@ -245,5 +245,5 @@ Here is what it does not cover.
 [^13]: Artem Chaikin and Shivan Kaul Sahib, “Agentic Browser Security: Indirect Prompt Injection in Perplexity Comet”, Brave blog (20 August 2025). <https://brave.com/blog/comet-prompt-injection/>
 [^14]: Shuyan Zhou et al., “WebArena: A Realistic Web Environment for Building Autonomous Agents”, arXiv:2307.13854 (v1 25 July 2023; v4 16 April 2024), abstract. <https://arxiv.org/abs/2307.13854>
 [^15]: WebMCP explainer, “Goals & Non-Goals”. <https://github.com/webmachinelearning/webmcp#goals--non-goals>
-[^16]: WebMCP, “Browser and Agent Implementation Status”, webmachinelearning/webmcp (read 14 October 2026). <https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md>
+[^16]: WebMCP, “Browser and Agent Implementation Status”, webmachinelearning/webmcp (read 15 October 2026). <https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md>
 [^17]: vibeprogrammer/webmcp-book-demos, the companion repository for this book. <https://github.com/vibeprogrammer/webmcp-book-demos>
