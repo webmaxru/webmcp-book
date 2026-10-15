@@ -12,7 +12,7 @@ Lars is planning three nights in Jotunheimen at the end of October. He has two q
 
 Nothing in that exchange involved a browser. The assistant didn’t scrape Trailhead’s product pages or guess at a tracking form. Somebody at Trailhead had written a small server that offers two operations, `search_products` and `get_order_status`, each with a name, a plain-language description and a JSON Schema for its inputs. Lars (or his company’s IT department) had added that server to the assistant once. From then on the model could see the two tools, decide when to use them, and call them with structured arguments. The server ran Trailhead’s own code and sent back structured results.
 
-That arrangement is the *Model Context Protocol* (MCP), and it is the subject of this chapter. MCP matters to a book about WebMCP for two reasons. First, WebMCP borrows MCP’s vocabulary almost word for word: tools, descriptions, input schemas, annotations, results. Chapter 4 calls a WebMCP page “a client-side MCP server”, and that phrase only means something once you know what a server-side one looks like. Second, most products that become agent-ready will end up with both: a backend MCP server for the moments when the user is anywhere, and WebMCP tools for the moments when the user is on the site. Trailhead will have both by the end of this book.
+That arrangement is the *Model Context Protocol* (MCP), and it is the subject of this chapter. MCP matters to a book about WebMCP for two reasons. First, WebMCP borrows MCP’s vocabulary almost word for word: tools, descriptions, input schemas, annotations, results. Chapter 4 quotes the WebMCP specification’s own description of a page that uses it: a Model Context Protocol server that implements tools “in client-side script instead of on the backend”. That description only means something once you know what a backend one looks like. Second, most products that become agent-ready will end up with both: a backend MCP server for the moments when the user is anywhere, and WebMCP tools for the moments when the user is on the site. Trailhead will have both by the end of this book.
 
 So this chapter is practical. We look at MCP’s architecture and its wire format, at what servers and clients offer each other, and at the big change in the current revision, 2026-07-28, which removed the handshake and made the protocol stateless. Then we build Trailhead’s backend MCP server with the official TypeScript SDK, run it over both of MCP’s standard transports, and test it with an SDK client and the MCP Inspector. Every listing in this chapter runs, and every one is in the book’s companion repository with its tests.
 
@@ -157,7 +157,7 @@ A tool definition has a `name`, an optional `title` for display, a `description`
 - *Structured results.* A tool can return `structuredContent`, any JSON value, alongside its ordinary `content` blocks. If the tool declares an `outputSchema`, “Servers MUST provide structured results that conform to this schema.” For compatibility, a tool that returns structured content “SHOULD also return the serialized JSON in a TextContent block.”[^13]
 - *Annotations.* Four optional hints describe a tool’s behaviour: `readOnlyHint` (“the tool does not modify its environment”), `destructiveHint`, `idempotentHint` and `openWorldHint` (whether the tool reaches out to “an ‘open world’ of external entities”).[^14] The defaults are cautious: unless told otherwise, a client should assume a tool may write, may destroy and may reach the outside world. And the hints are only hints. “For trust & safety and security, clients MUST consider tool annotations to be untrusted unless they come from trusted servers.”[^13] Chapter 6 shows how WebMCP took over `readOnlyHint` and added hints of its own, under the same caveat.
 
-Tools also have a clear model for failure, and it’s one of the more useful ideas WebMCP inherited. MCP distinguishes two kinds of error.[^13] *Protocol errors* are for requests that are broken: an unknown tool, a malformed request, a server failure. They come back as JSON-RPC `error` objects. *Tool execution errors* are for things the model can fix: “Input validation errors (e.g., date in wrong format, value out of range)” and “Business logic errors”. They come back as an ordinary result with `isError: true` and a message the model can read, and the specification wants clients to pass them on: “Clients SHOULD provide tool execution errors to language models to enable self-correction.”[^13] Chapter 5 made the same argument for WebMCP tools, which return recoverable failures as values. Trailhead’s `get_order_status`, later in this chapter, does exactly this when an order ID doesn’t exist.
+Tools also have a clear model for failure, and it’s one of the more useful ideas WebMCP inherited. MCP distinguishes two kinds of error.[^13] *Protocol errors* are for requests that are broken: an unknown tool, a malformed request, a server failure. They come back as JSON-RPC `error` objects. *Tool execution errors* are for things the model can fix: “Input validation errors (e.g., date in wrong format, value out of range)” and “Business logic errors”. They come back as an ordinary result with `isError: true` and a message the model can read, and the specification wants clients to pass them on: “Clients SHOULD provide tool execution errors to language models to enable self-correction.”[^13] Chapter 5 makes the same argument for WebMCP tools, which return recoverable failures as values, and Chapter 11 turns it into a convention. Trailhead’s `get_order_status`, later in this chapter, does exactly this when an order ID doesn’t exist.
 
 Finally, the specification is firm about the human: “there SHOULD always be a human in the loop with the ability to deny tool invocations.” And servers must validate all tool inputs, implement access controls, rate-limit invocations and sanitize outputs.[^13] Part IV applies the same discipline to tools that run inside a page.
 
@@ -167,7 +167,7 @@ Finally, the specification is firm about the human: “there SHOULD always be a 
 
 *Prompts* are templates that a server offers and a user picks. The specification calls them “user-controlled, meaning they are exposed from servers to clients with the intention of the user being able to explicitly select them for use,” and suggests slash commands as a typical interface.[^16] Trailhead’s `packing_list` prompt turns “Jotunheimen in October, three nights” into a ready-made request that tells the model to draft a packing list and use `search_products` for each item.
 
-Neither of these exists in WebMCP today. As Chapter 4 explained, WebMCP offers tools only; Chrome’s comparison guide says it “omits various server-side concepts, such as resources.”[^31] That is one reason a site may want a backend MCP server even after it adopts WebMCP: resources and prompts are useful, and only MCP has them.
+Neither of these exists in WebMCP today. As Chapter 4 explains, WebMCP offers tools only; Chrome’s comparison guide says it “omits various server-side concepts, such as resources.”[^31] That is one reason a site may want a backend MCP server even after it adopts WebMCP: resources and prompts are useful, and only MCP has them.
 
 ## What clients offer: elicitation
 
@@ -179,7 +179,7 @@ How a stateless protocol asks a question mid-call is one of the neater ideas in 
 
 Older tutorials also mention *sampling* (a server asking the host’s model for a completion) and *roots* (a server asking which directories it may use). Both are deprecated as of 2026-07-28, along with logging; new implementations “SHOULD NOT adopt” sampling, and deprecated features stay in the specification for at least twelve months.[^18][^9]
 
-Elicitation is the MCP feature WebMCP most visibly lacks, and the gap is a live debate. Chrome’s tool-security page says “the spec draft includes `requestUserInteraction()` to asynchronously request user input at tool execution”,[^32] but the WebMCP draft I checked today (dated 14 October 2026) contains no such method,[^34] and the issue titled “WebMCP elicitation via requestUserInteraction()” is still open.[^33] Chapter 13 takes up that thread; for now, note that MCP solved “ask the human” with a protocol message, while WebMCP sites today solve it with their own UI, as Fjord Table’s confirmation dialog did in Chapter 5.
+Elicitation is the MCP feature WebMCP most visibly lacks, and the gap is a live debate. Chrome’s tool-security page says “the spec draft includes `requestUserInteraction()` to asynchronously request user input at tool execution”,[^32] but the WebMCP draft I checked today (dated 15 October 2026) contains no such method,[^34] and the issue titled “WebMCP elicitation via requestUserInteraction()” is still open.[^33] Chapter 13 takes up that thread; for now, note that MCP solved “ask the human” with a protocol message, while WebMCP sites today solve it with their own UI, as Fjord Table’s booking form, which the guest confirms on screen, does in Chapter 5.
 
 ## Building Trailhead’s MCP server
 
@@ -187,7 +187,7 @@ Time to build. Trailhead’s backend server is small on purpose. It offers the t
 
 ### The SDK, version 2
 
-The official SDK changed shape this year, and older tutorials will confuse you if you don’t know. Version 1 was a single package, `@modelcontextprotocol/sdk`. Version 2 splits it into separate packages, of which we need `@modelcontextprotocol/server`, `@modelcontextprotocol/client` and, for the Node HTTP adapter, `@modelcontextprotocol/node`. The server package’s README describes itself as “v2 of the MCP TypeScript SDK, the stable release line, implementing the 2026-07-28 MCP spec,” and says it “replaces the single `@modelcontextprotocol/sdk` package from v1.”[^20] On 14 October 2026 the npm registry listed `@modelcontextprotocol/server` and `@modelcontextprotocol/client` at 2.3.1, `@modelcontextprotocol/node` at 2.1.1, and Zod, which the SDK uses for schemas, at 4.6.7.[^20] Those are the exact versions the companion repository pins.
+The official SDK changed shape this year, and older tutorials will confuse you if you don’t know. Version 1 was a single package, `@modelcontextprotocol/sdk`. Version 2 splits it into separate packages, of which we need `@modelcontextprotocol/server`, `@modelcontextprotocol/client` and, for the Node HTTP adapter, `@modelcontextprotocol/node`. The server package’s README describes itself as “v2 of the MCP TypeScript SDK, the stable release line, implementing the 2026-07-28 MCP spec,” and says it “replaces the single `@modelcontextprotocol/sdk` package from v1.”[^20] On 15 October 2026 the npm registry listed `@modelcontextprotocol/server` and `@modelcontextprotocol/client` at 2.3.1, `@modelcontextprotocol/node` at 2.1.1, and Zod, which the SDK uses for schemas, at 4.6.7.[^20] Those are the exact versions the companion repository pins.
 
 Install them in an empty folder with `"type": "module"` in its `package.json`:
 
@@ -219,8 +219,8 @@ export const products = [
 ];
 
 export const orders = new Map([
-  ['TH-100231', { status: 'shipped', carrier: 'Posten', estimatedDelivery: '2026-10-17' }],
-  ['TH-100232', { status: 'processing', carrier: null, estimatedDelivery: '2026-10-21' }]
+  ['TH-100231', { orderState: 'shipped', carrier: 'Posten', estimatedDelivery: '2026-10-17' }],
+  ['TH-100232', { orderState: 'processing', carrier: null, estimatedDelivery: '2026-10-21' }]
 ]);
 ```
 
@@ -325,6 +325,8 @@ Most of Listing 3.3 is description and schema rather than logic, and that is the
 *Validation happens before the handler runs, and its failures are recoverable.* If a model sends `category: "kayaks"` or `orderId: "12345"`, the SDK rejects the call without running the handler and returns an ordinary result with `isError: true` and a message that begins “Input validation error”, which the model can read and correct.[^21] The test suite checks both cases.
 
 *A missing order is a result, not an exception.* When the ID is well formed but unknown, `get_order_status` returns `isError: true` with “No order found with ID TH-999999.” That is the tool execution error from the specification: a business-logic failure the model can explain to the user or retry, rather than a protocol error that tells it nothing.[^13]
+
+*Two ways to report an outcome.* In Parts II and III, the book’s WebMCP tools report how a call went inside the result itself, as `{ status, code, message }`: `status` is `'error'`, `'refused'`, `'needs_input'` or `'cancelled_by_user'` when a call falls short, and a domain word such as `'booked'` when it succeeds. Chapter 11 explains that vocabulary. WebMCP needs it because a WebMCP result is just the value your function returns, with no failure flag around it, so the outcome has to travel in the data. An MCP result already has the flag, and MCP clients act on `isError`, so Trailhead’s server uses it and doesn’t repeat the outcome in the payload. One rule carries over unchanged: Chapter 11 reserves the name `status` for the outcome, so the order’s own state is `orderState`, just as the Helpdesk Widget’s tickets have a `ticketState`.
 
 *`search_products` returns both renderings.* It declares an `outputSchema` and returns the same data as `structuredContent` and as serialized JSON in a text block, as the specification recommends for compatibility.[^13] The SDK validates `structuredContent` against `outputSchema` “before the result leaves your server.”[^21] The output shape (`sku`, `name`, a `price` with `amount` and `currency: 'NOK'`, `rating`, `inStock`) is the same shape Trailhead’s WebMCP `search_products` tool returns in later chapters, so an agent sees the same product whichever door it comes through.
 
@@ -495,7 +497,7 @@ console.log(JSON.stringify(result.structuredContent, null, 2));
 await client.close();
 ```
 
-The interesting option is `versionNegotiation: { mode: 'auto' }`. Without it, the client performs the 2025 `initialize` handshake “byte for byte”. With `'auto'`, it first probes the server with `server/discover` and connects on whichever era it finds, falling back to the handshake against a 2025-only server; `{ pin: '2026-07-28' }` refuses to fall back at all.[^24] On stdio, the SDK runs that probe on a short-lived sibling process, because some legacy servers exit when they receive any request before `initialize`.[^25]
+The interesting option is `versionNegotiation: { mode: 'auto' }`. Without it, the client performs the 2025 `initialize` handshake “byte for byte”. With `'auto'`, it first probes the server with `server/discover` and connects on whichever era it finds, falling back to the handshake against a 2025-only server; `mode: { pin: '2026-07-28' }` refuses to fall back at all.[^24] On stdio, the SDK runs that probe on a short-lived sibling process, because some legacy servers exit when they receive any request before `initialize`.[^25]
 
 Run it with `node src/client.js` and you get:
 
@@ -550,12 +552,12 @@ Listing 3.9 shows what the client and server actually said to each other for Lar
     "content": [
       {
         "type": "text",
-        "text": "{\"orderId\":\"TH-100231\",\"status\":\"shipped\",\"carrier\":\"Posten\",\"estimatedDelivery\":\"2026-10-17\"}"
+        "text": "{\"orderId\":\"TH-100231\",\"orderState\":\"shipped\",\"carrier\":\"Posten\",\"estimatedDelivery\":\"2026-10-17\"}"
       }
     ],
     "structuredContent": {
       "orderId": "TH-100231",
-      "status": "shipped",
+      "orderState": "shipped",
       "carrier": "Posten",
       "estimatedDelivery": "2026-10-17"
     },
@@ -574,7 +576,7 @@ Every piece of the protocol from the first half of the chapter is visible here. 
 
 ### The MCP Inspector
 
-The MCP Inspector is the project’s own tool for poking at servers. Version 2.11.0, current on npm on 14 October 2026, has a web UI, a terminal UI and a command-line mode (`--web`, `--cli`, `--tui`).[^28] `npx @modelcontextprotocol/inspector node src/stdio.js` (the repository’s `npm run inspect`) opens the web UI, where you can click through the tools.[^22] For scripts and CI, the CLI mode is handier. Listing 3.10 lists Trailhead’s tools, calls one, reads the resource and renders the prompt, without configuring the server in any host.
+The MCP Inspector is the project’s own tool for poking at servers. Version 2.11.0, current on npm on 15 October 2026, has a web UI, a terminal UI and a command-line mode (`--web`, `--cli`, `--tui`).[^28] `npx @modelcontextprotocol/inspector node src/stdio.js` (the repository’s `npm run inspect`) opens the web UI, where you can click through the tools.[^22] For scripts and CI, the CLI mode is handier. Listing 3.10 lists Trailhead’s tools, calls one, reads the resource and renders the prompt, without configuring the server in any host.
 
 **Listing 3.10 — Exercising the server with the Inspector CLI (scripts/inspect.sh)**
 
@@ -632,7 +634,7 @@ Three practical consequences follow for anyone writing or reading about MCP.
 
 > **Still in flux: MCP after 2026-07-28**
 >
-> The 2026-07-28 revision deprecated sampling, roots and logging, and formally deprecated the old HTTP+SSE transport and Dynamic Client Registration, all with year-long off-ramps.[^9] Tasks, the mechanism for long-running operations, moved out of the core into the `io.modelcontextprotocol/tasks` extension, alongside MCP Apps.[^10][^30] On 22 August 2026 the project published a new roadmap covering the next specification release.[^35] Treat every MCP detail in this chapter as accurate for revision 2026-07-28 and for the SDK versions named above, as checked on 14 October 2026, and check the changelog of whatever revision is current when you read this.
+> The 2026-07-28 revision deprecated sampling, roots and logging, and formally deprecated the old HTTP+SSE transport and Dynamic Client Registration, all with year-long off-ramps.[^9] Tasks, the mechanism for long-running operations, moved out of the core into the `io.modelcontextprotocol/tasks` extension, alongside MCP Apps.[^10][^30] On 22 August 2026 the project published a new roadmap covering the next specification release.[^35] Treat every MCP detail in this chapter as accurate for revision 2026-07-28 and for the SDK versions named above, as checked on 15 October 2026, and check the changelog of whatever revision is current when you read this.
 
 ## From a backend server to a page
 
@@ -668,13 +670,13 @@ The two will live side by side. Trailhead keeps the server from this chapter for
 [^11]: Model Context Protocol specification 2026-07-28, “Overview” of the base protocol (`_meta` and its reserved keys). <https://modelcontextprotocol.io/specification/2026-07-28/basic>
 [^12]: Model Context Protocol specification 2026-07-28, “Versioning and Compatibility” (protocol version negotiation, `server/discover`, extension negotiation, backward compatibility and the compatibility matrix). <https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning>
 [^13]: Model Context Protocol specification 2026-07-28, “Tools” (user interaction model, tool names, structured content, output schema, error handling, security considerations). <https://modelcontextprotocol.io/specification/2026-07-28/server/tools>
-[^14]: Model Context Protocol, schema for revision 2026-07-28, `ToolAnnotations` interface (schema.ts). <https://github.com/modelcontextprotocol/specification/blob/main/schema/2026-07-28/schema.ts>
+[^14]: Model Context Protocol, schema for revision 2026-07-28, `ToolAnnotations` interface (schema.ts). <https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/schema/2026-07-28/schema.ts>
 [^15]: Model Context Protocol specification 2026-07-28, “Resources”. <https://modelcontextprotocol.io/specification/2026-07-28/server/resources>
 [^16]: Model Context Protocol specification 2026-07-28, “Prompts”. <https://modelcontextprotocol.io/specification/2026-07-28/server/prompts>
 [^17]: Model Context Protocol specification 2026-07-28, “Elicitation” (form and URL modes, user interaction model, capabilities). <https://modelcontextprotocol.io/specification/2026-07-28/client/elicitation>
 [^18]: Model Context Protocol specification 2026-07-28, “Sampling” (deprecated as of 2026-07-28, SEP-2577). <https://modelcontextprotocol.io/specification/2026-07-28/client/sampling>
 [^19]: Model Context Protocol specification 2026-07-28, “Message Patterns” (request and response, multi round-trip requests, subscribe and notify). <https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns>
-[^20]: npm registry entries for `@modelcontextprotocol/server` (2.3.1), `@modelcontextprotocol/client` (2.3.1), `@modelcontextprotocol/node` (2.1.1) and `zod` (4.6.7), read with `npm view` on 14 October 2026, and the `@modelcontextprotocol/server` 2.3.1 README. <https://www.npmjs.com/package/@modelcontextprotocol/server>
+[^20]: npm registry entries for `@modelcontextprotocol/server` (2.3.1), `@modelcontextprotocol/client` (2.3.1), `@modelcontextprotocol/node` (2.1.1) and `zod` (4.6.7), read with `npm view` on 15 October 2026, and the `@modelcontextprotocol/server` 2.3.1 README. <https://www.npmjs.com/package/@modelcontextprotocol/server>
 [^21]: MCP TypeScript SDK v2 documentation, “Tools”. <https://ts.sdk.modelcontextprotocol.io/v2/servers/tools>
 [^22]: MCP TypeScript SDK v2 documentation, “Serve over stdio”. <https://ts.sdk.modelcontextprotocol.io/v2/serving/stdio>
 [^23]: MCP TypeScript SDK v2 documentation, “Serve over HTTP” (per-request factory, Host and Origin validation, passing authentication through). <https://ts.sdk.modelcontextprotocol.io/v2/serving/http>
@@ -682,11 +684,11 @@ The two will live side by side. Trailhead keeps the server from this chapter for
 [^25]: MCP TypeScript SDK v2 documentation, “Supporting protocol revision 2026-07-28”. <https://ts.sdk.modelcontextprotocol.io/v2/migration/support-2026-07-28.html>
 [^26]: MCP TypeScript SDK v2 documentation, “Test a server”. <https://ts.sdk.modelcontextprotocol.io/v2/testing.html>
 [^27]: MCP TypeScript SDK v2 documentation, “Support legacy clients”. <https://ts.sdk.modelcontextprotocol.io/v2/serving/legacy-clients.html>
-[^28]: npm registry, `@modelcontextprotocol/inspector` 2.11.0 (latest on 14 October 2026), and the output of `mcp-inspector --help` and `mcp-inspector --cli --help` for that version. <https://www.npmjs.com/package/@modelcontextprotocol/inspector>
+[^28]: npm registry, `@modelcontextprotocol/inspector` 2.11.0 (latest on 15 October 2026), and the output of `mcp-inspector --help` and `mcp-inspector --cli --help` for that version. <https://www.npmjs.com/package/@modelcontextprotocol/inspector>
 [^29]: Model Context Protocol, “MCP Apps” (extension overview: how MCP Apps work, security model, client support). <https://modelcontextprotocol.io/extensions/apps/overview>
 [^30]: Model Context Protocol, “Extensions” overview (identifiers and official extensions). <https://modelcontextprotocol.io/extensions/overview>
 [^31]: Chrome for Developers, “WebMCP and MCP compared” (published 11 March 2026, updated 19 May 2026). <https://developer.chrome.com/docs/ai/webmcp/compare-mcp>
 [^32]: Chrome for Developers, “WebMCP tool security” (“Next steps”). <https://developer.chrome.com/docs/ai/webmcp/secure-tools>
-[^33]: webmachinelearning/webmcp issue #165, “WebMCP elicitation via requestUserInteraction() (was: Human in the Loop support for non-browser clients)” (open on 14 October 2026). <https://github.com/webmachinelearning/webmcp/issues/165>
-[^34]: WebMCP specification, Draft Community Group Report, 14 October 2026 (searched for `requestUserInteraction`; no occurrence). <https://webmachinelearning.github.io/webmcp/>
+[^33]: webmachinelearning/webmcp issue #165, “WebMCP elicitation via requestUserInteraction() (was: Human in the Loop support for non-browser clients)” (open on 15 October 2026). <https://github.com/webmachinelearning/webmcp/issues/165>
+[^34]: WebMCP specification, Draft Community Group Report, 15 October 2026 (searched for `requestUserInteraction`; no occurrence). <https://webmachinelearning.github.io/webmcp/>
 [^35]: Model Context Protocol Blog, “The New MCP Roadmap” (22 August 2026). <https://blog.modelcontextprotocol.io/posts/mcp-roadmap/>
