@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the electronic edition of "Tools, Not Clicks" (working title) as a static site.
+"""Build the electronic edition of "Tools, Not Clicks" as a static site.
 
 Modelled on the generator of Maxim Salnikov's earlier book,
 https://github.com/webmaxru/github-agentic-workflows-book (site/generate.py): the same
@@ -12,12 +12,12 @@ they are (publication-ready Markdown). Everything here happens at build time, in
   * the chapter list (17 chapters in 6 parts, plus appendices) is read from outline/outline.md;
   * a chapter counts as published when a Markdown file whose first heading is
     "# Chapter N: ..." exists under chapters/; every other chapter is shown as
-    "To be published";
+    "Not available online";
   * likewise, an appendix counts as published when a Markdown file whose first heading
     is "# Appendix X: ..." exists under appendices/ (e.g. appendices/a-api-reference/);
     it gets its own page at appendices/<folder>.html and is linked from the contents
-    on the front page and from the sidebar; appendices without a file stay
-    "To be published";
+    on the front page and from the sidebar; appendices without a file are
+    shown as "Not available online";
   * Markdown is rendered with markdown-it (CommonMark + GFM tables + footnotes);
   * figure images are copied next to the rendered page, "Listing N.N" captions become
     code figures, "Figure N.N" captions become <figcaption>s, and "> **Still in flux: ...**"
@@ -65,14 +65,19 @@ DEMOS_URL = "https://github.com/vibeprogrammer/webmcp-book-demos"
 SITE_URL = "https://vibeprogrammer.github.io/webmcp-book/"
 
 # --- Calls to action --------------------------------------------------------------
-# Both links come from the example book's generator (webmaxru/github-agentic-workflows-book,
+# The "Get the PDF" sign-up goes to the newsletter's own sign-up page (NEWSLETTER_URL);
+# the PDF itself is sent to new subscribers by the newsletter's welcome email and is
+# never linked from this site. Both links come from the example book's generator (webmaxru/github-agentic-workflows-book,
 # site/generate.py): AUTHOR_URL is its AUTHOR_URL; the newsletter is the isainative
 # Substack that its BOOK_DOWNLOAD_URL (https://isainative.substack.com/p/free-agentic-workflows-book)
 # lives on, linked at the publication's own sign-up page.
 CONTACT_URL = "https://www.linkedin.com/in/webmax/"
 NEWSLETTER_URL = "https://isainative.substack.com/subscribe"
 
-STATUS_PENDING = "To be published"
+# The book is complete: every chapter and appendix has its file. STATUS_PENDING only labels
+# an outline entry that has no Markdown file (a fallback; nothing renders it today).
+STATUS_PENDING = "Not available online"
+EDITION_LINE = "Complete edition · updated for the WebMCP draft of 15 Oct 2026"
 
 
 def esc(value: object) -> str:
@@ -344,9 +349,9 @@ def ext(href: str, label: str, cls: str = "") -> str:
 
 
 def cta_band(compact: bool = False) -> str:
-    """The two calls to action, on the cover and at the end of every chapter."""
+    """The two calls to action (publishers, Get the PDF), on the cover and at the end of every chapter."""
     cls = "cta-band cta-band--compact" if compact else "cta-band"
-    return f'''<section class="{cls}" aria-label="Get in touch">
+    return f'''<section class="{cls}" aria-label="Get the PDF or contact the author">
       <div class="cta-grid">
         <div class="cta-card cta-card--publisher">
           <p class="cta-kicker">For publishers</p>
@@ -355,13 +360,18 @@ def cta_band(compact: bool = False) -> str:
           {ext(CONTACT_URL, f"Contact {esc(AUTHOR_NAME)} ↗", "btn btn-primary")}
         </div>
         <div class="cta-card cta-card--newsletter">
-          <p class="cta-kicker">New chapters</p>
-          <p class="cta-title">Get notified about the next chapters.</p>
-          <p class="cta-text">Sign up for the newsletter to hear when the next chapter is published.</p>
-          {ext(NEWSLETTER_URL, "Sign up for the newsletter ↗", "btn btn-quiet")}
+          <p class="cta-kicker">Free PDF</p>
+          <p class="cta-title">Get the PDF.</p>
+          <p class="cta-text">Enter your email and get the whole book as a PDF, plus updates when the spec changes.</p>
+          {ext(NEWSLETTER_URL, "Get the PDF ↗", "btn btn-primary")}
         </div>
       </div>
     </section>'''
+
+
+def reading_time(minutes: int) -> str:
+    """'about 12 hours' for the whole book, 'about 45 minutes' for anything under two hours."""
+    return f"about {round(minutes / 60)} hours" if minutes >= 120 else f"about {minutes} minutes"
 
 
 def chapter_href(ch: Chapter, prefix: str = "chapters/") -> str:
@@ -371,8 +381,8 @@ def chapter_href(ch: Chapter, prefix: str = "chapters/") -> str:
 def colophon(prefix: str = "") -> str:
     return f'''<footer class="colophon">
     <div class="colophon-inner">
-      <p class="colophon-author">By <strong>{esc(AUTHOR_NAME)}</strong> · <em>{esc(FULL_TITLE)}</em> (working title)</p>
-      <p class="colophon-meta">{ext(CONTACT_URL, "Publishers: contact Maxim Salnikov")} · {ext(NEWSLETTER_URL, "Newsletter")} · <a href="{prefix}outline.html">Full outline</a> · {ext(REPO_URL, "Book repository on GitHub ↗")} · {ext(DEMOS_URL, "Demos ↗")}</p>
+      <p class="colophon-author">By <strong>{esc(AUTHOR_NAME)}</strong> · <em>{esc(FULL_TITLE)}</em> · {esc(EDITION_LINE)}</p>
+      <p class="colophon-meta">{ext(CONTACT_URL, "Publishers: contact Maxim Salnikov")} · {ext(NEWSLETTER_URL, "Get the PDF")} · <a href="{prefix}outline.html">Detailed outline</a> · {ext(REPO_URL, "Book repository on GitHub ↗")} · {ext(DEMOS_URL, "Demos ↗")}</p>
     </div>
   </footer>'''
 
@@ -386,7 +396,7 @@ def reader_bar(prefix: str, published: list[Chapter]) -> str:
         <a href="{prefix}index.html#contents">Contents</a>
         <a href="{start}">Start reading</a>
         <a href="{prefix}outline.html">Outline</a>
-        {ext(NEWSLETTER_URL, "Newsletter")}
+        {ext(NEWSLETTER_URL, "Get the PDF")}
         {ext(CONTACT_URL, "Publishers")}
       </nav>
       {theme_toggle()}
@@ -447,15 +457,13 @@ def render_index(parts: list[Part], appendices: list[Appendix], published: list[
     chapters = [c for p in parts for c in p.chapters]
     minutes = sum(max(1, round(c.words / 200)) for c in published)
     start = chapter_href(published[0]) if published else "#contents"
-    pub_list = ", ".join(str(c.number) for c in published) or "none yet"
-    pub_apps = [a.letter for a in appendices if a.published]
-    app_meta = f"; appendices {', '.join(pub_apps)}" if pub_apps else ""
     minutes += sum(max(1, round(a.words / 200)) for a in appendices if a.published)
     blocks = []
     for p in parts:
         rows = "\n".join(toc_row(c) for c in p.chapters)
         ready = sum(1 for c in p.chapters if c.published)
-        note = f"{ready} of {len(p.chapters)} published" if ready else STATUS_PENDING
+        n = len(p.chapters)
+        note = f"{n} chapter{'s' if n != 1 else ''}" if ready == n else f"{ready} of {n} online"
         blocks.append(f'''        <section class="toc-part" aria-labelledby="part-{p.number}">
           <header class="toc-part-head">
             <span class="toc-part-kicker">Part {p.number}</span>
@@ -469,7 +477,7 @@ def render_index(parts: list[Part], appendices: list[Appendix], published: list[
     app_rows = "\n".join(appendix_toc_row(a) for a in appendices)
     if app_rows:
         app_ready = sum(1 for a in appendices if a.published)
-        app_note = f"{app_ready} of {len(appendices)} published" if app_ready else STATUS_PENDING
+        app_note = f"{len(appendices)} appendices" if app_ready == len(appendices) else f"{app_ready} of {len(appendices)} online"
         blocks.append(f'''        <section class="toc-part" aria-labelledby="part-appendices">
           <header class="toc-part-head">
             <span class="toc-part-kicker">Back matter</span>
@@ -492,19 +500,19 @@ def render_index(parts: list[Part], appendices: list[Appendix], published: list[
   <main id="main-content" tabindex="-1">
     <section class="cover" aria-labelledby="cover-title">
       <div class="cover-inner">
-        <p class="cover-series">A book in progress · working title</p>
+        <p class="cover-series">{esc(EDITION_LINE)}</p>
         <h1 id="cover-title" class="cover-title">{esc(BOOK_TITLE)}</h1>
         <p class="cover-subtitle">{esc(BOOK_SUBTITLE)}</p>
         <p class="cover-sub">{esc(BOOK_TAGLINE)}</p>
         <p class="cover-author">by <strong>{esc(AUTHOR_NAME)}</strong></p>
         <div class="cover-actions">
           <a class="btn btn-primary" href="{start}">Start reading</a>
-          <a class="btn btn-quiet" href="#contents">Browse the outline</a>
+          <a class="btn btn-quiet" href="#contents">Browse the contents</a>
         </div>
         <dl class="cover-meta">
           <div class="cover-meta-item"><dt>Length</dt><dd>{len(chapters)} chapters across {len(parts)} parts</dd></div>
-          <div class="cover-meta-item"><dt>Published so far</dt><dd>{len(published)} of {len(chapters)} (ch. {pub_list}){app_meta}</dd></div>
-          <div class="cover-meta-item"><dt>Reading time</dt><dd>about {minutes} minutes</dd></div>
+          <div class="cover-meta-item"><dt>Appendices</dt><dd>{len(appendices)} ({appendices[0].letter}–{appendices[-1].letter})</dd></div>
+          <div class="cover-meta-item"><dt>Reading time</dt><dd>{reading_time(minutes)}</dd></div>
         </dl>
       </div>
     </section>
@@ -514,10 +522,9 @@ def render_index(parts: list[Part], appendices: list[Appendix], published: list[
     <section id="contents" class="contents" aria-labelledby="contents-title">
       <div class="contents-inner">
         <div class="contents-head">
-          <h2 id="contents-title">Outline</h2>
-          <p class="contents-note">{len(chapters)} chapters across {len(parts)} parts · <a href="outline.html">full outline</a>{' · <a href="outline/WebMCP_Book_Outline.pdf">PDF</a>' if OUTLINE_PDF.exists() else ''}</p>
+          <h2 id="contents-title">Contents</h2>
+          <p class="contents-note">{len(chapters)} chapters across {len(parts)} parts, plus {len(appendices)} appendices · <a href="outline.html">detailed outline</a></p>
         </div>
-        <p class="pending-note">Chapters marked <strong>{STATUS_PENDING}</strong> are still being written. {ext(NEWSLETTER_URL, "Sign up for the newsletter")} to hear when they come out.</p>
 {chr(10).join(blocks)}
       </div>
     </section>
@@ -591,8 +598,8 @@ def render_chapter(ch: Chapter, body: str, sections, parts, published, prev_ch, 
     pending_note = ""
     if nxt_pending is not None:
         pending_note = (f'<p class="pending-note next-pending">Next in the book: <strong>Chapter {nxt_pending.number}: '
-                        f'{inline_md(nxt_pending.title)}</strong> — {STATUS_PENDING.lower()}. '
-                        f'{ext(NEWSLETTER_URL, "Sign up for the newsletter")} to hear when it is out.</p>')
+                        f'{inline_md(nxt_pending.title)}</strong> ({STATUS_PENDING.lower()}). '
+                        f'{ext(NEWSLETTER_URL, "Get the PDF")} to read the whole book.</p>')
     toc = "".join(f'<li><a href="#{sid}">{esc(html.unescape(t))}</a></li>' for sid, t in sections)
     minutes = max(1, round(ch.words / 200))
     return f"""<!doctype html>
@@ -615,7 +622,7 @@ def render_chapter(ch: Chapter, body: str, sections, parts, published, prev_ch, 
 {sidebar_nav(parts, ch, appendices, "chapters")}
         </nav>
         <div class="sidebar-cta">
-          {ext(NEWSLETTER_URL, "Get notified about the next chapters ↗")}
+          {ext(NEWSLETTER_URL, "Get the book as a PDF ↗")}
           {ext(CONTACT_URL, "Publishers: contact Maxim Salnikov ↗")}
         </div>
       </div>
@@ -623,7 +630,7 @@ def render_chapter(ch: Chapter, body: str, sections, parts, published, prev_ch, 
 
     <div class="content-shell">
       <header class="chapter-header">
-        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / Chapter {ch.number} <span class="fm-sep">·</span> {ext(NEWSLETTER_URL, "Get notified about new chapters")} <span class="fm-sep">·</span> {ext(CONTACT_URL, "Publishers: contact the author")}</nav>
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / Chapter {ch.number} <span class="fm-sep">·</span> {ext(NEWSLETTER_URL, "Get the PDF")} <span class="fm-sep">·</span> {ext(CONTACT_URL, "Publishers: contact the author")}</nav>
         <p class="fm"><span class="fm-k">chapter:</span> <span class="fm-v">{ch.number:02d}</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">{esc(ch.part.number)} — {inline_md(ch.part.title)}</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">{minutes} min</span></p>
         <h1>Chapter {ch.number}: {wbr(inline_md(ch.title))}</h1>
         <p class="lead">{inline_md(ch.summary)}</p>
@@ -651,7 +658,7 @@ def render_chapter(ch: Chapter, body: str, sections, parts, published, prev_ch, 
       </main>
 
       <footer class="site-footer chapter-footer">
-        <p>By <strong>{esc(AUTHOR_NAME)}</strong> · {ext(CONTACT_URL, "Publishers: contact Maxim Salnikov")} · {ext(NEWSLETTER_URL, "Newsletter")} · <a href="../outline.html">Full outline</a> · {ext(REPO_URL, "Book repository on GitHub ↗")} · {ext(DEMOS_URL, "Demos ↗")}</p>
+        <p>By <strong>{esc(AUTHOR_NAME)}</strong> · {ext(CONTACT_URL, "Publishers: contact Maxim Salnikov")} · {ext(NEWSLETTER_URL, "Get the PDF")} · <a href="../outline.html">Detailed outline</a> · {ext(REPO_URL, "Book repository on GitHub ↗")} · {ext(DEMOS_URL, "Demos ↗")}</p>
       </footer>
     </div>
   </div>
@@ -663,7 +670,7 @@ def render_chapter(ch: Chapter, body: str, sections, parts, published, prev_ch, 
 def render_appendix(a: Appendix, body: str, sections, parts, appendices, published, prev_doc, next_doc) -> str:
     toc = "".join(f'<li><a href="#{sid}">{esc(html.unescape(t))}</a></li>' for sid, t in sections)
     minutes = max(1, round(a.words / 200))
-    description = f"Appendix {a.letter} of {FULL_TITLE} (working title) by {AUTHOR_NAME}."
+    description = f"Appendix {a.letter} of {FULL_TITLE} by {AUTHOR_NAME}."
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -684,7 +691,7 @@ def render_appendix(a: Appendix, body: str, sections, parts, appendices, publish
 {sidebar_nav(parts, a, appendices, "appendices")}
         </nav>
         <div class="sidebar-cta">
-          {ext(NEWSLETTER_URL, "Get notified about the next chapters ↗")}
+          {ext(NEWSLETTER_URL, "Get the book as a PDF ↗")}
           {ext(CONTACT_URL, "Publishers: contact Maxim Salnikov ↗")}
         </div>
       </div>
@@ -692,7 +699,7 @@ def render_appendix(a: Appendix, body: str, sections, parts, appendices, publish
 
     <div class="content-shell">
       <header class="chapter-header">
-        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / <a href="../index.html#part-appendices">Appendices</a> / Appendix {esc(a.letter)} <span class="fm-sep">·</span> {ext(NEWSLETTER_URL, "Get notified about new chapters")} <span class="fm-sep">·</span> {ext(CONTACT_URL, "Publishers: contact the author")}</nav>
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a> / <a href="../index.html#part-appendices">Appendices</a> / Appendix {esc(a.letter)} <span class="fm-sep">·</span> {ext(NEWSLETTER_URL, "Get the PDF")} <span class="fm-sep">·</span> {ext(CONTACT_URL, "Publishers: contact the author")}</nav>
         <p class="fm"><span class="fm-k">appendix:</span> <span class="fm-v">{esc(a.letter)}</span><span class="fm-sep">·</span><span class="fm-k">part:</span> <span class="fm-v">Back matter</span><span class="fm-sep">·</span><span class="fm-k">reading:</span> <span class="fm-v">{minutes} min</span></p>
         <h1>Appendix {esc(a.letter)}: {wbr(inline_md(a.page_title))}</h1>
       </header>
@@ -718,7 +725,7 @@ def render_appendix(a: Appendix, body: str, sections, parts, appendices, publish
       </main>
 
       <footer class="site-footer chapter-footer">
-        <p>By <strong>{esc(AUTHOR_NAME)}</strong> · {ext(CONTACT_URL, "Publishers: contact Maxim Salnikov")} · {ext(NEWSLETTER_URL, "Newsletter")} · <a href="../outline.html">Full outline</a> · {ext(REPO_URL, "Book repository on GitHub ↗")} · {ext(DEMOS_URL, "Demos ↗")}</p>
+        <p>By <strong>{esc(AUTHOR_NAME)}</strong> · {ext(CONTACT_URL, "Publishers: contact Maxim Salnikov")} · {ext(NEWSLETTER_URL, "Get the PDF")} · <a href="../outline.html">Detailed outline</a> · {ext(REPO_URL, "Book repository on GitHub ↗")} · {ext(DEMOS_URL, "Demos ↗")}</p>
       </footer>
     </div>
   </div>
@@ -777,9 +784,7 @@ def render_outline_page(published: list[Chapter], appendices: list[Appendix] = (
         j = body.find("</ul>", i)
         if j != -1:
             body = body[:i] + re.sub(r"(<li>([A-Z])\. .*?)</li>", mark_app, body[i:j], flags=re.S) + body[j:]
-    if OUTLINE_PDF.exists():
-        body += '\n<p class="pending-note">This outline is also available as a <a href="outline/WebMCP_Book_Outline.pdf">PDF</a>.</p>'
-    return render_simple_page("Book outline", body, published)
+    return render_simple_page("Detailed outline", body, published)
 
 
 def render_book(parts: list[Part], published: list[Chapter], bodies: dict[int, str]) -> str:
@@ -794,7 +799,7 @@ def render_book(parts: list[Part], published: list[Chapter], bodies: dict[int, s
         chunks.append(f'<section class="book-chapter" id="chapter-{c.number}"><p class="kicker">{esc(c.kicker)}</p>'
                       f'<h1>Chapter {c.number}: {inline_md(c.title)}</h1>{b}</section>')
     toc = "".join(f'<li><a href="#chapter-{c.number}">Chapter {c.number}: {inline_md(c.title)}</a></li>' for c in published)
-    body = (f'<h1>{esc(FULL_TITLE)}</h1><p><em>Working title. Single-page edition of the published chapters.</em></p>'
+    body = (f'<h1>{esc(FULL_TITLE)}</h1><p><em>Single-page edition: all {len(published)} chapters. The appendices have their own pages.</em></p>'
             f'<ol class="book-toc">{toc}</ol>' + "\n".join(chunks))
     return render_simple_page("Single-page edition", body, published, cls="doc-page book-page")
 

@@ -1,8 +1,8 @@
-# WebMCP: Book Outline
+# Tools, Not Clicks: Detailed Outline
 
 *A book about the web standard that lets websites hand AI agents real tools*
 
-*Prepared for Maxim · 14 October 2026 · Status checked against official sources on that date*
+*Status table checked against official sources on 14 October 2026. The chapters track the WebMCP draft of 15 October 2026.*
 
 ## Where WebMCP stands today
 
@@ -19,13 +19,7 @@ WebMCP is a draft proposal being incubated, not a shipped standard. Two Chromium
 | W3C TAG          | Early design review open since Jun 2026, labelled “Missing: multi-stakeholder support”. The editors asked the TAG on 9 Oct 2026 to wait for Mozilla’s refreshed position and for TPAC.                                                                                                                 |
 | Agents and tools | The explainer’s status page lists ChatGPT Desktop (supported), Brave Leo (experimental) and Meta Ray-Ban Display (coming). Also: Chrome’s inspector and example agent extensions, the MCP-B polyfill and bridges, and React (usewebmcp) and Angular integrations.                                      |
 
-## Working titles and premise
-
-1. Tools, Not Clicks: Building Agent-Ready Websites with WebMCP
-2. The Agent-Ready Web: A Practical Guide to WebMCP for Developers and Product Leaders
-3. WebMCP in Action: Exposing Your Web App to AI Agents, Safely
-
-### Premise
+## Premise
 
 AI agents already browse on our behalf, but most of them still work like a tourist with a phrasebook: they take screenshots, guess which button does what, and break the moment a layout changes. WebMCP is the web platform’s proposed answer. A page declares what it can do as named, described, schema-typed tools, and the browser’s agent calls them directly, inside the user’s live, logged-in session, with the human watching and in control. This book explains why that matters, how WebMCP relates to Anthropic’s Model Context Protocol (MCP), and how to use the API to make a real product agent-ready without rebuilding it. It covers registering tools, wiring them into React and Angular, testing them with evals, and hardening them against prompt injection and over-reach. It also gives an honest map of a standard still being argued over, with Google and Microsoft shipping trials, Mozilla neutral, and WebKit opposed, so readers can build now and still be ready for whatever WebMCP becomes.
 
@@ -34,9 +28,6 @@ AI agents already browse on our behalf, but most of them still work like a touri
 | Primary reader | Front-end and full-stack web developers who build production web apps (JavaScript or TypeScript, with React, Angular or similar) and want a hands-on path from first tool to production.                         |
 |----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Second reader  | Product managers, tech leads and engineering managers who must decide whether, where and when to invest in agent-readiness. Part VI and the chapter openers are written so they can read those without the code. |
-| Alternative 1  | Make it a narrower reference for framework and library authors, focused on spec algorithms, lifecycle and integration. It would be smaller and date faster.                                                      |
-| Alternative 2  | Make it a short strategy book for executives and product leaders about the agentic web, with WebMCP as the main case study and little code.                                                                      |
-| Alternative 3  | Make it a security-first book for AppSec and privacy engineers: threat models, consent and agent safety across MCP and WebMCP.                                                                                   |
 
 ## Chapter outline
 
@@ -307,5 +298,3 @@ The open questions that will decide what WebMCP becomes, and how to build today 
 - Guidance numbers. Chrome’s character budgets and best practices are explicitly provisional, and the spec may set hard limits.
 - Agent support list. Which assistants consume WebMCP is moving fast. ChatGPT Desktop, Brave Leo and Meta glasses are listed by the explainer, not by the vendors’ own docs. Whether Chrome’s built-in Gemini will call WebMCP tools is not stated in the sources.
 - MCP itself versions often. Its latest spec is 2026-07-28. Keep MCP comparisons at the level of concepts.
-
-> Suggested approach: write Parts I, IV and VI first, since they are the most durable. Keep API detail in Part II tied to a dated “as of” box per chapter, and keep a companion site or repository for code that will churn. Re-verify every API name against the live spec right before the manuscript is final.
