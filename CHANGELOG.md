@@ -4,6 +4,15 @@ All notable changes to *Tools, Not Clicks: Building Agent-Ready Websites with We
 
 Each version is a Git tag `vX.Y.Z`. Its GitHub Release carries the PDF, the EPUB and the HTML edition built from that tag. The web edition shows this file as its release history.
 
+## [2.0.1] - 2026-11-02
+
+### Fixed
+
+- Links to the book's repositories now point to their new home under github.com/webmaxru (the old vibeprogrammer addresses redirect). The demos repository is public.
+- Appendix C's note on link checks says which repository is private.
+- The Leanpub page is https://leanpub.com/webmcp.
+- The release history no longer links to the private repository's release pages.
+
 ## [2.0.0] - 2026-11-02
 
 The second edition. Every chapter, listing and figure was checked against the Chrome WebMCP documentation, the WebMCP specification (Draft Community Group Report of 27 October 2026) and the webmachinelearning/webmcp repository as of 2 November 2026, then rewritten. The code was tested in Chromium 156.0.8078.4. The API the first edition teaches (`document.modelContext.registerTool()`, input schemas, `execute`, `AbortSignal` unregistration, annotations, the declarative form attributes) is unchanged. What changed is the guidance around it, the standards status and the ecosystem. See VALIDATION.md for every finding and its source.
@@ -42,6 +51,3 @@ The second edition. Every chapter, listing and figure was checked against the Ch
 ## [1.0.0] - 2026-10-15
 
 The first edition, as published on the web edition on GitHub Pages: 17 chapters in six parts and Appendices A–D, written against Chromium 156 with the `WebMCPTesting` feature and the WebMCP draft of 15 October 2026. This version was never tagged in Git; it is recorded here as the baseline for 2.0.0.
-
-[2.0.0]: https://github.com/vibeprogrammer/webmcp-book/releases/tag/v2.0.0
-[1.0.0]: https://github.com/vibeprogrammer/webmcp-book/tree/main

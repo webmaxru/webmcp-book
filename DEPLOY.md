@@ -8,7 +8,7 @@ The free web edition of the book (`python3 tools/build.py site` → `dist/site/`
 - **Azure CLI**, a current release (the latest when this was written: 2.91.0; `az upgrade` updates it), logged in with `az login`. The script installs Bicep through `az bicep install` if it's missing.
 - **Python 3.11+** for the build (`tools/requirements.txt` is installed into `.venv/` by the script).
 - **Node.js 20+** (18 is the minimum) for the upload: the script runs the Static Web Apps CLI `2.1.0` through `npx`, and on its first upload the CLI downloads Microsoft's deployment client (about 70 MB, kept in `~/.swa`).
-- Optional: **GitHub CLI** (`gh auth login`) with admin rights on `vibeprogrammer/webmcp-book`, so the script can store the deployment token as a repository secret. Without it, the script prints the two manual steps.
+- Optional: **GitHub CLI** (`gh auth login`) with admin rights on `webmaxru/webmcp-book`, so the script can store the deployment token as a repository secret. Without it, the script prints the two manual steps.
 - Windows: use `infra/deploy.ps1` (Windows PowerShell 5.1 or PowerShell 7). macOS/Linux/WSL: `infra/deploy.sh`.
 
 ## The one command
@@ -46,7 +46,7 @@ Static Web Apps accepts only `westeurope`, `eastus2`, `centralus`, `westus2` and
 | Static Web App `swa-webmcp-book`, **Free** plan | No repository link, preview environments off. |
 | Custom domain binding (optional) | Free managed TLS certificate. |
 | Budget `budget-webmcp-book` (optional) | Email at 80 % actual and 100 % forecast. Alerts only. |
-| GitHub secret `AZURE_STATIC_WEB_APPS_API_TOKEN` | On `vibeprogrammer/webmcp-book`. |
+| GitHub secret `AZURE_STATIC_WEB_APPS_API_TOKEN` | On `webmaxru/webmcp-book`. |
 
 **Cost: 0.** The Free plan has no charge, and overage bandwidth is listed as unavailable on Free, so there is nothing that can be billed. Free plan limits ([quotas](https://learn.microsoft.com/en-us/azure/static-web-apps/quotas), [plans](https://learn.microsoft.com/en-us/azure/static-web-apps/plans), read 2026-11-02):
 

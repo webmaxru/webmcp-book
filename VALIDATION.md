@@ -40,7 +40,7 @@ These items are kept in the text with their original source and date, or marked 
 - The Angular demo suite in Chapter 10 was not re-run. Its listings are unchanged.
 - Whether a Chrome build later than 156 fixes the renderer crash in Appendix A (crbug 573722078).
 - The Google Developer Expert listing in About the Author is confirmed by the author's GitHub profile, not by the GDE directory.
-- The demo repository (github.com/vibeprogrammer/webmcp-book-demos) is private, so readers who follow the book's links cannot open it yet.
+- The book's repositories moved to github.com/webmaxru on 2 November 2026, and the demos repository is now public. The manuscript repository stays private, so its link in Appendix C works only for people with access.
 - Nothing in this edition was tested in Chrome 157 or later.
 
 ## Per-file records
@@ -1092,7 +1092,7 @@ No invented anecdotes. Lars, Kari, Jonas and Trailhead are the book’s establis
 
 | # | Claim / API / listing | Status | Now | Source URL |
 |---|---|---|---|---|
-| 1 | "Every URL here was fetched on 14 October 2026 … 15 October 2026" | CHANGED | re-fetched 2 Nov 2026: all HTTP 200 except (a) npmjs.com pages 403 bot check → registry records used and all 200, (b) github.com/vibeprogrammer/webmcp-book and webmcp-book-demos 404 for anonymous readers (private repos), (c) webmcp.salnikov.no not serving yet (connection error; DNS/SWA not set up), (d) docs/proposal.md@adbc2c5 429 rate limit | script |
+| 1 | "Every URL here was fetched on 14 October 2026 … 15 October 2026" | CHANGED | re-fetched 2 Nov 2026: all HTTP 200 except (a) npmjs.com pages 403 bot check → registry records used and all 200, (b) github.com/webmaxru/webmcp-book and webmcp-book-demos 404 for anonymous readers (private repos), (c) webmcp.salnikov.no not serving yet (connection error; DNS/SWA not set up), (d) docs/proposal.md@adbc2c5 429 rate limit | script |
 | 2 | Spec date "read 15 October 2026" | CHANGED | 27 October 2026, four editors | https://webmachinelearning.github.io/webmcp/ |
 | 3 | C.2 Chrome pages: Imperative "updated 21 September 2026" | CHANGED | updated 16 October 2026 | the shared validation notes §1.10 |
 | 4 | compare-mcp "updated 19 May 2026" | CHANGED | published 11 March 2026, updated 27 October 2026 (rewritten, new table) | the shared validation notes §1.10, §2.5 |

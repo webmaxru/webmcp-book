@@ -2,7 +2,7 @@
 
 Manuscript: `manuscript/08-declarative-api.md`
 Figures: `figures/src/figure-8-1.svg`, `figure-8-2.svg` (hand-written SVG, APM figure kit) rendered to `manuscript/resources/images/figure-8-1.png`, `figure-8-2.png`
-Demo: `chapters/08-declarative-api/` in vibeprogrammer/webmcp-book-demos (no code change; suite re-run 2 Nov 2026 on Chromium 156.0.8078.4: 17 passed, 0 failed)
+Demo: `chapters/08-declarative-api/` in webmaxru/webmcp-book-demos (no code change; suite re-run 2 Nov 2026 on Chromium 156.0.8078.4: 17 passed, 0 failed)
 Validation: VALIDATION.md (48 rows)
 Length: 8,656 words (Oct 15) → 9,382 words (`wc -w`, listings included). The growth is new material (TAG early comment, issue #361 serialization note, PR #350 explainer fix, re-run statement), about 450 words. The rest was tightened slightly.
 

@@ -10,7 +10,7 @@
 #
 # Options (defaults in brackets):
 #   --resource-group NAME  [rg-webmcp-book]     --swa-name NAME    [swa-webmcp-book]
-#   --location REGION      [westeurope]         --repo OWNER/NAME  [vibeprogrammer/webmcp-book]
+#   --location REGION      [westeurope]         --repo OWNER/NAME  [webmaxru/webmcp-book]
 #   --subscription ID      switch the Azure subscription first
 #   --custom-domain HOST   bind HOST (its CNAME must already point at the app, CUSTOM-DOMAIN.md)
 #   --budget-email EMAIL   add a monthly budget alert   --budget-amount N [1]
@@ -23,7 +23,7 @@
 #   -h, --help
 set -euo pipefail
 
-RG=rg-webmcp-book; SWA=swa-webmcp-book; LOCATION=westeurope; REPO=vibeprogrammer/webmcp-book
+RG=rg-webmcp-book; SWA=swa-webmcp-book; LOCATION=westeurope; REPO=webmaxru/webmcp-book
 SUBSCRIPTION=""; CUSTOM_DOMAIN=""; BUDGET_EMAIL=""; BUDGET_AMOUNT=1; BUDGET_NAME=budget-webmcp-book
 YES=0; SKIP_GH=0; BUILD_ONLY=0; INFRA_ONLY=0; UPLOAD_ONLY=0; NO_BUILD=0
 SWA_CLI_VERSION=2.1.0              # @azure/static-web-apps-cli, pinned

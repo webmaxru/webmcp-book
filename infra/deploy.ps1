@@ -30,7 +30,7 @@ param(
   [string]$SwaName = 'swa-webmcp-book',
   [ValidateSet('westeurope', 'eastus2', 'centralus', 'westus2', 'eastasia')]
   [string]$Location = 'westeurope',
-  [string]$Repo = 'vibeprogrammer/webmcp-book',
+  [string]$Repo = 'webmaxru/webmcp-book',
   [string]$Subscription = '',
   [string]$CustomDomain = '',
   [string]$BudgetEmail = '',

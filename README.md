@@ -1,6 +1,6 @@
 # Tools, Not Clicks
 
-This repository holds the manuscript of *Tools, Not Clicks: Building Agent-Ready Websites with WebMCP* by Maxim Salnikov, second edition, together with its figure sources, editorial records, theme, build tools and hosting setup. The runnable demos live in the companion repository [vibeprogrammer/webmcp-book-demos](https://github.com/vibeprogrammer/webmcp-book-demos). The web edition is hosted on Azure Static Web Apps at https://webmcp.salnikov.no once deployed (see [`DEPLOY.md`](DEPLOY.md)).
+This repository holds the manuscript of *Tools, Not Clicks: Building Agent-Ready Websites with WebMCP* by Maxim Salnikov, second edition, together with its figure sources, editorial records, theme, build tools and hosting setup. The runnable demos live in the companion repository [webmaxru/webmcp-book-demos](https://github.com/webmaxru/webmcp-book-demos). The web edition is hosted on Azure Static Web Apps at https://webmcp.salnikov.no once deployed (see [`DEPLOY.md`](DEPLOY.md)).
 
 ## What lives where
 
@@ -106,15 +106,16 @@ Version 1.0.0 (15 October 2026) was the first edition and was never tagged. Vers
 
 ## Leanpub
 
-Leanpub can publish this book in two ways.
+The book's Leanpub page is https://leanpub.com/webmcp. Leanpub can publish it in two ways.
 
 **Upload the files built here (recommended).** In the book's Leanpub settings, choose to upload your own files, then upload the release's PDF and EPUB. Readers then get exactly the editions on the GitHub Release, with this theme. Upload the new files for every release.
 
 **Let Leanpub build from this repository.** Leanpub's GitHub writing mode reads `manuscript/Book.txt` and the files it lists, with images from `manuscript/resources/images/`, which is how this repository is laid out. Leanpub then renders the book with its own Markua styling, not this theme. Notes for this mode:
 
 - `Book.txt` lists one file per line, in reading order; `tools/lint_manuscript.py` fails if it names a missing file or misses one.
-- Each part file starts with `{class: part}` and a `# Part …` heading. Leanpub's Markua manual also documents the older form, a heading with a trailing `#` (`# Part I: … #`); if Leanpub's preview shows a part as an ordinary chapter, use that form.
-- Leanpub chooses its own sample chapters in this mode. Choose them in the book's settings.
+- Each part file starts with `{class: part}` and a heading in the part form, `# Part I: … #`.
+- Chapter headings already carry their numbers (`# Chapter 1: …`), so turn off Leanpub's own chapter numbering in the book's settings.
+- The free sample is marked in the manuscript: `{sample: true}` above Part I, Chapter 1, Chapter 5 and About the Author, and `{sample: false}` above Chapters 2 and 6. Leanpub ignores `Sample.txt` for Markua books; this repository keeps it only as a readable list that matches the markers. In upload mode, Leanpub asks for a separate sample file.
 - Code blocks, tables, footnotes and `![Figure …](images/…)` figures are standard Markua.
 
 Either way, the version on Leanpub is the version you upload or publish; note it in the release notes Leanpub sends to readers.

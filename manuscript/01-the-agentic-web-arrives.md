@@ -178,7 +178,7 @@ Concepts are easier to hold on to when they are attached to something you build.
 
 ![Figure 1.3 — The book’s four running projects and the chapters in which each does most of its work. Fjord Table introduces the API, Trailhead carries the production chapters, Helpdesk Widget covers cross-origin embedding, and the optional Test Agent exercises everyone else’s tools.](images/figure-1-3.png)
 
-Every code listing in the book is also in the companion repository, `vibeprogrammer/webmcp-book-demos` on GitHub, organised by chapter, with tests that run each example against a mock of the API and, where possible, against Chromium with WebMCP enabled.[^ch01-17] This chapter and the next have no code. From Chapter 3 on, almost every chapter does.
+Every code listing in the book is also in the companion repository, `webmaxru/webmcp-book-demos` on GitHub, organised by chapter, with tests that run each example against a mock of the API and, where possible, against Chromium with WebMCP enabled.[^ch01-17] This chapter and the next have no code. From Chapter 3 on, almost every chapter does.
 
 ## What this book covers, and what it doesn’t
 
@@ -233,4 +233,4 @@ And here is what it doesn’t cover:
 [^ch01-14]: Shuyan Zhou et al., “WebArena: A Realistic Web Environment for Building Autonomous Agents”, arXiv:2307.13854 (v1 25 July 2023, v4 16 April 2024), abstract. <https://arxiv.org/abs/2307.13854>
 [^ch01-15]: WebMCP explainer, “Goals & Non-Goals” (retrieved November 2026). <https://github.com/webmachinelearning/webmcp#goals--non-goals>
 [^ch01-16]: WebMCP, “Browser and Agent Implementation Status”, webmachinelearning/webmcp (retrieved November 2026). <https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md>
-[^ch01-17]: vibeprogrammer/webmcp-book-demos, the companion repository for this book. <https://github.com/vibeprogrammer/webmcp-book-demos>
+[^ch01-17]: webmaxru/webmcp-book-demos, the companion repository for this book. <https://github.com/webmaxru/webmcp-book-demos>
