@@ -264,8 +264,19 @@ if ($doUpload -or $BuildOnly) {
   $bytes = ($files | Measure-Object -Property Length -Sum).Sum
   Write-Ok ("dist/site: {0} files, {1:N1} MB (Free plan limits: 250 MB per environment, 15,000 files)" -f $files.Count, ($bytes / 1MB))
   if ($bytes -ge 250MB) { Exit-WithHint 'dist/site is larger than the Free plan allows (250 MB).' 'Shrink images or move to the Standard plan.' }
-  $checkPy = $py
-  if (-not $checkPy) { foreach ($cand in @('python3', 'python', 'py')) { if (Get-Command $cand -ErrorAction SilentlyContinue) { $checkPy = $cand; break } } }
+  # Pick a Python that really starts: the build venv first, then the probed one, then py/python/python3.
+  # (Shims such as scoop's python3.exe or the Store alias can pass Get-Command and still refuse to run.)
+  $checkPy = $null
+  $venvCheck = if ($IsWin) { Join-Path (Join-Path (Join-Path $Root '.venv') 'Scripts') 'python.exe' } else { Join-Path (Join-Path (Join-Path $Root '.venv') 'bin') 'python' }
+  $pyCands = @()
+  if (Test-Path $venvCheck) { $pyCands += $venvCheck }
+  if ($py) { $pyCands += $py }
+  $pyCands += $(if ($IsWin) { @('py', 'python', 'python3') } else { @('python3', 'python') })
+  foreach ($cand in $pyCands) {
+    if (-not (Test-Path $cand) -and -not (Get-Command $cand -CommandType Application -ErrorAction SilentlyContinue)) { continue }
+    $t = Invoke-Native -Exe $cand -Arguments @('-c', 'print(42)')
+    if ($t.Code -eq 0 -and $t.Out -eq '42') { $checkPy = $cand; break }
+  }
   if ($checkPy) {
     & $checkPy (Join-Path $InfraDir 'check_site.py') $SiteDir
     if ($LASTEXITCODE -ne 0) { Exit-WithHint 'The pre-upload check failed (see above): the live site would break or the headers would block something.' 'python infra/check_site.py dist/site --update-csp fixes inline-script hashes; other findings need a change in theme/ or staticwebapp.config.json.' }
