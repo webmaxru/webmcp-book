@@ -10,6 +10,8 @@ Each version is a Git tag `vX.Y.Z`. Its GitHub Release carries the PDF, the EPUB
 
 - Links to the book's repositories now point to their new home under github.com/webmaxru (the old vibeprogrammer addresses redirect). The demos repository is public.
 - Appendix C's note on link checks says which repository is private.
+- The Leanpub page is https://leanpub.com/webmcp.
+- The release history no longer links to the private repository's release pages.
 
 ## [2.0.0] - 2026-11-02
 
@@ -49,7 +51,3 @@ The second edition. Every chapter, listing and figure was checked against the Ch
 ## [1.0.0] - 2026-10-15
 
 The first edition, as published on the web edition on GitHub Pages: 17 chapters in six parts and Appendices A–D, written against Chromium 156 with the `WebMCPTesting` feature and the WebMCP draft of 15 October 2026. This version was never tagged in Git; it is recorded here as the baseline for 2.0.0.
-
-[2.0.1]: https://github.com/webmaxru/webmcp-book/releases/tag/v2.0.1
-[2.0.0]: https://github.com/webmaxru/webmcp-book/releases/tag/v2.0.0
-[1.0.0]: https://github.com/webmaxru/webmcp-book/tree/v1.0.0
