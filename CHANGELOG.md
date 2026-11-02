@@ -4,11 +4,18 @@ All notable changes to *Tools, Not Clicks: Building Agent-Ready Websites with We
 
 Each version is a Git tag `vX.Y.Z`. Its GitHub Release carries the PDF, the EPUB and the HTML edition built from that tag. The web edition shows this file as its release history.
 
+## [2.0.2] - 2026-11-02
+
+### Fixed
+
+- The copyright and licence lines across the book's repositories name the author, Maxim Salnikov, and every repository link points to github.com/webmaxru.
+- The demos repository's licence reads "Copyright (c) 2026 Maxim Salnikov".
+
 ## [2.0.1] - 2026-11-02
 
 ### Fixed
 
-- Links to the book's repositories now point to their new home under github.com/webmaxru (the old vibeprogrammer addresses redirect). The demos repository is public.
+- Links to the book's repositories now point to their new home under github.com/webmaxru (the old addresses redirect). The demos repository is public.
 - Appendix C's note on link checks says which repository is private.
 - The Leanpub page is https://leanpub.com/webmcp.
 - The release history no longer links to the private repository's release pages.

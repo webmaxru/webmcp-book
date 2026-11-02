@@ -1110,7 +1110,7 @@ No invented anecdotes. Lars, Kari, Jonas and Trailhead are the book’s establis
 | 16 | MCP `latest` redirects to 2026-07-28 | OK | still true 2 Nov (fetched) | https://modelcontextprotocol.io/specification/latest |
 | 17 | SDK Tier 1 list | OK | TypeScript, Python, C#, Go, Rust, Ruby still Tier 1 (Java Tier 2) on the SDK page, fetched 2 Nov | https://modelcontextprotocol.io/docs/sdk |
 | 18 | Table C.1 versions "15 October 2026" | CHANGED | two columns: demos pin (Oct) and registry latest 2 Nov: server/client 2.4.0, node 2.1.2, inspector 2.13.0, Angular 22.2.4, rest unchanged; added use-webmcp-tool 0.3.0 and @vueuse/core 15.0.0 | https://registry.npmjs.org/ |
-| 19 | C.9 website URL vibeprogrammer.github.io/webmcp-book | CHANGED | https://webmcp.salnikov.no (house style rule 8, planned home; not serving on 2 Nov) | — |
+| 19 | C.9 website URL (the old GitHub Pages address) | CHANGED | https://webmcp.salnikov.no (house style rule 8, planned home; not serving on 2 Nov) | — |
 | 20 | Demo repo links | UNVERIFIED for readers | the demos and book repos return 404 to anonymous users (private). Lead/Maxim: decide visibility or ship demos as a zip; the book text links them per house style rule 8 | — |
 | 21 | Table C.2 rows for other chapters' demos | OK (not re-validated) | checked with each chapter. The Chapter 10 row says `usewebmcp`, which matches Chapter 10's demo (Trailhead stays on `usewebmcp`; `use-webmcp-tool` is covered in the text) | — |
 
