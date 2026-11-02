@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="{{lang}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>(function(){try{var t=localStorage.getItem('tnc-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+  <title>{{page_title}}</title>
+  <meta name="description" content="{{description}}">
+  <meta name="author" content="{{author}}">
+  <link rel="canonical" href="{{canonical}}">
+  <meta name="theme-color" content="#F6F7FB" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#10141F" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="{{og_type}}">
+  <meta property="og:site_name" content="{{book_title}}">
+  <meta property="og:title" content="{{page_title}}">
+  <meta property="og:description" content="{{description}}">
+  <meta property="og:url" content="{{canonical}}">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="{{root}}favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{{root}}apple-touch-icon.png">
+  <link rel="preload" href="{{root}}assets/fonts/literata.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{root}}assets/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{root}}assets/style.css">
+  <script defer src="{{root}}assets/theme-toggle.js"></script>
+  <script defer src="{{root}}assets/app.js"></script>
+</head>
+<body class="page-{{kind}}">
+<a class="skip-link" href="#content">Skip to the text</a>
+<div class="page-shell">
+  <aside class="sidebar" id="chapter-sidebar" aria-label="Book contents">
+    <div class="sidebar-inner">
+      <div class="sidebar-top">
+        <a class="site-title" href="{{root}}index.html">{{book_title}}<small>{{book_subtitle}}</small></a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2 12h2.2M19.8 12H22M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/></svg></button>
+      </div>
+      <p class="sidebar-tagline">{{author}} · <span class="pin-tag">v{{version}}</span></p>
+      <div class="search" role="search">
+        <input id="q" type="search" placeholder="Search the book  ( / )" aria-label="Search the book" autocomplete="off" data-base="{{root}}">
+        <div id="results" class="results" role="listbox"></div>
+      </div>
+      <nav class="chapter-nav" aria-label="Chapters">
+{{nav}}
+      </nav>
+      <div class="sidebar-links">
+        <a href="{{root}}releases.html">Release history</a>
+        <a href="{{newsletter_url}}" rel="noopener">Get the PDF</a>
+        <a href="{{contact_url}}" rel="noopener">For publishers: contact {{author}}</a>
+      </div>
+    </div>
+  </aside>
+  <div class="content-shell">
+    <div class="mobile-bar">
+      <button class="menu" type="button" aria-controls="chapter-sidebar" aria-expanded="false">☰ Contents</button>
+      <a class="mb-title" href="{{root}}index.html">{{book_title}}</a>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2 12h2.2M19.8 12H22M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/></svg></button>
+    </div>
+{{header}}
+    <main id="content" class="chapter-main">
+      <article class="prose">
+{{body}}
+      </article>
+{{after}}
+    </main>
+    <footer class="page-footer">
+{{footer}}
+    </footer>
+  </div>
+</div>
+</body>
+</html>

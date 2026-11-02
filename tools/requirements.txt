@@ -1,0 +1,9 @@
+# Build tools for the book. Python 3.11+. Pinned to the versions the author's Book 2 uses.
+markdown-it-py==4.2.0
+mdit-py-plugins==0.6.1
+linkify-it-py==2.2.0
+Pygments==2.21.0
+lxml==6.0.2
+# PDF only: Playwright drives Chromium (`python -m playwright install chromium`, or set CHROME_PATH)
+playwright==1.64.0
+pypdf==6.18.1

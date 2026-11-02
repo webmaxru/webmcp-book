@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 966" width="1200" height="966">
+<rect width="1200" height="966" fill="#FFFFFF"/>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5A6478"/></marker></defs>
+<line x1="250" y1="40" x2="250" y2="856" stroke="#171A22" stroke-width="3"/>
+<text x="222" y="85.0" text-anchor="end" font-family="Bricolage Grotesque" font-weight="700" font-size="24" fill="#171A22">5 Mar 2026</text>
+<circle cx="250" cy="77.0" r="11" fill="#C2468A"/>
+<rect x="284" y="49.0" width="886" height="56" rx="9" fill="#F6F7FB" stroke="#C2468A" stroke-width="4"/>
+<text x="302" y="84.0" font-size="21" fill="#171A22"><tspan font-family="IBM Plex Mono">provideContext()</tspan><tspan font-family="Literata"> and </tspan><tspan font-family="IBM Plex Mono">clearContext()</tspan><tspan font-family="Literata"> removed</tspan></text>
+<text x="1154" y="84.0" text-anchor="end" font-family="IBM Plex Mono" font-size="18" fill="#5A6478">#132</text>
+<text x="222" y="107.0" text-anchor="end" font-family="Bricolage Grotesque" font-weight="700" font-size="15" letter-spacing="1" fill="#C2468A">BREAKS OLD CODE</text>
+<text x="222" y="159.0" text-anchor="end" font-family="Bricolage Grotesque" font-weight="700" font-size="24" fill="#171A22">26 Mar 2026</text>
+<circle cx="250" cy="151.0" r="11" fill="#5A54F0"/>
+<rect x="284" y="123.0" width="886" height="56" rx="9" fill="#F6F7FB" stroke="#5A54F0" stroke-width="2"/>
+<text x="302" y="158.0" font-size="21" fill="#171A22"><tspan font-family="IBM Plex Mono">registerTool(tool, { signal })</tspan><tspan font-family="Literata">, </tspan><tspan font-family="IBM Plex Mono">unregisterTool()</tspan><tspan font-family="Literata"> removed</tspan></text>
+<text x="1154" y="158.0" text-anchor="end" font-family="IBM Plex Mono" font-size="18" fill="#5A6478">#147</text>
+<text x="222" y="233.0" text-anchor="end" font-family="Bricolage Grotesque" font-weight="700" font-size="24" fill="#171A22">19 May 2026</text>
+<circle cx="250" cy="225.0" r="11" fill="#5A54F0"/>
+<rect x="284" y="197.0" width="886" height="56" rx="9" fill="#F6F7FB" stroke="#5A54F0" stroke-width="2"/>
+<text x="302" y="232.0" font-size="21" fill="#171A22"><tspan font-family="IBM Plex Mono">ModelContext</tspan><tspan font-family="Literata"> scoped to </tspan><tspan font-family="IBM Plex Mono">Document</tspan></text>
+<text x="1154" y="232.0" text-anchor="end" font-family="IBM Plex Mono" font-size="18" fill="#5A6478">#177</text>
+<text x="222" y="307.0" text-anchor="end" font-family="Bricolage Grotesque" font-weight="700" font-size="24" fill="#171A22">27 May 2026</text>
+<circle cx="250" cy="299.0" r="11" fill="#C2468A"/>
+<rect x="284" y="271.0" width="886" height="56" rx="9" fill="#F6F7FB" stroke="#C2468A" stroke-width="4"/>
+<text x="302" y="306.0" font-size="21" fill="#171A22"><tspan font-family="IBM Plex Mono">navigator.modelContext</tspan><tspan font-family="Literata"> → </tspan><tspan font-family="IBM Plex Mono">document.modelContext</tspan></text>
+<text x="1154" y="306.0" text-anchor="end" font-family="IBM Plex Mono" font-size="18" fill="#5A6478">#184</text>
+<text x="222" y="329.0" text-anchor="end" font-family="Bricolage Grotesque" font-weight="700" font-size="15" letter-spacing="1" fill="#C2468A">BREAKS OLD CODE</text>
+<text x="222" y="381.0" text-anchor="end" font-family="Bricolage Grotesque" font-weight="700" font-size="24" fill="#171A22">8 Jun 2026</text>
+<circle cx="250" cy="373.0" r="11" fill="#5A54F0"/>
+<rect x="284" y="345.0" width="886" height="56" rx="9" fill="#F6F7FB" stroke="#5A54F0" stroke-width="2"/>
+<text x="302" y="380.0" font-size="21" fill="#171A22"><tspan font-family="IBM Plex Mono">registerTool()</tspan><tspan font-family="Literata"> returns a promise</tspan></text>
+<text x="1154" y="380.0" text-anchor="end" font-family="IBM Plex Mono" font-size="18" fill="#5A6478">#200</text>
+<text x="222" y="455.0" text-anchor="end" font-family="Bricolage Grotesque" font-weight="700" font-size="24" fill="#171A22">11 Jun 2026</text>
+<circle cx="250" cy="447.0" r="11" fill="#5A54F0"/>
+<rect x="284" y="419.0" width="886" height="56" rx="9" fill="#F6F7FB" stroke="#5A54F0" stroke-width="2"/>
+<text x="302" y="454.0" font-size="21" fill="#171A22"><tspan font-family="IBM Plex Mono">ModelContextClient</tspan><tspan font-family="Literata"> and </tspan><tspan font-family="IBM Plex Mono">requestUserInteraction()</tspan><tspan font-family="Literata"> removed</tspan></text>
+<text x="1154" y="454.0" text-anchor="end" font-family="IBM Plex Mono" font-size="18" fill="#5A6478">#205</text>
+<text x="222" y="529.0" text-anchor="end" font-family="Bricolage Grotesque" font-weight="700" font-size="24" fill="#171A22">19 Aug 2026</text>
+<circle cx="250" cy="521.0" r="11" fill="#5A54F0"/>
+<rect x="284" y="493.0" width="886" height="56" rx="9" fill="#F6F7FB" stroke="#5A54F0" stroke-width="2"/>
+<text x="302" y="528.0" font-size="21" fill="#171A22"><tspan font-family="IBM Plex Mono">execute(input, { signal })</tspan></text>
+<text x="1154" y="528.0" text-anchor="end" font-family="IBM Plex Mono" font-size="18" fill="#5A6478">#247</text>
+<text x="222" y="603.0" text-anchor="end" font-family="Bricolage Grotesque" font-weight="700" font-size="24" fill="#171A22">8 Oct 2026</text>
+<circle cx="250" cy="595.0" r="11" fill="#5A54F0"/>
+<rect x="284" y="567.0" width="886" height="56" rx="9" fill="#F6F7FB" stroke="#5A54F0" stroke-width="2"/>
+<text x="302" y="602.0" font-size="21" fill="#171A22"><tspan font-family="Literata">Declarative API leaves the spec, specific error names</tspan></text>
+<text x="1154" y="602.0" text-anchor="end" font-family="IBM Plex Mono" font-size="18" fill="#5A6478">#338 · #339</text>
+<text x="222" y="677.0" text-anchor="end" font-family="Bricolage Grotesque" font-weight="700" font-size="24" fill="#171A22">27 Oct 2026</text>
+<circle cx="250" cy="669.0" r="10" fill="#FFFFFF" stroke="#5A6478" stroke-width="3"/>
+<rect x="284" y="641.0" width="886" height="56" rx="9" fill="#F6F7FB" stroke="#5A6478" stroke-width="2" stroke-dasharray="7 6"/>
+<text x="302" y="676.0" font-size="21" fill="#171A22"><tspan font-family="Literata">New draft: IDL unchanged, two-sided opt-in written up</tspan></text>
+<text x="1154" y="676.0" text-anchor="end" font-family="IBM Plex Mono" font-size="18" fill="#5A6478">#326</text>
+<text x="222" y="766" text-anchor="end" font-family="Bricolage Grotesque" font-weight="700" font-size="24" fill="#171A22">2 Nov 2026</text>
+<text x="222" y="792" text-anchor="end" font-family="Literata" font-size="17" fill="#5A6478">open, not merged</text>
+<circle cx="250" cy="766" r="10" fill="#FFFFFF" stroke="#5A6478" stroke-width="3" stroke-dasharray="4 3"/>
+<rect x="284" y="726" width="886" height="126" rx="14" fill="#EEF1F8" stroke="#5A6478" stroke-width="2" stroke-dasharray="7 6"/>
+<text x="302" y="762" font-family="Bricolage Grotesque" font-weight="700" font-size="22" fill="#171A22">Proposals that would change code again</text>
+<text x="302" y="798" font-size="20" fill="#171A22"><tspan font-family="IBM Plex Mono">Tool</tspan><tspan font-family="Literata"> interface #348 · </tspan><tspan font-family="IBM Plex Mono">outputSchema</tspan><tspan font-family="Literata"> #254</tspan></text><text x="302" y="830" font-size="20" fill="#171A22"><tspan font-family="IBM Plex Mono">requestUserInput()</tspan><tspan font-family="Literata"> #204 · </tspan><tspan font-family="IBM Plex Mono">openWorldHint</tspan><tspan font-family="Literata"> #355</tspan></text>
+<circle cx="60" cy="923" r="10" fill="#C2468A"/><text x="80" y="930" font-family="Literata" font-size="20" fill="#171A22">breaks early-2026 code</text>
+<circle cx="370" cy="923" r="10" fill="#5A54F0"/><text x="390" y="930" font-family="Literata" font-size="20" fill="#171A22">a change you meet while porting</text>
+<circle cx="760" cy="923" r="9" fill="#FFFFFF" stroke="#5A6478" stroke-width="3"/><text x="780" y="930" font-family="Literata" font-size="20" fill="#171A22">no code change</text>
+</svg>

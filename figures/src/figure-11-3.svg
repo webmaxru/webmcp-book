@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560">
+<rect width="1200" height="560" fill="#FFFFFF"/>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5A6478"/></marker></defs>
+<text x="40" y="44" font-family="Bricolage Grotesque" font-size="20" font-weight="700" fill="#171A22" text-anchor="start">Characters per tool definition (name + description + inputSchema)</text>
+<line x1="300.0" y1="70" x2="300.0" y2="440" stroke="#DCE1EC" stroke-width="1.5"/>
+<text x="300.0" y="462" font-family="IBM Plex Mono" font-size="14" font-weight="400" fill="#5A6478" text-anchor="middle">0</text>
+<line x1="477.27272727272725" y1="70" x2="477.27272727272725" y2="440" stroke="#DCE1EC" stroke-width="1.5"/>
+<text x="477.27272727272725" y="462" font-family="IBM Plex Mono" font-size="14" font-weight="400" fill="#5A6478" text-anchor="middle">250</text>
+<line x1="654.5454545454545" y1="70" x2="654.5454545454545" y2="440" stroke="#DCE1EC" stroke-width="1.5"/>
+<text x="654.5454545454545" y="462" font-family="IBM Plex Mono" font-size="14" font-weight="400" fill="#5A6478" text-anchor="middle">500</text>
+<line x1="831.8181818181819" y1="70" x2="831.8181818181819" y2="440" stroke="#DCE1EC" stroke-width="1.5"/>
+<text x="831.8181818181819" y="462" font-family="IBM Plex Mono" font-size="14" font-weight="400" fill="#5A6478" text-anchor="middle">750</text>
+<line x1="1009.0909090909091" y1="70" x2="1009.0909090909091" y2="440" stroke="#DCE1EC" stroke-width="1.5"/>
+<text x="1009.0909090909091" y="462" font-family="IBM Plex Mono" font-size="14" font-weight="400" fill="#5A6478" text-anchor="middle">1,000</text>
+<text x="40" y="102" font-family="IBM Plex Mono" font-size="18" font-weight="600" fill="#171A22" text-anchor="start">search_products</text>
+<text x="40" y="124" font-family="Literata" font-size="14" font-weight="400" fill="#5A6478" text-anchor="start">earlier: Listing 6.2</text>
+<rect x="300" y="84" width="442.4727272727273" height="24" rx="5" fill="#DCE1EC" stroke="#DCE1EC" stroke-width="1"/>
+<text x="750.4727272727273" y="102" font-family="IBM Plex Mono" font-size="15" font-weight="500" fill="#5A6478" text-anchor="start">624</text>
+<rect x="300" y="112" width="580.0363636363636" height="24" rx="5" fill="#5A54F0" stroke="#5A54F0" stroke-width="1"/>
+<text x="888.0363636363636" y="130" font-family="IBM Plex Mono" font-size="15" font-weight="700" fill="#3F38D6" text-anchor="start">818</text>
+<text x="40" y="174" font-family="IBM Plex Mono" font-size="18" font-weight="600" fill="#171A22" text-anchor="start">add_to_cart</text>
+<text x="40" y="196" font-family="Literata" font-size="14" font-weight="400" fill="#5A6478" text-anchor="start">earlier: Listing 6.7</text>
+<rect x="300" y="156" width="280.0909090909091" height="24" rx="5" fill="#DCE1EC" stroke="#DCE1EC" stroke-width="1"/>
+<text x="588.0909090909091" y="174" font-family="IBM Plex Mono" font-size="15" font-weight="500" fill="#5A6478" text-anchor="start">395</text>
+<rect x="300" y="184" width="356.6727272727273" height="24" rx="5" fill="#5A54F0" stroke="#5A54F0" stroke-width="1"/>
+<text x="664.6727272727273" y="202" font-family="IBM Plex Mono" font-size="15" font-weight="700" fill="#3F38D6" text-anchor="start">503</text>
+<text x="40" y="246" font-family="IBM Plex Mono" font-size="18" font-weight="600" fill="#171A22" text-anchor="start">search_articles</text>
+<text x="40" y="268" font-family="Literata" font-size="14" font-weight="400" fill="#5A6478" text-anchor="start">earlier: Listing 7.3</text>
+<rect x="300" y="228" width="200.6727272727273" height="24" rx="5" fill="#DCE1EC" stroke="#DCE1EC" stroke-width="1"/>
+<text x="508.6727272727273" y="246" font-family="IBM Plex Mono" font-size="15" font-weight="500" fill="#5A6478" text-anchor="start">283</text>
+<rect x="300" y="256" width="286.4727272727273" height="24" rx="5" fill="#5A54F0" stroke="#5A54F0" stroke-width="1"/>
+<text x="594.4727272727273" y="274" font-family="IBM Plex Mono" font-size="15" font-weight="700" fill="#3F38D6" text-anchor="start">404</text>
+<text x="40" y="318" font-family="IBM Plex Mono" font-size="18" font-weight="600" fill="#171A22" text-anchor="start">create_ticket</text>
+<text x="40" y="340" font-family="Literata" font-size="14" font-weight="400" fill="#5A6478" text-anchor="start">earlier: Listing 7.3</text>
+<rect x="300" y="300" width="294.27272727272725" height="24" rx="5" fill="#DCE1EC" stroke="#DCE1EC" stroke-width="1"/>
+<text x="602.2727272727273" y="318" font-family="IBM Plex Mono" font-size="15" font-weight="500" fill="#5A6478" text-anchor="start">415</text>
+<rect x="300" y="328" width="719.0181818181818" height="24" rx="5" fill="#5A54F0" stroke="#5A54F0" stroke-width="1"/>
+<text x="1027.0181818181818" y="346" font-family="IBM Plex Mono" font-size="15" font-weight="700" fill="#3F38D6" text-anchor="start">1,014</text>
+<text x="40" y="390" font-family="IBM Plex Mono" font-size="18" font-weight="600" fill="#171A22" text-anchor="start">get_ticket_status</text>
+<text x="40" y="412" font-family="Literata" font-size="14" font-weight="400" fill="#5A6478" text-anchor="start">earlier: Listing 7.3</text>
+<rect x="300" y="372" width="182.23636363636365" height="24" rx="5" fill="#DCE1EC" stroke="#DCE1EC" stroke-width="1"/>
+<text x="490.23636363636365" y="390" font-family="IBM Plex Mono" font-size="15" font-weight="500" fill="#5A6478" text-anchor="start">257</text>
+<rect x="300" y="400" width="306.3272727272727" height="24" rx="5" fill="#5A54F0" stroke="#5A54F0" stroke-width="1"/>
+<text x="614.3272727272727" y="418" font-family="IBM Plex Mono" font-size="15" font-weight="700" fill="#3F38D6" text-anchor="start">432</text>
+<rect x="40" y="490" width="24" height="18" rx="5" fill="#DCE1EC" stroke="#DCE1EC" stroke-width="2"/>
+<text x="74" y="505" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">earlier version</text>
+<rect x="260" y="490" width="24" height="18" rx="5" fill="#5A54F0" stroke="#5A54F0" stroke-width="2"/>
+<text x="294" y="505" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">this chapter</text>
+<text x="40" y="540" font-family="Literata" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">Widget total 955 → 1,850. Trailhead’s two tools 1,019 → 1,321. Measured in Chromium 156 with measureTools(), 2 November 2026.</text>
+</svg>

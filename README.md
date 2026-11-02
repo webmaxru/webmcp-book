@@ -1,115 +1,128 @@
-# Tools, Not Clicks: Building Agent-Ready Websites with WebMCP
+# Tools, Not Clicks
 
-[![Deploy book to GitHub Pages](https://github.com/vibeprogrammer/webmcp-book/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/vibeprogrammer/webmcp-book/actions/workflows/deploy-pages.yml)
-[![Read online](https://img.shields.io/badge/read-free%20online-2ea44f)](https://vibeprogrammer.github.io/webmcp-book/)
+This repository holds the manuscript of *Tools, Not Clicks: Building Agent-Ready Websites with WebMCP* by Maxim Salnikov, second edition, together with its figure sources, editorial records, theme, build tools and hosting setup. The runnable demos live in the companion repository [vibeprogrammer/webmcp-book-demos](https://github.com/vibeprogrammer/webmcp-book-demos). The web edition is hosted on Azure Static Web Apps at https://webmcp.salnikov.no once deployed (see [`DEPLOY.md`](DEPLOY.md)).
 
-A practical book on WebMCP, the proposed web standard that lets a website give AI agents real, typed tools instead of making them click through the page.
+## What lives where
 
-**[Read it free online →](https://vibeprogrammer.github.io/webmcp-book/)**
+| Path | What it is |
+| --- | --- |
+| [`manuscript/`](manuscript/) | The book: one Markdown file per part, chapter and appendix, in the order of [`Book.txt`](manuscript/Book.txt). Plain Markdown, no styling. Images are in [`manuscript/resources/images/`](manuscript/resources/images/) and are referenced as `images/<file>.png` (Leanpub's layout). |
+| [`figures/`](figures/) | Sources of the figures and the script that renders them into `manuscript/resources/images/`. |
+| [`theme/`](theme/) | Everything about how the book looks: the web edition (`site/`), the PDF (`print/`), the EPUB (`epub/`) and the fonts. Swapping the theme never touches the manuscript. See [`theme/README.md`](theme/README.md). |
+| [`tools/`](tools/) | The build: [`build.py`](tools/build.py) is the one entry point; [`book.json`](tools/book.json) holds the title, version, copyright lines and links; [`lint_manuscript.py`](tools/lint_manuscript.py) checks the manuscript; [`wordcount.py`](tools/wordcount.py) writes the table below. |
+| [`editorial/`](editorial/) | Editorial logs, one per chapter: the passes each chapter went through and what was checked. |
+| [`infra/`](infra/) | Azure Static Web Apps infrastructure for the web edition, with a one-command deploy. See [`DEPLOY.md`](DEPLOY.md) and [`CUSTOM-DOMAIN.md`](CUSTOM-DOMAIN.md). |
+| [`staticwebapp.config.json`](staticwebapp.config.json) | The web edition's hosting rules and security headers; the site build copies it into `dist/site/`. |
+| [`.github/workflows/`](.github/workflows/) | Book CI (lint and build on every pull request), Release (on a `v*` tag) and the web deploy. |
+| [`.agents/skills/`](.agents/skills/) | Supporting agent instructions, not book content. |
+| [`CHANGELOG.md`](CHANGELOG.md), [`RELEASING.md`](RELEASING.md) | What changed in each version, and how to cut a release. |
+| [`VALIDATION.md`](VALIDATION.md) | How the second edition was checked against the Chrome documentation, the specification and the WebMCP repository, with every finding and its source. |
+| `dist/` | Build output (not committed). |
 
-<!-- Leanpub ebook: add the link (and a buy badge, if wanted) here once the book is published on Leanpub. -->
+## Manuscript
 
-## Table of contents
+Read in this order. Word counts are `wc -w` on the Markdown source (code included); the last column is the share of words inside code blocks. The table is generated: `python3 tools/wordcount.py --update`.
 
-- [About the book](#about-the-book)
-- [Status](#status)
-- [Contents](#contents)
-- [Code and demos](#code-and-demos)
-- [Build the web edition locally](#build-the-web-edition-locally)
-- [Errata and feedback](#errata-and-feedback)
-- [Author](#author)
-- [Copyright and license](#copyright-and-license)
+<!-- wordcount:start -->
+| File | Title | Words | Code |
+| --- | --- | ---: | ---: |
+| [`part-1.md`](manuscript/part-1.md) | **Part I: Why the Web Needs an Agent Interface** | 11 |  |
+| [`01-the-agentic-web-arrives.md`](manuscript/01-the-agentic-web-arrives.md) | Chapter 1: The Agentic Web Arrives | 6,320 | 0 % |
+| [`02-from-apis-to-tools.md`](manuscript/02-from-apis-to-tools.md) | Chapter 2: From APIs to Tools: A Short History | 5,555 | 0 % |
+| [`03-mcp-in-practice.md`](manuscript/03-mcp-in-practice.md) | Chapter 3: MCP in Practice | 9,169 | 13 % |
+| [`04-enter-webmcp.md`](manuscript/04-enter-webmcp.md) | Chapter 4: Enter WebMCP | 8,191 | 2 % |
+| [`part-2.md`](manuscript/part-2.md) | **Part II: The WebMCP API in Depth** | 9 |  |
+| [`05-registering-tools.md`](manuscript/05-registering-tools.md) | Chapter 5: Registering Tools with document.modelContext | 10,224 | 10 % |
+| [`06-annotations-lifecycle-errors.md`](manuscript/06-annotations-lifecycle-errors.md) | Chapter 6: Annotations, Lifecycle and Errors | 10,956 | 14 % |
+| [`07-frames-origins-agents.md`](manuscript/07-frames-origins-agents.md) | Chapter 7: Frames, Origins and Page-Embedded Agents | 9,128 | 15 % |
+| [`08-declarative-api.md`](manuscript/08-declarative-api.md) | Chapter 8: The Declarative API: Forms as Tools | 9,382 | 11 % |
+| [`part-3.md`](manuscript/part-3.md) | **Part III: Building Agent-Ready Apps** | 7 |  |
+| [`09-first-webmcp-app.md`](manuscript/09-first-webmcp-app.md) | Chapter 9: Your First WebMCP App, End to End | 9,222 | 17 % |
+| [`10-webmcp-in-frameworks.md`](manuscript/10-webmcp-in-frameworks.md) | Chapter 10: WebMCP in Frameworks | 9,965 | 20 % |
+| [`11-designing-tools.md`](manuscript/11-designing-tools.md) | Chapter 11: Designing Tools Agents Can Actually Use | 12,185 | 21 % |
+| [`part-4.md`](manuscript/part-4.md) | **Part IV: Trust: Security, Privacy and Consent** | 9 |  |
+| [`12-threat-models.md`](manuscript/12-threat-models.md) | Chapter 12: Threat Models for Tool-Exposing Pages | 8,380 | 14 % |
+| [`13-privacy-consent-human-in-the-loop.md`](manuscript/13-privacy-consent-human-in-the-loop.md) | Chapter 13: Privacy, Consent and the Human in the Loop | 7,059 | 11 % |
+| [`part-5.md`](manuscript/part-5.md) | **Part V: Shipping and the Ecosystem** | 8 |  |
+| [`14-testing-debugging-evals.md`](manuscript/14-testing-debugging-evals.md) | Chapter 14: Testing, Debugging and Evals | 12,470 | 20 % |
+| [`15-browser-support-and-standards.md`](manuscript/15-browser-support-and-standards.md) | Chapter 15: Browser Support and the Standards Road | 10,877 | 6 % |
+| [`part-6.md`](manuscript/part-6.md) | **Part VI: Strategy and the Future** | 8 |  |
+| [`16-product-and-business-implications.md`](manuscript/16-product-and-business-implications.md) | Chapter 16: Product and Business Implications | 8,025 | 10 % |
+| [`17-the-road-ahead.md`](manuscript/17-the-road-ahead.md) | Chapter 17: The Road Ahead | 8,576 | 7 % |
+| [`appendix-a-api-reference.md`](manuscript/appendix-a-api-reference.md) | Appendix A: API Quick Reference (IDL, Attributes, Events, Errors) | 5,263 | 8 % |
+| [`appendix-b-glossary.md`](manuscript/appendix-b-glossary.md) | Appendix B: Glossary | 7,382 | 0 % |
+| [`appendix-c-resources.md`](manuscript/appendix-c-resources.md) | Appendix C: Resources and Further Reading | 4,007 | 0 % |
+| [`appendix-d-migration.md`](manuscript/appendix-d-migration.md) | Appendix D: Migration Notes: navigator.modelContext and provideContext() to document.modelContext | 3,663 | 20 % |
+| [`about-the-author.md`](manuscript/about-the-author.md) | About the Author | 300 | 0 % |
+| | **Total** | **176,351** | 11 % |
+<!-- wordcount:end -->
 
-## About the book
+## Manuscript conventions
 
-AI agents already browse on our behalf, but most of them still work from screenshots: they guess which button does what, and they break when the layout changes. WebMCP is the web platform's proposed answer. A page declares what it can do as named, described, schema-typed tools on `document.modelContext`, and the browser's agent calls them directly, inside the user's own session, with the user watching and in control.
+The manuscript stays clean Markdown, so the same files work on Leanpub and in this repo's build. `python3 tools/lint_manuscript.py` checks most of these rules.
 
-**Who it's for**
+1. CommonMark with pipe tables, fenced code with a language tag and footnotes. No raw HTML, CSS classes, inline styles, front matter or Leanpub-only asides. The only Markua attribute lines are `{class: part}` in the part files and `{sample: true}` / `{sample: false}`, which mark the Leanpub sample.
+2. One `#` heading per file: `# Chapter N: Title`, `# Appendix X: Title`, `# About the Author`, and `# Part I: Title #` in the part files. Sections use `##` to `####`.
+3. Figures are one line, `![Figure N.M — Caption.](images/figure-N-M.png)`. The alt text is the caption. The SVG source lives in `figures/src/`, and `python3 figures/render.py figure-N-M` renders it to `manuscript/resources/images/` (read `figures/PALETTE.md` first).
+4. Listings have a bold label line above the fence: `**Listing 5.3** `fjord-table/booking-tools.js` — title`. Every listing is byte-identical to a file in the demos repository, or marked as an excerpt.
+5. Callouts are blockquotes that start with a bold word: `> **Note:**`, `> **Warning:**`, `> **Tip:**` or `> **Still in flux:**`.
+6. Footnote ids are unique across the book: `[^ch05-3]`, `[^appa-2]`.
+7. Cross-references use chapter numbers in words ("Chapter 6"), not file links.
+8. No placeholders of any kind. If something is unknown, the text says so in plain words.
 
-- Front-end and full-stack web developers who build production apps in JavaScript or TypeScript (plain, React, Angular or similar) and want a hands-on path from a first tool to production.
-- Product managers, tech leads and engineering managers who need to decide whether, where and when to invest in agent-readiness. Part VI and the chapter openers work without the code.
+## Build
 
-**What you'll learn**
+Python 3.11 or later.
 
-- Why agents need tools rather than clicks, and how WebMCP relates to the Model Context Protocol (MCP).
-- How to register tools with `document.modelContext`: schemas, annotations, lifecycle, errors, frames and origins, and the declarative form API.
-- How to build an agent-ready app end to end, wire WebMCP into React and Angular, and design tools that models actually use well.
-- How to threat-model tool-exposing pages and keep a human in the loop for consent and privacy.
-- How to test, debug and evaluate tools, follow browser support and the standards process, and judge the product and business impact.
+```sh
+python3 -m venv .venv && . .venv/bin/activate
+pip install -r tools/requirements.txt
+python -m playwright install chromium      # only for the PDF
 
-## Status
-
-**Complete.** All 17 chapters and Appendices A–D are written. The whole book was technically reviewed on 15 October 2026:
-
-- Every claim was checked against sources read that day.
-- Spec references are dated to the WebMCP [Draft Community Group Report](https://webmachinelearning.github.io/webmcp/) of 15 October 2026 from the W3C Web Machine Learning Community Group.
-- Every code listing was re-run in Chromium 156 with `--enable-features=WebMCPTesting` and against a `document.modelContext` mock. All demo tests pass.
-
-WebMCP is still a Community Group draft, not a W3C standard, and it changes between browser releases. Each chapter marks what is still in flux in **Still in flux** callouts.
-
-## Contents
-
-| Part | Chapter | Read online | Source |
-|:---:|---|:---:|:---:|
-| **I** | 1. The Agentic Web Arrives | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/01-the-agentic-web-arrives.html) | [Markdown](chapters/01-the-agentic-web-arrives/WebMCP_Ch01_The_Agentic_Web_Arrives.md) |
-|  | 2. From APIs to Tools: A Short History | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/02-from-apis-to-tools.html) | [Markdown](chapters/02-from-apis-to-tools/WebMCP_Ch02_From_APIs_to_Tools.md) |
-|  | 3. MCP in Practice | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/03-mcp-in-practice.html) | [Markdown](chapters/03-mcp-in-practice/WebMCP_Ch03_MCP_in_Practice.md) |
-|  | 4. Enter WebMCP | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/04-enter-webmcp.html) | [Markdown](chapters/04-enter-webmcp/WebMCP_Ch04_Enter_WebMCP.md) |
-| **II** | 5. Registering Tools with `document.modelContext` | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/05-registering-tools.html) | [Markdown](chapters/05-registering-tools/WebMCP_Ch05_Registering_Tools.md) |
-|  | 6. Annotations, Lifecycle and Errors | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/06-annotations-lifecycle-errors.html) | [Markdown](chapters/06-annotations-lifecycle-errors/WebMCP_Ch06_Annotations_Lifecycle_Errors.md) |
-|  | 7. Frames, Origins and Page-Embedded Agents | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/07-frames-origins-agents.html) | [Markdown](chapters/07-frames-origins-agents/WebMCP_Ch07_Frames_Origins_Agents.md) |
-|  | 8. The Declarative API: Forms as Tools | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/08-declarative-api.html) | [Markdown](chapters/08-declarative-api/WebMCP_Ch08_Declarative_API.md) |
-| **III** | 9. Your First WebMCP App, End to End | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/09-first-webmcp-app.html) | [Markdown](chapters/09-first-webmcp-app/WebMCP_Ch09_First_WebMCP_App.md) |
-|  | 10. WebMCP in Frameworks | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/10-webmcp-in-frameworks.html) | [Markdown](chapters/10-webmcp-in-frameworks/WebMCP_Ch10_WebMCP_in_Frameworks.md) |
-|  | 11. Designing Tools Agents Can Actually Use | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/11-designing-tools.html) | [Markdown](chapters/11-designing-tools/WebMCP_Ch11_Designing_Tools.md) |
-| **IV** | 12. Threat Models for Tool-Exposing Pages | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/12-threat-models.html) | [Markdown](chapters/12-threat-models/WebMCP_Ch12_Threat_Models.md) |
-|  | 13. Privacy, Consent and the Human in the Loop | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/13-privacy-consent-human-in-the-loop.html) | [Markdown](chapters/13-privacy-consent-human-in-the-loop/WebMCP_Ch13_Privacy_Consent_Human_in_the_Loop.md) |
-| **V** | 14. Testing, Debugging and Evals | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/14-testing-debugging-evals.html) | [Markdown](chapters/14-testing-debugging-evals/WebMCP_Ch14_Testing_Debugging_Evals.md) |
-|  | 15. Browser Support and the Standards Road | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/15-browser-support-and-standards.html) | [Markdown](chapters/15-browser-support-and-standards/WebMCP_Ch15_Browser_Support_and_Standards.md) |
-| **VI** | 16. Product and Business Implications | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/16-product-and-business-implications.html) | [Markdown](chapters/16-product-and-business-implications/WebMCP_Ch16_Product_and_Business_Implications.md) |
-|  | 17. The Road Ahead | [Web](https://vibeprogrammer.github.io/webmcp-book/chapters/17-the-road-ahead.html) | [Markdown](chapters/17-the-road-ahead/WebMCP_Ch17_The_Road_Ahead.md) |
-
-| Appendix | Read online | Source |
-|---|:---:|:---:|
-| A. API Quick Reference (IDL, Attributes, Events, Errors) | [Web](https://vibeprogrammer.github.io/webmcp-book/appendices/a-api-reference.html) | [Markdown](appendices/a-api-reference/WebMCP_AppA_API_Reference.md) |
-| B. Glossary | [Web](https://vibeprogrammer.github.io/webmcp-book/appendices/b-glossary.html) | [Markdown](appendices/b-glossary/WebMCP_AppB_Glossary.md) |
-| C. Resources and Further Reading | [Web](https://vibeprogrammer.github.io/webmcp-book/appendices/c-resources.html) | [Markdown](appendices/c-resources/WebMCP_AppC_Resources.md) |
-| D. Migration Notes: `navigator.modelContext` and `provideContext()` to `document.modelContext` | [Web](https://vibeprogrammer.github.io/webmcp-book/appendices/d-migration.html) | [Markdown](appendices/d-migration/WebMCP_AppD_Migration.md) |
-
-Also in this repository: the original [book outline](outline/outline.md) ([PDF](outline/WebMCP_Book_Outline.pdf)).
-
-The chapters are GitHub-flavoured Markdown with footnotes. Each chapter's figures live in an `images/` folder next to its Markdown file.
-
-## Code and demos
-
-Every listing in the book is runnable code in the companion repository, **[vibeprogrammer/webmcp-book-demos](https://github.com/vibeprogrammer/webmcp-book-demos)**. It has one folder per chapter (plus Fjord Table, the restaurant-booking site that runs through the book), each with its own tests against Chromium's WebMCP and a mock. See its README for requirements and a quick start.
-
-## Build the web edition locally
-
-The web edition is generated from the Markdown by [`site/generate.py`](site/generate.py). You need Python 3 (CI uses Python 3.12).
-
-```bash
-python -m pip install -r site/requirements.txt
-python site/generate.py                    # writes site/_site/ (git-ignored)
-python -m http.server -d site/_site 8000   # then open http://localhost:8000
+python3 tools/lint_manuscript.py            # placeholders, raw HTML, images, footnotes, numbering, Book.txt, anchors
+python3 tools/build.py                      # everything; or: build.py site | zip | epub | pdf
 ```
 
-Every push to `main` that touches `chapters/`, `appendices/`, `outline/` or `site/` runs [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml), which builds the site and publishes it to GitHub Pages. [`site/README.md`](site/README.md) explains how the build works.
+| Command | Output |
+| --- | --- |
+| `python3 tools/build.py site` | `dist/site/`: the web edition (home page, one page per part, chapter and appendix, About, Release history, 404, sitemap, search) |
+| `python3 tools/build.py zip` | `dist/Tools-Not-Clicks-HTML-v<version>.zip`: the web edition for offline reading |
+| `python3 tools/build.py epub` | `dist/Tools-Not-Clicks-Maxim-Salnikov-v<version>.epub` |
+| `python3 tools/build.py pdf` | `dist/Tools-Not-Clicks-Maxim-Salnikov-v<version>.pdf`: 7 × 9.25 in |
 
-## Errata and feedback
+To preview the web edition: `python3 -m http.server -d dist/site 8000`, then open http://localhost:8000. The PDF build uses Playwright's Chromium, or the browser in `CHROME_PATH`.
 
-Found a mistake, a broken link or code that no longer works in a newer browser? Please [open an issue](https://github.com/vibeprogrammer/webmcp-book/issues/new). Include the chapter and section (or listing number), what you expected, and your browser and version. Problems with the runnable code belong in the [demos repository's issues](https://github.com/vibeprogrammer/webmcp-book-demos/issues).
+## Editions and releases
 
-## Author
+Every release is a Git tag `vX.Y.Z` with a GitHub Release carrying the PDF, the EPUB and the HTML edition (zip), all built from that tag, with the version's [`CHANGELOG.md`](CHANGELOG.md) section as its notes. The current version is in [`tools/book.json`](tools/book.json) and on the book's copyright page. The web edition shows the release history at https://webmcp.salnikov.no/releases.html.
 
-**Maxim Salnikov** is a developer advocate, conference speaker and community organizer based in Oslo.
+- **PDF**, 7 × 9.25 in, for reading, Leanpub and the KDP paperback.
+- **EPUB 3**, checked with EPUBCheck, for Leanpub, KDP (Kindle) and other e-book stores.
+- **Web edition**, deployed to Azure Static Web Apps on every change to `main` and on every release.
+- [Book CI](.github/workflows/ci.yml) lints the manuscript and builds all three editions on every pull request; the built files are attached to the run.
+- [`RELEASING.md`](RELEASING.md): version numbers, and how to cut, rebuild or roll back a release.
 
-- LinkedIn: [linkedin.com/in/webmax](https://www.linkedin.com/in/webmax/)
-- GitHub: [@webmaxru](https://github.com/webmaxru)
-- Newsletter: [isainative.substack.com](https://isainative.substack.com/)
+Version 1.0.0 (15 October 2026) was the first edition and was never tagged. Version 2.0.0 is the first tagged release.
 
-## Copyright and license
+## Leanpub
 
-© 2026 Maxim Salnikov. Free to read online; all rights reserved.
+Leanpub can publish this book in two ways.
 
-The code in the companion [webmcp-book-demos](https://github.com/vibeprogrammer/webmcp-book-demos) repository is available under the [MIT License](https://github.com/vibeprogrammer/webmcp-book-demos/blob/main/LICENSE).
+**Upload the files built here (recommended).** In the book's Leanpub settings, choose to upload your own files, then upload the release's PDF and EPUB. Readers then get exactly the editions on the GitHub Release, with this theme. Upload the new files for every release.
+
+**Let Leanpub build from this repository.** Leanpub's GitHub writing mode reads `manuscript/Book.txt` and the files it lists, with images from `manuscript/resources/images/`, which is how this repository is laid out. Leanpub then renders the book with its own Markua styling, not this theme. Notes for this mode:
+
+- `Book.txt` lists one file per line, in reading order; `tools/lint_manuscript.py` fails if it names a missing file or misses one.
+- Each part file starts with `{class: part}` and a `# Part …` heading. Leanpub's Markua manual also documents the older form, a heading with a trailing `#` (`# Part I: … #`); if Leanpub's preview shows a part as an ordinary chapter, use that form.
+- Leanpub chooses its own sample chapters in this mode. Choose them in the book's settings.
+- Code blocks, tables, footnotes and `![Figure …](images/…)` figures are standard Markua.
+
+Either way, the version on Leanpub is the version you upload or publish; note it in the release notes Leanpub sends to readers.
+
+## Kindle Direct Publishing (KDP)
+
+**Paperback.** Create a paperback with trim size **7 × 9.25 in (17.78 × 23.5 cm)**, **no bleed**, black-and-white or color interior (the figures are in color; a black-and-white interior prints them in grey). Upload the release's PDF as the manuscript. The PDF's inside margin is 0.875 in, which KDP accepts for any page count up to its maximum. The cover is made separately: use KDP's cover calculator with the final page count (on the PDF's last page, and in the build's report) and the paper type to get the spine width.
+
+**Kindle e-book.** Upload the release's EPUB as the manuscript. Check it in Kindle Previewer before publishing; it shows how the code listings and tables reflow on small screens.
+
+Whenever the page count changes, the paperback cover's spine changes with it.

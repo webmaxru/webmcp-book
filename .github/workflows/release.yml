@@ -1,0 +1,162 @@
+# Builds the book from a version tag and publishes a GitHub Release with the PDF, the EPUB,
+# the HTML edition (zip) and their checksums, with the tag's CHANGELOG.md section as the notes.
+# Then it asks the deploy-swa workflow to put that release on the web edition. See RELEASING.md.
+#
+#   git tag -a v2.0.0 -m "v2.0.0" && git push origin v2.0.0
+#
+# Re-run for an existing tag (to rebuild its assets, or to publish a tag created before this
+# workflow existed): Actions -> Release -> Run workflow, tag = v2.0.0.
+# Uses only the built-in GITHUB_TOKEN.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build and publish (for example v2.0.0)"
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
+
+jobs:
+  build:
+    name: Build the editions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ env.TAG }}
+          fetch-depth: 0
+      - name: Version from the tag
+        id: version
+        run: |
+          case "$TAG" in v[0-9]*.[0-9]*.[0-9]*) ;; *) echo "::error::'$TAG' is not a vX.Y.Z tag"; exit 1;; esac
+          version="${TAG#v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          case "$version" in *-*) echo "prerelease=true" >> "$GITHUB_OUTPUT";; *) echo "prerelease=false" >> "$GITHUB_OUTPUT";; esac
+          v_json="$(python3 -c 'import json; print(json.load(open("tools/book.json")).get("version", ""))')"
+          if [ "$v_json" != "$version" ]; then
+            echo "::error file=tools/book.json::version is $v_json but the tag is $TAG"; exit 1
+          fi
+      - name: Release notes from CHANGELOG.md (default branch)
+        run: |
+          git show "origin/${{ github.event.repository.default_branch }}:CHANGELOG.md" > /tmp/CHANGELOG.md
+          python3 - "${{ steps.version.outputs.version }}" > release-notes.md <<'PY'
+          import os, re, sys
+          v = sys.argv[1]
+          text = open("/tmp/CHANGELOG.md", encoding="utf-8").read()
+          m = re.search(rf"^## \[{re.escape(v)}\]\s*[-–—]?\s*(.*?)\s*\n(.*?)(?=^## \[|\Z)", text, re.M | re.S)
+          if not m:
+              sys.exit(f"CHANGELOG.md has no '## [{v}]' section")
+          if not re.match(r"\d{4}-\d{2}-\d{2}$", m.group(1)):
+              sys.exit(f"CHANGELOG.md: '## [{v}]' has no release date (found '{m.group(1)}'); set it to YYYY-MM-DD before tagging")
+          body = re.sub(r"(?m)^\[[^\]]+\]: \S+\s*$", "", m.group(2))
+          base = f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/blob/{os.environ['TAG']}/"
+          body = re.sub(r"\]\((?!https?:|#|mailto:)([^)]+)\)", lambda mm: "](" + base + mm.group(1) + ")", body)
+          print(body.strip())
+          PY
+          cat release-notes.md
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install the build tools
+        run: |
+          pip install -r tools/requirements.txt
+          python -m playwright install --with-deps chromium
+      - name: Manuscript lint
+        run: python tools/lint_manuscript.py
+      - name: Build the web edition (zip), the EPUB and the PDF
+        env:
+          BOOK_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          python tools/build.py all 2>&1 | tee build.log
+          if grep -q '^warning:' build.log; then echo "::error::the build printed warnings"; exit 1; fi
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: EPUBCheck
+        run: |
+          curl -sSL -o /tmp/epubcheck.zip https://github.com/w3c/epubcheck/releases/download/v5.2.1/epubcheck-5.2.1.zip
+          unzip -q /tmp/epubcheck.zip -d /tmp
+          java -jar /tmp/epubcheck-5.2.1/epubcheck.jar dist/*.epub
+      - name: Collect the release files and checksums
+        run: |
+          mkdir release
+          cp dist/*.pdf dist/*.epub dist/*.zip release/
+          (cd release && sha256sum -- * > SHA256SUMS.txt && cat SHA256SUMS.txt)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: editions-${{ env.TAG }}
+          path: release/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release-notes.md
+
+  publish:
+    name: Publish the GitHub Release
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: editions-${{ env.TAG }}
+          path: release
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PRE: ${{ needs.build.outputs.prerelease }}
+        run: |
+          title="$TAG"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --title "$title" --notes-file release-notes.md
+            gh release upload "$TAG" release/* --clobber
+          else
+            flags=(--verify-tag --title "$title" --notes-file release-notes.md)
+            if [ "$PRE" = "true" ]; then flags+=(--prerelease); fi
+            # Only the highest stable version is marked "Latest", so rebuilding an old tag
+            # (or publishing it late) doesn't take the label from a newer one.
+            newest="$(gh api "repos/$GH_REPO/tags" --paginate --jq '.[].name' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)"
+            if [ "$PRE" != "true" ] && [ "$TAG" = "$newest" ]; then flags+=(--latest); else flags+=(--latest=false); fi
+            gh release create "$TAG" "${flags[@]}" release/*
+          fi
+          gh release view "$TAG" --json url,assets --jq '.url, (.assets[] | "  \(.name)  \(.size) bytes")'
+      # A release created with GITHUB_TOKEN does not start other workflows ("release: published"
+      # never fires for it), but workflow_dispatch does. So the web edition is deployed from here.
+      - name: Deploy this release to the web edition
+        if: needs.build.outputs.prerelease == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if gh workflow view deploy-swa.yml >/dev/null 2>&1; then
+            gh workflow run deploy-swa.yml --ref "${{ github.event.repository.default_branch }}" -f ref="$TAG"
+            echo "Asked deploy-swa to deploy $TAG."
+          else
+            echo "No deploy-swa workflow in this repository; the web edition is not deployed by the release."
+          fi

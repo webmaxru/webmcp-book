@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1182" viewBox="0 0 1200 1182">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5A6478"/></marker></defs>
+<rect x="0" y="0" width="1200" height="1182" fill="#FFFFFF"/>
+<rect x="40" y="30" width="1120" height="210" rx="14" fill="#F6F7FB" stroke="#DCE1EC" stroke-width="2"/>
+<text x="70" y="70" font-family="Bricolage Grotesque" font-size="25" font-weight="800" fill="#171A22" text-anchor="start">What a tool declares</text>
+<rect x="70" y="86" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="113" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Output schemas</text>
+<text x="560" y="113" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">#9, #92, PR #254</text>
+<rect x="1018.5" y="91" width="101.5" height="30" rx="15" fill="#B87613" stroke="#B87613" stroke-width="2"/><text x="1069.25" y="112" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">PR open</text>
+<rect x="70" y="134" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="161" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Multimodal input and output</text>
+<text x="560" y="161" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">#41, #81</text>
+<rect x="1050.0" y="139" width="70.0" height="30" rx="15" fill="#FFFFFF" stroke="#5A6478" stroke-width="2"/><text x="1085.0" y="160" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#171A22" text-anchor="middle">Open</text>
+<rect x="70" y="182" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="209" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Sensitive reads</text>
+<text x="560" y="209" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">#331</text>
+<rect x="1050.0" y="187" width="70.0" height="30" rx="15" fill="#FFFFFF" stroke="#5A6478" stroke-width="2"/><text x="1085.0" y="208" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#171A22" text-anchor="middle">Open</text>
+<rect x="40" y="258" width="1120" height="258" rx="14" fill="#F6F7FB" stroke="#DCE1EC" stroke-width="2"/>
+<text x="70" y="298" font-family="Bricolage Grotesque" font-size="25" font-weight="800" fill="#171A22" text-anchor="start">A single call</text>
+<rect x="70" y="314" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="341" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Cancellation semantics</text>
+<text x="560" y="341" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">#299, #344</text>
+<rect x="1029.0" y="319" width="91.0" height="30" rx="15" fill="#0EA5A5" stroke="#0EA5A5" stroke-width="2"/><text x="1074.5" y="340" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">Closed</text>
+<rect x="70" y="362" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="389" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Event ordering</text>
+<text x="560" y="389" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">#332</text>
+<rect x="1050.0" y="367" width="70.0" height="30" rx="15" fill="#FFFFFF" stroke="#5A6478" stroke-width="2"/><text x="1085.0" y="388" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#171A22" text-anchor="middle">Open</text>
+<rect x="70" y="410" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="437" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Asking the user mid-call</text>
+<text x="560" y="437" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">#165, PR #204</text>
+<rect x="1018.5" y="415" width="101.5" height="30" rx="15" fill="#B87613" stroke="#B87613" stroke-width="2"/><text x="1069.25" y="436" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">PR open</text>
+<rect x="70" y="458" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="485" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Streaming and progress</text>
+<text x="560" y="485" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">#82</text>
+<rect x="1050.0" y="463" width="70.0" height="30" rx="15" fill="#FFFFFF" stroke="#5A6478" stroke-width="2"/><text x="1085.0" y="484" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#171A22" text-anchor="middle">Open</text>
+<rect x="40" y="534" width="1120" height="162" rx="14" fill="#F6F7FB" stroke="#DCE1EC" stroke-width="2"/>
+<text x="70" y="574" font-family="Bricolage Grotesque" font-size="25" font-weight="800" fill="#171A22" text-anchor="start">Work that outlives the document</text>
+<rect x="70" y="590" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="617" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Continuation tokens</text>
+<text x="560" y="617" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">#135, explainer</text>
+<rect x="997.5" y="595" width="122.5" height="30" rx="15" fill="#B87613" stroke="#B87613" stroke-width="2"/><text x="1058.75" y="616" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">Exploring</text>
+<rect x="70" y="638" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="665" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Service-worker tools</text>
+<text x="560" y="665" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">explainer</text>
+<rect x="945.0" y="643" width="175.0" height="30" rx="15" fill="#FFFFFF" stroke="#5A6478" stroke-width="2"/><text x="1032.5" y="664" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#5A6478" text-anchor="middle">Explainer only</text>
+<rect x="40" y="714" width="1120" height="210" rx="14" fill="#F6F7FB" stroke="#DCE1EC" stroke-width="2"/>
+<text x="70" y="754" font-family="Bricolage Grotesque" font-size="25" font-weight="800" fill="#171A22" text-anchor="start">Who sees a tool</text>
+<rect x="70" y="770" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="797" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Two-sided opt-in, §6.3.4</text>
+<text x="560" y="797" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">PR #326, merged 27 Oct</text>
+<rect x="976.5" y="775" width="143.5" height="30" rx="15" fill="#5A54F0" stroke="#5A54F0" stroke-width="2"/><text x="1048.25" y="796" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">In the spec</text>
+<rect x="70" y="818" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="845" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Built-in agent exposure</text>
+<text x="560" y="845" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">native-agent</text>
+<rect x="945.0" y="823" width="175.0" height="30" rx="15" fill="#FFFFFF" stroke="#5A6478" stroke-width="2"/><text x="1032.5" y="844" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#5A6478" text-anchor="middle">Explainer only</text>
+<rect x="70" y="866" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="893" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Host-controlled iframes</text>
+<text x="560" y="893" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">#317</text>
+<rect x="1050.0" y="871" width="70.0" height="30" rx="15" fill="#FFFFFF" stroke="#5A6478" stroke-width="2"/><text x="1085.0" y="892" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#171A22" text-anchor="middle">Open</text>
+<rect x="40" y="942" width="1120" height="210" rx="14" fill="#F6F7FB" stroke="#DCE1EC" stroke-width="2"/>
+<text x="70" y="982" font-family="Bricolage Grotesque" font-size="25" font-weight="800" fill="#171A22" text-anchor="start">What the platform becomes</text>
+<rect x="70" y="998" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="1025" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Generic call API</text>
+<text x="560" y="1025" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">#236</text>
+<rect x="1050.0" y="1003" width="70.0" height="30" rx="15" fill="#FFFFFF" stroke="#5A6478" stroke-width="2"/><text x="1085.0" y="1024" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#171A22" text-anchor="middle">Open</text>
+<rect x="70" y="1046" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="1073" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Tool grouping</text>
+<text x="560" y="1073" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">#161, #255</text>
+<rect x="1008.0" y="1051" width="112.0" height="30" rx="15" fill="#FFFFFF" stroke="#5A6478" stroke-width="2"/><text x="1064.0" y="1072" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#5A6478" text-anchor="middle">Deferred</text>
+<rect x="70" y="1094" width="1060" height="40" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="1121" font-family="Bricolage Grotesque" font-size="20" font-weight="600" fill="#171A22" text-anchor="start">Venue: Agentic Web WG</text>
+<text x="560" y="1121" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">charter draft</text>
+<rect x="955.5" y="1099" width="164.5" height="30" rx="15" fill="#B87613" stroke="#B87613" stroke-width="2"/><text x="1037.75" y="1120" font-family="Bricolage Grotesque" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">In refinement</text>
+</svg>

@@ -1,0 +1,9 @@
+/* Shared figure kit for "Tools, Not Clicks". Palette and type follow the APM book theme
+   (apm.isainative.dev): Bricolage Grotesque for labels, IBM Plex Mono for code, Literata for prose notes. */
+@font-face{font-family:"Bricolage Grotesque";src:url("../theme/fonts/BricolageGrotesque[opsz,wdth,wght].ttf");font-weight:200 800}
+@font-face{font-family:"Literata";src:url("../theme/fonts/Literata[opsz,wght].ttf");font-weight:200 900}
+@font-face{font-family:"Literata";font-style:italic;src:url("../theme/fonts/Literata-Italic[opsz,wght].ttf");font-weight:200 900}
+@font-face{font-family:"IBM Plex Mono";src:url("../theme/fonts/IBMPlexMono-Regular.ttf");font-weight:400}
+@font-face{font-family:"IBM Plex Mono";src:url("../theme/fonts/IBMPlexMono-SemiBold.ttf");font-weight:600}
+html,body{margin:0;padding:0;background:#FFFFFF}
+svg{display:block}

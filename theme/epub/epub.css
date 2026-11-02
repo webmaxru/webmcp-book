@@ -1,0 +1,50 @@
+/* EPUB edition theme: the web edition's APM-derived typography, reduced to what reading
+   systems honour. Reading apps override fonts, sizes and colours at the reader's request,
+   so this sheet sets structure and gentle defaults only. Used by tools/build_epub.py. */
+@font-face { font-family: "Literata"; src: url("../fonts/literata.woff2"); font-weight: 200 900; font-style: normal; }
+@font-face { font-family: "Literata"; src: url("../fonts/literata-italic.woff2"); font-weight: 200 900; font-style: italic; }
+@font-face { font-family: "Bricolage Grotesque"; src: url("../fonts/bricolage-grotesque.woff2"); font-weight: 200 800; }
+@font-face { font-family: "IBM Plex Mono"; src: url("../fonts/ibm-plex-mono-400.woff2"); font-weight: 400; }
+@font-face { font-family: "IBM Plex Mono"; src: url("../fonts/ibm-plex-mono-600.woff2"); font-weight: 600; }
+
+body { font-family: "Literata", Georgia, serif; line-height: 1.5; margin: 0 4%; }
+h1, h2, h3, h4 { font-family: "Bricolage Grotesque", sans-serif; line-height: 1.2; page-break-after: avoid; break-after: avoid; }
+h1 { font-size: 1.8em; margin: 1.2em 0 0.8em; }
+h2 { font-size: 1.35em; margin: 1.6em 0 0.5em; }
+h3 { font-size: 1.15em; margin: 1.3em 0 0.4em; }
+h4 { font-size: 1em; margin: 1.1em 0 0.3em; }
+.label { display: block; font-family: "IBM Plex Mono", monospace; font-size: 0.6em; letter-spacing: 0.18em; text-transform: uppercase; color: #8F5A0C; margin-bottom: 0.5em; }
+p { margin: 0 0 0.75em; text-align: left; }
+a { color: #3F38D6; }
+code { font-family: "IBM Plex Mono", monospace; font-size: 0.86em; }
+pre { font-family: "IBM Plex Mono", monospace; font-size: 0.78em; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word;
+      background: #F3F4F9; border-left: 3px solid #5A54F0; padding: 0.6em 0.8em; margin: 0.8em 0 1em; }
+pre .ln { display: block; }
+figure { margin: 1.2em 0; }
+figure.figure { text-align: center; page-break-inside: avoid; break-inside: avoid; }
+figure.figure img { max-width: 100%; }
+figcaption { font-size: 0.85em; text-align: left; color: #444; margin-top: 0.4em; }
+figure.listing figcaption { margin: 0 0 0.3em; }
+.fig-label, .listing-label { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 0.85em; color: #8F5A0C; margin-right: 0.4em; }
+blockquote { margin: 1em 0; padding: 0.4em 0.9em; border-left: 3px solid #DCE1EC; }
+blockquote.epigraph { border-left-color: #B87613; font-style: italic; }
+blockquote.callout { background: #F6F7FB; border-left: 3px solid #5A54F0; }
+blockquote.callout-tip { border-left-color: #0B7F7F; }
+blockquote.callout-warning { border-left-color: #A8346F; }
+blockquote.callout-flux { border-left-color: #B87613; background: #FAF6EE; }
+.callout-kind { font-family: "IBM Plex Mono", monospace; font-size: 0.75em; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.4em; }
+.callout-head--block .callout-kind { display: block; }
+table { border-collapse: collapse; width: 100%; font-size: 0.85em; margin: 1em 0; }
+th, td { border: 1px solid #DCE1EC; padding: 0.3em 0.45em; text-align: left; vertical-align: top; }
+th { background: #EEF1F8; }
+section.footnotes { font-size: 0.85em; border-top: 1px solid #DCE1EC; margin-top: 2em; padding-top: 0.6em; }
+.notes-title { font-family: "IBM Plex Mono", monospace; font-size: 0.8em; letter-spacing: 0.12em; text-transform: uppercase; }
+sup { font-size: 0.7em; line-height: 0; }
+.part { text-align: left; margin-top: 20%; }
+.part ol { list-style: none; padding: 0; }
+.titlepage { margin-top: 15%; }
+.titlepage .t-title { font-family: "Bricolage Grotesque", sans-serif; font-size: 2.4em; font-weight: 800; line-height: 1.05; margin: 0; }
+.titlepage .t-sub { font-family: "Bricolage Grotesque", sans-serif; font-size: 1.2em; color: #5A6478; }
+.titlepage .t-author { font-family: "Bricolage Grotesque", sans-serif; font-size: 1.2em; font-weight: 600; margin-top: 2em; }
+.copyright p { font-size: 0.8em; }
+nav ol { list-style: none; padding-left: 1em; }
