@@ -4,13 +4,13 @@
 # Windows: infra/teardown.ps1.
 #
 #   ./infra/teardown.sh [--resource-group rg-webmcp-book] [--subscription ID]
-#                       [--remove-github-secret] [--repo vibeprogrammer/webmcp-book] [--yes]
+#                       [--remove-github-secret] [--repo webmaxru/webmcp-book] [--yes]
 #
 # The DNS record for a custom domain lives at your DNS provider and is NOT touched:
 # delete the webmcp CNAME yourself afterwards, or it will point at nothing.
 set -euo pipefail
 
-RG=rg-webmcp-book; REPO=vibeprogrammer/webmcp-book; SUBSCRIPTION=""; REMOVE_SECRET=0; YES=0
+RG=rg-webmcp-book; REPO=webmaxru/webmcp-book; SUBSCRIPTION=""; REMOVE_SECRET=0; YES=0
 SECRET_NAME=AZURE_STATIC_WEB_APPS_API_TOKEN
 need_arg() { [ $# -ge 2 ] && [ -n "$2" ] || { echo "Option $1 needs a value" >&2; exit 2; }; }
 while [ $# -gt 0 ]; do

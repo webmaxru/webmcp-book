@@ -1,6 +1,6 @@
 # Tools, Not Clicks
 
-This repository holds the manuscript of *Tools, Not Clicks: Building Agent-Ready Websites with WebMCP* by Maxim Salnikov, second edition, together with its figure sources, editorial records, theme, build tools and hosting setup. The runnable demos live in the companion repository [vibeprogrammer/webmcp-book-demos](https://github.com/vibeprogrammer/webmcp-book-demos). The web edition is hosted on Azure Static Web Apps at https://webmcp.salnikov.no once deployed (see [`DEPLOY.md`](DEPLOY.md)).
+This repository holds the manuscript of *Tools, Not Clicks: Building Agent-Ready Websites with WebMCP* by Maxim Salnikov, second edition, together with its figure sources, editorial records, theme, build tools and hosting setup. The runnable demos live in the companion repository [webmaxru/webmcp-book-demos](https://github.com/webmaxru/webmcp-book-demos). The web edition is hosted on Azure Static Web Apps at https://webmcp.salnikov.no once deployed (see [`DEPLOY.md`](DEPLOY.md)).
 
 ## What lives where
 

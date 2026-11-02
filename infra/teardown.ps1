@@ -19,7 +19,7 @@
 [CmdletBinding()]
 param(
   [string]$ResourceGroup = 'rg-webmcp-book',
-  [string]$Repo = 'vibeprogrammer/webmcp-book',
+  [string]$Repo = 'webmaxru/webmcp-book',
   [string]$Subscription = '',
   [switch]$RemoveGitHubSecret,
   [switch]$Yes

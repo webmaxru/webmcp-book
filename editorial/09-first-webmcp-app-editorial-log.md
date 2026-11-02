@@ -2,7 +2,7 @@
 
 Manuscript: `manuscript/09-first-webmcp-app.md`
 Figures: `figures/src/figure-9-1.svg` (start-up decision flow), `figure-9-2.svg` (hub: the six ways to reach the tools, replacing the old card grid), `figure-9-3.svg` (trial timeline), hand-written SVG per the APM figure kit, rendered to `manuscript/resources/images/`
-Demo: `chapters/09-first-webmcp-app/` in vibeprogrammer/webmcp-book-demos. Changed: `app.js` (Listing 9.4, batch rollback), `tests/run-tests.mjs` (new rollback test, `init` option for `openPage`), README status block. Suite: 22 checks with `CHAPTER_MD` (21 without), Chromium 156.0.8078.4, Playwright 1.64.1. Result: see the README status block and the validation file.
+Demo: `chapters/09-first-webmcp-app/` in webmaxru/webmcp-book-demos. Changed: `app.js` (Listing 9.4, batch rollback), `tests/run-tests.mjs` (new rollback test, `init` option for `openPage`), README status block. Suite: 22 checks with `CHAPTER_MD` (21 without), Chromium 156.0.8078.4, Playwright 1.64.1. Result: see the README status block and the validation file.
 Validation: VALIDATION.md (37 rows)
 Length: 8,364 words (Oct 15) → 9,222 words (`wc -w`, listings included). Growth: the rollback section and table row, the issue #361 and PR #348 notes in the Test Agent section, "Pin versions", "Share the application service", the Chrome 156 Stable sentence.
 

@@ -227,9 +227,9 @@ The packages’ registry records (the npmjs.com pages show the same data to a br
 ## C.9 The book’s own repositories
 
 - **The book.** The manuscript (one Markdown file per chapter and appendix), the theme and the build scripts for the PDF, EPUB and web editions, and the release history.
-  <https://github.com/vibeprogrammer/webmcp-book>
+  <https://github.com/webmaxru/webmcp-book>
 - **The demos.** Every listing as a runnable file, with tests.
-  <https://github.com/vibeprogrammer/webmcp-book-demos>
+  <https://github.com/webmaxru/webmcp-book-demos>
 - **The website.** The web edition, built from the same manuscript, at its new home.
   <https://webmcp.salnikov.no>
 
@@ -286,4 +286,4 @@ Chapter 15’s `standards-watch.mjs`, in the demos repository, automates most of
 ## Notes
 
 [^appc-1]: W3C, “Community and Business Groups: Frequently Asked Questions”, answer to “Does the Community Group Process replace the Recommendation Track?” (retrieved November 2026). <https://www.w3.org/community/about/faq/>
-[^appc-2]: Every URL in this appendix was fetched on 14 and 15 October 2026 for the first edition, and again on 2 November 2026 for this one, with a script. On 2 November every URL returned HTTP 200 with three exceptions. The npmjs.com package pages answered the script with a bot check (HTTP 403), so packages and versions were confirmed in the npm registry records instead, for example <https://registry.npmjs.org/usewebmcp/latest>. The book and demos repositories in Section C.9 answer HTTP 404 to anyone without access to them. And webmcp.salnikov.no, the web edition’s new address, was not yet serving when this appendix was checked. One commit-pinned GitHub page (Appendix D’s `docs/proposal.md`) answered with GitHub’s rate limit and was confirmed through the GitHub API.
+[^appc-2]: Every URL in this appendix was fetched on 14 and 15 October 2026 for the first edition, and again on 2 November 2026 for this one, with a script. On 2 November every URL returned HTTP 200 with three exceptions. The npmjs.com package pages answered the script with a bot check (HTTP 403), so packages and versions were confirmed in the npm registry records instead, for example <https://registry.npmjs.org/usewebmcp/latest>. The book’s manuscript repository in Section C.9 is private and answers HTTP 404 to anyone without access. The demos repository is public. And webmcp.salnikov.no, the web edition’s new address, was not yet serving when this appendix was checked. One commit-pinned GitHub page (Appendix D’s `docs/proposal.md`) answered with GitHub’s rate limit and was confirmed through the GitHub API.
