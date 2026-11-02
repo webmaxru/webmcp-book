@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="{{lang}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>(function(){try{var t=localStorage.getItem('tnc-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+  <title>{{page_title}}</title>
+  <meta name="description" content="{{description}}">
+  <meta name="author" content="{{author}}">
+  <link rel="canonical" href="{{canonical}}">
+  <meta name="theme-color" content="#F6F7FB" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#10141F" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="{{og_type}}">
+  <meta property="og:site_name" content="{{book_title}}">
+  <meta property="og:title" content="{{page_title}}">
+  <meta property="og:description" content="{{description}}">
+  <meta property="og:url" content="{{canonical}}">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="{{root}}favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{{root}}apple-touch-icon.png">
+  <link rel="preload" href="{{root}}assets/fonts/literata.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{root}}assets/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{root}}assets/style.css">
+  <script defer src="{{root}}assets/theme-toggle.js"></script>
+  <script defer src="{{root}}assets/app.js"></script>
+</head>
+<body class="page-index">
+<a class="skip-link" href="#content">Skip to the contents</a>
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="brand" href="{{root}}index.html"><img src="{{root}}favicon.svg" alt="" width="30" height="30">{{book_title}}</a>
+    <nav aria-label="Site">
+      <a href="#contents">Contents</a>
+      <a class="hide-sm" href="{{root}}about.html">About the author</a>
+      <a class="hide-sm" href="{{root}}releases.html">Releases</a>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2 12h2.2M19.8 12H22M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/></svg></button>
+    </nav>
+  </div>
+</header>
+<main id="content">
+{{body}}
+</main>
+<footer class="site-footer">
+  <div class="container">
+{{footer}}
+  </div>
+</footer>
+</body>
+</html>

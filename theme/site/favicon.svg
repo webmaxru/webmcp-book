@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>Tools, Not Clicks</title>
+  <rect width="64" height="64" rx="14" fill="#5A54F0"/>
+  <!-- T: the tool -->
+  <rect x="10" y="15" width="25" height="7" rx="1.5" fill="#FFFFFF"/>
+  <rect x="19" y="15" width="7" height="34" rx="1.5" fill="#FFFFFF"/>
+  <!-- C: an open bracket, the agent's call coming in -->
+  <path d="M52 25.5 A11.5 11.5 0 1 0 52 42.5" fill="none" stroke="#F3C766" stroke-width="7" stroke-linecap="round"/>
+</svg>

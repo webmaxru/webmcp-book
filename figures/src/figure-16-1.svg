@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="780" viewBox="0 0 1200 780">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5A6478"/></marker></defs>
+<rect x="0" y="0" width="1200" height="780" fill="#FFFFFF"/>
+<rect x="150" y="40" width="500.0" height="320.0" rx="0" fill="#EEF1F8" stroke="#DCE1EC" stroke-width="2"/>
+<rect x="650.0" y="40" width="500.0" height="320.0" rx="0" fill="#F6F7FB" stroke="#DCE1EC" stroke-width="2"/>
+<rect x="150" y="360.0" width="500.0" height="320.0" rx="0" fill="#F6F7FB" stroke="#DCE1EC" stroke-width="2"/>
+<rect x="650.0" y="360.0" width="500.0" height="320.0" rx="0" fill="#F6F7FB" stroke="#DCE1EC" stroke-width="2"/>
+<line x1="150" y1="680" x2="1170" y2="680" stroke="#5A6478" stroke-width="2.5" marker-end="url(#arr)"/>
+<line x1="150" y1="680" x2="150" y2="20" stroke="#5A6478" stroke-width="2.5" marker-end="url(#arr)"/>
+<text x="650.0" y="730" font-family="Bricolage Grotesque" font-size="24" font-weight="600" fill="#171A22" text-anchor="middle">Risk if the agent gets it wrong</text>
+<text x="150" y="708" font-family="Literata" font-size="17" font-weight="400" fill="#5A6478" text-anchor="start">low</text>
+<text x="1150" y="708" font-family="Literata" font-size="17" font-weight="400" fill="#5A6478" text-anchor="end">high</text>
+<g transform="translate(70,360.0) rotate(-90)"><text x="0" y="0" font-family="Bricolage Grotesque" font-size="24" font-weight="600" fill="#171A22" text-anchor="middle">Value per completion</text></g>
+<text x="136" y="676" font-family="Literata" font-size="17" font-weight="400" fill="#5A6478" text-anchor="end">low</text>
+<text x="136" y="58" font-family="Literata" font-size="17" font-weight="400" fill="#5A6478" text-anchor="end">high</text>
+<text x="174" y="80" font-family="Bricolage Grotesque" font-size="26" font-weight="800" fill="#3F38D6" text-anchor="start">Start here</text>
+<text x="174" y="106" font-family="Literata" font-size="17" font-weight="400" fill="#5A6478" text-anchor="start">read-only or reversible, used a lot</text>
+<text x="674.0" y="80" font-family="Bricolage Grotesque" font-size="26" font-weight="800" fill="#8F5A0C" text-anchor="start">Next, with confirmation UX</text>
+<text x="674.0" y="106" font-family="Literata" font-size="17" font-weight="400" fill="#5A6478" text-anchor="start">consequential, the customer confirms</text>
+<text x="174" y="400.0" font-family="Bricolage Grotesque" font-size="26" font-weight="800" fill="#5A6478" text-anchor="start">Later</text>
+<text x="674.0" y="400.0" font-family="Bricolage Grotesque" font-size="26" font-weight="800" fill="#5A6478" text-anchor="start">Later, once policy is settled</text>
+
+<rect x="180" y="132" width="330" height="64" rx="9" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2.5"/><circle cx="210" cy="164.0" r="17" fill="#5A54F0"/><text x="210" y="171.0" font-family="Bricolage Grotesque" font-size="19" font-weight="800" fill="#FFFFFF" text-anchor="middle">1</text><text x="238" y="160" font-family="Bricolage Grotesque" font-size="21" font-weight="700" fill="#171A22" text-anchor="start">Search products</text><text x="238" y="184" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">search_products</text>
+<rect x="180" y="208" width="330" height="64" rx="9" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2.5"/><circle cx="210" cy="240.0" r="17" fill="#5A54F0"/><text x="210" y="247.0" font-family="Bricolage Grotesque" font-size="19" font-weight="800" fill="#FFFFFF" text-anchor="middle">1</text><text x="238" y="236" font-family="Bricolage Grotesque" font-size="21" font-weight="700" fill="#171A22" text-anchor="start">Compare products</text><text x="238" y="260" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">compare_products</text>
+<rect x="300" y="284" width="330" height="64" rx="9" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2.5"/><circle cx="330" cy="316.0" r="17" fill="#5A54F0"/><text x="330" y="323.0" font-family="Bricolage Grotesque" font-size="19" font-weight="800" fill="#FFFFFF" text-anchor="middle">2</text><text x="358" y="312" font-family="Bricolage Grotesque" font-size="21" font-weight="700" fill="#171A22" text-anchor="start">Add to cart</text><text x="358" y="336" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">add_to_cart, get_cart</text>
+<rect x="690.0" y="170" width="420" height="64" rx="9" fill="#FFFFFF" stroke="#B87613" stroke-width="2.5"/><circle cx="720.0" cy="202.0" r="17" fill="#B87613"/><text x="720.0" y="209.0" font-family="Bricolage Grotesque" font-size="19" font-weight="800" fill="#FFFFFF" text-anchor="middle">3</text><text x="748.0" y="198" font-family="Bricolage Grotesque" font-size="21" font-weight="700" fill="#171A22" text-anchor="start">Checkout (summary only)</text><text x="748.0" y="222" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">checkout · the customer clicks</text>
+<rect x="180" y="440.0" width="400" height="64" rx="9" fill="#FFFFFF" stroke="#5A6478" stroke-width="2.5"/><text x="198" y="468.0" font-family="Bricolage Grotesque" font-size="21" font-weight="700" fill="#171A22" text-anchor="start">Order status</text><text x="198" y="492.0" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">get_order_status · backend MCP</text>
+<rect x="710.0" y="480.0" width="360" height="64" rx="9" fill="#FFFFFF" stroke="#5A6478" stroke-width="2.5"/><text x="728.0" y="508.0" font-family="Bricolage Grotesque" font-size="21" font-weight="700" fill="#171A22" text-anchor="start">Returns</text><text x="728.0" y="532.0" font-family="IBM Plex Mono" font-size="16" font-weight="500" fill="#5A6478" text-anchor="start">no tool yet · policy open</text>
+</svg>

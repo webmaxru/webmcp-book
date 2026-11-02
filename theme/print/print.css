@@ -1,0 +1,197 @@
+/* Print layout for the PDF edition (Leanpub / KDP): 7 x 9.25 in technical book.
+   The typography of the web edition's APM-derived theme, set for paper:
+   Literata (body), Bricolage Grotesque (display: openers, part pages, headings),
+   IBM Plex Mono (code), indigo for the page's voice and amber for the machine's.
+   Used by tools/build_pdf.py, which also stamps running heads and folios from the
+   .overlay rules at the end of this file. Colours stay legible in greyscale. */
+@font-face { font-family: "Literata"; src: url("../fonts/Literata[opsz,wght].ttf"); font-weight: 200 900; font-style: normal; }
+@font-face { font-family: "Literata"; src: url("../fonts/Literata-Italic[opsz,wght].ttf"); font-weight: 200 900; font-style: italic; }
+@font-face { font-family: "Bricolage Grotesque"; src: url("../fonts/BricolageGrotesque[opsz,wdth,wght].ttf"); font-weight: 200 800; font-stretch: 75% 100%; }
+@font-face { font-family: "IBM Plex Mono"; src: url("../fonts/IBMPlexMono-Regular.ttf"); font-weight: 400; font-style: normal; }
+@font-face { font-family: "IBM Plex Mono"; src: url("../fonts/IBMPlexMono-Italic.ttf"); font-weight: 400; font-style: italic; }
+@font-face { font-family: "IBM Plex Mono"; src: url("../fonts/IBMPlexMono-Medium.ttf"); font-weight: 500; font-style: normal; }
+@font-face { font-family: "IBM Plex Mono"; src: url("../fonts/IBMPlexMono-SemiBold.ttf"); font-weight: 600 700; font-style: normal; }
+
+/* Text block 5.375 x 7.45 in. Inner/outer margins swap on left/right pages but the width stays the
+   same, so a blank page inserted by the build never reflows the text. */
+@page { size: 7in 9.25in; margin: 0.88in 0.75in 0.92in 0.875in; }
+@page :left  { margin-left: 0.75in;  margin-right: 0.875in; }
+@page :right { margin-left: 0.875in; margin-right: 0.75in; }
+
+:root {
+  --ink: #171A22; --muted: #5A6478; --rule: #DCE1EC; --indigo: #4A44D8; --indigo-strong: #3F38D6;
+  --amber: #8F5A0C; --teal: #0B7F7F; --magenta: #A8346F; --codebg: #F3F4F9; --panel: #F6F7FB;
+  --display: "Bricolage Grotesque", sans-serif; --body: "Literata", serif; --mono: "IBM Plex Mono", monospace;
+}
+html { font-size: 9.8pt; }
+body { margin: 0; font-family: var(--body); font-size: 9.8pt; line-height: 1.45; color: var(--ink);
+       font-optical-sizing: auto; font-kerning: normal; font-variant-ligatures: common-ligatures;
+       hyphens: auto; -webkit-hyphens: auto; text-rendering: optimizeLegibility;
+       -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+/* ---------- blocks ---------- */
+.block { break-before: page; }
+.block:first-child { break-before: auto; }
+.blank { break-before: page; height: 1px; }
+.fullpage { height: 7.3in; display: flex; flex-direction: column; overflow: hidden; }
+
+/* title page */
+.titlepage .t-eyebrow { font-family: var(--mono); font-size: 7.5pt; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-top: 0.9in; }
+.titlepage .t-title { font-family: var(--display); font-weight: 800; font-size: 38pt; line-height: 0.98; letter-spacing: -0.03em; margin-top: 0.14in; }
+.titlepage .t-sub { font-family: var(--display); font-weight: 500; font-size: 15pt; line-height: 1.22; letter-spacing: -0.01em; color: var(--muted); margin-top: 0.2in; max-width: 4.4in; }
+.titlepage .t-rule { width: 1.1in; height: 3pt; background: var(--indigo); margin: 0.38in 0 0.26in; }
+.titlepage .t-rule::after { content: ""; display: block; width: 0.32in; height: 3pt; margin-left: 1.1in; background: var(--amber); }
+.titlepage .t-author { font-family: var(--display); font-size: 15pt; font-weight: 600; letter-spacing: -0.01em; }
+.titlepage .t-spacer { flex: 1; }
+.titlepage .t-tested { font-family: var(--mono); font-size: 7.6pt; color: var(--amber); border-top: 0.5pt solid var(--rule); padding-top: 8pt; }
+
+/* copyright page */
+.copyright { justify-content: flex-end; font-size: 7.9pt; line-height: 1.5; color: #333; }
+.copyright p { margin: 0 0 6.5pt; text-align: left; hyphens: manual; text-indent: 0 !important; }
+.copyright .c-title { font-family: var(--display); font-weight: 600; font-size: 9.5pt; margin-bottom: 10pt; color: var(--ink); }
+.copyright .c-version { font-family: var(--mono); font-size: 7.4pt; color: var(--amber); }
+
+/* part page */
+.partpage { justify-content: center; }
+.partpage h1 { font-family: var(--display); margin: 0; font-weight: 700; font-size: 25pt; line-height: 1.1; letter-spacing: -0.02em; break-after: auto; hyphens: manual; }
+.partpage h1 .p-label { display: block; font-family: var(--mono); font-size: 9pt; font-weight: 600; letter-spacing: 0.22em;
+                        text-transform: uppercase; color: var(--amber); margin-bottom: 14pt; }
+.partpage .p-rule { width: 1.1in; height: 2.5pt; background: var(--indigo); margin-top: 18pt; }
+.partpage .p-intro { margin-top: 16pt; font-size: 9.6pt; color: #333; }
+.partpage ol { list-style: none; padding: 0; margin: 20pt 0 0; }
+.partpage li { margin: 0 0 5pt; display: flex; gap: 10pt; align-items: baseline; font-family: var(--display); font-size: 10.5pt; font-weight: 500; }
+.partpage li .pl { font-family: var(--mono); font-size: 7.5pt; color: var(--amber); width: 0.75in; flex: none; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* chapter opener */
+.opener { padding-top: 0.75in; margin-bottom: 0.34in; }
+.opener .o-label { font-family: var(--mono); font-weight: 600; font-size: 8pt; letter-spacing: 0.22em; text-transform: uppercase; color: var(--amber); margin-bottom: 9pt; }
+.opener h1 { font-family: var(--display); font-weight: 700; font-size: 25pt; line-height: 1.06; margin: 0; letter-spacing: -0.025em; hyphens: manual; }
+.opener .o-rule { width: 0.9in; height: 2.5pt; background: var(--indigo); margin-top: 15pt; }
+
+/* ---------- text ---------- */
+p { margin: 0; text-align: justify; orphans: 2; widows: 2; }
+p + p { text-indent: 1.2em; }
+.chapter-body > p:first-child, h2 + p, h3 + p, h4 + p { text-indent: 0; }
+p, ul, ol { hyphenate-limit-chars: 6 3 2; }
+ul, ol { margin: 6pt 0; padding-left: 1.4em; }
+li { margin: 2pt 0; text-align: left; }
+li::marker { color: var(--amber); }
+li > p { text-align: left; }
+li > p + p { text-indent: 0; margin-top: 4pt; }
+ul + p, ol + p, pre + p, .table-wrap + p, figure + p, blockquote + p { text-indent: 0; margin-top: 7pt; }
+strong { font-weight: 650; }
+em { font-style: italic; }
+a { color: inherit; text-decoration: none; }
+a.ext { color: var(--indigo); }
+a.ext::after { content: " <" attr(data-url) ">"; font-family: var(--mono); font-size: 0.74em; color: var(--muted);
+               overflow-wrap: anywhere; word-break: break-all; hyphens: none; }
+a.bare { font-family: var(--mono); font-size: 0.78em; color: var(--indigo); overflow-wrap: anywhere; word-break: break-all; hyphens: none; }
+
+h2, h3, h4 { font-family: var(--display); color: var(--ink); break-after: avoid; break-inside: avoid; hyphens: manual; text-align: left; letter-spacing: -0.01em; }
+h2 { font-size: 14pt; font-weight: 700; line-height: 1.18; margin: 20pt 0 7pt; letter-spacing: -0.015em; }
+h3 { font-size: 11.2pt; font-weight: 650; line-height: 1.24; margin: 14pt 0 5pt; }
+h4 { font-size: 10pt; font-weight: 600; margin: 11pt 0 4pt; color: #2A2F3A; }
+h2 + h3 { margin-top: 6pt; }
+.chapter-body > h2:first-child, .epigraph + h2 { margin-top: 0; }
+
+code { font-family: var(--mono); font-size: 0.84em; background: var(--codebg); padding: 0.3pt 1.4pt; border-radius: 1.5pt;
+       overflow-wrap: anywhere; hyphens: none; font-variant-ligatures: none; }
+h2 code, h3 code, h4 code { background: none; padding: 0; font-size: 0.9em; }
+
+pre.code { font-family: var(--mono); font-size: 8pt; line-height: 1.38; background: var(--codebg); color: #1B1F2A;
+           border-left: 2pt solid var(--indigo); padding: 6pt 8pt 6pt 9pt; margin: 8pt 0 9pt; white-space: pre-wrap;
+           overflow-wrap: anywhere; hyphens: none; font-variant-ligatures: none; border-radius: 0 2pt 2pt 0;
+           orphans: 3; widows: 3; text-align: left; }
+pre.code.short { break-inside: avoid; }
+/* wide blocks: IBM Plex Mono advances 0.6 em; the box is ~370 pt wide inside its padding */
+pre.code.w80 { font-size: 7.4pt; }
+pre.code.w88 { font-size: 6.9pt; }
+pre.code.w96 { font-size: 6.4pt; }
+pre.code code { background: none; padding: 0; font-size: 1em; border-radius: 0; }
+pre.code .ln { display: block; padding-left: 2.2ch; text-indent: -2.2ch; min-height: 1.38em; }
+/* token colours, dark enough for print and distinct in greyscale by weight/style */
+.code .c, .code .c1, .code .cm, .code .cs, .code .ch, .code .cp, .code .cpf { color: #6B7489; font-style: italic; }
+.code .k, .code .kd, .code .kn, .code .kr, .code .kc, .code .kp, .code .ow, .code .nt { color: #3F38D6; font-weight: 600; }
+.code .kt, .code .nb, .code .bp, .code .nf, .code .fm, .code .nc, .code .nn, .code .nd { color: #0B6E6E; }
+.code .s, .code .s1, .code .s2, .code .sb, .code .sc, .code .sd, .code .se, .code .sh, .code .si, .code .sx, .code .sr, .code .ss, .code .sa, .code .dl { color: #2E7D4F; }
+.code .m, .code .mi, .code .mf, .code .mh, .code .mo, .code .il, .code .na, .code .nl, .code .py, .code .no { color: #8F5A0C; }
+.code .err { border: 0; background: none; color: inherit; }
+
+/* listings: the caption bar above the code */
+figure.listing { margin: 9pt 0 10pt; break-inside: auto; }
+figure.listing > figcaption { font-family: var(--display); font-size: 8.3pt; line-height: 1.3; color: #2A2F3A; margin: 0 0 3pt;
+                              break-after: avoid; text-align: left; }
+figure.listing .listing-label { font-family: var(--mono); font-weight: 600; font-size: 7.4pt; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber); margin-right: 5pt; }
+figure.listing figcaption code { background: none; padding: 0; font-size: 0.92em; }
+figure.listing .listing-rest, figure.listing .listing-title { font-weight: 500; }
+figure.listing pre.code { margin-top: 0; }
+
+/* epigraph */
+blockquote.epigraph { margin: 0 0 16pt; padding: 0 0 0 14pt; border-left: 1.5pt solid var(--amber); background: none; font-size: 9.2pt; color: #333; }
+blockquote.epigraph p { text-align: left; text-indent: 0 !important; }
+blockquote.epigraph p:last-child { font-family: var(--mono); font-size: 7.2pt; margin-top: 3pt; color: var(--muted); }
+
+/* plain blockquote and callouts */
+blockquote { margin: 9pt 0; padding: 6pt 10pt 6pt 11pt; border-left: 2.5pt solid var(--rule); font-size: 9.2pt; line-height: 1.42; }
+blockquote p { text-indent: 0 !important; text-align: left; }
+blockquote p + p { margin-top: 4pt; }
+blockquote.callout { background: var(--panel); border-left: 2.5pt solid var(--indigo); break-inside: avoid; }
+blockquote.callout-tip { border-left-color: var(--teal); }
+blockquote.callout-warning { border-left-color: var(--magenta); }
+blockquote.callout-flux { border-left-color: var(--amber); background: #FAF6EE; }
+blockquote.callout-aside { border-left-color: var(--muted); }
+.callout-kind { font-family: var(--mono); font-weight: 600; font-size: 6.9pt; letter-spacing: 0.16em; text-transform: uppercase; color: var(--indigo); margin-right: 5pt; }
+.callout-tip .callout-kind { color: var(--teal); }
+.callout-warning .callout-kind { color: var(--magenta); }
+.callout-flux .callout-kind { color: var(--amber); }
+.callout-title { font-family: var(--display); font-weight: 650; letter-spacing: -0.005em; }
+.callout-head--block { margin-bottom: 3pt; }
+.callout-head--block .callout-kind { display: block; margin-bottom: 1.5pt; }
+blockquote pre.code { background: #ECEEF5; }
+
+/* tables */
+.table-wrap { margin: 9pt 0 10pt; }
+table { border-collapse: collapse; width: 100%; font-family: var(--display); font-size: 8.2pt; line-height: 1.3; hyphens: auto; }
+thead { display: table-header-group; }
+tr { break-inside: avoid; }
+th { text-align: left; font-weight: 700; border-bottom: 1pt solid var(--ink); border-top: 1.2pt solid var(--ink); padding: 3.5pt 5pt; vertical-align: bottom; hyphens: manual; }
+td { border-bottom: 0.4pt solid var(--rule); padding: 3pt 5pt; vertical-align: top; overflow-wrap: break-word; }
+tbody tr:last-child td { border-bottom: 1pt solid var(--ink); }
+td code, th code { font-size: 0.86em; padding: 0 1pt; }
+
+/* figures */
+figure.figure { margin: 12pt 0; text-align: center; break-inside: avoid; }
+figure.figure img { max-width: 100%; max-height: 5.6in; }
+figure.figure figcaption { font-family: var(--body); font-size: 8.2pt; color: #333; margin-top: 6pt; text-align: left; line-height: 1.38; }
+.fig-label { font-family: var(--mono); font-weight: 600; font-size: 7.2pt; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber); margin-right: 4pt; }
+img { max-width: 100%; }
+hr { border: 0; border-top: 0.5pt solid var(--rule); margin: 14pt 25%; }
+
+/* notes (footnotes become chapter endnotes) */
+section.footnotes { font-size: 7.9pt; line-height: 1.38; margin-top: 18pt; border-top: 0.5pt solid var(--rule); padding-top: 8pt; }
+section.footnotes .notes-title { font-family: var(--mono); font-size: 7pt; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 4pt; text-indent: 0; }
+section.footnotes ol { padding-left: 1.8em; margin: 0; }
+section.footnotes li { margin: 1.5pt 0; }
+section.footnotes p { text-align: left; text-indent: 0 !important; }
+sup { font-size: 0.68em; line-height: 0; }
+.footnote-ref a { color: var(--indigo); font-family: var(--mono); }
+
+/* contents */
+.toc h1 { font-family: var(--display); font-weight: 700; font-size: 25pt; letter-spacing: -0.025em; margin: 0.75in 0 0.3in; }
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc li { margin: 0; text-align: left; }
+.toc .e { display: flex; align-items: baseline; break-inside: avoid; }
+.toc .e .t { flex: 0 1 auto; }
+.toc .e .d { flex: 1 1 auto; border-bottom: 0.7pt dotted #8A93A8; margin: 0 4pt; transform: translateY(-2.5pt); min-width: 0.3in; }
+.toc .e .n { flex: 0 0 auto; font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: 0.92em; }
+.toc .part > .e { font-family: var(--mono); font-weight: 600; font-size: 7.4pt; letter-spacing: 0.16em; text-transform: uppercase; color: var(--amber); margin: 13pt 0 3pt; break-after: avoid; }
+.toc .part > .e .d, .toc .part > .e .n { visibility: hidden; }
+.toc .chap > .e { font-family: var(--display); font-weight: 600; font-size: 10.2pt; margin: 7pt 0 1.5pt; break-after: avoid; }
+.toc .sec > .e { font-size: 8.6pt; margin: 0.5pt 0 0.5pt 1.6em; color: #2B2F3A; }
+
+/* ---------- running heads and folios (a separate overlay document, stamped on each page) ---------- */
+.overlay .hd { position: absolute; top: 0.48in; font-family: var(--display); font-size: 7.6pt; color: var(--muted);
+               display: flex; gap: 14pt; white-space: nowrap; letter-spacing: 0.01em; }
+.overlay .hd .f { font-family: var(--mono); font-weight: 600; color: var(--ink); font-size: 7.8pt; }
+.overlay .hd .h { overflow: hidden; text-overflow: ellipsis; max-width: 4.6in; }
+.overlay .ft { position: absolute; bottom: 0.5in; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: 7.8pt; color: var(--ink); }

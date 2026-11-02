@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 596" width="1200" height="596">
+<rect width="1200" height="596" fill="#FFFFFF"/>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5A6478"/></marker></defs>
+<rect x="40" y="24" width="520" height="170" rx="14" fill="#EEF1F8" stroke="#5A54F0" stroke-width="2.5"/>
+<text x="64" y="62" font-family="Bricolage Grotesque" font-size="24" font-weight="700" fill="#3F38D6" text-anchor="start">The person</text>
+<text x="64" y="90" font-family="Literata" font-size="17" font-weight="400" fill="#5A6478" text-anchor="start">clicks, types, navigates</text>
+<rect x="64" y="108" width="472" height="66" rx="9" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2"/>
+<text x="84" y="138" font-family="Bricolage Grotesque" font-size="20" font-weight="700" fill="#171A22" text-anchor="start">React components</text>
+<text x="84" y="162" font-family="Literata" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">ShopPage, CartPage, ConfirmDialog: render and handle events</text>
+<rect x="640" y="24" width="520" height="170" rx="14" fill="#F6F7FB" stroke="#B87613" stroke-width="2.5"/>
+<text x="664" y="62" font-family="Bricolage Grotesque" font-size="24" font-weight="700" fill="#8F5A0C" text-anchor="start">The agent</text>
+<text x="664" y="90" font-family="Literata" font-size="17" font-weight="400" fill="#5A6478" text-anchor="start">calls tools through document.modelContext</text>
+<rect x="664" y="108" width="472" height="66" rx="9" fill="#FFFFFF" stroke="#B87613" stroke-width="2"/>
+<text x="684" y="138" font-family="Bricolage Grotesque" font-size="20" font-weight="700" fill="#171A22" text-anchor="start">Tool files: describe, check, translate</text>
+<text x="684" y="162" font-family="Literata" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">search-products.ts, cart-tools.ts, checkout tool</text>
+<line x1="300" y1="194" x2="300" y2="262" stroke="#5A6478" stroke-width="2.5" marker-end="url(#arr)"/>
+<line x1="900" y1="194" x2="900" y2="262" stroke="#5A6478" stroke-width="2.5" marker-end="url(#arr)"/>
+<text x="312" y="236" font-family="Literata" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">same functions</text>
+<text x="912" y="236" font-family="Literata" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">same functions</text>
+<rect x="40" y="266" width="1120" height="236" rx="14" fill="#F6F7FB" stroke="#5A6478" stroke-width="2.5"/>
+<text x="64" y="304" font-family="Bricolage Grotesque" font-size="24" font-weight="700" fill="#171A22" text-anchor="start">One application service</text>
+<text x="1136" y="304" font-family="Literata" font-size="16" font-weight="400" fill="#5A6478" text-anchor="end">plain TypeScript: no React, no WebMCP</text>
+<rect x="64" y="324" width="256" height="158" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="80" y="356" font-family="IBM Plex Mono" font-size="18" font-weight="600" fill="#171A22" text-anchor="start">catalog.ts</text>
+<text x="80" y="388" font-family="IBM Plex Mono" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">searchProducts()</text>
+<text x="80" y="412" font-family="IBM Plex Mono" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">getProduct()</text>
+<rect x="336" y="324" width="256" height="158" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="352" y="356" font-family="IBM Plex Mono" font-size="18" font-weight="600" fill="#171A22" text-anchor="start">cart-store.ts</text>
+<text x="352" y="388" font-family="IBM Plex Mono" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">add()</text>
+<text x="352" y="412" font-family="IBM Plex Mono" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">placeOrder()</text>
+<text x="352" y="436" font-family="IBM Plex Mono" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">getSnapshot()</text>
+<rect x="608" y="324" width="256" height="158" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="624" y="356" font-family="IBM Plex Mono" font-size="18" font-weight="600" fill="#171A22" text-anchor="start">checkout.ts</text>
+<text x="624" y="388" font-family="IBM Plex Mono" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">checkout(signal)</text>
+<text x="624" y="468" font-family="Literata" font-size="15" font-weight="400" fill="#C2468A" text-anchor="start" font-style="italic">commit point</text>
+<rect x="880" y="324" width="256" height="158" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="896" y="356" font-family="IBM Plex Mono" font-size="18" font-weight="600" fill="#171A22" text-anchor="start">confirm-store.ts</text>
+<text x="896" y="388" font-family="IBM Plex Mono" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">requestConfirmation()</text>
+<text x="896" y="468" font-family="Literata" font-size="15" font-weight="400" fill="#0EA5A5" text-anchor="start" font-style="italic">survives navigation</text>
+<text x="64" y="540" font-family="Literata" font-size="17" font-weight="400" fill="#5A6478" text-anchor="start">The tests drive the same service through both doors, so the UI and the agent can’t drift apart.</text>
+<text x="64" y="568" font-family="Literata" font-size="17" font-weight="400" fill="#5A6478" text-anchor="start">A tool file never clicks a button and never keeps its own copy of the cart.</text>
+</svg>

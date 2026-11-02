@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 566" width="1200" height="566">
+<rect width="1200" height="566" fill="#FFFFFF"/>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5A6478"/></marker></defs>
+<rect x="400" y="24" width="400" height="64" rx="14" fill="#171A22" stroke="#171A22" stroke-width="2"/>
+<text x="600" y="64" font-family="Bricolage Grotesque" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">The agent calls a tool</text>
+<text x="600" y="124" font-family="Literata" font-size="17" font-weight="400" fill="#5A6478" text-anchor="middle">and reads status first</text>
+<line x1="144.0" y1="150" x2="1056.0" y2="150" stroke="#5A6478" stroke-width="2"/>
+<line x1="600" y1="134" x2="600" y2="150" stroke="#5A6478" stroke-width="2"/>
+<line x1="144.0" y1="150" x2="144.0" y2="176" stroke="#5A6478" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="62.5" y="180" width="163" height="31" rx="15" fill="#FFFFFF" stroke="#8F5A0C" stroke-width="2"/>
+<text x="144.0" y="200.75" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#8F5A0C" text-anchor="middle">added / created</text>
+<text x="144.0" y="250" font-family="Bricolage Grotesque" font-size="17" font-weight="700" fill="#171A22" text-anchor="middle">It worked</text>
+<rect x="36.0" y="272" width="216" height="170" rx="14" fill="#F6F7FB" stroke="#B87613" stroke-width="2"/>
+<text x="54.0" y="306" font-family="Literata" font-size="14" font-weight="400" fill="#5A6478" text-anchor="start">Who acts next</text>
+<text x="54.0" y="336" font-family="Bricolage Grotesque" font-size="21" font-weight="700" fill="#8F5A0C" text-anchor="start">The agent</text>
+<text x="54.0" y="366" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">continues with the</text>
+<text x="54.0" y="388" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">result</text>
+<text x="144.0" y="474" font-family="IBM Plex Mono" font-size="15" font-weight="500" fill="#5A6478" text-anchor="middle">—</text>
+<line x1="372.0" y1="150" x2="372.0" y2="176" stroke="#5A6478" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="335.5" y="180" width="73" height="31" rx="15" fill="#FFFFFF" stroke="#8F5A0C" stroke-width="2"/>
+<text x="372.0" y="200.75" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#8F5A0C" text-anchor="middle">error</text>
+<text x="372.0" y="250" font-family="Bricolage Grotesque" font-size="17" font-weight="700" fill="#171A22" text-anchor="middle">The call was wrong</text>
+<rect x="264.0" y="272" width="216" height="170" rx="14" fill="#F6F7FB" stroke="#B87613" stroke-width="2"/>
+<text x="282.0" y="306" font-family="Literata" font-size="14" font-weight="400" fill="#5A6478" text-anchor="start">Who acts next</text>
+<text x="282.0" y="336" font-family="Bricolage Grotesque" font-size="21" font-weight="700" fill="#8F5A0C" text-anchor="start">The agent</text>
+<text x="282.0" y="366" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">fixes its arguments or</text>
+<text x="282.0" y="388" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">calls another tool</text>
+<text x="282.0" y="410" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">first</text>
+<text x="372.0" y="474" font-family="IBM Plex Mono" font-size="15" font-weight="500" fill="#5A6478" text-anchor="middle">retry after fixing</text>
+<line x1="600.0" y1="150" x2="600.0" y2="176" stroke="#5A6478" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="536.5" y="180" width="127" height="31" rx="15" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2"/>
+<text x="600.0" y="200.75" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#5A54F0" text-anchor="middle">needs_input</text>
+<text x="600.0" y="250" font-family="Bricolage Grotesque" font-size="17" font-weight="700" fill="#171A22" text-anchor="middle">Only the user knows</text>
+<rect x="492.0" y="272" width="216" height="170" rx="14" fill="#EEF1F8" stroke="#5A54F0" stroke-width="2"/>
+<text x="510.0" y="306" font-family="Literata" font-size="14" font-weight="400" fill="#5A6478" text-anchor="start">Who acts next</text>
+<text x="510.0" y="336" font-family="Bricolage Grotesque" font-size="21" font-weight="700" fill="#3F38D6" text-anchor="start">The user</text>
+<text x="510.0" y="366" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">answers, then the</text>
+<text x="510.0" y="388" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">agent calls again</text>
+<text x="600.0" y="474" font-family="IBM Plex Mono" font-size="15" font-weight="500" fill="#5A6478" text-anchor="middle">retry with the answer</text>
+<line x1="828.0" y1="150" x2="828.0" y2="176" stroke="#5A6478" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="782.5" y="180" width="91" height="31" rx="15" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2"/>
+<text x="828.0" y="200.75" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#5A54F0" text-anchor="middle">refused</text>
+<text x="828.0" y="250" font-family="Bricolage Grotesque" font-size="17" font-weight="700" fill="#171A22" text-anchor="middle">A rule says no</text>
+<rect x="720.0" y="272" width="216" height="170" rx="14" fill="#EEF1F8" stroke="#5A54F0" stroke-width="2"/>
+<text x="738.0" y="306" font-family="Literata" font-size="14" font-weight="400" fill="#5A6478" text-anchor="start">Who acts next</text>
+<text x="738.0" y="336" font-family="Bricolage Grotesque" font-size="21" font-weight="700" fill="#3F38D6" text-anchor="start">The user</text>
+<text x="738.0" y="366" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">decides what happens</text>
+<text x="738.0" y="388" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">next</text>
+<text x="828.0" y="474" font-family="IBM Plex Mono" font-size="15" font-weight="500" fill="#5A6478" text-anchor="middle">not without the user</text>
+<line x1="1056.0" y1="150" x2="1056.0" y2="176" stroke="#5A6478" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="965.5" y="180" width="181" height="31" rx="15" fill="#FFFFFF" stroke="#C2468A" stroke-width="2"/>
+<text x="1056.0" y="200.75" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#C2468A" text-anchor="middle">cancelled_by_user</text>
+<text x="1056.0" y="250" font-family="Bricolage Grotesque" font-size="17" font-weight="700" fill="#171A22" text-anchor="middle">The person declined</text>
+<rect x="948.0" y="272" width="216" height="170" rx="14" fill="#FFFFFF" stroke="#C2468A" stroke-width="2.5"/>
+<text x="966.0" y="306" font-family="Literata" font-size="14" font-weight="400" fill="#5A6478" text-anchor="start">Who acts next</text>
+<text x="966.0" y="336" font-family="Bricolage Grotesque" font-size="21" font-weight="700" fill="#C2468A" text-anchor="start">Nobody</text>
+<text x="966.0" y="366" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">unless the user asks</text>
+<text x="966.0" y="388" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">again</text>
+<text x="1056.0" y="474" font-family="IBM Plex Mono" font-size="15" font-weight="500" fill="#5A6478" text-anchor="middle">no retry</text>
+<rect x="36.0" y="500" width="24" height="18" rx="5" fill="#B87613" stroke="#B87613" stroke-width="2"/>
+<text x="70.0" y="515" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">the agent acts</text>
+<rect x="256.0" y="500" width="24" height="18" rx="5" fill="#5A54F0" stroke="#5A54F0" stroke-width="2"/>
+<text x="290.0" y="515" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">the person acts</text>
+<rect x="476.0" y="500" width="24" height="18" rx="5" fill="#C2468A" stroke="#C2468A" stroke-width="2"/>
+<text x="510.0" y="515" font-family="Literata" font-size="16" font-weight="400" fill="#171A22" text-anchor="start">stop</text>
+<text x="36.0" y="548" font-family="Literata" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">Table 11.3 has the same five rows. A refusal such as DUPLICATE_TICKET or PURCHASE_LIMIT is never “fixed” by changing the arguments.</text>
+</svg>

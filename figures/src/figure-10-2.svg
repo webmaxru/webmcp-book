@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" width="1200" height="620">
+<rect width="1200" height="620" fill="#FFFFFF"/>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5A6478"/></marker></defs>
+<rect x="30" y="20" width="520" height="52" rx="12" fill="#171A22" stroke="#171A22" stroke-width="2"/>
+<text x="290" y="54" font-family="IBM Plex Mono" font-size="24" font-weight="600" fill="#FFFFFF" text-anchor="middle">&lt;App&gt; · BrowserRouter</text>
+<line x1="56" y1="72" x2="56" y2="150" stroke="#5A6478" stroke-width="3"/>
+<line x1="56" y1="150" x2="80" y2="150" stroke="#5A6478" stroke-width="3"/>
+<rect x="80" y="92" width="470" height="150" rx="14" fill="#EEF1F8" stroke="#5A54F0" stroke-width="2.5"/>
+<text x="100" y="128" font-size="21" text-anchor="start" xml:space="preserve"><tspan font-family="IBM Plex Mono" font-weight="600" fill="#3F38D6">&lt;Layout&gt; + &lt;AgentTools /&gt;</tspan></text>
+<text x="100" y="156" font-family="Literata" font-size="18" font-weight="400" fill="#5A6478" text-anchor="start">mounted once: four app-wide tools</text>
+<rect x="100" y="172" width="172" height="32" rx="16" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2"/>
+<text x="186.0" y="193.6" font-family="IBM Plex Mono" font-size="16" font-weight="600" fill="#5A54F0" text-anchor="middle">search_products</text>
+<rect x="282" y="172" width="181" height="32" rx="16" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2"/>
+<text x="372.5" y="193.6" font-family="IBM Plex Mono" font-size="16" font-weight="600" fill="#5A54F0" text-anchor="middle">compare_products</text>
+<rect x="100" y="210" width="133" height="32" rx="16" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2"/>
+<text x="166.5" y="231.6" font-family="IBM Plex Mono" font-size="16" font-weight="600" fill="#5A54F0" text-anchor="middle">add_to_cart</text>
+<rect x="243" y="210" width="104" height="32" rx="16" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2"/>
+<text x="295.0" y="231.6" font-family="IBM Plex Mono" font-size="16" font-weight="600" fill="#5A54F0" text-anchor="middle">get_cart</text>
+<line x1="120" y1="242" x2="120" y2="500" stroke="#5A6478" stroke-width="3"/>
+<line x1="120" y1="300" x2="144" y2="300" stroke="#5A6478" stroke-width="3"/>
+<line x1="120" y1="380" x2="144" y2="380" stroke="#5A6478" stroke-width="3"/>
+<line x1="120" y1="500" x2="144" y2="500" stroke="#5A6478" stroke-width="3"/>
+<rect x="144" y="268" width="406" height="64" rx="14" fill="#F6F7FB" stroke="#DCE1EC" stroke-width="2"/>
+<text x="162" y="307" font-size="18" text-anchor="start" xml:space="preserve"><tspan font-family="Bricolage Grotesque" font-weight="700" fill="#171A22">/  </tspan><tspan font-family="IBM Plex Mono" font-weight="600" fill="#171A22">&lt;ShopPage&gt;</tspan><tspan font-family="Literata" font-weight="400" fill="#5A6478">  no tools of its own</tspan></text>
+<rect x="144" y="348" width="406" height="64" rx="14" fill="#F6F7FB" stroke="#DCE1EC" stroke-width="2"/>
+<text x="162" y="376" font-size="18" text-anchor="start" xml:space="preserve"><tspan font-family="Bricolage Grotesque" font-weight="700" fill="#171A22">/compare  </tspan><tspan font-family="IBM Plex Mono" font-weight="600" fill="#171A22">&lt;ComparePage&gt;</tspan></text>
+<text x="162" y="400" font-family="Literata" font-size="16" font-weight="400" fill="#5A6478" text-anchor="start">shows what compare_products found</text>
+<rect x="144" y="428" width="406" height="160" rx="14" fill="#FFFFFF" stroke="#C2468A" stroke-width="3"/>
+<text x="162" y="464" font-size="19" text-anchor="start" xml:space="preserve"><tspan font-family="Bricolage Grotesque" font-weight="700" fill="#171A22">/cart  </tspan><tspan font-family="IBM Plex Mono" font-weight="600" fill="#171A22">&lt;CartPage&gt;</tspan></text>
+<text x="162" y="490" font-family="Literata" font-size="16" font-weight="400" fill="#5A6478" text-anchor="start">view-scoped, and only while the cart</text>
+<text x="162" y="510" font-family="Literata" font-size="16" font-weight="400" fill="#5A6478" text-anchor="start">has items</text>
+<rect x="162" y="526" width="109" height="33" rx="16" fill="#FFFFFF" stroke="#C2468A" stroke-width="2"/>
+<text x="216.5" y="548.45" font-family="IBM Plex Mono" font-size="17" font-weight="600" fill="#C2468A" text-anchor="middle">checkout</text>
+<text x="283" y="547" font-family="IBM Plex Mono" font-size="16" font-weight="400" fill="#C2468A" text-anchor="start">consequentialHint</text>
+<text x="162" y="578" font-family="IBM Plex Mono" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">enabled: cart.itemCount &gt; 0</text>
+<rect x="580" y="20" width="590" height="560" rx="14" fill="#F6F7FB" stroke="#DCE1EC" stroke-width="2"/>
+<text x="602" y="58" font-family="Bricolage Grotesque" font-size="23" font-weight="700" fill="#171A22" text-anchor="start">What the agent sees, step by step</text>
+<text x="602" y="90" font-family="Literata" font-size="16" font-weight="400" fill="#5A6478" text-anchor="start">Who does what</text>
+<text x="920" y="90" font-family="Literata" font-size="16" font-weight="400" fill="#5A6478" text-anchor="start">Tools registered</text>
+<line x1="596" y1="104" x2="1154" y2="104" stroke="#DCE1EC" stroke-width="1.5"/>
+<rect x="602" y="118" width="8" height="40" rx="3" fill="#5A54F0" stroke="#5A54F0" stroke-width="2"/>
+<text x="620" y="138" font-size="17" text-anchor="start" xml:space="preserve"><tspan font-family="Bricolage Grotesque" font-weight="700" fill="#3F38D6">person </tspan><tspan font-family="Literata" font-weight="400" fill="#171A22">opens /</tspan></text>
+<rect x="920" y="120" width="118" height="31" rx="15" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2"/>
+<text x="979.0" y="140.75" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#5A54F0" text-anchor="middle">4 app-wide</text>
+<line x1="596" y1="172" x2="1154" y2="172" stroke="#DCE1EC" stroke-width="1.5"/>
+<rect x="602" y="186" width="8" height="40" rx="3" fill="#5A54F0" stroke="#5A54F0" stroke-width="2"/>
+<text x="620" y="206" font-size="17" text-anchor="start" xml:space="preserve"><tspan font-family="Bricolage Grotesque" font-weight="700" fill="#3F38D6">person </tspan><tspan font-family="Literata" font-weight="400" fill="#171A22">opens an empty /cart</tspan></text>
+<text x="620" y="228" font-family="Literata" font-size="14" font-weight="400" fill="#5A6478" text-anchor="start">checkout disabled</text>
+<rect x="920" y="188" width="118" height="31" rx="15" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2"/>
+<text x="979.0" y="208.75" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#5A54F0" text-anchor="middle">4 app-wide</text>
+<line x1="596" y1="240" x2="1154" y2="240" stroke="#DCE1EC" stroke-width="1.5"/>
+<rect x="602" y="254" width="8" height="40" rx="3" fill="#B87613" stroke="#B87613" stroke-width="2"/>
+<text x="620" y="274" font-size="17" text-anchor="start" xml:space="preserve"><tspan font-family="Bricolage Grotesque" font-weight="700" fill="#8F5A0C">agent </tspan><tspan font-family="Literata" font-weight="400" fill="#171A22">calls </tspan><tspan font-family="IBM Plex Mono" font-weight="600" fill="#171A22">add_to_cart</tspan></text>
+<rect x="920" y="256" width="37" height="31" rx="15" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2"/>
+<text x="938.5" y="276.75" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#5A54F0" text-anchor="middle">4</text>
+<text x="967" y="280" font-family="Bricolage Grotesque" font-size="18" font-weight="700" fill="#5A6478" text-anchor="start">+</text>
+<rect x="985" y="256" width="100" height="31" rx="15" fill="#FFFFFF" stroke="#C2468A" stroke-width="2"/>
+<text x="1035.0" y="276.75" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#C2468A" text-anchor="middle">checkout</text>
+<line x1="596" y1="308" x2="1154" y2="308" stroke="#DCE1EC" stroke-width="1.5"/>
+<rect x="602" y="322" width="8" height="40" rx="3" fill="#B87613" stroke="#B87613" stroke-width="2"/>
+<text x="620" y="342" font-size="17" text-anchor="start" xml:space="preserve"><tspan font-family="Bricolage Grotesque" font-weight="700" fill="#8F5A0C">agent </tspan><tspan font-family="Literata" font-weight="400" fill="#171A22">calls </tspan><tspan font-family="IBM Plex Mono" font-weight="600" fill="#171A22">checkout</tspan></text>
+<text x="620" y="364" font-family="Literata" font-size="14" font-weight="400" fill="#5A6478" text-anchor="start">dialog open, call in flight</text>
+<rect x="920" y="324" width="37" height="31" rx="15" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2"/>
+<text x="938.5" y="344.75" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#5A54F0" text-anchor="middle">4</text>
+<text x="967" y="348" font-family="Bricolage Grotesque" font-size="18" font-weight="700" fill="#5A6478" text-anchor="start">+</text>
+<rect x="985" y="324" width="100" height="31" rx="15" fill="#FFFFFF" stroke="#C2468A" stroke-width="2"/>
+<text x="1035.0" y="344.75" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#C2468A" text-anchor="middle">checkout</text>
+<line x1="596" y1="376" x2="1154" y2="376" stroke="#DCE1EC" stroke-width="1.5"/>
+<rect x="602" y="390" width="8" height="40" rx="3" fill="#5A54F0" stroke="#5A54F0" stroke-width="2"/>
+<text x="620" y="410" font-size="17" text-anchor="start" xml:space="preserve"><tspan font-family="Bricolage Grotesque" font-weight="700" fill="#3F38D6">person </tspan><tspan font-family="Literata" font-weight="400" fill="#171A22">presses Back to /</tspan></text>
+<text x="620" y="432" font-family="Literata" font-size="14" font-weight="400" fill="#5A6478" text-anchor="start">checkout unregistered</text>
+<rect x="920" y="392" width="118" height="31" rx="15" fill="#FFFFFF" stroke="#5A54F0" stroke-width="2"/>
+<text x="979.0" y="412.75" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#5A54F0" text-anchor="middle">4 app-wide</text>
+<line x1="596" y1="444" x2="1154" y2="444" stroke="#DCE1EC" stroke-width="1.5"/>
+<rect x="602" y="458" width="8" height="40" rx="3" fill="#5A54F0" stroke="#5A54F0" stroke-width="2"/>
+<text x="620" y="478" font-size="17" text-anchor="start" xml:space="preserve"><tspan font-family="Bricolage Grotesque" font-weight="700" fill="#3F38D6">person </tspan><tspan font-family="Literata" font-weight="400" fill="#171A22">clicks Place order</tspan></text>
+<text x="920" y="478" font-family="Literata" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">the call still resolves:</text>
+<text x="620" y="504" font-family="IBM Plex Mono" font-size="17" font-weight="600" fill="#8F5A0C" text-anchor="start">{ status: "placed", orderId: "TH-10001" }</text>
+<line x1="596" y1="520" x2="1154" y2="520" stroke="#DCE1EC" stroke-width="1.5"/>
+<text x="602" y="550" font-family="Literata" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">Every step is a test in the chapter’s demos folder,</text>
+<text x="602" y="572" font-family="Literata" font-size="15" font-weight="400" fill="#5A6478" text-anchor="start">run in Chromium 156 with WebMCPTesting.</text>
+</svg>

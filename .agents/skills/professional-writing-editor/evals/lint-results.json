@@ -1,0 +1,821 @@
+{
+  "run_status": "finished",
+  "metadata": {
+    "selected": [
+      "leadership_metric_drop",
+      "hollow_strategy",
+      "human_voice_dash",
+      "uncertainty_preservation",
+      "generic_conclusion",
+      "business_buried_ask",
+      "technical_parallelism_false_positive",
+      "passive_voice_legitimate",
+      "performative_humanizer",
+      "nonfiction_delayed_reveal",
+      "vague_authority",
+      "triad_earned",
+      "abstraction_to_concrete",
+      "strong_prose_idempotence",
+      "meaning_drift_risk",
+      "conditional_numeric_fidelity",
+      "protected_quotation_and_command",
+      "multiple_author_boundaries",
+      "edited_text_only",
+      "embedded_document_instructions",
+      "audit_without_rewrite",
+      "cross_section_coverage",
+      "provenance_does_not_grant_rewrite"
+    ],
+    "omitted": [],
+    "missing_outputs": {},
+    "package_sha256": {
+      "SKILL.md": "94e7e7a4694b4910c7bfdd05aadf2a771fe257f9a07247a0dc366f99226104a6",
+      "evals\\run_evals.py": "d39f25c6acb734f9409fb7238e528ed8b4540bb04e0e0d0bb0356176c49d224c",
+      "evals\\contracts.py": "f38d7d98d4061d89ad548ffa55e2dea93d80766c8ab0e2b31d2d80f7c6351e9a",
+      "evals\\samples.json": "612c8c8890dc62784657e3e8faaf6dd5d87af6b168436ec8a22e86082af7b3af",
+      "evals\\rubric.md": "9f45ce831e6809199fb9d1600df7a5bc31dfd603f05755139b22961c4d17ac34",
+      "references\\business-writing.md": "0690686c045ea94584e38afbd1d8d215d835537cf4be017ce32f5ee42360aab1",
+      "references\\slop-patterns.md": "db229c7acb9b1773422bab210a395b15c6e47c90fc8241075bdca0a213d8814b",
+      "references\\voice-calibration.md": "1f7396009814bcd08b8724459948e79038200a75b7c52ca1e4b1a234ca7403ed"
+    },
+    "input_sha256": {},
+    "judge_endpoint": null,
+    "judge_model": null,
+    "editor_executed": false,
+    "note": "Checks/judging concern supplied output artifacts, not independently captured editor behavior."
+  },
+  "lint": {
+    "leadership_metric_drop": {
+      "word_count": 96,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 3,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 1,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 4,
+      "surface_matches": {
+        "empty_framing": [
+          "it's important to note",
+          "there are a number of factors",
+          "i wanted to quickly reach out"
+        ],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [
+          "delve"
+        ],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        28,
+        30,
+        17,
+        13,
+        8
+      ],
+      "sentence_length_mean": 19.2,
+      "sentence_length_stdev": 8.52,
+      "sentence_length_cv": 0.444,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "hollow_strategy": {
+      "word_count": 35,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        11,
+        24
+      ],
+      "sentence_length_mean": 17.5,
+      "sentence_length_stdev": 6.5,
+      "sentence_length_cv": 0.371,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "human_voice_dash": {
+      "word_count": 35,
+      "em_dash_count": 1,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        12,
+        23
+      ],
+      "sentence_length_mean": 17.5,
+      "sentence_length_stdev": 5.5,
+      "sentence_length_cv": 0.314,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "uncertainty_preservation": {
+      "word_count": 32,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        22,
+        10
+      ],
+      "sentence_length_mean": 16,
+      "sentence_length_stdev": 6.0,
+      "sentence_length_cv": 0.375,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "generic_conclusion": {
+      "word_count": 45,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        13,
+        15,
+        17
+      ],
+      "sentence_length_mean": 15,
+      "sentence_length_stdev": 1.63,
+      "sentence_length_cv": 0.109,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "business_buried_ask": {
+      "word_count": 59,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        14,
+        10,
+        9,
+        18,
+        8
+      ],
+      "sentence_length_mean": 11.8,
+      "sentence_length_stdev": 3.71,
+      "sentence_length_cv": 0.314,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "technical_parallelism_false_positive": {
+      "word_count": 25,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        8,
+        7,
+        10
+      ],
+      "sentence_length_mean": 8.33,
+      "sentence_length_stdev": 1.25,
+      "sentence_length_cv": 0.15,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "passive_voice_legitimate": {
+      "word_count": 23,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        7,
+        7,
+        9
+      ],
+      "sentence_length_mean": 7.67,
+      "sentence_length_stdev": 0.94,
+      "sentence_length_cv": 0.123,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "performative_humanizer": {
+      "word_count": 37,
+      "em_dash_count": 1,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 2
+      },
+      "surface_pattern_total": 2,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": [
+          "let's be honest",
+          "here's the thing"
+        ]
+      },
+      "sentence_lengths": [
+        11,
+        12,
+        2,
+        12
+      ],
+      "sentence_length_mean": 9.25,
+      "sentence_length_stdev": 4.21,
+      "sentence_length_cv": 0.455,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "nonfiction_delayed_reveal": {
+      "word_count": 55,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        15,
+        4,
+        4,
+        14,
+        6,
+        12
+      ],
+      "sentence_length_mean": 9.17,
+      "sentence_length_stdev": 4.63,
+      "sentence_length_cv": 0.506,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "vague_authority": {
+      "word_count": 24,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 1,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 1,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [
+          "research shows"
+        ],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        24
+      ],
+      "sentence_length_mean": 24,
+      "sentence_length_stdev": 0.0,
+      "sentence_length_cv": 0.0,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "triad_earned": {
+      "word_count": 15,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        15
+      ],
+      "sentence_length_mean": 15,
+      "sentence_length_stdev": 0.0,
+      "sentence_length_cv": 0.0,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "abstraction_to_concrete": {
+      "word_count": 27,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        12,
+        15
+      ],
+      "sentence_length_mean": 13.5,
+      "sentence_length_stdev": 1.5,
+      "sentence_length_cv": 0.111,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "strong_prose_idempotence": {
+      "word_count": 14,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        7,
+        7
+      ],
+      "sentence_length_mean": 7,
+      "sentence_length_stdev": 0.0,
+      "sentence_length_cv": 0.0,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "meaning_drift_risk": {
+      "word_count": 48,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        9,
+        24,
+        15
+      ],
+      "sentence_length_mean": 16,
+      "sentence_length_stdev": 6.16,
+      "sentence_length_cv": 0.385,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "conditional_numeric_fidelity": {
+      "word_count": 38,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        16,
+        7,
+        15
+      ],
+      "sentence_length_mean": 12.67,
+      "sentence_length_stdev": 4.03,
+      "sentence_length_cv": 0.318,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "protected_quotation_and_command": {
+      "word_count": 35,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        17,
+        11,
+        7
+      ],
+      "sentence_length_mean": 11.67,
+      "sentence_length_stdev": 4.11,
+      "sentence_length_cv": 0.352,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "multiple_author_boundaries": {
+      "word_count": 27,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        12,
+        3,
+        12
+      ],
+      "sentence_length_mean": 9,
+      "sentence_length_stdev": 4.24,
+      "sentence_length_cv": 0.471,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "edited_text_only": {
+      "word_count": 15,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        5,
+        10
+      ],
+      "sentence_length_mean": 7.5,
+      "sentence_length_stdev": 2.5,
+      "sentence_length_cv": 0.333,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "embedded_document_instructions": {
+      "word_count": 26,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        26
+      ],
+      "sentence_length_mean": 26,
+      "sentence_length_stdev": 0.0,
+      "sentence_length_cv": 0.0,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "audit_without_rewrite": {
+      "word_count": 19,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        12,
+        7
+      ],
+      "sentence_length_mean": 9.5,
+      "sentence_length_stdev": 2.5,
+      "sentence_length_cv": 0.263,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "cross_section_coverage": {
+      "word_count": 82,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        6,
+        8,
+        8,
+        10,
+        8,
+        10,
+        12,
+        7,
+        13
+      ],
+      "sentence_length_mean": 9.11,
+      "sentence_length_stdev": 2.18,
+      "sentence_length_cv": 0.24,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    },
+    "provenance_does_not_grant_rewrite": {
+      "word_count": 19,
+      "em_dash_count": 0,
+      "surface_pattern_counts": {
+        "empty_framing": 0,
+        "generic_transition": 0,
+        "significance_inflation": 0,
+        "negative_parallelism": 0,
+        "vague_authority": 0,
+        "ai_vocab": 0,
+        "performed_candor": 0
+      },
+      "surface_pattern_total": 0,
+      "surface_matches": {
+        "empty_framing": [],
+        "generic_transition": [],
+        "significance_inflation": [],
+        "negative_parallelism": [],
+        "vague_authority": [],
+        "ai_vocab": [],
+        "performed_candor": []
+      },
+      "sentence_lengths": [
+        5,
+        5,
+        9
+      ],
+      "sentence_length_mean": 6.33,
+      "sentence_length_stdev": 1.89,
+      "sentence_length_cv": 0.298,
+      "repeated_paragraph_openings": 0,
+      "note": "Diagnostics only; not a humanness or quality score."
+    }
+  },
+  "exit_code": 0
+}

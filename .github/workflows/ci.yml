@@ -1,0 +1,70 @@
+# Checks every change to the manuscript, the theme or the build tools: the manuscript lint must
+# pass, and the web edition, the EPUB and the PDF must build without warnings (missing images,
+# broken cross-references, files without exactly one H1, empty book.json fields). The EPUB must
+# pass EPUBCheck. The built editions are attached to the run, so a pull request can be read as a
+# PDF before it is merged. Uses no secrets.
+name: Book CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: book-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: tools/requirements.txt
+      - name: Install the build tools
+        run: |
+          pip install -r tools/requirements.txt
+          python -m playwright install --with-deps chromium
+      - name: CHANGELOG has a section for the version in tools/book.json
+        run: |
+          v="$(python3 -c 'import json; print(json.load(open("tools/book.json"))["version"])')"
+          grep -Eq "^## \[$v\]" CHANGELOG.md || { echo "::error file=CHANGELOG.md::no '## [$v]' section"; exit 1; }
+      - name: Manuscript lint
+        run: python tools/lint_manuscript.py
+      - name: Web edition
+        run: |
+          python tools/build.py zip 2>&1 | tee site.log
+          ! grep -q '^warning:' site.log
+      - name: EPUB
+        run: |
+          python tools/build.py epub 2>&1 | tee epub.log
+          ! grep -q '^warning:' epub.log
+      - name: PDF
+        run: |
+          python tools/build.py pdf 2>&1 | tee pdf.log
+          ! grep -q '^warning:' pdf.log
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: EPUBCheck
+        run: |
+          curl -sSL -o /tmp/epubcheck.zip https://github.com/w3c/epubcheck/releases/download/v5.2.1/epubcheck-5.2.1.zip
+          unzip -q /tmp/epubcheck.zip -d /tmp
+          java -jar /tmp/epubcheck-5.2.1/epubcheck.jar dist/*.epub
+      - uses: actions/upload-artifact@v4
+        with:
+          name: book-${{ github.sha }}
+          path: |
+            dist/*.pdf
+            dist/*.epub
+            dist/*.zip
+          retention-days: 14

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="690" viewBox="0 0 1200 690">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5A6478"/></marker></defs>
+<rect x="0" y="0" width="1200" height="690" fill="#FFFFFF"/>
+<rect x="40" y="30" width="520" height="300" rx="14" fill="#F6F7FB" stroke="#B87613" stroke-width="2.5"/>
+<text x="70" y="74" font-family="Bricolage Grotesque" font-size="26" font-weight="800" fill="#8F5A0C" text-anchor="start">Backend MCP server</text>
+<text x="70" y="102" font-family="Literata" font-size="17" font-weight="400" fill="#5A6478" text-anchor="start">available anywhere, any time, no UI</text>
+<rect x="70" y="128" width="460" height="52" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="161" font-family="IBM Plex Mono" font-size="19" font-weight="500" fill="#171A22" text-anchor="start">search_products</text>
+<rect x="70" y="198" width="460" height="52" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="90" y="231" font-family="IBM Plex Mono" font-size="19" font-weight="500" fill="#171A22" text-anchor="start">get_order_status</text>
+<text x="70" y="300" font-family="Literata" font-size="16" font-weight="400" fill="#5A6478" text-anchor="start">“where is my order?” with the site closed</text>
+<rect x="640" y="30" width="520" height="300" rx="14" fill="#F6F7FB" stroke="#5A54F0" stroke-width="2.5"/>
+<text x="670" y="74" font-family="Bricolage Grotesque" font-size="26" font-weight="800" fill="#3F38D6" text-anchor="start">WebMCP tools in the open tab</text>
+<text x="670" y="102" font-family="Literata" font-size="17" font-weight="400" fill="#5A6478" text-anchor="start">only while the customer has the page open</text>
+<rect x="670" y="128" width="220" height="46" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="684" y="158" font-family="IBM Plex Mono" font-size="17" font-weight="500" fill="#171A22" text-anchor="start">search_products</text>
+<rect x="905" y="128" width="220" height="46" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="919" y="158" font-family="IBM Plex Mono" font-size="17" font-weight="500" fill="#171A22" text-anchor="start">compare_products</text>
+<rect x="670" y="186" width="220" height="46" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="684" y="216" font-family="IBM Plex Mono" font-size="17" font-weight="500" fill="#171A22" text-anchor="start">add_to_cart</text>
+<rect x="905" y="186" width="220" height="46" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="919" y="216" font-family="IBM Plex Mono" font-size="17" font-weight="500" fill="#171A22" text-anchor="start">get_cart</text>
+<rect x="670" y="244" width="220" height="46" rx="9" fill="#FFFFFF" stroke="#DCE1EC" stroke-width="2"/>
+<text x="684" y="274" font-family="IBM Plex Mono" font-size="17" font-weight="500" fill="#171A22" text-anchor="start">checkout</text>
+<text x="670" y="310" font-family="Literata" font-size="16" font-weight="400" fill="#5A6478" text-anchor="start">the customer watches, and clicks “Place order”</text>
+<rect x="40" y="420" width="1120" height="120" rx="14" fill="#EEF1F8" stroke="#5A6478" stroke-width="2"/>
+<text x="70" y="462" font-family="Bricolage Grotesque" font-size="24" font-weight="800" fill="#171A22" text-anchor="start">Trailhead’s services</text>
+<rect x="330" y="446" width="340" height="70" rx="9" fill="#FFFFFF" stroke="#5A6478" stroke-width="2"/>
+<text x="500" y="490" font-family="Bricolage Grotesque" font-size="22" font-weight="700" fill="#171A22" text-anchor="middle">Catalog service</text>
+<rect x="730" y="446" width="340" height="70" rx="9" fill="#FFFFFF" stroke="#5A6478" stroke-width="2"/>
+<text x="900" y="490" font-family="Bricolage Grotesque" font-size="22" font-weight="700" fill="#171A22" text-anchor="middle">Order service</text>
+<line x1="300" y1="330" x2="300" y2="416" stroke="#5A6478" stroke-width="2.5" marker-end="url(#arr)"/>
+<line x1="900" y1="330" x2="900" y2="416" stroke="#5A6478" stroke-width="2.5" marker-end="url(#arr)"/>
+<rect x="40" y="580" width="1120" height="80" rx="14" fill="#FFFFFF" stroke="#0EA5A5" stroke-width="2.5" stroke-dasharray="10 6"/>
+<text x="600" y="616" font-family="Bricolage Grotesque" font-size="22" font-weight="700" fill="#171A22" text-anchor="middle">Shared across both: one tool catalog, the same eval suites, the same owners</text>
+<text x="600" y="644" font-family="Literata" font-size="16" font-weight="400" fill="#5A6478" text-anchor="middle">a change to search behaviour is reviewed once and tested on both surfaces</text>
+</svg>

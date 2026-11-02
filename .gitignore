@@ -1,4 +1,12 @@
+# build output: never commit the editions
+dist/
+_site/
+build/
+*.pdf
+*.epub
+# local environments and caches
+.venv*/
+__pycache__/
+*.pyc
+node_modules/
 .DS_Store
-Thumbs.db
-*.swp
-~$*

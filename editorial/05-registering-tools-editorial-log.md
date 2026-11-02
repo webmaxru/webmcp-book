@@ -1,0 +1,24 @@
+# Editorial log: Chapter 5, Registering Tools with `document.modelContext`
+
+Manuscript: `manuscript/05-registering-tools.md`. Figures: `figures/src/figure-5-1.svg`, `figure-5-2.svg` → `manuscript/resources/images/`. Demo: `demos-new/fjord-table/` (Listings 5.3–5.6) and `demos-new/chapters/05-registering-tools/` (the Chromium probe). Old text (15 October 2026): 9,205 words by `wc -w`. New text: 10,209 words (including listings and 48 notes).
+
+Skills loaded: personal-author-voice (his voice profile, the Book 2 voice report, slop-patterns reference, Book 2 intro and editorial log, the his recent article), professional-writing-editor, and the house style.
+
+## Pass 1: voice draft (personal-author-voice)
+
+- **Author presence.** "I" for observations Maxim made with the probe and the type-check, his recommendations ("This is my advice, not a rule from the spec"), and co-author disclosures on the two Chrome pages quoted. Service-worker parallel on the secure-context trap kept as a fact about service workers, not a personal story. "We" for Fjord Table, "you" for the reader.
+- **Rhythm.** "In simple words" for the AbortSignal principle and the resolve-when-the-page-agrees rule, "Bottomline" for the `undefined` advice, "Of course" once, questions to open the results-shape and #361 discussions. Parentheses and full stops replace every semicolon.
+- **Listings** unchanged byte for byte; labels converted to house format. Listing 5.1 is labelled as Listing 4.1 with markers added (the only listing that isn't a verbatim demo excerpt, by design), Listing 5.2 cites the spec's IDL index.
+
+## Pass 2: substantive edit (professional-writing-editor)
+
+- **Point of the chapter:** walk Listing 4.1 marker by marker, add `book_table`, and be exact about what the browser does and doesn't check. Structure kept (①–⑥), two subsections added: "Resolve when the page agrees" and the batch-registration paragraph in "Registering by page state".
+- **Currency fixes from validation** (VALIDATION.md draft date 27 Oct with an explicit statement that the IDL is unchanged; issue #92's October debate (Beaufort, Dallstream, Hofmann quote); issue #361 (Chrome and WPT called wrong on string results, the `undefined` → `"null"` proposal, the Chromium CL); the best-practices update of 30 Oct (resolve only when output matches app state, register all at once with rollback, explicit commit points); PR #348; webmcp-types still 0.1.10; probe re-run on 2 Nov with identical results, including the renderer crash.
+- **Error fixed:** "the four-character string `undefined`" was wrong in the first edition. It is nine characters.
+- **Slop sweep:** no filler openers, no "it's worth noting", no stacked adjectives. Semicolons in prose, tables and notes: zero (five table cells in Tables 5.2, 5.3 and 5.6 rewritten). Em dashes 17 (about 1.7 per 1,000 words).
+
+## Pass 3: voice recheck and fidelity check
+
+- Kept unchanged: every spec quote (searched in the 27 Oct HTML), all tables except the Table 5.5 caption date and the semicolon cells, the probe observations, listing code, the PR and issue history.
+- Checks: lint clean, all image paths exist, Listings 5.3–5.6 byte-identical to the demo files, footnotes `[^ch05-1]`…`[^ch05-48]` all defined and all used, Fjord Table tests and `typecheck` pass, chapter 5 probe clean.
+- Figures 5.1 and 5.2 redrawn as SVG in the APM palette. Figure 5.1 is now a three-lane sequence (page, browser, agent) over four phases, with the in-image title removed. Figure 5.2 keeps the three-column anatomy (ModelContextTool → tool definition → RegisteredTool).

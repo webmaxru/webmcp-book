@@ -1,0 +1,4 @@
+part-1.md
+01-the-agentic-web-arrives.md
+05-registering-tools.md
+about-the-author.md
