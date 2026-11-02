@@ -70,7 +70,12 @@ function Invoke-Native {
   param([Parameter(Mandatory = $true)][string]$Exe, [string[]]$Arguments = @())
   $prev = $ErrorActionPreference
   $ErrorActionPreference = 'Continue'
-  try { $all = & $Exe @Arguments 2>&1; $code = $LASTEXITCODE } finally { $ErrorActionPreference = $prev }
+  try {
+    $all = & $Exe @Arguments 2>&1; $code = $LASTEXITCODE
+  } catch {
+    # e.g. the Windows Store 'python3.exe' alias, which PowerShell cannot start with redirected output
+    return [pscustomobject]@{ Code = 9009; Out = ''; Err = $_.Exception.Message }
+  } finally { $ErrorActionPreference = $prev }
   $outLines = @(); $errLines = @()
   foreach ($line in @($all)) {
     if ($line -is [System.Management.Automation.ErrorRecord]) { $errLines += $line.ToString() } else { $outLines += [string]$line }
@@ -143,13 +148,15 @@ if ($doAzure) {
 }
 $py = $null
 if ($doBuild) {
-  foreach ($cand in @('python3', 'python', 'py')) {
-    if (Get-Command $cand -ErrorAction SilentlyContinue) {
+  $cands = if ($IsWin) { @('py', 'python', 'python3') } else { @('python3', 'python') }
+  foreach ($cand in $cands) {
+    $cmd = Get-Command $cand -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($cmd) {
       $v = Invoke-Native -Exe $cand -Arguments @('-c', 'import sys; print(1 if sys.version_info >= (3, 11) else 0)')
       if ($v.Code -eq 0 -and $v.Out -eq '1') { $py = $cand; break }
     }
   }
-  if (-not $py) { Exit-WithHint 'Python 3.11+ is needed for the build.' 'winget install -e --id Python.Python.3.12 (macOS: brew install python@3.12)' }
+  if (-not $py) { Exit-WithHint 'Python 3.11+ is needed for the build (the Microsoft Store python3 alias does not count).' 'winget install -e --id Python.Python.3.12 (macOS: brew install python@3.12)' }
   if (-not (Test-Path (Join-Path (Join-Path $Root 'tools') 'build.py'))) { Exit-WithHint "tools/build.py not found under $Root." 'Run this script from a full clone of the book repo.' }
   $pv = Invoke-Native -Exe $py -Arguments @('-V')
   Write-Ok $pv.Out
