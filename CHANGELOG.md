@@ -4,6 +4,20 @@ All notable changes to *Tools, Not Clicks: Building Agent-Ready Websites with We
 
 Each version is a Git tag `vX.Y.Z`. Its GitHub Release carries the PDF, the EPUB and the HTML edition built from that tag. The web edition shows this file as its release history.
 
+## [2.1.0] - 2026-11-04
+
+New material from reader feedback. Thanks to Francesco Marinoni Moretto (Agentic Standards Map) for reading the book closely and for the question behind the new section.
+
+### Added
+
+- Chapter 16: a new section, “WebMCP and protocol checkout (UCP)”. The same Shopify storefronts that deploy WebMCP also publish a Universal Commerce Protocol profile at `/.well-known/ucp` (fetched on three stores on 4 November 2026). The section covers how the two channels relate (on Shopify, Checkout WebMCP implements the UCP checkout capability in the page), which one an agent should use (Shopify’s guidance, and the silence of both specifications), whether Chapter 13’s human-in-the-loop guarantees carry over (UCP requires a trusted UI or signed AP2 mandates, and Shopify’s in-page tools require the buyer’s confirmation) and which record a dispute relies on (open, with the Article 8(2) question linked to the existing citation). New notes ch16-29 to ch16-32 and a new summary bullet.
+- Chapter 13: one sentence pointing from “What a trusted click proves” to the new section.
+- VALIDATION.md: Chapter 16 rows 21–29 and Chapter 13 row 38, each with its source and the date it was read.
+
+### Changed
+
+- Chapters 16 and 17: the commenter cited on the Consumer Rights Directive (Article 8(2)) is named as Francesco Marinoni Moretto (GitHub: frmoretto), at his request, in the text and in notes ch16-26 and ch17-35. VALIDATION.md Chapter 16 row 13 and the Chapter 16 editorial log record the change.
+
 ## [2.0.2] - 2026-11-02
 
 ### Fixed
