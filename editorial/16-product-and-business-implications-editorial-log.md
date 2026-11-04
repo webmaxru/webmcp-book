@@ -22,3 +22,8 @@ the editor, v2 rewrite, 2 November 2026. Voice target: Maxim’s his voice profi
 - Grep: no TODO/TBD/FIXME/XXX/[insert/[[/lorem/“coming soon”/“to be published”. Zero semicolons in prose.
 - Listings are embedded byte for byte from `demos-new/chapters/16-product-and-business-implications/src/` and checked by the demo’s listing test.
 - Length: about 8,000 words with listings and notes, against 7,144 in v1. The growth is the new Chrome guidance and the October standards material. I cut elsewhere where repetition allowed.
+
+## v2.1.0 (4 November 2026)
+
+- The GitHub user frmoretto wrote to the author and gave his name, Francesco Marinoni Moretto, and his GitHub profile shows the same name. He is now named in the text (“Francesco Marinoni Moretto (GitHub: frmoretto)” on first mention, “Marinoni Moretto” after that) and in notes ch16-26 and ch17-35. This replaces the handle-only note above.
+- New section “WebMCP and protocol checkout (UCP)” after “WebMCP and backend MCP in one plan”, from his suggestion. Every fact was checked against primary sources on 4 November 2026 (live `/.well-known/ucp` fetches on three stores, the UCP 2026-08-25 specification, Shopify’s changelog and Checkout WebMCP documentation). His map is cited as a secondary source. Where the specifications are silent, the text says so. VALIDATION.md rows 21–29. No semicolons in the new prose.
