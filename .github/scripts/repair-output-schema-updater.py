@@ -73,30 +73,30 @@ appendix_marker = '# Appendix A: mirror the current IDL'
 appendix_position = source.find(appendix_marker)
 if appendix_position < 0:
     raise SystemExit('Appendix A IDL updater section not found')
-idl_start = source.find('  idl = read(p)', appendix_position)
-idl_end = source.find('  edit(p,', idl_start)
+idl_start = source.find('idl = read(p)', appendix_position)
+idl_end = source.find('edit(p,', idl_start)
 if idl_start < 0 or idl_end < 0:
     raise SystemExit('Could not locate Appendix A IDL updater boundaries')
-idl_replacement = '''  idl = read(p)
-  def add_output_schema(text: str, dictionary: str) -> str:
-      start = text.find(f'dictionary {dictionary} {{')
-      if start < 0:
-          raise RuntimeError(f'Appendix A {dictionary} IDL dictionary not found')
-      end = text.find('\\n};', start)
-      if end < 0:
-          raise RuntimeError(f'Appendix A {dictionary} IDL dictionary end not found')
-      block = text[start:end]
-      if re.search(r'(?m)^[ \\t]*object outputSchema;', block):
-          return text
-      match = re.search(r'(?m)^([ \\t]*)object inputSchema;[ \\t]*$', block)
-      if match is None:
-          raise RuntimeError(f'Appendix A {dictionary} IDL inputSchema not found')
-      insert_at = start + match.end()
-      return text[:insert_at] + '\\n' + match.group(1) + 'object outputSchema;' + text[insert_at:]
+idl_replacement = '''idl = read(p)
+def add_output_schema(text: str, dictionary: str) -> str:
+    start = text.find(f'dictionary {dictionary} {{')
+    if start < 0:
+        raise RuntimeError(f'Appendix A {dictionary} IDL dictionary not found')
+    end = text.find('\\n};', start)
+    if end < 0:
+        raise RuntimeError(f'Appendix A {dictionary} IDL dictionary end not found')
+    block = text[start:end]
+    if re.search(r'(?m)^[ \\t]*object outputSchema;', block):
+        return text
+    match = re.search(r'(?m)^([ \\t]*)object inputSchema;[ \\t]*$', block)
+    if match is None:
+        raise RuntimeError(f'Appendix A {dictionary} IDL inputSchema not found')
+    insert_at = start + match.end()
+    return text[:insert_at] + '\\n' + match.group(1) + 'object outputSchema;' + text[insert_at:]
 
-  idl = add_output_schema(idl, 'ModelContextTool')
-  idl = add_output_schema(idl, 'RegisteredTool')
-  updates[p] = idl
+idl = add_output_schema(idl, 'ModelContextTool')
+idl = add_output_schema(idl, 'RegisteredTool')
+updates[p] = idl
 
 '''
 source = source[:idl_start] + idl_replacement + source[idl_end:]
