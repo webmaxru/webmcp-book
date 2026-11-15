@@ -24,12 +24,16 @@ jobs:
       - name: Clone paired demo listings
         run: git clone --depth 1 --branch output-schema-update https://github.com/webmaxru/webmcp-book-demos.git "$RUNNER_TEMP/webmcp-book-demos"
       - name: Repair known manuscript updater anchors
+        shell: bash
         run: |
-          python3 - <<'PY'
+          set +e
+          python3 - <<'PY' > /tmp/anchor-repair.log 2>&1
           from pathlib import Path
 
           path = Path('.github/scripts/apply-output-schema-update.py')
           source = path.read_text(encoding='utf-8')
+          print('old heading:', '## Layer 4: evaluations against real models' in source)
+          print('new heading:', '## Layer 4: evals' in source)
           old_heading = '## Layer 4: evaluations against real models'
           if old_heading in source:
               source = source.replace(old_heading, '## Layer 4: evals', 1)
@@ -38,11 +42,14 @@ jobs:
 
           duplicate_label = "'Chapter 5 output subsection old start'"
           label_position = source.find(duplicate_label)
+          print('duplicate label:', label_position)
           if label_position >= 0:
               start = source.rfind('  edit(p,', 0, label_position)
+              print('duplicate edit start:', start)
               if start < 0:
                   raise SystemExit('Could not find start of duplicate Chapter 5 edit')
               end = source.find('  updates[p] = read(p).rstrip() + """', label_position)
+              print('duplicate edit end:', end)
               if end < 0:
                   raise SystemExit('Could not find end of duplicate Chapter 5 edit')
               source = source[:start] + source[end:]
@@ -52,6 +59,18 @@ jobs:
           path.write_text(source, encoding='utf-8')
           print('Repaired Chapter 14 heading and removed duplicate Chapter 5 edit')
           PY
+          status=$?
+          cat /tmp/anchor-repair.log
+          if [ "$status" -ne 0 ]; then
+            mkdir -p .github/workflow-logs
+            cp /tmp/anchor-repair.log .github/workflow-logs/anchor-repair.log
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+actions[bot]@users.noreply.github.com'
+            git add .github/workflow-logs/anchor-repair.log
+            git commit -m 'Record manuscript updater repair diagnostics' || true
+            git push origin HEAD:output-schema-update || true
+            exit "$status"
+          fi
       - name: Apply manuscript edits
         run: python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos"
       - name: Install manuscript build dependencies
