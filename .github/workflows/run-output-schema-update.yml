@@ -1,4 +1,4 @@
-name: Apply and validate outputSchema manuscript update
+name: Run and validate WebMCP outputSchema manuscript update
 
 on:
   push:
@@ -21,85 +21,60 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Get the paired demo listings
+      - name: Clone paired demo listings
         run: git clone --depth 1 --branch output-schema-update https://github.com/webmaxru/webmcp-book-demos.git "$RUNNER_TEMP/webmcp-book-demos"
-      - name: Repair the update script anchors
+      - name: Repair known manuscript updater anchors
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
-          p = Path('.github/scripts/apply-output-schema-update.py')
-          s = p.read_text()
-          old_heading = '## Layer 4: evaluations against real models'
-          new_heading = '## Layer 4: evals'
-          if old_heading in s:
-              s = s.replace(old_heading, new_heading, 1)
-          elif new_heading not in s:
-              raise SystemExit('Chapter 14 Layer 4 heading not found')
 
-          start_marker = '  edit(p,\n  """  - Output schemas are resolved'
-          end_marker = '\n  edit(p,\n  """**Listing 17.1**'
-          start = s.find(start_marker)
-          if start >= 0:
-              end = s.find(end_marker, start)
-              if end < 0:
-                  raise SystemExit('Chapter 17 summary edit boundary not found')
-              replacement = '''  summary = read(p)
-    summary, count = re.subn(
-        r"(?m)^  - Output schemas are resolved.*$",
-        "  - PR #254 added optional `outputSchema` to the spec on 2 November. Issue #92 remains open on validation behavior. Chromium 156 still drops the member from `getTools()`; agent harnesses should validate declared results before returning them to a model.",
-        summary,
-        count=1,
-    )
-    if count != 1:
-        raise RuntimeError('Chapter 17 outputSchema summary line not found')
-    updates[p] = summary
-  '''
-              s = s[:start] + replacement + s[end:]
-          elif 'Chapter 17 outputSchema summary line not found' not in s:
-              raise SystemExit('Chapter 17 summary edit not found')
+          path = Path('.github/scripts/apply-output-schema-update.py')
+          source = path.read_text(encoding='utf-8')
+          source, heading_count = re.subn(
+              r'## Layer 4: evaluations against real models',
+              '## Layer 4: evals',
+              source,
+              count=1,
+          )
+          if heading_count == 0 and '## Layer 4: evals' not in source:
+              raise SystemExit('Chapter 14 Layer 4 heading anchor not found')
 
-          start = s.find('\nedit(p,\n"""*Output schemas.* MCP tools can declare')
-          if start >= 0:
-              end = s.find('\nupdates[p] = read(p).rstrip()', start)
-              if end < 0:
-                  raise SystemExit('Could not find end of obsolete duplicate callout edit')
-              s = s[:start] + s[end:]
-          p.write_text(s)
-          print('Update anchors repaired')
+          duplicate_start = re.search(
+              r'(?m)^  edit\(p,\n  """\\*Output schemas\\.\\* MCP tools can declare',
+              source,
+          )
+          if duplicate_start:
+              footnote_append = re.search(
+                  r'(?m)^  updates\[p\] = read\(p\)\.rstrip\(\) \+ """',
+                  source[duplicate_start.end():],
+              )
+              if not footnote_append:
+                  raise SystemExit('Could not bound duplicate Chapter 5 output-schema edit')
+              end = duplicate_start.end() + footnote_append.start()
+              source = source[:duplicate_start.start()] + source[end:]
+          elif 'Chapter 5 output subsection old start' in source:
+              raise SystemExit('Duplicate Chapter 5 output-schema edit anchor is malformed')
+
+          path.write_text(source, encoding='utf-8')
+          print('Repaired Chapter 14 heading and removed duplicate Chapter 5 edit')
           PY
-      - name: Apply manuscript changes and run lint
-        run: |
-          set +e
-          python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos" > /tmp/output-schema-update.log 2>&1
-          result=$?
-          if [ "$result" -eq 0 ]; then
-            python3 tools/lint_manuscript.py >> /tmp/output-schema-update.log 2>&1
-            result=$?
-          fi
-          cat /tmp/output-schema-update.log
-          if [ "$result" -ne 0 ]; then
-            mkdir -p .github/workflow-logs
-            cp /tmp/output-schema-update.log .github/workflow-logs/output-schema-update.txt
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+actions[bot]@users.noreply.github.com"
-            git add .github/workflow-logs/output-schema-update.txt
-            git commit -m "Record outputSchema manuscript workflow diagnostics" || true
-            git push origin HEAD:output-schema-update || true
-            exit "$result"
-          fi
+      - name: Apply manuscript edits
+        run: python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos"
+      - name: Install manuscript build dependencies
+        run: python3 -m pip install -r tools/requirements.txt
+      - name: Run manuscript lint
+        run: python3 tools/lint_manuscript.py
       - name: Build web edition
-        run: |
-          pip install -r tools/requirements.txt
-          python tools/build.py zip
+        run: python3 tools/build.py zip
       - name: Commit manuscript changes
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+actions[bot]@users.noreply.github.com"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+actions[bot]@users.noreply.github.com'
           git add manuscript/05-registering-tools.md manuscript/09-first-webmcp-app.md manuscript/11-designing-tools.md manuscript/14-testing-debugging-evals.md manuscript/15-browser-support-and-standards.md manuscript/17-the-road-ahead.md manuscript/appendix-a-api-reference.md VALIDATION.md CHANGELOG.md
           if ! git diff --cached --quiet; then
-            git commit -m "Update book for WebMCP outputSchema"
+            git commit -m 'Update book for WebMCP outputSchema'
             git push origin HEAD:output-schema-update
           else
-            echo "No manuscript changes to commit"
+            echo 'No manuscript changes to commit'
           fi
