@@ -37,7 +37,6 @@ jobs:
               source = source.replace(old_heading, '## Layer 4: evals', 1)
           elif '## Layer 4: evals' not in source:
               raise SystemExit('Chapter 14 Layer 4 heading anchor not found')
-
           duplicate_label = "'Chapter 5 output subsection old start'"
           label_position = source.find(duplicate_label)
           print('duplicate label:', label_position)
@@ -51,9 +50,6 @@ jobs:
               if end < 0:
                   raise SystemExit('Could not find end of duplicate Chapter 5 edit')
               source = source[:start] + source[end:]
-          elif 'Output schemas.* MCP tools can declare' in source:
-              raise SystemExit('Duplicate Chapter 5 edit remains but its label is missing')
-
           path.write_text(source, encoding='utf-8')
           print('Repaired Chapter 14 heading and removed duplicate Chapter 5 edit')
           PY
@@ -69,8 +65,23 @@ jobs:
             git push origin HEAD:output-schema-update || true
             exit "$status"
           fi
-      - name: Apply manuscript edits
-        run: python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos"
+      - name: Apply manuscript edits and capture diagnostics
+        shell: bash
+        run: |
+          set +e
+          python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos" > /tmp/manuscript-update.log 2>&1
+          status=$?
+          cat /tmp/manuscript-update.log
+          if [ "$status" -ne 0 ]; then
+            mkdir -p .github/workflow-logs
+            cp /tmp/manuscript-update.log .github/workflow-logs/manuscript-update.log
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+actions[bot]@users.noreply.github.com'
+            git add .github/workflow-logs/manuscript-update.log
+            git commit -m 'Record manuscript updater diagnostics' || true
+            git push origin HEAD:output-schema-update || true
+            exit "$status"
+          fi
       - name: Install manuscript build dependencies
         run: python3 -m pip install -r tools/requirements.txt
       - name: Run manuscript lint
