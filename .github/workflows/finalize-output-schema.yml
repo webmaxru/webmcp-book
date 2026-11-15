@@ -70,6 +70,19 @@ jobs:
           '''
           source = source[:start] + replacement + source[end:]
           p.write_text(source)
+
+          # Normalize the one checklist line by its stable prefix. The manuscript
+          # has punctuation/spacing that differs from the updater's old full-line anchor.
+          chapter = Path('manuscript/17-the-road-ahead.md')
+          lines = chapter.read_text(encoding='utf-8').splitlines()
+          prefix = '2. **Put the API shape in one file.**'
+          desired = '  2. **Put the API shape in one file.** Only the adapter calls `document.modelContext` (Listing 17.2). When continuation support or a new exposure keyword arrives, or the API moves again (Appendix D covers the last move), one file changes. The adapter already passes `outputSchema` through.'
+          matches = [i for i, line in enumerate(lines) if line.strip().startswith(prefix)]
+          if len(matches) == 1:
+              lines[matches[0]] = desired
+              chapter.write_text('\\n'.join(lines) + '\\n', encoding='utf-8')
+          elif not any(line == desired for line in lines):
+              raise SystemExit(f'Expected one Chapter 17 API-shape checklist line, found {len(matches)}')
           PY
       - name: Apply manuscript edits and preserve failures
         run: |
