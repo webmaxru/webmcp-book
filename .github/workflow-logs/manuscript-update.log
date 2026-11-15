@@ -1,3 +1,1 @@
-  File "/home/runner/work/webmcp-book/webmcp-book/.github/scripts/apply-output-schema-update.py", line 222
-    chapter17 = read(p)
-IndentationError: unexpected indent
+Chapter 17 checklist adapter line not found
