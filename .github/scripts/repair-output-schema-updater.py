@@ -52,7 +52,7 @@ elif 'Chapter 17 outputSchema summary line not found' not in source:
 checklist_label = "'Chapter 17 checklist adapter'"
 label_position = source.find(checklist_label)
 if label_position >= 0:
-    start = source.rfind('  edit(p,', 0, label_position)
+    start = source.rfind('edit(p,', 0, label_position)
     line_end = source.find('\n', label_position)
     if start < 0 or line_end < 0:
         raise SystemExit('Could not locate Chapter 17 checklist edit boundaries')
