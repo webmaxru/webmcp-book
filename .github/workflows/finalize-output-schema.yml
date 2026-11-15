@@ -1,0 +1,72 @@
+name: Finalize outputSchema manuscript update
+
+on:
+  push:
+    branches: [output-schema-update]
+    paths:
+      - .github/workflows/finalize-output-schema.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: output-schema-update
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Clone the paired demo listings
+        run: git clone --depth 1 --branch output-schema-update https://github.com/webmaxru/webmcp-book-demos.git "$RUNNER_TEMP/webmcp-book-demos"
+      - name: Repair the Chapter 17 summary anchor in the prepared update script
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('.github/scripts/apply-output-schema-update.py')
+          source = p.read_text()
+          start_marker = '  edit(p,\n  """  - Output schemas are resolved'
+          end_marker = '  edit(p,\n  """**Listing 17.1**'
+          start = source.find(start_marker)
+          if start >= 0:
+              end = source.find(end_marker, start)
+              if end < 0:
+                  raise SystemExit('Chapter 17 summary replacement boundary not found')
+              replacement = '''  summary = read(p)
+          summary, count = re.subn(
+              r"(?m)^\\s*- Output schemas.*$",
+              "  - PR #254 added optional `outputSchema` to the spec on 2 November. Issue #92 remains open on validation behavior. Chromium 156 still drops the member from `getTools()`; agent harnesses should validate declared results before returning them to a model.",
+              summary,
+              count=1,
+          )
+          if count == 0 and "PR #254 added optional `outputSchema` to the spec on 2 November." not in summary:
+              raise RuntimeError('Chapter 17 outputSchema summary bullet not found')
+          updates[p] = summary
+          '''
+              source = source[:start] + replacement + source[end:]
+          elif "PR #254 added optional `outputSchema` to the spec on 2 November." not in source:
+              raise SystemExit('Chapter 17 summary edit not found')
+          p.write_text(source)
+          PY
+      - name: Apply the manuscript edits
+        run: python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos"
+      - name: Run manuscript lint and build
+        run: |
+          python3 tools/lint_manuscript.py
+          python3 -m pip install -r tools/requirements.txt
+          python3 tools/build.py zip
+      - name: Commit the manuscript update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+actions[bot]@users.noreply.github.com"
+          git add manuscript/05-registering-tools.md manuscript/09-first-webmcp-app.md manuscript/11-designing-tools.md manuscript/14-testing-debugging-evals.md manuscript/15-browser-support-and-standards.md manuscript/17-the-road-ahead.md manuscript/appendix-a-api-reference.md VALIDATION.md CHANGELOG.md
+          if ! git diff --cached --quiet; then
+            git commit -m "Update book for WebMCP outputSchema"
+            git push origin HEAD:output-schema-update
+          else
+            echo "No manuscript changes to commit"
+          fi
