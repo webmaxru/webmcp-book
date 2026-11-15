@@ -47,7 +47,7 @@ jobs:
           end = source.find('def edit(', start)
           if start < 0 or end < 0:
               raise SystemExit('Could not locate replace_once() and edit() in the manuscript updater')
-          line_start = source.rfind('\n', 0, start) + 1
+          line_start = source.rfind('\\n', 0, start) + 1
           replacement = r'''def replace_once(text, old, new, label):
               if old in text:
                   return text.replace(old, new, 1)
@@ -76,6 +76,20 @@ jobs:
           PY
       - name: Apply manuscript edits
         run: python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos"
+      - name: Remove obsolete outputSchema citations
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('manuscript/05-registering-tools.md')
+          lines = path.read_text(encoding='utf-8').splitlines()
+          for label in ('ch05-37', 'ch05-38'):
+              matches = [i for i, line in enumerate(lines) if line.startswith(f'[^{label}]:')]
+              if len(matches) != 1:
+                  raise SystemExit(f'Expected one obsolete footnote definition for {label}, found {len(matches)}')
+              del lines[matches[0]]
+          path.write_text('\\n'.join(lines) + '\\n', encoding='utf-8')
+          print('Removed superseded outputSchema footnote definitions')
+          PY
       - name: Install manuscript build dependencies
         run: python3 -m pip install -r tools/requirements.txt
       - name: Run manuscript lint and build
