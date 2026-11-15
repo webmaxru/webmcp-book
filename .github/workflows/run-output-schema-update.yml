@@ -36,16 +36,18 @@ jobs:
           elif '## Layer 4: evals' not in source:
               raise SystemExit('Chapter 14 Layer 4 heading anchor not found')
 
-          start_marker = '  edit(p,\n  """*Output schemas.* MCP tools can declare'
-          start = source.find(start_marker)
-          if start >= 0:
-              end_marker = '  updates[p] = read(p).rstrip() + """'
-              end = source.find(end_marker, start)
+          duplicate_label = "'Chapter 5 output subsection old start'"
+          label_position = source.find(duplicate_label)
+          if label_position >= 0:
+              start = source.rfind('  edit(p,', 0, label_position)
+              if start < 0:
+                  raise SystemExit('Could not find start of duplicate Chapter 5 edit')
+              end = source.find('  updates[p] = read(p).rstrip() + """', label_position)
               if end < 0:
-                  raise SystemExit('Could not bound duplicate Chapter 5 output-schema edit')
+                  raise SystemExit('Could not find end of duplicate Chapter 5 edit')
               source = source[:start] + source[end:]
-          elif 'Chapter 5 output subsection old start' in source:
-              raise SystemExit('Duplicate Chapter 5 output-schema edit anchor is malformed')
+          elif 'Output schemas.* MCP tools can declare' in source:
+              raise SystemExit('Duplicate Chapter 5 edit remains but its label is missing')
 
           path.write_text(source, encoding='utf-8')
           print('Repaired Chapter 14 heading and removed duplicate Chapter 5 edit')
