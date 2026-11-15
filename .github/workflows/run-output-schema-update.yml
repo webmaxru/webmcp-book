@@ -32,8 +32,6 @@ jobs:
 
           path = Path('.github/scripts/apply-output-schema-update.py')
           source = path.read_text(encoding='utf-8')
-          print('old heading:', '## Layer 4: evaluations against real models' in source)
-          print('new heading:', '## Layer 4: evals' in source)
           old_heading = '## Layer 4: evaluations against real models'
           if old_heading in source:
               source = source.replace(old_heading, '## Layer 4: evals', 1)
@@ -44,11 +42,11 @@ jobs:
           label_position = source.find(duplicate_label)
           print('duplicate label:', label_position)
           if label_position >= 0:
-              start = source.rfind('  edit(p,', 0, label_position)
+              start = source.rfind('edit(p,', 0, label_position)
               print('duplicate edit start:', start)
               if start < 0:
                   raise SystemExit('Could not find start of duplicate Chapter 5 edit')
-              end = source.find('  updates[p] = read(p).rstrip() + """', label_position)
+              end = source.find('updates[p] = read(p).rstrip() + """', label_position)
               print('duplicate edit end:', end)
               if end < 0:
                   raise SystemExit('Could not find end of duplicate Chapter 5 edit')
