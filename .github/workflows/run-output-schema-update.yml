@@ -5,6 +5,7 @@ on:
     branches: [output-schema-update]
     paths:
       - .github/workflows/run-output-schema-update.yml
+      - .github/scripts/repair-output-schema-updater.py
   workflow_dispatch:
 
 permissions:
@@ -23,68 +24,8 @@ jobs:
           python-version: '3.12'
       - name: Clone paired demo listings
         run: git clone --depth 1 --branch output-schema-update https://github.com/webmaxru/webmcp-book-demos.git "$RUNNER_TEMP/webmcp-book-demos"
-      - name: Repair known manuscript updater anchors
-        shell: bash
-        run: |
-          set +e
-          python3 - <<'PY' > /tmp/anchor-repair.log 2>&1
-          from pathlib import Path
-
-          path = Path('.github/scripts/apply-output-schema-update.py')
-          source = path.read_text(encoding='utf-8')
-          old_heading = '## Layer 4: evaluations against real models'
-          if old_heading in source:
-              source = source.replace(old_heading, '## Layer 4: evals', 1)
-          elif '## Layer 4: evals' not in source:
-              raise SystemExit('Chapter 14 Layer 4 heading anchor not found')
-
-          duplicate_label = "'Chapter 5 output subsection old start'"
-          label_position = source.find(duplicate_label)
-          if label_position >= 0:
-              start = source.rfind('edit(p,', 0, label_position)
-              end = source.find('updates[p] = read(p).rstrip() + """', label_position)
-              if start < 0 or end < 0:
-                  raise SystemExit('Could not remove duplicate obsolete Chapter 5 edit')
-              source = source[:start] + source[end:]
-
-          summary_label = "'Chapter 17 summary output schema'"
-          label_position = source.find(summary_label)
-          if label_position >= 0:
-              start = source.rfind('edit(p,', 0, label_position)
-              caption_position = source.find('**Listing 17.1**', label_position)
-              end = source.rfind('edit(p,', label_position, caption_position)
-              if start < 0 or caption_position < 0 or end <= start:
-                  raise SystemExit('Could not locate Chapter 17 summary edit boundaries')
-              replacement = '''summary = read(p)
-summary, count = re.subn(
-    r"(?m)^[ \\t]*- Output schemas are resolved.*$",
-    "  - PR #254 added optional `outputSchema` to the spec on 2 November. Issue #92 remains open on validation behavior. Chromium 156 still drops the member from `getTools()`; agent harnesses should validate declared results before returning them to a model.",
-    summary,
-    count=1,
-)
-if count != 1:
-    raise RuntimeError('Chapter 17 outputSchema summary line not found')
-updates[p] = summary
-'''
-              source = source[:start] + replacement + source[end:]
-          elif 'Chapter 17 outputSchema summary line not found' not in source:
-              raise SystemExit('Chapter 17 summary edit was not found')
-
-          path.write_text(source, encoding='utf-8')
-          print('Repaired Chapter 14 heading and Chapter 17 summary anchor')
-          PY
-          status=$?
-          cat /tmp/anchor-repair.log
-          if [ "$status" -ne 0 ]; then
-            mkdir -p .github/workflow-logs
-            cp /tmp/anchor-repair.log .github/workflow-logs/anchor-repair.log
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+actions[bot]@users.noreply.github.com'
-            git add .github/workflow-logs/anchor-repair.log
-            git commit -m 'Record manuscript updater repair diagnostics' || true
-            git push origin HEAD:output-schema-update || true
-            exit "$status"
-          fi
+      - name: Repair manuscript updater anchors
+        run: python3 .github/scripts/repair-output-schema-updater.py
       - name: Apply manuscript edits and capture diagnostics
         shell: bash
         run: |
