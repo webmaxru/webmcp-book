@@ -37,21 +37,41 @@ jobs:
               source = source.replace(old_heading, '## Layer 4: evals', 1)
           elif '## Layer 4: evals' not in source:
               raise SystemExit('Chapter 14 Layer 4 heading anchor not found')
+
           duplicate_label = "'Chapter 5 output subsection old start'"
           label_position = source.find(duplicate_label)
-          print('duplicate label:', label_position)
           if label_position >= 0:
               start = source.rfind('edit(p,', 0, label_position)
-              print('duplicate edit start:', start)
-              if start < 0:
-                  raise SystemExit('Could not find start of duplicate Chapter 5 edit')
               end = source.find('updates[p] = read(p).rstrip() + """', label_position)
-              print('duplicate edit end:', end)
-              if end < 0:
-                  raise SystemExit('Could not find end of duplicate Chapter 5 edit')
+              if start < 0 or end < 0:
+                  raise SystemExit('Could not remove duplicate obsolete Chapter 5 edit')
               source = source[:start] + source[end:]
+
+          summary_label = "'Chapter 17 summary output schema'"
+          label_position = source.find(summary_label)
+          if label_position >= 0:
+              start = source.rfind('edit(p,', 0, label_position)
+              caption_position = source.find('**Listing 17.1**', label_position)
+              end = source.rfind('edit(p,', label_position, caption_position)
+              if start < 0 or caption_position < 0 or end <= start:
+                  raise SystemExit('Could not locate Chapter 17 summary edit boundaries')
+              replacement = '''summary = read(p)
+summary, count = re.subn(
+    r"(?m)^[ \\t]*- Output schemas are resolved.*$",
+    "  - PR #254 added optional `outputSchema` to the spec on 2 November. Issue #92 remains open on validation behavior. Chromium 156 still drops the member from `getTools()`; agent harnesses should validate declared results before returning them to a model.",
+    summary,
+    count=1,
+)
+if count != 1:
+    raise RuntimeError('Chapter 17 outputSchema summary line not found')
+updates[p] = summary
+'''
+              source = source[:start] + replacement + source[end:]
+          elif 'Chapter 17 outputSchema summary line not found' not in source:
+              raise SystemExit('Chapter 17 summary edit was not found')
+
           path.write_text(source, encoding='utf-8')
-          print('Repaired Chapter 14 heading and removed duplicate Chapter 5 edit')
+          print('Repaired Chapter 14 heading and Chapter 17 summary anchor')
           PY
           status=$?
           cat /tmp/anchor-repair.log
