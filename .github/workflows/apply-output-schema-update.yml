@@ -23,6 +23,20 @@ jobs:
           python-version: '3.12'
       - name: Get the paired demo listings
         run: git clone --depth 1 --branch output-schema-update https://github.com/webmaxru/webmcp-book-demos.git "$RUNNER_TEMP/webmcp-book-demos"
+      - name: Repair manuscript update anchors
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('.github/scripts/apply-output-schema-update.py')
+          s = p.read_text()
+          old = '## Layer 4: evaluations against real models'
+          new = '## Layer 4: evals'
+          if old in s:
+              s = s.replace(old, new, 1)
+          elif new not in s:
+              raise SystemExit('Chapter 14 Layer 4 heading not found')
+          p.write_text(s)
+          PY
       - name: Remove duplicate obsolete callout edit
         run: |
           python3 - <<'PY'
@@ -48,7 +62,7 @@ jobs:
             mkdir -p .github/workflow-logs
             cp /tmp/book-update.log .github/workflow-logs/book-apply-output-schema.txt
             git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git config user.email "41898282+actions[bot]@users.noreply.github.com"
             git add .github/workflow-logs/book-apply-output-schema.txt
             git commit -m "Record manuscript update diagnostics" || true
             git push origin HEAD:output-schema-update || true
@@ -57,7 +71,7 @@ jobs:
       - name: Commit manuscript changes
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+actions[bot]@users.noreply.github.com"
           git add manuscript/05-registering-tools.md manuscript/09-first-webmcp-app.md manuscript/11-designing-tools.md manuscript/14-testing-debugging-evals.md manuscript/15-browser-support-and-standards.md manuscript/17-the-road-ahead.md manuscript/appendix-a-api-reference.md VALIDATION.md CHANGELOG.md
           if ! git diff --cached --quiet; then
             git commit -m "Update book for WebMCP outputSchema"
