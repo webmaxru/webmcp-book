@@ -27,14 +27,36 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
           p = Path('.github/scripts/apply-output-schema-update.py')
           s = p.read_text()
-          old = '## Layer 4: evaluations against real models'
-          new = '## Layer 4: evals'
-          if old in s:
-              s = s.replace(old, new, 1)
-          elif new not in s:
+          old_heading = '## Layer 4: evaluations against real models'
+          new_heading = '## Layer 4: evals'
+          if old_heading in s:
+              s = s.replace(old_heading, new_heading, 1)
+          elif new_heading not in s:
               raise SystemExit('Chapter 14 Layer 4 heading not found')
+          start_marker = '  edit(p,\n  """  - Output schemas are resolved'
+          end_marker = '\n  edit(p,\n  """**Listing 17.1**'
+          start = s.find(start_marker)
+          if start >= 0:
+              end = s.find(end_marker, start)
+              if end < 0:
+                  raise SystemExit('Chapter 17 summary edit boundary not found')
+              replacement = '''  summary = read(p)
+  summary, count = re.subn(
+      r"(?m)^  - Output schemas are resolved.*$",
+      "  - PR #254 added optional `outputSchema` to the spec on 2 November. Issue #92 remains open on validation behavior. Chromium 156 still drops the member from `getTools()`; agent harnesses should validate declared results before returning them to a model.",
+      summary,
+      count=1,
+  )
+  if count != 1:
+      raise RuntimeError('Chapter 17 outputSchema summary line not found')
+  updates[p] = summary
+'''
+              s = s[:start] + replacement + s[end:]
+          elif 'Chapter 17 outputSchema summary line not found' not in s:
+              raise SystemExit('Chapter 17 summary edit not found')
           p.write_text(s)
           PY
       - name: Remove duplicate obsolete callout edit
