@@ -28,28 +28,27 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import re
           path = Path('.github/scripts/apply-output-schema-update.py')
           source = path.read_text(encoding='utf-8')
           source = source.replace('## Layer 4: evaluations against real models', '## Layer 4: evals')
 
-          # Remove the redundant Chapter 5 fragment edit superseded by the full
-          # output-schema callout replacement earlier in this updater.
           label = "Chapter 5 output subsection old start')"
           if label in source:
               label_at = source.index(label)
               start = source.rfind('edit(p,', 0, label_at)
-              end = label_at + len(label)
               if start < 0:
                   raise SystemExit('Could not isolate redundant Chapter 5 callout edit')
+              end = label_at + len(label)
               source = source[:start] + source[end:].lstrip('\\r\\n')
 
-          # Match anchors independent of Markdown list/blockquote indentation.
-          pattern = re.compile(r'(?ms)^[ \\t]*def replace_once\\b.*?(?=^[ \\t]*def edit\\b)')
-          match = pattern.search(source)
-          if not match:
-              raise SystemExit('Could not find replace_once() in the manuscript updater')
-          replacement = '''def replace_once(text, old, new, label):
+          # Replace the updater's exact-only helper. String slicing avoids brittle
+          # regex escaping in this workflow's embedded Python block.
+          start = source.find('def replace_once')
+          end = source.find('def edit(', start)
+          if start < 0 or end < 0:
+              raise SystemExit('Could not locate replace_once() and edit() in the manuscript updater')
+          line_start = source.rfind('\\n', 0, start) + 1
+          replacement = r'''def replace_once(text, old, new, label):
               if old in text:
                   return text.replace(old, new, 1)
               if new in text:
@@ -71,7 +70,7 @@ jobs:
               raise RuntimeError(f"{label}: expected text not found: {old[:140]!r}")
 
           '''
-          source = source[:match.start()] + replacement + source[match.end():]
+          source = source[:line_start] + replacement + source[end:]
           path.write_text(source, encoding='utf-8')
           print('Prepared updater anchors are repaired')
           PY
