@@ -31,24 +31,20 @@ jobs:
           import re
           path = Path('.github/scripts/apply-output-schema-update.py')
           source = path.read_text(encoding='utf-8')
-
-          # The existing chapter heading is already "evals"; keep the inserted
-          # schema-contract subsection anchored to that exact heading.
           source = source.replace('## Layer 4: evaluations against real models', '## Layer 4: evals')
 
-          # Remove a second, obsolete Chapter 5 callout edit that is superseded
-          # by the full replacement above it.
-          marker = 'Chapter 5 output subsection old start'
-          if marker in source:
-              label_at = source.index(marker)
+          # Remove the redundant Chapter 5 fragment edit superseded by the full
+          # output-schema callout replacement earlier in this updater.
+          label = "Chapter 5 output subsection old start')"
+          if label in source:
+              label_at = source.index(label)
               start = source.rfind('edit(p,', 0, label_at)
-              end = source.find('\n  edit(p,', label_at)
-              if start < 0 or end < 0:
+              end = label_at + len(label)
+              if start < 0:
                   raise SystemExit('Could not isolate redundant Chapter 5 callout edit')
-              source = source[:start] + source[end + 1:]
+              source = source[:start] + source[end:].lstrip('\\r\\n')
 
-          # Match manuscript anchors independent of Markdown list/blockquote
-          # indentation, while preserving the replacement's first-line indent.
+          # Match anchors independent of Markdown list/blockquote indentation.
           pattern = re.compile(r'(?ms)^[ \\t]*def replace_once\\b.*?(?=^[ \\t]*def edit\\b)')
           match = pattern.search(source)
           if not match:
