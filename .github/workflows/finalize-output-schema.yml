@@ -23,57 +23,6 @@ jobs:
           python-version: '3.12'
       - name: Clone the paired demo listings
         run: git clone --depth 1 --branch output-schema-update https://github.com/webmaxru/webmcp-book-demos.git "$RUNNER_TEMP/webmcp-book-demos"
-      - name: Repair manuscript anchors in the prepared updater
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          path = Path('.github/scripts/apply-output-schema-update.py')
-          source = path.read_text(encoding='utf-8')
-          source = source.replace('## Layer 4: evaluations against real models', '## Layer 4: evals')
-
-          label = "Chapter 5 output subsection old start')"
-          if label in source:
-              label_at = source.index(label)
-              start = source.rfind('edit(p,', 0, label_at)
-              if start < 0:
-                  raise SystemExit('Could not isolate redundant Chapter 5 callout edit')
-              end = label_at + len(label)
-              source = source[:start] + source[end:].lstrip('\\r\\n')
-
-          # Replace the updater's exact-only helper. String slicing avoids brittle
-          # regex escaping in this workflow's embedded Python block.
-          start = source.find('def replace_once')
-          end = source.find('def edit(', start)
-          if start < 0 or end < 0:
-              raise SystemExit('Could not locate replace_once() and edit() in the manuscript updater')
-          line_start = source.rfind('\\n', 0, start) + 1
-          replacement = r'''def replace_once(text, old, new, label):
-              if old in text:
-                  return text.replace(old, new, 1)
-              if new in text:
-                  return text
-              old_lines = old.splitlines()
-              actual = text.splitlines(keepends=True)
-              plain = [line.rstrip("\\r\\n") for line in actual]
-              expected = [line.rstrip("\\r\\n") for line in old_lines]
-              for i in range(len(plain) - len(expected) + 1):
-                  if all(plain[i + j].strip() == expected[j].strip() for j in range(len(expected))):
-                      indent = plain[i][:len(plain[i]) - len(plain[i].lstrip(" \\t"))]
-                      new_lines = new.splitlines()
-                      if new_lines:
-                          new_lines[0] = indent + new_lines[0].lstrip(" \\t")
-                      begin = sum(len(line) for line in actual[:i])
-                      finish = sum(len(line) for line in actual[:i + len(expected)])
-                      newline = "\\n" if actual[i + len(expected) - 1].endswith("\\n") else ""
-                      return text[:begin] + "\\n".join(new_lines) + newline + text[finish:]
-              raise RuntimeError(f"{label}: expected text not found: {old[:140]!r}")
-
-          '''
-          source = source[:line_start] + replacement + source[end:]
-          path.write_text(source, encoding='utf-8')
-          print('Prepared updater anchors are repaired')
-          PY
       - name: Apply manuscript edits
         run: python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos"
       - name: Remove obsolete outputSchema citations
@@ -87,7 +36,7 @@ jobs:
               if len(matches) != 1:
                   raise SystemExit(f'Expected one obsolete footnote definition for {label}, found {len(matches)}')
               del lines[matches[0]]
-          path.write_text('\\n'.join(lines) + '\\n', encoding='utf-8')
+          path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
           print('Removed superseded outputSchema footnote definitions')
           PY
       - name: Install manuscript build dependencies
