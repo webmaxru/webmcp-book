@@ -1,0 +1,67 @@
+name: Apply WebMCP outputSchema manuscript update
+
+on:
+  push:
+    branches: [output-schema-update]
+    paths:
+      - .github/scripts/apply-output-schema-update.py
+      - .github/workflows/apply-output-schema-update.yml
+
+permissions:
+  contents: write
+
+jobs:
+  update-manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: output-schema-update
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Get the paired demo listings
+        run: git clone --depth 1 --branch output-schema-update https://github.com/webmaxru/webmcp-book-demos.git "$RUNNER_TEMP/webmcp-book-demos"
+      - name: Remove duplicate obsolete callout edit
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('.github/scripts/apply-output-schema-update.py')
+          s = p.read_text()
+          start = s.find('\nedit(p,\n"""*Output schemas.* MCP tools can declare')
+          if start >= 0:
+              end = s.find('\nupdates[p] = read(p).rstrip()', start)
+              if end < 0:
+                  raise SystemExit('Could not find end of obsolete duplicate edit')
+              s = s[:start] + s[end:]
+          p.write_text(s)
+          PY
+      - name: Apply manuscript edits and synchronize listings
+        shell: bash
+        run: |
+          set +e
+          python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos" > /tmp/book-update.log 2>&1
+          result=$?
+          cat /tmp/book-update.log
+          if [ "$result" -ne 0 ]; then
+            mkdir -p .github/workflow-logs
+            cp /tmp/book-update.log .github/workflow-logs/book-apply-output-schema.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add .github/workflow-logs/book-apply-output-schema.txt
+            git commit -m "Record manuscript update diagnostics" || true
+            git push origin HEAD:output-schema-update || true
+            exit "$result"
+          fi
+      - name: Commit manuscript changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manuscript/05-registering-tools.md manuscript/09-first-webmcp-app.md manuscript/11-designing-tools.md manuscript/14-testing-debugging-evals.md manuscript/15-browser-support-and-standards.md manuscript/17-the-road-ahead.md manuscript/appendix-a-api-reference.md VALIDATION.md CHANGELOG.md
+          if ! git diff --cached --quiet; then
+            git commit -m "Update book for WebMCP outputSchema"
+            git push origin HEAD:output-schema-update
+          else
+            echo "No manuscript changes to commit"
+          fi
