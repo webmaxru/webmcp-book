@@ -67,6 +67,34 @@ jobs:
           updates[p] = '\\n'.join(lines) + '\\n'
           '''
           source = source[:start] + replacement + source[end:]
+
+          # Let block quotes nest inside Markdown lists even when the anchor and
+          # the manuscript use different leading indentation.
+          start = source.index('def replace_once(')
+          end = source.index('\\ndef edit(', start)
+          replacement = '''def replace_once(text, old, new, label):
+              if old in text:
+                  return text.replace(old, new, 1)
+              if new in text:
+                  return text
+              old_lines = old.splitlines()
+              actual = text.splitlines(keepends=True)
+              plain = [line.rstrip('\\r\\n') for line in actual]
+              expected = [line.rstrip('\\r\\n') for line in old_lines]
+              for i in range(len(plain) - len(expected) + 1):
+                  if all(plain[i + j].strip() == expected[j].strip() for j in range(len(expected))):
+                      indent = plain[i][:len(plain[i]) - len(plain[i].lstrip(' \\t'))]
+                      new_lines = new.splitlines()
+                      if new_lines:
+                          new_lines[0] = indent + new_lines[0].lstrip(' \\t')
+                      begin = sum(len(line) for line in actual[:i])
+                      finish = sum(len(line) for line in actual[:i + len(expected)])
+                      trailing_newline = '\\n' if actual[i + len(expected) - 1].endswith('\\n') else ''
+                      return text[:begin] + '\\n'.join(new_lines) + trailing_newline + text[finish:]
+              raise RuntimeError(f'{label}: expected text not found: {old[:140]!r}')
+          '''
+          source = source[:start] + replacement + source[end:]
+
           for heading in ('output schemas', 'output validation'):
               unindented = f'"""> **Still in flux:** {heading}'
               indented = f'"""  > **Still in flux:** {heading}'
