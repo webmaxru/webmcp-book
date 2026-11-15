@@ -47,7 +47,7 @@ jobs:
           end = source.find('def edit(', start)
           if start < 0 or end < 0:
               raise SystemExit('Could not locate replace_once() and edit() in the manuscript updater')
-          line_start = source.rfind('\\n', 0, start) + 1
+          line_start = source.rfind('\n', 0, start) + 1
           replacement = r'''def replace_once(text, old, new, label):
               if old in text:
                   return text.replace(old, new, 1)
