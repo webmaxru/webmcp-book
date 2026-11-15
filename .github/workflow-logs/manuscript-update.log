@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/home/runner/work/webmcp-book/webmcp-book/.github/scripts/apply-output-schema-update.py", line 251, in <module>
-    idl = replace_once(idl, '    object inputSchema;\n    required ToolExecuteCallback execute;', '    object inputSchema;\n    object outputSchema;\n    required ToolExecuteCallback execute;', 'Appendix A ModelContextTool IDL')
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/webmcp-book/webmcp-book/.github/scripts/apply-output-schema-update.py", line 17, in replace_once
-    raise RuntimeError(f'{label}: expected text not found: {old[:140]!r}')
-RuntimeError: Appendix A ModelContextTool IDL: expected text not found: '    object inputSchema;\n    required ToolExecuteCallback execute;'

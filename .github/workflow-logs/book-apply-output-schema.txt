@@ -1,9 +1,0 @@
-Traceback (most recent call last):
-  File "/home/runner/work/webmcp-book/webmcp-book/.github/scripts/apply-output-schema-update.py", line 209, in <module>
-    edit(p,
-  File "/home/runner/work/webmcp-book/webmcp-book/.github/scripts/apply-output-schema-update.py", line 20, in edit
-    updates[path] = replace_once(read(path), old, new, label)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/webmcp-book/webmcp-book/.github/scripts/apply-output-schema-update.py", line 17, in replace_once
-    raise RuntimeError(f'{label}: expected text not found: {old[:140]!r}')
-RuntimeError: Chapter 17 summary output schema: expected text not found: '  - Output schemas are resolved in principle and in an open PR (#254), and whether schemas should be required is argued in #92. Chromium 156'
