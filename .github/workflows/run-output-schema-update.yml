@@ -27,32 +27,23 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import re
 
           path = Path('.github/scripts/apply-output-schema-update.py')
           source = path.read_text(encoding='utf-8')
-          source, heading_count = re.subn(
-              r'## Layer 4: evaluations against real models',
-              '## Layer 4: evals',
-              source,
-              count=1,
-          )
-          if heading_count == 0 and '## Layer 4: evals' not in source:
+          old_heading = '## Layer 4: evaluations against real models'
+          if old_heading in source:
+              source = source.replace(old_heading, '## Layer 4: evals', 1)
+          elif '## Layer 4: evals' not in source:
               raise SystemExit('Chapter 14 Layer 4 heading anchor not found')
 
-          duplicate_start = re.search(
-              r'(?m)^  edit\(p,\n  """\\*Output schemas\\.\\* MCP tools can declare',
-              source,
-          )
-          if duplicate_start:
-              footnote_append = re.search(
-                  r'(?m)^  updates\[p\] = read\(p\)\.rstrip\(\) \+ """',
-                  source[duplicate_start.end():],
-              )
-              if not footnote_append:
+          start_marker = '  edit(p,\n  """*Output schemas.* MCP tools can declare'
+          start = source.find(start_marker)
+          if start >= 0:
+              end_marker = '  updates[p] = read(p).rstrip() + """'
+              end = source.find(end_marker, start)
+              if end < 0:
                   raise SystemExit('Could not bound duplicate Chapter 5 output-schema edit')
-              end = duplicate_start.end() + footnote_append.start()
-              source = source[:duplicate_start.start()] + source[end:]
+              source = source[:start] + source[end:]
           elif 'Chapter 5 output subsection old start' in source:
               raise SystemExit('Duplicate Chapter 5 output-schema edit anchor is malformed')
 
