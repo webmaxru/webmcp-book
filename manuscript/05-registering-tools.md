@@ -33,6 +33,15 @@ if ('modelContext' in document) {                                   // ①
       },
       required: ['date', 'partySize']
     },
+    outputSchema: {
+      type: 'object',
+      properties: {
+        date: { type: 'string' },
+        partySize: { type: 'integer' },
+        slots: { type: 'array', items: { type: 'string' } }
+      },
+      required: ['date', 'partySize', 'slots']
+    },
     annotations: { readOnlyHint: true },                            // → Chapter 6
     async execute({ date, time, partySize }, { signal }) {          // ⑤
       // The same function the date picker calls when a human searches.
@@ -80,6 +89,7 @@ dictionary ModelContextTool {
   USVString title;
   required DOMString description;
   object inputSchema;
+  object outputSchema;
   required ToolExecuteCallback execute;
   ToolAnnotations annotations;
 };
@@ -191,12 +201,13 @@ Two small notes on the listing. It’s a module, so it can use top-level `await`
 | `title` | `USVString` | No | Stores it for display in browser UI. In-page agents see `""` when it’s absent |
 | `description` | `DOMString` | Yes | Rejects the empty string, otherwise passes it to agents unchanged |
 | `inputSchema` | `object` | No | Serializes it to a JSON string at registration time |
+| `outputSchema` | `object` | No | Serializes it to a JSON string at registration; describes the expected result |
 | `execute` | `ToolExecuteCallback` | Yes | Calls it with a parsed input object and `{ signal }` |
 | `annotations` | `ToolAnnotations` | No | Copies four boolean hints (Chapter 6) |
 
 Sources: the specification’s ModelContextTool dictionary, its tool definition concept and the registerTool() steps.[^ch05-14][^ch05-4][^ch05-12]
 
-Because `ModelContextTool` is a Web IDL dictionary, two general rules of Web IDL apply before any WebMCP-specific check runs.[^ch05-9] First, a missing required member, or an `execute` that isn’t callable, fails argument conversion with a `TypeError`. And because `registerTool()` returns a promise, that error arrives as a rejected promise, not as a synchronous throw. Second, members the dictionary doesn’t define are ignored without complaint. If you write `inputschema` (lower-case “s”) or add an `outputSchema` because a blog post mentioned one, the browser drops it. Your tool registers without a schema, and nothing tells you. A typed setup (see the TypeScript section later in this chapter) catches this at compile time.
+Because `ModelContextTool` is a Web IDL dictionary, two general rules of Web IDL apply before any WebMCP-specific check runs.[^ch05-9] First, a missing required member, or an `execute` that isn’t callable, fails argument conversion with a `TypeError`. And because `registerTool()` returns a promise, that error arrives as a rejected promise, not as a synchronous throw. Second, members the dictionary doesn’t define are ignored without complaint. If you write `inputschema` (lower-case “s”), the browser ignores that unknown member without complaint. `outputSchema` is now a defined, optional member alongside `inputSchema`; both schemas are serialized at registration and exposed to agents. A typed setup (see the TypeScript section later in this chapter) catches this at compile time.
 
 ![Figure 5.2 — Anatomy of a tool record: what you pass to registerTool(), what the browser stores, and what an in-page agent gets back from getTools().](images/figure-5-2.png)
 
@@ -310,6 +321,25 @@ export const bookTable = {
     },
     required: ['date', 'time', 'partySize']
   },
+  outputSchema: {
+    type: 'object',
+    properties: {
+      status: { type: 'string', enum: ['error', 'refused', 'booked', 'cancelled_by_user'] },
+      code: { type: 'string' },
+      message: { type: 'string' },
+      reference: { type: 'string' },
+      date: { type: 'string' },
+      time: { type: 'string' },
+      partySize: { type: 'integer' }
+    },
+    required: ['status'],
+    oneOf: [
+      { properties: { status: { const: 'error' } }, required: ['code', 'message'] },
+      { properties: { status: { const: 'refused' } }, required: ['code', 'message'] },
+      { properties: { status: { const: 'booked' } }, required: ['reference', 'date', 'time', 'partySize'] },
+      { properties: { status: { const: 'cancelled_by_user' } }, required: ['message'] }
+    ]
+  },
   annotations: { consequentialHint: true },          // a real-world action: Chapter 6
   async execute(input, { signal }) {
     const problem = checkBookingInput(input);         // validate strictly in code
@@ -379,6 +409,8 @@ When should a tool report success? Chrome’s best-practices guide answers it in
 
 When your promise fulfils with a value `v`, the browser serializes `v` with the Infra standard’s *serialize a JavaScript value to a JSON string* operation, which is a call to `JSON.stringify()` that throws if the result is `undefined`.[^ch05-25][^ch05-24] That string is the result. An in-page agent receives it as the resolved value of `executeTool()`, which is why the IDL declares `Promise<DOMString>`.[^ch05-31] A browser agent receives it through whatever channel the browser uses. The spec deliberately doesn’t prescribe the format its model sees: browsers may expose tools “via Model Context Protocol, other proprietary ‘function calling’ methods, or any other way.”[^ch05-33]
 
+`outputSchema` describes the expected result; it does not by itself guarantee runtime validation. Until issue #92 settles who owns output validation and how a mismatch should be reported, the harness must do the check before the result reaches the model. If validation fails, give the model a useful error without echoing the untrusted payload. When there is no schema, preserve the tool’s ordinary result, including plain text.[^ch05-output-validation][^ch05-output-extension]
+
 Because the serializer is `JSON.stringify()`, its edge cases are WebMCP’s edge cases.
 
 **Table 5.5 — What different return values become, per the 27 October 2026 draft and in Chromium 156**
@@ -413,7 +445,9 @@ My advice for now: return a small, flat object with a `status` field and short, 
 
 > **Still in flux:** Results are the part of the API that moves most.
 >
-> *Output schemas.* MCP tools can declare an `outputSchema` and return `structuredContent`.[^ch05-15] WebMCP has neither. Issue #9 has asked for one since August 2025, and pull request #254 (opened on 21 August 2026, still open on 2 November) would add `outputSchema` to both `ModelContextTool` and `RegisteredTool`.[^ch05-37] Until it lands, a dictionary member named `outputSchema` is silently ignored (see ②), and Chromium 156 behaves exactly that way: a tool registered with an `outputSchema` registers without complaint, and the `RegisteredTool` an in-page agent gets back has no trace of it.[^ch05-3] A developer’s September 2026 issue described having to invent a size budget and a `RESULT_TOO_LARGE` error for 18 tools, because results are untyped.[^ch05-38]
+> *Output schemas.* Pull request #254 merged on 2 November 2026. It adds the optional `outputSchema` member to `ModelContextTool` and `RegisteredTool`; `getTools()` exposes the declared JSON Schema to in-page agents.[^ch05-output-schema] The task’s supplied Chrome build, `159.0.8140.0`, supports the member. This book’s browser observations and demo tests use Chromium 156, where the probe still found that `getTools()` drops it.[^ch05-3]
+>
+> The spec says a result is expected to match its `outputSchema`, but it does not yet require native `executeTool()` to reject a mismatch. Issue #92 remains open. For now, an agent harness should validate each parsed result before returning it to a model, and pass a clear validation error instead of a malformed result. Keep raw invalid data out of the transcript and error text. A tool without an `outputSchema` remains valid; text-returning tools can leave it out.[^ch05-output-validation][^ch05-output-extension]
 >
 > *No continuation tokens.* A tool call is one document and one promise, so a tool can’t hand the agent a second page of results or finish its work after a navigation. On 2 October 2026 the editors merged an explainer for *tool continuations*, which proposes a `ModelContextToolInvocation` object passed to `execute` through its options.[^ch05-39] It’s a proposal only: the draft’s `ToolExecuteCallbackOptions` still has just `signal`, and in Chromium 156 the options object `execute` receives has only `signal` too.[^ch05-14][^ch05-3] For now, keep each result small and let the agent ask again with narrower input, the way `search_availability` takes one date and returns at most five slots.
 >
@@ -612,8 +646,6 @@ Chapter 6 picks up where this one stops: the four annotation hints Fjord Table h
 [^ch05-34]: webmachinelearning/webmcp issue #361, “executeTool(): spec JSON-encodes strings and rejects undefined, Chrome and WPT do neither” (opened 23 October 2026), including François Beaufort’s comment of 26 October 2026 and the Chromium change he links (crrev.com/c/8657321). Open as of 2 November 2026. <https://github.com/webmachinelearning/webmcp/issues/361>
 [^ch05-35]: webmachinelearning/webmcp pull request #339, “Replace UnknownError with specific DOMException types.” (merged 8 October 2026 as commit b206dae). <https://github.com/webmachinelearning/webmcp/pull/339>
 [^ch05-36]: WebMCP explainer (README), “Imperative Tool Registration: `document.modelContext`”. <https://github.com/webmachinelearning/webmcp>
-[^ch05-37]: webmachinelearning/webmcp issue #9, “Introduce `outputSchema`” (opened 12 August 2025), and pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`” (opened 21 August 2026, last updated 26 October 2026, open as of 2 November 2026). <https://github.com/webmachinelearning/webmcp/pull/254>
-[^ch05-38]: webmachinelearning/webmcp issue #292, “Tool results are untyped, so every page invents its own truncation contract” (opened and closed 4 September 2026). <https://github.com/webmachinelearning/webmcp/issues/292>
 [^ch05-39]: webmachinelearning/webmcp, “Continuation Tokens” explainer by Mark Foltz (pull request #327, merged 2 October 2026). <https://github.com/webmachinelearning/webmcp/blob/main/continuations-explainer.md>
 [^ch05-40]: webmachinelearning/webmcp pull request #336, “Allow executeTool() to return null.” (closed without merging, 7 October 2026), including comments by Chrome and spec editors on Blink’s `Promise<DOMString?>`. <https://github.com/webmachinelearning/webmcp/pull/336>
 [^ch05-41]: WebMCP specification, §3, “notify documents of a tool change”, including the note and example on task ordering. <https://webmachinelearning.github.io/webmcp/#notify-documents-of-a-tool-change>
@@ -624,3 +656,7 @@ Chapter 6 picks up where this one stops: the four annotation hints Fjord Table h
 [^ch05-46]: webmachinelearning/webmcp issue #158, “Rename `execute` to `run`” (opened 1 April 2026, open). <https://github.com/webmachinelearning/webmcp/issues/158>
 [^ch05-47]: webmcp-types on npm (version 0.1.10, published 28 September 2026 and still the latest on 2 November 2026, source at github.com/webmachinelearning/webmcp-types). <https://www.npmjs.com/package/webmcp-types>
 [^ch05-48]: Chrome for Developers, “Debug WebMCP tools”, the WebMCP pane in Chrome DevTools (Application panel, retrieved November 2026). <https://developer.chrome.com/docs/devtools/application/webmcp>
+
+[^ch05-output-schema]: webmachinelearning/webmcp pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool”, merged 2 November 2026. <https://github.com/webmachinelearning/webmcp/pull/254>
+[^ch05-output-validation]: webmachinelearning/webmcp issue #92, “Who owns the validation layer?”, open on 15 November 2026; the November comments continue to discuss output mismatch handling and do not establish native `executeTool()` rejection behavior. <https://github.com/webmachinelearning/webmcp/issues/92>
+[^ch05-output-extension]: GoogleChromeLabs/webmcp-extension pull request #98, “Add support for tool outputSchema”, open on 15 November 2026; the example validates results in the agent host before model delivery. <https://github.com/GoogleChromeLabs/webmcp-extension/pull/98>

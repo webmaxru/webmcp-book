@@ -39,6 +39,7 @@ dictionary ModelContextTool {
   USVString title;
   required DOMString description;
   object inputSchema;
+  object outputSchema;
   required ToolExecuteCallback execute;
   ToolAnnotations annotations;
 };
@@ -77,6 +78,7 @@ dictionary RegisteredTool {
   DOMString title;
   required DOMString description;
   object inputSchema;
+  object outputSchema;
   required Window window;
   required USVString origin;
   ToolAnnotations annotations;
@@ -125,6 +127,7 @@ Registers one tool on the current document and returns a `Promise<undefined>`. T
 | `title` | `USVString` | no | A display name for the browser’s UI. |
 | `description` | `DOMString` | yes | Must not be empty, or `InvalidStateError`. |
 | `inputSchema` | `object` | no | Serialized with `JSON.stringify` at registration. A `toJSON()` that returns `undefined` rejects with a `TypeError`, and an error `JSON.stringify` throws (a circular object, for example) is rethrown. Serializing can run script, so the name and fully-active checks run again afterwards. (Tested: when `toJSON()` registers another tool with the same name, Chromium 156 kills the page’s renderer, see Table A.7.) |
+| `outputSchema` | `object` | no | Optional JSON Schema describing expected tool output. Serialized at registration and exposed by `getTools()`; this does not settle whether native `executeTool()` rejects a mismatch. |
 | `execute` | `ToolExecuteCallback` | yes | `(inputObject, { signal }) => any`, may return a promise. |
 | `annotations` | `ToolAnnotations` | no | See Table A.2. |
 
@@ -166,6 +169,7 @@ Returns the tools an in-page agent may see. To be precise: the tools of every do
 | `title` | `DOMString` | The empty string when no title was given (tested: `""` in Chromium 156). |
 | `description` | `DOMString` | As registered. |
 | `inputSchema` | `object` | Parsed back from the stored JSON string. Absent when none was given. |
+| `outputSchema` | `object` | Parsed back from the stored JSON string. Optional and absent when none was given. |
 | `window` | `Window` | The window of the document that registered the tool. |
 | `origin` | `USVString` | That document’s serialized origin. |
 | `annotations` | `ToolAnnotations` | Present only when the tool was registered with annotations. |
@@ -175,6 +179,10 @@ Returns the tools an in-page agent may see. To be precise: the tools of every do
 > **Still in flux: what an empty title looks like**
 >
 > The draft fills a missing `title` with the empty string, and an inline issue in the `getTools()` steps asks whether to leave the member out instead.[^appa-9] Issue #224, “Tool `title` and `inputSchema`: what to expose when not provided?”, opened on 21 July 2026, was still open on 2 November 2026.[^appa-11] Test for a falsy title rather than for `undefined` or `""` specifically.
+
+### Output schemas and validation
+
+`outputSchema` is an optional JSON Schema for the result. The specification expects a conforming value, but does not currently require native `executeTool()` to reject a mismatch. Issue #92 remains open. An agent harness should validate before passing results to a model; on mismatch, return a clear error and do not include the malformed payload. Tools without an output schema remain valid and may return unstructured text.[^appa-output-schema]
 
 ## A.4 `executeTool(tool, inputObject, options)`
 
@@ -314,14 +322,13 @@ The rows in Table A.8 are from Chrome’s declarative API page (published 18 May
 
 ## A.9 Proposals that would change this page
 
-Nothing below is in the specification. These are open pull requests that touch the IDL or the tables above, as of 2 November 2026.[^appa-29] I list them because the day one of them merges, a table in this appendix goes out of date, and you might want to know which one before your code tells you.
+Nothing below is in the specification. These are open pull requests that touch the IDL or the tables above, as of 15 November 2026. PR #254, which added `outputSchema`, merged on 2 November 2026 and is now reflected in Tables A.1 and A.4.[^appa-29] I list them because the day one of them merges, a table in this appendix goes out of date, and you might want to know which one before your code tells you.
 
 **Table A.9 — Open pull requests against the API, 2 November 2026**
 
 | Pull request | Opened by, last update | What it would change | What it means for your code |
 |---|---|---|---|
 | #348, “Introduce the `Tool` interface” | Dominic Farolino, 27 October 2026 | Replaces the `RegisteredTool` dictionary with a `Tool` interface keyed by a unique ID, which fixes races between unregistering and executing a tool and opens the way to executing tools from opaque-origin documents (issue #349). | In-page agents that pass what `getTools()` returned straight back to `executeTool()` should keep working. Code that builds a `RegisteredTool` by hand, or copies and serializes one, is the code to watch. |
-| #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`” | François Beaufort, 26 October 2026 | A JSON Schema for the tool’s result, next to `inputSchema`. | Additive. Nothing breaks, and you could describe results you already return. |
 | #204, “Replace requestUserInteraction with requestUserInput” | Brandon Walderman, 29 October 2026 | A way for a tool to ask the user for input through the agent, with `interactive`, `form` and `url` modes, aligned with MCP elicitation. | Additive. Until it lands, confirmation stays in your own page (Chapter 13). |
 | #355, “Clarify annotation defaults and add openWorldHint” (draft) and #358, “Say that a hint a tool leaves out is not an assurance” | Kenneth Christiansen, 20 October 2026 | A fifth annotation and clearer wording on what a missing hint means. | Additive. The second one is prose only. |
 
@@ -335,7 +342,7 @@ Nothing below is in the specification. These are open pull requests that touch t
 - `exposedTo` and `fromOrigins` accept only potentially trustworthy origins. Anything else is a `SecurityError`.
 - Chromium 156 reports most execution failures as `UnknownError` where the draft says `NotFoundError`, `OperationError` or `AbortError`, and it resolves results the draft would reject or quote. The spec’s editors say the draft is right about strings. Handle errors by family and return objects.
 - The declarative form attributes left the specification on 8 October 2026 but still work in Chrome.
-- Four open pull requests (`Tool` interface, `outputSchema`, `requestUserInput`, `openWorldHint`) would change this page if they merge.
+- Three open pull requests (`Tool` interface, `requestUserInput` and `openWorldHint`) could change this page. `outputSchema` is in the current draft.
 
 [^appa-1]: WebMCP specification, Draft Community Group Report, 27 October 2026, §3 Supporting concepts: the tool execution error table (“tool not found” → `NotFoundError`, “invalid input” → `DataError`, “tool rejected” and “unserializable result” → `OperationError`, “target document unloaded” → `AbortError`) and the note that tool execution errors are not exposed to the web (retrieved November 2026). <https://webmachinelearning.github.io/webmcp/#tool-execution-error>
 [^appa-2]: WebMCP specification, Draft Community Group Report dated 27 October 2026, editors Brandon Walderman (Microsoft), Khushal Sagar (Google), Dominic Farolino (Google) and Samuel Dallstream (Microsoft, added on 20 October 2026 by pull request #352), published by the W3C Web Machine Learning Community Group (retrieved November 2026). I compared its IDL index with the 15 October 2026 draft used for the first edition: they are identical. The changes in between include pull requests #326 (two-sided opt-in, merged 27 October 2026) and #334 (agent ecosystem risks, merged 20 October 2026), neither of which touches the IDL or the exception names. <https://webmachinelearning.github.io/webmcp/>
@@ -366,3 +373,5 @@ Nothing below is in the specification. These are open pull requests that touch t
 [^appa-27]: WebMCP specification, §6.3.4 Interaction with the Same-Origin Policy and §6.3.4.1 Enforcing Same-Origin Isolation via Two-Sided Opt-In, added by pull request #326, “Document cross-origin tool exposure and two-sided opt-in in Section 6.”, merged 27 October 2026 (retrieved November 2026). <https://github.com/webmachinelearning/webmcp/pull/326>
 [^appa-28]: webmachinelearning/webmcp pull request #350, “Editorial: sync explainers with spec”, merged 16 October 2026. <https://github.com/webmachinelearning/webmcp/pull/350>
 [^appa-29]: webmachinelearning/webmcp pull requests #348, #254, #204, #355 and #358, all open on 2 November 2026 (states and dates read from the GitHub API). <https://github.com/webmachinelearning/webmcp/pulls>
+
+[^appa-output-schema]: webmachinelearning/webmcp pull request #254, merged 2 November 2026, and issue #92, open on 15 November 2026. <https://github.com/webmachinelearning/webmcp/pull/254> <https://github.com/webmachinelearning/webmcp/issues/92>

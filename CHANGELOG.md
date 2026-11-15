@@ -4,6 +4,13 @@ All notable changes to *Tools, Not Clicks: Building Agent-Ready Websites with We
 
 Each version is a Git tag `vX.Y.Z`. Its GitHub Release carries the PDF, the EPUB and the HTML edition built from that tag. The web edition shows this file as its release history.
 
+## [Unreleased]
+
+### Changed
+
+- Update Chapters 5, 9, 11, 14, 15 and 17 and Appendix A for WebMCP `outputSchema` (PR #254, merged 2 November 2026). Clarify that the member is optional, the native mismatch behavior remains unresolved in issue #92, and agent harnesses should validate before model delivery. Synchronize Chapter 9 and Chapter 17 listings with the companion demo repository.
+- Preserve Chromium 156 test observations and state that the supplied Chrome build 159.0.8140.0 was not tested by this repository.
+
 ## [2.1.0] - 2026-11-04
 
 New material from reader feedback. Thanks to Francesco Marinoni Moretto (Agentic Standards Map) for reading the book closely and for the question behind the new section.
