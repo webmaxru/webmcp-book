@@ -35,7 +35,6 @@ jobs:
               source = source.replace(old_heading, new_heading, 1)
           elif new_heading not in source:
               raise SystemExit('Chapter 14 Layer 4 heading not found')
-
           phrase = 'Output schemas are resolved in principle and in an open PR (#254)'
           at = source.find(phrase)
           if at < 0:
@@ -61,8 +60,22 @@ jobs:
           source = source[:start] + replacement + source[end:]
           p.write_text(source)
           PY
-      - name: Apply manuscript edits
-        run: python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos"
+      - name: Apply manuscript edits and preserve failures
+        run: |
+          set +e
+          python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos" > /tmp/manuscript-update.log 2>&1
+          result=$?
+          cat /tmp/manuscript-update.log
+          if [ "$result" -ne 0 ]; then
+            mkdir -p .github/workflow-logs
+            cp /tmp/manuscript-update.log .github/workflow-logs/manuscript-update-error.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+actions[bot]@users.noreply.github.com"
+            git add .github/workflow-logs/manuscript-update-error.txt
+            git commit -m "Record manuscript update error" || true
+            git push origin HEAD:output-schema-update || true
+            exit "$result"
+          fi
       - name: Run manuscript lint and build
         run: |
           python3 tools/lint_manuscript.py
