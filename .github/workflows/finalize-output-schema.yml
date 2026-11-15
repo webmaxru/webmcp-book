@@ -76,10 +76,11 @@ jobs:
           PY
       - name: Apply manuscript edits
         run: python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos"
+      - name: Install manuscript build dependencies
+        run: python3 -m pip install -r tools/requirements.txt
       - name: Run manuscript lint and build
         run: |
           python3 tools/lint_manuscript.py
-          python3 -m pip install -r tools/requirements.txt
           python3 tools/build.py zip
       - name: Remove temporary workflows and commit manuscript changes
         run: |
