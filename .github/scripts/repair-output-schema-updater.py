@@ -54,13 +54,14 @@ if label_position >= 0:
         raise SystemExit('Could not locate Chapter 17 checklist edit boundaries')
     replacement = """chapter17 = read(p)
 chapter17, count = re.subn(
-    r"(?m)^  2\\. \\*\\*Put the API shape in one file\\.\\*\\*.*$",
+    r"(?m)^[ \\t]*2\\.[ \\t]+\\*\\*Put the API shape in one file\\.\\*\\*.*$",
     "  2. **Put the API shape in one file.** Only the adapter calls `document.modelContext` (Listing 17.2). When continuation support or a new exposure keyword arrives, or the API moves again (Appendix D covers the last move), one file changes. The adapter already passes `outputSchema` through.",
     chapter17,
     count=1,
 )
 if count == 0 and "The adapter already passes `outputSchema` through." not in chapter17:
-    raise SystemExit('Chapter 17 checklist adapter line not found')
+    candidates = [line for line in chapter17.splitlines() if "Put the API shape in one file." in line]
+    raise SystemExit('Chapter 17 checklist adapter line not found: ' + repr(candidates[:2]))
 updates[p] = chapter17
 """
     source = source[:start] + replacement.rstrip('\n') + source[line_end:]
