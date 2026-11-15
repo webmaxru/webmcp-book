@@ -23,12 +23,26 @@ jobs:
           python-version: '3.12'
       - name: Clone the paired demo listings
         run: git clone --depth 1 --branch output-schema-update https://github.com/webmaxru/webmcp-book-demos.git "$RUNNER_TEMP/webmcp-book-demos"
-      - name: Repair the Chapter 17 summary anchor in the prepared update script
+      - name: Repair the prepared update script anchors
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p = Path('.github/scripts/apply-output-schema-update.py')
           source = p.read_text()
+
+          # This second Chapter 5 edit is redundant: the earlier callout update
+          # already replaces the exact paragraph and therefore removes this anchor.
+          start_marker = '  edit(p,\n  """*Output schemas.* MCP tools can declare'
+          end_marker = '  edit(p,\n  """- The schema is stringified'
+          start = source.find(start_marker)
+          if start >= 0:
+              end = source.find(end_marker, start)
+              if end < 0:
+                  raise SystemExit('Chapter 5 duplicate edit boundary not found')
+              source = source[:start] + source[end:]
+
+          # Replace the Chapter 17 summary operation with a line-based update,
+          # which is insensitive to the exact wording of the existing bullet.
           start_marker = '  edit(p,\n  """  - Output schemas are resolved'
           end_marker = '  edit(p,\n  """**Listing 17.1**'
           start = source.find(start_marker)
@@ -37,19 +51,17 @@ jobs:
               if end < 0:
                   raise SystemExit('Chapter 17 summary replacement boundary not found')
               replacement = '''  summary = read(p)
-          summary, count = re.subn(
-              r"(?m)^\\s*- Output schemas.*$",
-              "  - PR #254 added optional `outputSchema` to the spec on 2 November. Issue #92 remains open on validation behavior. Chromium 156 still drops the member from `getTools()`; agent harnesses should validate declared results before returning them to a model.",
-              summary,
-              count=1,
-          )
-          if count == 0 and "PR #254 added optional `outputSchema` to the spec on 2 November." not in summary:
+          lines = summary.splitlines()
+          output_lines = [i for i, line in enumerate(lines) if line.strip().startswith('- Output schemas')]
+          if output_lines:
+              if len(output_lines) != 1:
+                  raise RuntimeError('Chapter 17 has multiple output schema summary bullets')
+              lines[output_lines[0]] = '  - PR #254 added optional `outputSchema` to the spec on 2 November. Issue #92 remains open on validation behavior. Chromium 156 still drops the member from `getTools()`; agent harnesses should validate declared results before returning them to a model.'
+          elif not any('PR #254 added optional `outputSchema` to the spec on 2 November.' in line for line in lines):
               raise RuntimeError('Chapter 17 outputSchema summary bullet not found')
-          updates[p] = summary
+          updates[p] = '\\n'.join(lines) + '\\n'
           '''
               source = source[:start] + replacement + source[end:]
-          elif "PR #254 added optional `outputSchema` to the spec on 2 November." not in source:
-              raise SystemExit('Chapter 17 summary edit not found')
           p.write_text(source)
           PY
       - name: Apply the manuscript edits
