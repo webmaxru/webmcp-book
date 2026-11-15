@@ -23,55 +23,36 @@ jobs:
           python-version: '3.12'
       - name: Clone the paired demo listings
         run: git clone --depth 1 --branch output-schema-update https://github.com/webmaxru/webmcp-book-demos.git "$RUNNER_TEMP/webmcp-book-demos"
-      - name: Repair the prepared update script anchors
+      - name: Repair manuscript anchors in the prepared updater
+        shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          p = Path('.github/scripts/apply-output-schema-update.py')
-          source = p.read_text()
-          old_heading = '## Layer 4: evaluations against real models'
-          new_heading = '## Layer 4: evals'
-          if old_heading in source:
-              source = source.replace(old_heading, new_heading, 1)
-          elif new_heading not in source:
-              raise SystemExit('Chapter 14 Layer 4 heading not found')
+          import re
+          path = Path('.github/scripts/apply-output-schema-update.py')
+          source = path.read_text(encoding='utf-8')
 
-          obsolete = source.find('Chapter 5 output subsection old start')
-          if obsolete >= 0:
-              start = source.rfind('edit(p,', 0, obsolete)
-              end = source.find('edit(p,', obsolete)
+          # The existing chapter heading is already "evals"; keep the inserted
+          # schema-contract subsection anchored to that exact heading.
+          source = source.replace('## Layer 4: evaluations against real models', '## Layer 4: evals')
+
+          # Remove a second, obsolete Chapter 5 callout edit that is superseded
+          # by the full replacement above it.
+          marker = 'Chapter 5 output subsection old start'
+          if marker in source:
+              label_at = source.index(marker)
+              start = source.rfind('edit(p,', 0, label_at)
+              end = source.find('\n  edit(p,', label_at)
               if start < 0 or end < 0:
-                  raise SystemExit('Could not isolate redundant Chapter 5 edit')
-              source = source[:start] + source[end:]
+                  raise SystemExit('Could not isolate redundant Chapter 5 callout edit')
+              source = source[:start] + source[end + 1:]
 
-          phrase = 'Output schemas are resolved in principle and in an open PR (#254)'
-          at = source.find(phrase)
-          if at < 0:
-              raise SystemExit('Chapter 17 summary edit not found')
-          start = source.rfind('edit(p,', 0, at)
-          label = source.find('Chapter 17 summary output schema', at)
-          if start < 0 or label < 0:
-              raise SystemExit('Could not isolate Chapter 17 summary edit')
-          end = source.find('edit(p,', label)
-          if end < 0:
-              raise SystemExit('Could not locate the edit after the Chapter 17 summary')
-          replacement = '''summary = read(p)
-          lines = summary.splitlines()
-          matches = [i for i, line in enumerate(lines) if line.strip().startswith('- Output schemas are resolved')]
-          if matches:
-              if len(matches) != 1:
-                  raise RuntimeError('Chapter 17 has multiple output-schema summary bullets')
-              lines[matches[0]] = '  - PR #254 added optional `outputSchema` to the spec on 2 November. Issue #92 remains open on validation behavior. Chromium 156 still drops the member from `getTools()`; agent harnesses should validate declared results before returning them to a model.'
-          elif not any('PR #254 added optional `outputSchema` to the spec on 2 November.' in line for line in lines):
-              raise RuntimeError('Chapter 17 outputSchema summary bullet not found')
-          updates[p] = '\\n'.join(lines) + '\\n'
-          '''
-          source = source[:start] + replacement + source[end:]
-
-          # Let block quotes nest inside Markdown lists even when the anchor and
-          # the manuscript use different leading indentation.
-          start = source.index('def replace_once(')
-          end = source.index('\\ndef edit(', start)
+          # Match manuscript anchors independent of Markdown list/blockquote
+          # indentation, while preserving the replacement's first-line indent.
+          pattern = re.compile(r'(?ms)^[ \\t]*def replace_once\\b.*?(?=^[ \\t]*def edit\\b)')
+          match = pattern.search(source)
+          if not match:
+              raise SystemExit('Could not find replace_once() in the manuscript updater')
           replacement = '''def replace_once(text, old, new, label):
               if old in text:
                   return text.replace(old, new, 1)
@@ -79,64 +60,33 @@ jobs:
                   return text
               old_lines = old.splitlines()
               actual = text.splitlines(keepends=True)
-              plain = [line.rstrip('\\r\\n') for line in actual]
-              expected = [line.rstrip('\\r\\n') for line in old_lines]
+              plain = [line.rstrip("\\r\\n") for line in actual]
+              expected = [line.rstrip("\\r\\n") for line in old_lines]
               for i in range(len(plain) - len(expected) + 1):
                   if all(plain[i + j].strip() == expected[j].strip() for j in range(len(expected))):
-                      indent = plain[i][:len(plain[i]) - len(plain[i].lstrip(' \\t'))]
+                      indent = plain[i][:len(plain[i]) - len(plain[i].lstrip(" \\t"))]
                       new_lines = new.splitlines()
                       if new_lines:
-                          new_lines[0] = indent + new_lines[0].lstrip(' \\t')
+                          new_lines[0] = indent + new_lines[0].lstrip(" \\t")
                       begin = sum(len(line) for line in actual[:i])
                       finish = sum(len(line) for line in actual[:i + len(expected)])
-                      trailing_newline = '\\n' if actual[i + len(expected) - 1].endswith('\\n') else ''
-                      return text[:begin] + '\\n'.join(new_lines) + trailing_newline + text[finish:]
-              raise RuntimeError(f'{label}: expected text not found: {old[:140]!r}')
+                      newline = "\\n" if actual[i + len(expected) - 1].endswith("\\n") else ""
+                      return text[:begin] + "\\n".join(new_lines) + newline + text[finish:]
+              raise RuntimeError(f"{label}: expected text not found: {old[:140]!r}")
+
           '''
-          source = source[:start] + replacement + source[end:]
-
-          for heading in ('output schemas', 'output validation'):
-              unindented = f'"""> **Still in flux:** {heading}'
-              indented = f'"""  > **Still in flux:** {heading}'
-              if unindented in source:
-                  source = source.replace(unindented, indented, 1)
-              elif indented not in source:
-                  raise SystemExit(f'Chapter 17 callout anchor not found: {heading}')
-          p.write_text(source)
-
-          chapter = Path('manuscript/17-the-road-ahead.md')
-          lines = chapter.read_text(encoding='utf-8').splitlines()
-          prefix = '2. **Put the API shape in one file.**'
-          desired = '  2. **Put the API shape in one file.** Only the adapter calls `document.modelContext` (Listing 17.2). When continuation support or a new exposure keyword arrives, or the API moves again (Appendix D covers the last move), one file changes. The adapter already passes `outputSchema` through.'
-          matches = [i for i, line in enumerate(lines) if line.strip().startswith(prefix)]
-          if len(matches) == 1:
-              lines[matches[0]] = desired
-              chapter.write_text('\\n'.join(lines) + '\\n', encoding='utf-8')
-          elif not any(line == desired for line in lines):
-              raise SystemExit(f'Expected one Chapter 17 API-shape checklist line, found {len(matches)}')
+          source = source[:match.start()] + replacement + source[match.end():]
+          path.write_text(source, encoding='utf-8')
+          print('Prepared updater anchors are repaired')
           PY
-      - name: Apply manuscript edits and preserve failures
-        run: |
-          set +e
-          python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos" > /tmp/manuscript-update.log 2>&1
-          result=$?
-          cat /tmp/manuscript-update.log
-          if [ "$result" -ne 0 ]; then
-            mkdir -p .github/workflow-logs
-            cp /tmp/manuscript-update.log .github/workflow-logs/manuscript-update-error.txt
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+actions[bot]@users.noreply.github.com"
-            git add .github/workflow-logs/manuscript-update-error.txt
-            git commit -m "Record manuscript update error" || true
-            git push origin HEAD:output-schema-update || true
-            exit "$result"
-          fi
+      - name: Apply manuscript edits
+        run: python3 .github/scripts/apply-output-schema-update.py "$RUNNER_TEMP/webmcp-book-demos"
       - name: Run manuscript lint and build
         run: |
           python3 tools/lint_manuscript.py
           python3 -m pip install -r tools/requirements.txt
           python3 tools/build.py zip
-      - name: Commit manuscript changes and remove temporary files
+      - name: Remove temporary workflows and commit manuscript changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+actions[bot]@users.noreply.github.com"
