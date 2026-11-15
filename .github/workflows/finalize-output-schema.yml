@@ -36,8 +36,6 @@ jobs:
           elif new_heading not in source:
               raise SystemExit('Chapter 14 Layer 4 heading not found')
 
-          # The earlier Chapter 5 callout edit already changes this text; this
-          # later edit has a stale anchor and is redundant.
           obsolete = source.find('Chapter 5 output subsection old start')
           if obsolete >= 0:
               start = source.rfind('edit(p,', 0, obsolete)
@@ -69,17 +67,15 @@ jobs:
           updates[p] = '\\n'.join(lines) + '\\n'
           '''
           source = source[:start] + replacement + source[end:]
-          # The source manuscript nests this block quote inside a numbered list.
           for heading in ('output schemas', 'output validation'):
               unindented = f'"""> **Still in flux:** {heading}'
-              indented = f'""">  > **Still in flux:** {heading}'
+              indented = f'"""  > **Still in flux:** {heading}'
               if unindented in source:
                   source = source.replace(unindented, indented, 1)
               elif indented not in source:
                   raise SystemExit(f'Chapter 17 callout anchor not found: {heading}')
           p.write_text(source)
 
-          # Normalize the checklist line by its stable prefix.
           chapter = Path('manuscript/17-the-road-ahead.md')
           lines = chapter.read_text(encoding='utf-8').splitlines()
           prefix = '2. **Put the API shape in one file.**'
