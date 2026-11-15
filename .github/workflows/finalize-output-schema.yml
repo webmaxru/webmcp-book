@@ -35,6 +35,17 @@ jobs:
               source = source.replace(old_heading, new_heading, 1)
           elif new_heading not in source:
               raise SystemExit('Chapter 14 Layer 4 heading not found')
+
+          # The earlier Chapter 5 callout edit already changes this text; this
+          # later edit has a stale anchor and is redundant.
+          obsolete = source.find('Chapter 5 output subsection old start')
+          if obsolete >= 0:
+              start = source.rfind('edit(p,', 0, obsolete)
+              end = source.find('edit(p,', obsolete)
+              if start < 0 or end < 0:
+                  raise SystemExit('Could not isolate redundant Chapter 5 edit')
+              source = source[:start] + source[end:]
+
           phrase = 'Output schemas are resolved in principle and in an open PR (#254)'
           at = source.find(phrase)
           if at < 0:
