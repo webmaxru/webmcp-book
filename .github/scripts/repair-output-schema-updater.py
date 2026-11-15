@@ -101,5 +101,25 @@ updates[p] = idl
 '''
 source = source[:idl_start] + idl_replacement + source[idl_end:]
 
+chapter9_marker = '# Chapter 9: copy the executable listings exactly from the companion repository.'
+if chapter9_marker not in source:
+    raise SystemExit('Chapter 9 updater section not found')
+if 'Remove superseded Chapter 5 output-schema citations' not in source:
+    source = source.replace(
+        chapter9_marker,
+        """# Remove obsolete citations that were only used by the replaced output-schema callout.
+chapter5 = read('manuscript/05-registering-tools.md')
+chapter5 = re.sub(r'(?m)^\\[\\^ch05-(?:37|38)\\]:.*(?:\\n|$)', '', chapter5)
+updates['manuscript/05-registering-tools.md'] = chapter5
+
+""" + chapter9_marker,
+        1,
+    )
+    source = source.replace(
+        '# Remove obsolete citations that were only used by the replaced output-schema callout.',
+        '# Remove superseded Chapter 5 output-schema citations.',
+        1,
+    )
+
 path.write_text(source, encoding='utf-8')
-print('Repaired Chapter 14, Chapter 17, and Appendix A manuscript updater anchors')
+print('Repaired Chapter 14, Chapter 17, Appendix A, and superseded citation matching')
