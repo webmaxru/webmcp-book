@@ -1,0 +1,32 @@
+name: Apply PR 8 follow-up correction
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/pr-8-review-follow-up
+          fetch-depth: 0
+      - name: Correct citation and remove the temporary workflow
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("manuscript/17-the-road-ahead.md")
+          text = path.read_text()
+          old = 'and `RegisteredTool``” (merged 2 November 2026).'
+          new = 'and `RegisteredTool`” (merged 2 November 2026).'
+          if text.count(old) != 1:
+              raise SystemExit(f"expected one malformed citation, found {text.count(old)}")
+          path.write_text(text.replace(old, new, 1))
+          PY
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manuscript/17-the-road-ahead.md
+          git rm .github/workflows/review-follow-up.yml
+          git commit -m "Fix Chapter 17 PR #254 reference markup"
+          git push origin HEAD:refs/heads/fix/pr-8-review-follow-up
