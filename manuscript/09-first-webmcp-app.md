@@ -377,7 +377,7 @@ export function createTestAgent({ planner, maxSteps = 6, log = console.info } = 
     try {
       const raw = await document.modelContext.executeTool(tool, args, { signal });
       const result = parse(raw);
-      checkOutput(tool.outputSchema, result);
+      checkOutput(tool.name, tool.outputSchema, result);
       // Keep raw output only after validation: the planner reads this transcript.
       entry.raw = raw;
       entry.result = result;
@@ -412,14 +412,14 @@ function parse(raw) {
   try { return JSON.parse(raw); } catch { return raw; }   // Chromium returns plain strings as-is
 }
 
-function checkOutput(schema, result) {
+function checkOutput(toolName, schema, result) {
   if (schema === undefined) return;                     // an output schema is optional
   let validation;
   try {
     validation = new Validator(schema, '2020-12').validate(result);
   } catch {
     // Fail closed: never pass on an output we could not check.
-    throw new Error('Could not validate the tool output against its outputSchema');
+    throw new Error(`Could not validate output for tool "${toolName}" against its outputSchema`);
   }
   if (!validation.valid) {
     // Applicator summaries such as "properties" point only to a parent schema
@@ -459,7 +459,7 @@ function checkOutput(schema, result) {
     };
     const suffix = safeKeyword ? ` (${safeKeyword} keyword)` : '';
     const reason = safeKeyword ? (reasons[safeKeyword] ?? `the ${safeKeyword} constraint failed`) : 'validation failed';
-    throw new Error(`Tool output does not match its outputSchema${safePath}${suffix}: ${reason}`);
+    throw new Error(`Tool "${toolName}" output does not match its outputSchema${safePath}${suffix}: ${reason}`);
   }
 }
 ```
