@@ -32,8 +32,8 @@ jobs:
                    "throw new Error(`Tool \"${toolName}\" output does not match its outputSchema${safePath}${suffix}: ${reason}`);")
               ],
               "manuscript/17-the-road-ahead.md": [
-                  ("“Add `outputSchema` to `ModelContextTool` and `RegisteredTool”",
-                   "“Add `outputSchema` to `ModelContextTool` and `RegisteredTool`”")
+                  ("`ModelContextTool` and `RegisteredTool",
+                   "`ModelContextTool` and `RegisteredTool`")
               ],
               "manuscript/appendix-a-api-reference.md": [
                   ("[^appa-29]: webmachinelearning/webmcp pull requests #348, #254, #204, #355 and #358, all open on 2 November 2026 (states and dates read from the GitHub API). <https://github.com/webmachinelearning/webmcp/pulls>",
@@ -61,7 +61,7 @@ jobs:
           assert "checkOutput(tool.name, tool.outputSchema, result);" in ch9
           assert 'Tool "${toolName}" output does not match its outputSchema' in ch9
           ch17 = Path("manuscript/17-the-road-ahead.md").read_text(encoding="utf-8")
-          assert 'and `RegisteredTool`”' in ch17
+          assert '`ModelContextTool` and `RegisteredTool`' in ch17
           app_a = Path("manuscript/appendix-a-api-reference.md").read_text(encoding="utf-8")
           assert "all open on 15 November 2026" in app_a
           assert "pull request #254 merged on 2 November 2026" in app_a
