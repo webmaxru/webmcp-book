@@ -1,0 +1,73 @@
+name: Apply PR #8 review follow-up
+
+on:
+  push:
+    branches: [fix/pr-8-review-follow-up]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/pr-8-review-follow-up
+      - name: Apply exact review fixes and remove this temporary workflow
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          edits = {
+              "manuscript/09-first-webmcp-app.md": [
+                  ("checkOutput(tool.outputSchema, result);",
+                   "checkOutput(tool.name, tool.outputSchema, result);"),
+                  ("function checkOutput(schema, result) {",
+                   "function checkOutput(toolName, schema, result) {"),
+                  ("throw new Error('Could not validate the tool output against its outputSchema');",
+                   "throw new Error(`Could not validate output for tool \"${toolName}\" against its outputSchema`);"),
+                  ("throw new Error(`Tool output does not match its outputSchema${safePath}${suffix}: ${reason}`);",
+                   "throw new Error(`Tool \"${toolName}\" output does not match its outputSchema${safePath}${suffix}: ${reason}`);")
+              ],
+              "manuscript/17-the-road-ahead.md": [
+                  ("“Add `outputSchema` to `ModelContextTool` and `RegisteredTool”",
+                   "“Add `outputSchema` to `ModelContextTool` and `RegisteredTool`”")
+              ],
+              "manuscript/appendix-a-api-reference.md": [
+                  ("[^appa-29]: webmachinelearning/webmcp pull requests #348, #254, #204, #355 and #358, all open on 2 November 2026 (states and dates read from the GitHub API). <https://github.com/webmachinelearning/webmcp/pulls>",
+                   "[^appa-29]: webmachinelearning/webmcp pull requests #348, #204, #355 and #358, all open on 15 November 2026 (states and dates read from the GitHub API); pull request #254 merged on 2 November 2026 and is no longer in the table. <https://github.com/webmachinelearning/webmcp/pulls>")
+              ]
+          }
+
+          for filename, replacements in edits.items():
+              path = Path(filename)
+              text = path.read_text(encoding="utf-8")
+              for old, new in replacements:
+                  count = text.count(old)
+                  if count != 1:
+                      raise SystemExit(f"{filename}: expected one exact match, found {count}: {old!r}")
+                  text = text.replace(old, new, 1)
+              path.write_text(text, encoding="utf-8")
+
+          workflow = Path(".github/workflows/review-follow-up.yml")
+          if not workflow.exists():
+              raise SystemExit("temporary workflow was not present")
+          workflow.unlink()
+
+          # Guard the resulting manuscript before committing.
+          ch9 = Path("manuscript/09-first-webmcp-app.md").read_text(encoding="utf-8")
+          assert "checkOutput(tool.name, tool.outputSchema, result);" in ch9
+          assert 'Tool "${toolName}" output does not match its outputSchema' in ch9
+          ch17 = Path("manuscript/17-the-road-ahead.md").read_text(encoding="utf-8")
+          assert 'and `RegisteredTool`”' in ch17
+          app_a = Path("manuscript/appendix-a-api-reference.md").read_text(encoding="utf-8")
+          assert "all open on 15 November 2026" in app_a
+          assert "pull request #254 merged on 2 November 2026" in app_a
+          PY
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manuscript/09-first-webmcp-app.md manuscript/17-the-road-ahead.md manuscript/appendix-a-api-reference.md .github/workflows/review-follow-up.yml
+          git commit -m "Resolve remaining PR #8 review comments"
+          git push origin HEAD:fix/pr-8-review-follow-up
