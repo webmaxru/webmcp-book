@@ -1,8 +1,9 @@
 name: Apply PR #8 review follow-up
 
 on:
-  push:
-    branches: [fix/pr-8-review-follow-up]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
 
 permissions:
   contents: write
