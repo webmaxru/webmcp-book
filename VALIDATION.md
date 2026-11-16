@@ -12,7 +12,7 @@ This file records how the second edition was checked. Every chapter, listing, fi
 
 ## Summary
 
-The API the book teaches has not changed. The IDL in the 27 October draft has the same shape as the 15 October draft the first edition was written against: `document.modelContext` with `registerTool()`, `getTools()` and `executeTool()`, the three events, and `ToolAnnotations` with `readOnlyHint`, `untrustedContentHint`, `consequentialHint` and `debugging`. No listing needed an API change.
+The API surface changed after the 2 November edition check: PR #254 merged that day and added optional `outputSchema` to `ModelContextTool` and `RegisteredTool`. This follow-up updates the IDL, chapter explanations and paired listings. The original Chromium 156 observations remain dated to their actual test runs; no test in this repository was run on Chrome 159.0.8140.0. Issue #92 remains open on output-validation ownership and native mismatch behavior.
 
 What changed between 15 October and 2 November 2026:
 
@@ -277,7 +277,7 @@ File: `book/manuscript/05-registering-tools.md` (2 November 2026). Checked again
 | 25 | "the four-character string `undefined`" | FIXED (error in v1) | "nine-character string" — `undefined` has nine characters | — |
 | 26 | Issue #361 (string results and `undefined`) | NEW | Beaufort, 26 Oct: "The WPT assertions are wrong, and so is Chrome."; strings should resolve JSON-encoded (`'"hi"'`); proposes `undefined` → `null` → `"null"`; Chromium CL 8657321 started. Text marks it as a proposal, not in the draft | https://github.com/webmachinelearning/webmcp/issues/361 |
 | 27 | Platform failure names (PR #339, 8 Oct): NotFoundError, DataError, OperationError, AbortError; Chromium still UnknownError | OK, re-observed | Unchanged | https://github.com/webmachinelearning/webmcp/pull/339 |
-| 28 | outputSchema: issue #9, PR #254 open | OK | PR #254 still open (updated 26 Oct); silently ignored in Chromium (probe) | https://github.com/webmachinelearning/webmcp/pull/254 |
+| 28 | outputSchema: issue #9, PR #254 | CHANGED | PR #254 merged 2 Nov, adding the optional member; Chromium 156 probe still observes it dropped by `getTools()`; issue #92 remains open on validation | https://github.com/webmachinelearning/webmcp/pull/254 |
 | 29 | Continuation tokens explainer (PR #327, 2 Oct); options carry only `signal` | OK, re-observed | Unchanged | https://github.com/webmachinelearning/webmcp/blob/main/continuations-explainer.md |
 | 30 | `executeTool()` null after navigation (PR #336 closed 7 Oct) | OK | Unchanged | https://github.com/webmachinelearning/webmcp/pull/336 |
 | 31 | registerTool resolves `undefined` (#234 open); PR #348 `Tool` interface | OK + NEW | #234 open; PR #348 (opened 15 Oct, open) added as the possible change | https://github.com/webmachinelearning/webmcp/pull/348 |
@@ -1195,3 +1195,11 @@ Left out on purpose: LinkedIn URL (only a search snippet, not verified), followe
 #### Short bio (60 words, for store pages)
 
 Maxim Salnikov is a Senior Solution Engineer at Microsoft and a Google Developer Expert in Web Technologies. He co-authored two pages of Chrome's official WebMCP documentation, takes part in the W3C Web Machine Learning Community Group that incubates WebMCP, maintains the webmcp agent skill and the agentprose library, and organises developer conferences and communities in Oslo, Norway.
+
+## OutputSchema follow-up (15 November 2026)
+
+- Sources re-read this pass: WebMCP PR #254 (merged 2 November 2026), issue #92 (still open, with comments through 9 November), the current spec IDL, and GoogleChromeLabs/webmcp-extension PR #98 (still open).
+- PR #254 adds optional `outputSchema` to `ModelContextTool` and `RegisteredTool`. The current spec expects outputs to conform, but does not require native `executeTool()` to reject mismatches. Issue #92 has not settled that behavior.
+- The user supplied Chrome build `159.0.8140.0` as supporting the member. This task did not run that build. Existing observations and Playwright runs use Chromium 156.0.8078.4 and remain labelled as such.
+- The companion changes validate parsed tool results in the Test Agent before transcript/model use; mismatches become safe validation errors without raw payloads. Tests cover valid and invalid results, absent schemas, and planner visibility. Exact commands and Actions results are recorded in the demo PR after the workflow finishes.
+- Companion repository: <https://github.com/webmaxru/webmcp-book-demos>. Reference implementation: <https://github.com/GoogleChromeLabs/webmcp-extension/pull/98>.

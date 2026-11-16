@@ -337,6 +337,12 @@ The validator is only the first line of defence. Chrome’s guide on building to
 
 ## Returning useful results and errors
 
+### Declare the result shape, then validate it in the harness
+
+`outputSchema` is an optional JSON Schema for a tool’s return value. PR #254 added it to `ModelContextTool` and `RegisteredTool`, so an in-page agent can read it through `getTools()`.[^ch11-output-schema] The schema describes the result the tool promises; the current spec does not require native `executeTool()` to reject a mismatch. Issue #92 remains open on validation ownership and error semantics.[^ch11-output-validation]
+
+Validate every result against its declared schema before the result enters the model’s next prompt. If it fails, give the model a concise error with a schema path or safe reason, and omit the malformed result from both transcript and error text. A result can contain untrusted page content, so quoting the bad value inside the error would send it to the model by another route. If a tool has no `outputSchema`, preserve the optional case rather than inventing an object wrapper for plain text. The Test Agent in Chapter 9 demonstrates this boundary; WebMCP Extension PR #98 is another host-side example.[^ch11-output-extension]
+
 ### Results: high signal, the right identifiers, and an honest count
 
 A result has two jobs. It answers the question, and it gives the agent what it needs for the next step. Anthropic recommends returning “only high signal information,” avoiding “low-level technical identifiers” such as `uuid` or `mime_type`. It observes that agents “grapple with natural language names, terms, or identifiers significantly more successfully than they do with cryptic identifiers.”[^ch11-1] That doesn’t mean dropping identifiers. It means keeping the ones the next tool needs, next to a name a person would recognize. Trailhead’s search returns `sku` (which `compare_products` and `add_to_cart` take) and `name` (which the agent says to the user). It leaves out internal product IDs, warehouse codes and image URLs.
@@ -856,3 +862,7 @@ The demos folder `chapters/11-designing-tools/` has every listing in this chapte
 [^ch11-23]: WebMCP specification, Draft Community Group Report, 27 October 2026, §3 the tool execution error table and the note beneath it. <https://webmachinelearning.github.io/webmcp/#tool-execution-error>
 [^ch11-24]: Chrome for Developers, “Build your user’s agentic workflows with WebMCP tools” by André Cipriani Bandarra and Maxim Salnikov (published 26 August 2026, last updated 30 October 2026), sections “Define the user goal”, “Define the initial state”, “Role-play the conversation”, “Address variance”, “Enforce trust boundaries” and “Fail gracefully and enable recovery” (including “Duplication conflict”). <https://developer.chrome.com/docs/ai/webmcp/build-tools>
 [^ch11-25]: webmachinelearning/webmcp issue #255, comments by johnhenry (15 September 2026, the jjhub data point: 126 tools, the ChatGPT browser message quoted in the text, and the move to a budget of 20 registered tools with loader tools) and by Kenneth Rohde Christiansen (20 October 2026, feedback from the harness side). <https://github.com/webmachinelearning/webmcp/issues/255>
+
+[^ch11-output-schema]: webmachinelearning/webmcp pull request #254, merged 2 November 2026. <https://github.com/webmachinelearning/webmcp/pull/254>
+[^ch11-output-validation]: webmachinelearning/webmcp issue #92, open on 15 November 2026; the November discussion has not changed the spec’s execution algorithm. <https://github.com/webmachinelearning/webmcp/issues/92>
+[^ch11-output-extension]: GoogleChromeLabs/webmcp-extension pull request #98, host-side validation before model delivery, open on 15 November 2026. <https://github.com/GoogleChromeLabs/webmcp-extension/pull/98>

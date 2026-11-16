@@ -30,7 +30,7 @@ Table 17.1 summarises the questions this chapter covers.
 
 | Question | Where it lives | Status | What to do now |
 |---|---|---|---|
-| Output schemas | Issues #9, #92, PR #254 | Resolved in principle (Feb 2026), PR open, required-or-optional still argued | Write `outputSchema` in your catalog today |
+| Output schemas | Issues #9 and #92; PR #254 | PR #254 merged 2 Nov; `outputSchema` is optional; native validation behavior remains unresolved | Declare a useful schema and validate results in the agent harness |
 | Multimodal inputs and outputs | Issues #41, #81 | Open | Return references and compact JSON, not blobs |
 | Streaming arguments and progress | Issue #82, explainer | Open | Keep calls short, show progress on the page |
 | Cross-document responses | Issue #135, continuations explainer | Group exploring continuation tokens | Finish tool calls in one document, keep state server-side |
@@ -49,15 +49,15 @@ Table 17.1 summarises the questions this chapter covers.
 
 Every Trailhead tool already returns structured data. `search_products` answers with an object that has a `products` array, each item with a SKU, a name, a price in NOK, a rating and a stock flag. What the agent doesn’t get is a description of that shape. It has to work out what `inStock: false` means from the value itself, and it can’t tell in advance whether the tool returns prices at all.
 
-The request for an output schema is one of the oldest in the repository. Issue #9 was opened in August 2025, right after MCP added `outputSchema` to its tool definition. On 5 February 2026 the Community Group resolved to “add outputSchema to the imperative API and investigate how to associate outputSchema with declarative WebMCP.”[^ch17-8] Pull request #254, opened on 21 August 2026, adds an optional `outputSchema` member to both `ModelContextTool` and `RegisteredTool`. The page declares it, and an in-page agent can read it back from `getTools()`. The PR explains that the name was chosen over `responseConstraint`, which is specific to the Prompt API, to align with MCP. On 11 September its author wrote that he had “started experimenting with `outputSchema` in Chromium” in a code review. The PR was still open on 2 November.[^ch17-9]
+The request for an output schema is one of the oldest in the repository. Issue #9 was opened in August 2025, right after MCP added `outputSchema` to its tool definition. On 5 February 2026 the Community Group resolved to “add outputSchema to the imperative API and investigate how to associate outputSchema with declarative WebMCP.”[^ch17-8] Pull request #254 added the optional `outputSchema` member to both `ModelContextTool` and `RegisteredTool` and merged on 2 November 2026. The page declares a JSON Schema for the result, and an in-page agent can read it back from `getTools()`. The name was chosen over `responseConstraint`, which is specific to the Prompt API, to align with MCP.[^ch17-9] The task-supplied Chrome build `159.0.8140.0` supports the member; the companion repo’s browser tests still use Chromium 156 and do not verify Chrome 159.
 
-The argument has since moved to a sharper question: should the schemas be required? In issue #92, François Beaufort argued in mid-October for keeping both `inputSchema` and `outputSchema` “optional, with defaults the spec would define”, because a developer forced to write a schema can always write `{}`. Samuel Dallstream from Microsoft argued the opposite, that the cost of required schemas “is relatively small”. On 30 October Johann Hofmann added “full support from security for requiring and validating these schemas in the spec”.[^ch17-12] On the PR itself, an agent-host developer asked that the spec say plainly that leaving out `outputSchema` is the normal case for tools that return text.[^ch17-9]
+Issue #92 remains open on whether schemas should be required and who validates them. Its latest discussion still contains competing views: some participants favor optional schemas because tools may return plain text, while others want explicit contracts as a security signal. November comments distinguish invalid tool output from invalid model input and argue that an agent should not pass mismatched output to a model. Those comments are proposals, not normative spec text.[^ch17-12]
 
 On the MCP side, the 2026-07-28 tools specification already defines `outputSchema` as an optional JSON Schema for the result, and `structuredContent` as the field that carries the conforming value. For backwards compatibility, a tool that returns structured content “SHOULD also return the serialized JSON in a TextContent block.”[^ch17-10]
 
 So what does Chromium 156 do today if you include `outputSchema`? I tried it. Registration succeeds, the member is silently dropped, and `getTools()` returns a tool without it.[^ch17-11] That’s ordinary Web IDL dictionary behaviour: members the browser doesn’t know are ignored. It also means writing the schema now costs you nothing. Listing 17.1 is Trailhead’s search tool as plain data, with an output schema next to the input schema.
 
-**Listing 17.1** `chapters/17-the-road-ahead/src/catalog.js` — `search_products` as plain data, with an output schema the draft doesn’t have yet
+**Listing 17.1** `chapters/17-the-road-ahead/src/catalog.js` — `search_products` as plain data with an optional output schema
 
 ```js
 // catalog.js: Trailhead's search tool as plain data plus a plain function.
@@ -94,7 +94,7 @@ export const catalog = [
       },
       required: ['query'],
     },
-    // Not in the draft yet (issue #9, PR #254). Browsers that don't know it ignore it.
+    // Optional JSON Schema return contract; agents should validate results before passing them to a model.
     outputSchema: {
       type: 'object',
       properties: {
@@ -124,9 +124,9 @@ export const catalog = [
 
 Three choices in Listing 17.1 are deliberate. First, the definition never touches `document.modelContext`. It’s data plus a `run()` function, and Listing 17.2 turns it into a WebMCP tool. Second, the output schema is tested, not just written. The demo runs `run()` against several inputs and validates each result against `outputSchema`, which catches the day someone adds a field to the result and forgets the schema.[^ch17-11] Third, `currency` is an `enum` of one value. That looks pedantic. It is also exactly the kind of fact an agent comparing stores needs and won’t guess.
 
-> **Still in flux:** output schemas
+> **Still in flux:** output validation
 >
-> PR #254 was still open on 2 November 2026, and the draft has no `outputSchema`. Whether schemas become required, and whether the browser validates inputs and results against them, is being argued in issue #92.[^ch17-12] If the PR lands as written, the schema you write today becomes visible to in-page agents through `getTools()`. If the name or shape changes, it’s one field in your catalog.
+> PR #254 merged on 2 November 2026 and `outputSchema` is now part of the spec. The member is optional. The spec says a result is expected to conform, but does not yet say that native `executeTool()` must reject an output mismatch. Issue #92 remains open. Until it is resolved, validate results in the agent harness before model delivery, and return a safe validation error instead of malformed data. Keep the invalid payload out of the error itself.[^ch17-12][^ch17-output-schema]
 
 
 ## Multimodal and streaming data
@@ -237,7 +237,7 @@ The pattern in Figure 17.2 is the basis of the checklist that follows. Domain co
 Trailhead uses the following list as a release gate. None of it needs WebMCP to win.
 
 1. **Keep tools as data plus functions.** Define each tool’s name, description, schemas and annotations as plain data, and its behaviour as a function over your domain code that doesn’t read the DOM (Listing 17.1). The same definitions can feed WebMCP, a backend MCP server (Chapter 3) or a service worker. Chrome’s best practices now say the same thing in their own words: share the application service between the UI and the tools.[^ch17-37]
-2. **Put the API shape in one file.** Only the adapter calls `document.modelContext` (Listing 17.2). When `outputSchema`, continuations or a new exposure keyword arrive, or the API moves again (Appendix D covers the last move), one file changes.
+  2. **Put the API shape in one file.** Only the adapter calls `document.modelContext` (Listing 17.2). When continuation support or a new exposure keyword arrives, or the API moves again (Appendix D covers the last move), one file changes. The adapter already passes `outputSchema` through.
 3. **Register all or nothing.** If one registration fails, roll back the ones before it, so an agent never sees half a catalog. That’s Chrome’s guidance too: “Register tools all at once” and “Roll back the whole batch on failure”.[^ch17-37]
 4. **Validate inputs yourself.** The browser doesn’t check calls against `inputSchema`, and native validation is still being argued (#92).[^ch17-12] Return an error result the agent can act on: `status: 'error'` with a code and a message, as in Chapter 11.
 5. **Write `outputSchema` now, and test results against it.** Browsers that don’t know it ignore it.[^ch17-11]
@@ -379,7 +379,7 @@ Will that something be called WebMCP in two years? Will it live on `document.mod
 
 - WebMCP is a Community Group draft (27 October 2026) in origin trials that run to Chrome 162 and, in Edge, to 30 March 2027. Chrome Platform Status lists it as “Proposed”. Chrome plans to ship the imperative API first. The declarative API left the spec on 8 October and is an explainer again.
 - Weigh open questions by where they live: explainer, issue, resolution, pull request or Chromium experiment. Track the spec, the explainers and Chromium separately.
-- Output schemas are resolved in principle and in an open PR (#254), and whether schemas should be required is argued in #92. Chromium 156 accepts and ignores `outputSchema`, so write it now and test results against it.
+  - PR #254 added optional `outputSchema` to the spec on 2 November. Issue #92 remains open on validation behavior. Chromium 156 still drops the member from `getTools()`; agent harnesses should validate declared results before returning them to a model.
 - Multimodal results, file inputs, streaming and progress are open (#41, #81, #82). The editor prefers a web-shaped design to MCP’s content model (#86). Return compact JSON and references, and show rich output on the page.
 - Cross-document responses are being explored as continuation tokens (`requestToken()`, `resumeTool()`), single-use, same-origin and short-lived. Service-worker tools are an explainer. Chromium 156 has neither. Finish calls in one document and keep tools thin.
 - The spec now documents the two-sided opt-in for cross-origin tools (§6.3.4, PR #326, merged 27 October). Exposure defaults may still change, through a `native-agent` keyword, host-controlled iframe topologies (#317) or a second permissions policy (#236). Set exposure explicitly.
@@ -397,10 +397,10 @@ Will that something be called WebMCP in two years? Will it live on `document.mod
 [^ch17-6]: Mark A. Foltz, “Continuation Tokens” (explainer, added by pull request #327, merged 2 October 2026): “Overview”, “Proposal” (token creation and redemption) and “Agent Behaviors”. <https://github.com/webmachinelearning/webmcp/blob/main/continuations-explainer.md>
 [^ch17-7]: webmachinelearning/webmcp pull request #338, “Remove declarative API from spec” (opened 7 October 2026, merged 8 October 2026), including François Beaufort’s comment of 13 October 2026 on Chrome’s shipping plan. <https://github.com/webmachinelearning/webmcp/pull/338>
 [^ch17-8]: webmachinelearning/webmcp issue #9, “Introduce `outputSchema` (was: Should output also have a schema?)” (opened 12 August 2025, open on 2 November 2026), including the Community Group resolution of 5 February 2026. <https://github.com/webmachinelearning/webmcp/issues/9>
-[^ch17-9]: webmachinelearning/webmcp pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`” (opened 21 August 2026, open on 2 November 2026), including the author’s comment of 11 September 2026 and comments of 20 and 26 October 2026. <https://github.com/webmachinelearning/webmcp/pull/254>
+[^ch17-9]: webmachinelearning/webmcp pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`” (merged 2 November 2026). <https://github.com/webmachinelearning/webmcp/pull/254>
 [^ch17-10]: Model Context Protocol specification, version 2026-07-28, “Server Features › Tools”: tool definition (`outputSchema`), “Structured Content” and “Output Schema”. <https://modelcontextprotocol.io/specification/2026-07-28/server/tools>
 [^ch17-11]: Tested by the author on 2 November 2026 with Playwright 1.64 and Chromium 156.0.8078.4, both with a `document.modelContext` mock and with the browser’s own implementation (`--enable-features=WebMCPTesting`). Code and tests: webmaxru/webmcp-book-demos, chapters/17-the-road-ahead. Results describe this build only.
-[^ch17-12]: webmachinelearning/webmcp issue #92, “Who owns the validation layer?” (opened 17 February 2026, open on 2 November 2026), including comments by François Beaufort (14 October 2026), Samuel Dallstream (16 October 2026) and Johann Hofmann (30 October 2026). <https://github.com/webmachinelearning/webmcp/issues/92>
+[^ch17-12]: webmachinelearning/webmcp issue #92, “Who owns the validation layer?” (open on 15 November 2026), including the March resolution and comments through 9 November 2026 on input/output validation, error provenance and not passing malformed results to a model. <https://github.com/webmachinelearning/webmcp/issues/92>
 [^ch17-13]: webmachinelearning/webmcp issue #41, “Support multimodal tool input/output” (opened 17 October 2025, open on 2 November 2026), including the comment of 20 October 2026. <https://github.com/webmachinelearning/webmcp/issues/41>
 [^ch17-14]: webmachinelearning/webmcp issue #81, “Proposal: Support file attachments via imperative WebMCP API” (opened 11 February 2026), and issue #82, “Proposal: Stream Tool Arguments” (opened 13 February 2026), both open on 2 November 2026. <https://github.com/webmachinelearning/webmcp/issues/82>
 [^ch17-15]: webmachinelearning/webmcp issue #86, “Proposal: Tool result content types beyond text” (opened 14 February 2026, closed 28 September 2026 in favour of #41), closing comment by Dominic Farolino. <https://github.com/webmachinelearning/webmcp/issues/86>
@@ -430,3 +430,5 @@ Will that something be called WebMCP in two years? Will it live on `document.mod
 [^ch17-39]: webmachinelearning/webmcp pull request #348, “Introduce the `Tool` interface” (opened by Dominic Farolino 15 October 2026, open on 2 November 2026). <https://github.com/webmachinelearning/webmcp/pull/348>
 [^ch17-40]: WebMCP specification, Draft Community Group Report, 27 October 2026, §6.2 Agent Baseline Capabilities, text added by pull request #334 (merged 20 October 2026). <https://github.com/webmachinelearning/webmcp/pull/334>
 [^ch17-41]: webmachinelearning/webmcp issue #361 (opened 23 October 2026), including François Beaufort’s comment of 26 October 2026: “The WPT assertions are wrong, and so is Chrome.” <https://github.com/webmachinelearning/webmcp/issues/361>
+
+[^ch17-output-schema]: GoogleChromeLabs/webmcp-extension pull request #98, “Add support for tool outputSchema” (open on 15 November 2026), describes validating results in the host before model delivery. <https://github.com/GoogleChromeLabs/webmcp-extension/pull/98>
