@@ -657,6 +657,6 @@ Chapter 6 picks up where this one stops: the four annotation hints Fjord Table h
 [^ch05-47]: webmcp-types on npm (version 0.1.10, published 28 September 2026 and still the latest on 2 November 2026, source at github.com/webmachinelearning/webmcp-types). <https://www.npmjs.com/package/webmcp-types>
 [^ch05-48]: Chrome for Developers, “Debug WebMCP tools”, the WebMCP pane in Chrome DevTools (Application panel, retrieved November 2026). <https://developer.chrome.com/docs/devtools/application/webmcp>
 
-[^ch05-output-schema]: webmachinelearning/webmcp pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool”, merged 2 November 2026. <https://github.com/webmachinelearning/webmcp/pull/254>
+[^ch05-output-schema]: webmachinelearning/webmcp pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`”, merged 2 November 2026. <https://github.com/webmachinelearning/webmcp/pull/254>
 [^ch05-output-validation]: webmachinelearning/webmcp issue #92, “Who owns the validation layer?”, open on 15 November 2026; the November comments continue to discuss output mismatch handling and do not establish native `executeTool()` rejection behavior. <https://github.com/webmachinelearning/webmcp/issues/92>
 [^ch05-output-extension]: GoogleChromeLabs/webmcp-extension pull request #98, “Add support for tool outputSchema”, open on 15 November 2026; the example validates results in the agent host before model delivery. <https://github.com/GoogleChromeLabs/webmcp-extension/pull/98>

@@ -324,7 +324,7 @@ The rows in Table A.8 are from Chrome’s declarative API page (published 18 May
 
 Nothing below is in the specification. These are open pull requests that touch the IDL or the tables above, as of 15 November 2026. PR #254, which added `outputSchema`, merged on 2 November 2026 and is now reflected in Tables A.1 and A.4.[^appa-29] I list them because the day one of them merges, a table in this appendix goes out of date, and you might want to know which one before your code tells you.
 
-**Table A.9 — Open pull requests against the API, 2 November 2026**
+**Table A.9 — Open pull requests against the API, 15 November 2026**
 
 | Pull request | Opened by, last update | What it would change | What it means for your code |
 |---|---|---|---|

@@ -358,7 +358,11 @@ Listing 9.5 is the whole harness.
 // test-agent.js: the Test Agent, a minimal in-page agent for development and CI.
 // It lists tools with getTools(), asks a planner what to do next, runs each call
 // with executeTool() and keeps a transcript. It is a harness, not a product agent.
-import { Validator } from './node_modules/@cfworker/json-schema/dist/esm/index.js';
+// Note: In browsers, avoid importing from ./node_modules/... directly. Use a bare
+// specifier and provide an import map (or vendor the file) so the browser can resolve it.
+// Example import map entry (in your HTML):
+//   { "imports": { "@cfworker/json-schema": "/vendor/@cfworker/json-schema/dist/esm/index.js" } }
+import { Validator } from '@cfworker/json-schema';
 
 export function createTestAgent({ planner, maxSteps = 6, log = console.info } = {}) {
   const transcript = [];

@@ -447,7 +447,7 @@ All three tests passed against Chromium 156, in October and again on 2 November 
 
 The same driver should work for tools registered inside frames: every `Tool` in `toolsAdded` carries the `frameId` of the frame that registered it, and `invokeTool` takes that ID.[^ch14-21] The Helpdesk Widget of Chapter 7 registers its tools inside a cross-origin iframe. I haven’t tested that combination through the protocol yet, so please treat it as the next experiment to run.
 
-### Output-schema contract tests
+## Output-schema contract tests
 
 A schema contract test should exercise both sides of the model boundary. A matching result reaches the planner. A wrong type or missing required property becomes a clear validation error. A tool without `outputSchema` remains callable. Most importantly, the planner’s transcript contains no raw invalid result, including when validation fails. The Chapter 9 Test Agent uses `@cfworker/json-schema` for this check; WebMCP Extension PR #98 shows the same host-side placement. Chromium 156 tests only the API behavior available in that build; they do not verify Chrome 159.0.8140.0.[^ch14-output-schema]
 
