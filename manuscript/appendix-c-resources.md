@@ -6,7 +6,7 @@
 
 WebMCP keeps moving after a book is printed, so this appendix is less a reading list than a map of where to look. It lists the primary sources the chapters rely on, grouped by who publishes them, with one line on what each one is good for. Then it maps the folders of the book’s demos repository to the chapters, and it ends with the short routine I use to track changes myself.
 
-Every URL here was fetched again on 2 November 2026 for this edition, and each one answered with a working page, with two kinds of exception you should know about. The npmjs.com package pages serve a bot check to scripts, so for packages I give the npm registry’s own record, which is what `npm install` reads. And the book’s own repositories in Section C.9 open only for readers who have access to them.[^appc-2] Dates in the annotations are the dates printed on the pages themselves.
+The resources in the second edition were fetched again on 2 November 2026, with two kinds of exception you should know about. The polyfill entry in Section C.7 was checked on 18 November 2026. The npmjs.com package pages serve a bot check to scripts, so for packages I give the npm registry’s own record, which is what `npm install` reads. And the book’s own repositories in Section C.9 open only for readers who have access to them.[^appc-2] Dates in the annotations are the dates printed on the pages themselves.
 
 ## C.1 The specification and its repository
 
@@ -191,6 +191,25 @@ The packages’ registry records (the npmjs.com pages show the same data to a br
 - <https://registry.npmjs.org/@vueuse/core>
 
 ## C.7 Community projects and framework guides
+
+- **W3C WebMCP polyfill** (`@w3c/webmcp-polyfill`). Want to build and test tools before a browser exposes the native API? This open-source JavaScript package gives a page `document.modelContext` so you can register tools, discover them and call them. It is useful both for web developers exposing app features and for people building in-page agents or extensions that can reach the page's tools. You can also use it to try the draft before giving feedback.
+  <https://www.npmjs.com/package/@w3c/webmcp-polyfill>
+  <https://github.com/w3c-oss/webmcp-polyfill>
+
+  Install the package and load its automatic entry point before registering tools:
+
+  ```bash
+  npm install @w3c/webmcp-polyfill
+  ```
+
+  ```js
+  import "@w3c/webmcp-polyfill/auto";
+  ```
+
+  The package follows the WebMCP draft, ships TypeScript definitions based on `webmcp-types` and has no runtime JavaScript dependencies. Version 0.1.1 targets `webmcp-types` 0.1.10. It installs only in a secure context (HTTPS or localhost) and does not replace a native `document.modelContext`.
+
+  There are boundaries to keep in mind. The polyfill does not provide a browser agent, and its documentation says that talking to an actual browser agent needs browser support. Declarative forms are not implemented, and the project's testing notes list differences from the draft. WebMCP is still a Community Group draft, not a W3C Standard, so expect both the API and the package to change. Check the testing notes before depending on a particular behaviour. *Chapters 9, 14 and 15.*
+  <https://github.com/w3c-oss/webmcp-polyfill/blob/main/TESTING.md>
 
 - **MCP-B documentation.** Guides and references for the polyfill, the React hooks and the desktop relay. *Chapters 9, 10 and 15.*
   <https://docs.mcp-b.ai/>
