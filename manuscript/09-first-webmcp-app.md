@@ -12,7 +12,7 @@ Now let’s put the pieces back together and take one small app all the way: fro
 
 The app is Fjord Table again, small on purpose: one page, one search form, one booking dialog and two tools. That leaves room for the parts of the job that have nothing to do with the API itself, and that’s where most things go wrong in practice. The page has to work for every visitor, whether their browser has WebMCP or not. It has to fail quietly when a policy, an insecure origin or a missing script takes the tools away. And it needs a way to be driven by something other than a person, so you can test it on every commit.
 
-Everything here was run, not just written. The companion repository’s folder `chapters/09-first-webmcp-app/` holds the app, every listing of this chapter as a file, and a test suite of 22 checks. The suite runs the page in Chromium 156.0.8078.4 four ways: with no WebMCP at all, with the `WebMCPTesting` feature enabled (the switch behind the flag), with the polyfill, and with a dev-only mock. Where this chapter says *observed*, it means a test in that suite. The observations were first made on 14 October 2026, and I re-ran the whole suite for this edition on 2 November 2026.[^ch09-2]
+The companion repository's folder `chapters/09-first-webmcp-app/` holds the app, every numbered listing and a test suite. The original Chromium 156 observations in this chapter were made on 14 October 2026 and re-run on 2 November 2026 with the MCP-B polyfill. The demo now uses the W3C polyfill; a later run in Chromium 159 is recorded separately.[^ch09-2][^ch09-w3c-run]
 
 ## Local setup
 
@@ -96,8 +96,8 @@ Listing 9.2 is the whole decision. It’s short, because the browser does most o
 ```js
 // webmcp/enable.js: decide once, at start-up, how this page can talk to agents.
 const POLYFILL = {
-  src: 'https://cdn.jsdelivr.net/npm/@mcp-b/webmcp-polyfill@6.0.3/dist/index.iife.js',
-  integrity: 'sha384-aEnX8+GGpZs7j3YINfHJw5npl4H6AkfYHQ5KqdgJzScZ5s76I533BzlPrceDInPx'
+  src: 'https://cdn.jsdelivr.net/npm/@w3c/webmcp-polyfill@0.1.1/dist/polyfill.js',
+  integrity: 'sha256-qMH/jOVlACK6Z8tBBAsrXkzDga2qXWJKAXR7J+20Kok='
 };
 
 export async function enableWebMCP({ polyfill = false } = {}) {
@@ -111,7 +111,7 @@ export async function enableWebMCP({ polyfill = false } = {}) {
   }
   return 'modelContext' in document
     ? { mode: 'polyfill' }
-    : { mode: 'off', reason: 'polyfill-declined' };   // e.g. an old browser
+    : { mode: 'off', reason: 'polyfill-declined' };
 }
 
 function loadScript({ src, integrity }) {
@@ -125,11 +125,11 @@ function loadScript({ src, integrity }) {
 }
 ```
 
-The order of the checks follows Figure 9.1. An insecure page stops first: neither the native API nor the polyfill would work there, so there’s nothing to try. (The polyfill’s own installer also does nothing on an insecure page.[^ch09-9]) Native support wins next. A browser that has `document.modelContext`, through the flag, a trial token or one day a default, never downloads anything.
+The order of the checks follows Figure 9.1. An insecure page stops first: neither native WebMCP nor the W3C polyfill installs there.[^ch09-w3c] Native support wins next. A browser that already has `document.modelContext`, even a partial implementation, never downloads the fallback.
 
-The polyfill is opt-in, and the default is off. A polyfill can’t give a visitor’s browser an agent. It can only give agents that already run inside the page, or inside an extension that looks for `document.modelContext`, something to find. Is that worth a 27 KB download for every visitor? It depends on who your agents are. For Fjord Table it’s a deployment choice. In the demo, the query parameter `?webmcp-polyfill` turns it on, so the tests can exercise both paths.
+The polyfill is opt-in, and the default is off. It gives in-page code a WebMCP context for registering, discovering and calling tools; it does not add a browser agent. In the demo, `?webmcp-polyfill` turns the fallback on, so you can exercise both paths.
 
-When the polyfill is used, it’s loaded the careful way: a version-pinned URL and a Subresource Integrity hash. If the CDN serves different bytes, the browser refuses to run them, the `onerror` handler fires, and the page carries on with its tools off. The test suite checks that the hash in Listing 9.2 matches the published package, and that the page keeps working when the polyfill’s request is blocked.[^ch09-2] If the script loads but `document.modelContext` still isn’t there, the polyfill declined to install, which it does in browsers older than its baseline. Listing 9.2 reports that as `polyfill-declined`.[^ch09-9]
+Listing 9.2 pins the standalone `@w3c/webmcp-polyfill` build to version 0.1.1 and includes a Subresource Integrity hash. If the request fails or the bytes do not match, the page keeps working with its tools off. If the script loads without installing a context, the module reports `polyfill-declined`. The package documents an `/auto` import and an explicit `installWebMCP()` function for applications with a build step.[^ch09-w3c]
 
 ### Tools as thin wrappers
 
@@ -296,7 +296,7 @@ Part 1 is the page, and it runs before anything else. Part 2 asks Listing 9.2 fo
 
 Have a look at the `AbortController` in part 2. In the first edition, this code passed `new AbortController().signal` straight to `registerFjordTools()` and kept no reference to the controller. That works for the common failure: under a blocking policy, the very first `registerTool()` call rejects, and nothing is registered. But what if `search_availability` registers and `book_table` is then refused? The agent would see a search tool with no way to book, half a workflow. Chrome’s best-practices guide was updated on 30 October 2026 with a rule for exactly this: “The page must expose either the complete tool surface or none of it. Roll back the whole batch on failure instead of leaving half a workflow callable.”[^ch09-23] So the page now keeps the controller and aborts it in the `catch` block. Because both tools were registered with its signal, one `abort()` withdraws whichever of them made it. A test refuses the second registration on purpose and checks that `getTools()` then returns an empty list.[^ch09-2]
 
-The status line at the top of the page is a convenience for developers. It reports, in words, which path the page took. Table 9.2 lists what it said in each configuration the tests run.
+The status line at the top of the page is a convenience for developers. It reports, in words, which path the page took. Table 9.2 records the original Chromium 156 run, which used the MCP-B polyfill. The current demo uses the W3C package; see the newer test run for its results.[^ch09-w3c-run]
 
 **Table 9.2 — Fjord Table’s start-up paths (observed in Chromium 156)**
 
@@ -541,23 +541,31 @@ The Test Agent sees tools from inside the page. A browser agent sees them from o
 
 ## Polyfills and bridges
 
-Two kinds of package fill the gaps around native WebMCP. Polyfills give non-supporting browsers a `document.modelContext`. Bridges carry a page’s tools to agents outside the browser. The most complete set of both is MCP-B, published under the `@mcp-b` scope on npm. Its documentation says it covers the `@mcp-b/*` packages, and sends questions about the proposal, browsers and agents to the sources that own them.[^ch09-15] The three packages this chapter touches were at version 6.0.3 on 14 October 2026, and 6.0.3 was still the latest release of each on 2 November 2026.[^ch09-16]
+A polyfill gives a page a WebMCP context where the browser does not provide one. A bridge connects a page's tools to an agent outside the browser. They solve different problems, so let's look at them separately.
 
-### Which runtime, if any
+### The W3C polyfill
 
-MCP-B’s own guide to choosing a runtime starts with the question this chapter has been asking: does the target browser already have the behavior you need? If it does, “you may not need a runtime package.” After that, in order:[^ch09-17]
+Fjord Table uses `@w3c/webmcp-polyfill`, an open-source package from the W3C Open Source Program pilot. It follows the WebMCP Community Group draft, uses `webmcp-types` and has no runtime JavaScript dependencies. The draft is still changing; it is not a W3C Standard.[^ch09-w3c]
 
-- `@mcp-b/webmcp-polyfill`, if you need tool registration and discovery where native support is missing. It packages the Community Group’s own polyfill, `webmachinelearning/webmcp-polyfill`, pinned to a specific revision, plus a temporary layer for declarative forms.[^ch09-9]
-- `@mcp-b/global`, if you also need MCP-style transports, prompts, resources or direct access to an MCP server.[^ch09-17]
-- The Community Group’s `webmcp-types` package, if all you need is TypeScript declarations.[^ch09-17]
+If you use a bundler, install the package and load its automatic entry point before registering tools:
 
-Fjord Table needs only the first. The polyfill’s reference describes the parts that matter for Listing 9.2. Its installer is idempotent and leaves an existing native context alone. It does nothing on an insecure page or in a browser below its baseline, so `if (!document.modelContext)` is still a valid feature check after you load it. That baseline is Chrome 126, Firefox 126 and Safari 18, set by the newest APIs its core uses. It follows the current object-input `executeTool()` shape and supports unregistration through `AbortSignal` (which is exactly what the rollback in Listing 9.4 relies on). And like native WebMCP, its `registerTool()` “does not validate invocation arguments,” so the validation in Listing 9.3 is still needed.[^ch09-9] The script bundle, which Listing 9.2 loads, installs itself when it runs.[^ch09-9]
+```bash
+npm install @w3c/webmcp-polyfill
+```
 
-The companion tests run the polyfill path in Chromium without `WebMCPTesting`. They serve the pinned bundle in place of the CDN URL, byte for byte, so the integrity check still runs. The page reports “Agent tools on (polyfill),” and the Test Agent searches and books exactly as it does natively, guest confirmation included.[^ch09-2]
+```js
+import '@w3c/webmcp-polyfill/auto';
+```
+
+You can instead import `installWebMCP` from `@w3c/webmcp-polyfill` and call it explicitly. Both routes leave an existing `document.modelContext` alone, including a partial native implementation. The installer does nothing outside a secure context. Listing 9.2 uses the package's standalone `dist/polyfill.js` build instead, loaded only when the page opts in and has no context.[^ch09-w3c]
+
+What can you test with it? Registration, discovery and execution from code in the page, including the Test Agent's search and booking flow. The package also implements cancellation and frame discovery. It does not implement declarative forms, and talking to an actual browser agent needs browser support. Native contexts do not join the polyfill's channels, so check agent and bridge compatibility rather than assuming the two runtimes connect.[^ch09-w3c]
+
+The demo tests load the installed, pinned bundle in place of the CDN response, which keeps the integrity check in the browser. In the 18 November run, the Test Agent searched and booked with guest confirmation; the blocked-download and native paths passed too.[^ch09-w3c-run]
 
 Google’s WebMCP tools repository ships a second, standalone polyfill, `demos/shared/webmcp-polyfill.js`, “to make WebMCP tools and CSS pseudo-classes work in browsers that do not support the API natively.” Its demos, including the Page Agent, load it.[^ch09-18][^ch09-12] Its first statement returns early if `document.modelContext` already exists, the same rule Listing 9.2 follows.[^ch09-19] It’s a good file to read. For production, prefer a versioned package that you pin and hash.
 
-> **Still in flux:** *Polyfills track a moving target.* A polyfill can only be as current as the draft it copies. The MCP-B polyfill pins an upstream revision, and its declarative layer exists “until upstream supports” declarative tools. That is now an open question, since the spec removed them on 8 October 2026.[^ch09-9] Pin the version, read the changelog before upgrading, and keep your own tests running against both the polyfill and native Chromium, as this chapter’s suite does.
+> **Still in flux:** *Polyfills track a moving target.* The W3C package follows a Community Group draft that is still changing. Pin the version, read its release notes before upgrading, and run your own tests against both the polyfill and native WebMCP.[^ch09-w3c]
 
 ### Bridging to desktop agents
 
@@ -680,7 +688,7 @@ Fjord Table is now a complete, if small, agent-ready app. The companion folder `
 - the Test Agent (Listings 9.5 and 9.6), with a scripted planner for CI and a Prompt API planner for trying real requests on the device
 - `server.js` (Listing 9.9), which serves the page with an explicit tools policy and, when configured, an origin-trial token
 
-Its 22 tests pass against Chromium 156 without WebMCP, with WebMCP, with the polyfill and with the mock. The folder’s README maps every file to its listing and records what was observed, and on which versions. Chapter 10 moves to the bigger project, the Trailhead store, and to the questions a component framework raises: tools that come and go with views, shared state, and routing.
+The original suite ran in Chromium 156 with the MCP-B polyfill, native WebMCP and a mock. On 18 November, the updated W3C demo passed 21 browser and static checks in Chromium 159.0.8154.6, plus seven output-schema tests. The optional listing comparison was not enabled in that run.[^ch09-w3c-run] Chapter 10 moves to the bigger project, the Trailhead store, and to the questions a component framework raises: tools that come and go with views, shared state, and routing.
 
 Bottomline: the API calls in this chapter fit on one screen. Everything around them, the flag, the secure context, the fallbacks, the rollback, the tests and the token, is what makes it an app.
 
@@ -690,13 +698,16 @@ Bottomline: the API calls in this chapter fit on one screen. Everything around t
 - Check a page in seconds with Listing 9.1. Under `Permissions-Policy: tools=()`, `document.modelContext` still exists in Chromium 156, but `registerTool()` throws `NotAllowedError`. Feature detection isn’t enough. Handle the registration error too.
 - Build in three layers. The page works first. A start-up module decides whether to use native WebMCP, an opt-in polyfill or nothing. The tools are thin wrappers over the page’s own functions (“Share the application service,” in the words of Chrome’s best practices), so the agent path ends in the same code and the same UI as a person’s.
 - Register the tools as one set. Keep the `AbortController` you register them with, and abort it when any registration fails, so agents never see half a workflow.
-- Load a polyfill only by choice, pinned and with an integrity hash. `@mcp-b/webmcp-polyfill` 6.0.3 packages the Community Group’s polyfill, leaves native support alone, and installs nothing on insecure pages or in old browsers. It doesn’t validate arguments either.
+- Load a polyfill only by choice, pinned and with an integrity hash. `@w3c/webmcp-polyfill` 0.1.1 leaves an existing context alone, requires a secure context and does not validate tool arguments or implement declarative forms.[^ch09-w3c]
 - Explore with Chrome’s tools. The DevTools WebMCP pane lists tools as agents see them, logs every call and runs tools by hand. The Model Context Tool Inspector runs tools manually or through Gemini. The Example Agentic Chrome Extension is a working agent that takes annotations at their word: it always asks before a `consequentialHint` tool runs.
 - Test with an agent you can script. The Test Agent uses `getTools()` and `executeTool()` with a pluggable planner: a fixed script for CI, or Chrome’s Prompt API with a `responseConstraint` for trying real requests on the device. It keeps each raw result next to the parsed one, because result serialization is still being settled (issue #361). Record the spec revision, browser version, agent and model with every test run.
 - Bridges such as `@mcp-b/webmcp-local-relay` give desktop MCP clients a tab’s tools over a localhost WebSocket. Restrict them to your origin with `--widget-origin`.
 - Deploy with an origin-trial token per origin, in a meta tag or an `Origin-Trial` header. The Chrome trial runs from 149 to 156, extended to 162. Edge’s trial expires on 30 March 2027. Invalid or expired tokens are silently ignored, so make the page work, and report its mode, without the tools.
 
 ## Notes
+
+[^ch09-w3c]: W3C Open Source Program, `@w3c/webmcp-polyfill` README, version 0.1.1: installation, native coexistence, secure contexts and implementation status (retrieved November 2026). <https://www.npmjs.com/package/@w3c/webmcp-polyfill>
+[^ch09-w3c-run]: Companion demo GitHub Actions, Chapter 9 test run of 18 November 2026. <https://github.com/webmaxru/webmcp-book-demos/actions/runs/44382818272>
 
 [^ch09-1]: Chrome for Developers, “WebMCP” (overview; last updated 7 October 2026), sections “Get started,” “Local WebMCP,” “Permissions policy” and “Imitate an agent to test your tools” (retrieved November 2026). <https://developer.chrome.com/docs/ai/webmcp>
 [^ch09-2]: Observed in Chromium 156.0.8078.4 (Playwright 1.64 build) with and without `--enable-features=WebMCPTesting`, first on 14 October 2026 and again on 2 November 2026 for this edition. The tests are in the companion repository, `chapters/09-first-webmcp-app/tests/run-tests.mjs`, and the folder's README lists every observation. <https://github.com/webmaxru/webmcp-book-demos/tree/main/chapters/09-first-webmcp-app>
@@ -706,15 +717,11 @@ Bottomline: the API calls in this chapter fit on one screen. Everything around t
 [^ch09-6]: Chrome for Developers blog, “Join the WebMCP origin trial” (published 9 June 2026; retrieved November 2026). <https://developer.chrome.com/blog/ai-webmcp-origin-trial>
 [^ch09-7]: Microsoft Edge Origin Trials, “WebMCP” trial page: trial expiration date 30 March 2027; registration options for subdomains and third-party matching (retrieved November 2026). <https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a>
 [^ch09-8]: Chrome for Developers, “Get started with origin trials” (last updated 7 November 2024), sections “Take part in an origin trial,” “Provide a token programmatically,” “Tokens and iframes,” “Tokens and extensions,” “Renew origin trial enrollment” and “View origin trial information” (retrieved November 2026). <https://developer.chrome.com/docs/web-platform/origin-trials>
-[^ch09-9]: MCP-B documentation, “@mcp-b/webmcp-polyfill overview” and “@mcp-b/webmcp-polyfill reference,” sections “`installWebMCP()`,” “Core runtime,” “Declarative tools” and “Browser baseline” (retrieved November 2026). <https://docs.mcp-b.ai/packages/webmcp-polyfill/reference>
 [^ch09-10]: Chrome DevTools, “Debug WebMCP tools” (last updated 12 May 2026), sections “Open the WebMCP pane,” “Available tools,” “Invoked tools,” “Test tools manually” and “Command-line flags” (retrieved November 2026). <https://developer.chrome.com/docs/devtools/application/webmcp>
 [^ch09-11]: GoogleChromeLabs/webmcp-extension, “Example Agentic Chrome Extension to test WebMCP,” README, sections “What it does” and “Trust boundary” (retrieved November 2026). <https://github.com/GoogleChromeLabs/webmcp-extension>
 [^ch09-12]: GoogleChromeLabs/webmcp-tools, “WebMCP Page Agent,” README, sections “How It Works” (“Discovering Tools,” “Executing Tools”) (retrieved November 2026). <https://github.com/GoogleChromeLabs/webmcp-tools/tree/main/demos/page-agent>
 [^ch09-13]: Chrome for Developers, “The Prompt API” (published 20 May 2025, last updated 21 October 2026): availability by platform, `LanguageModel.availability()`, `LanguageModel.create()` and user activation, and “Pass a JSON Schema” (`responseConstraint`) (retrieved November 2026). <https://developer.chrome.com/docs/ai/prompt-api>
 [^ch09-14]: Chrome DevTools Protocol, experimental `WebMCP` domain (`enable`, `invokeTool`, `cancelInvocation`; events `toolsAdded`, `toolsRemoved`, `toolInvoked`, `toolResponded`) (retrieved November 2026). <https://chromedevtools.github.io/devtools-protocol/tot/WebMCP/>
-[^ch09-15]: MCP-B, “WebMCP Documentation” index (`llms.txt`) (retrieved November 2026). <https://docs.mcp-b.ai/llms.txt>
-[^ch09-16]: npm registry, `@mcp-b/webmcp-polyfill`, `@mcp-b/global` and `@mcp-b/webmcp-local-relay`, latest version 6.0.3 for each (published 14 October 2026), MIT licence (read 14 October 2026 and again 2 November 2026). <https://registry.npmjs.org/@mcp-b/webmcp-polyfill/latest> (and the same path for the other two packages)
-[^ch09-17]: MCP-B documentation, “Choose a runtime,” sections “Choose in order” and “Package comparison” (retrieved November 2026). <https://docs.mcp-b.ai/how-to/choose-runtime>
 [^ch09-18]: GoogleChromeLabs/webmcp-tools, “Collection of WebMCP tools,” README, section “Developer Utilities” (retrieved November 2026). <https://github.com/GoogleChromeLabs/webmcp-tools>
 [^ch09-19]: GoogleChromeLabs/webmcp-tools, `demos/shared/webmcp-polyfill.js` (retrieved November 2026). <https://github.com/GoogleChromeLabs/webmcp-tools/blob/main/demos/shared/webmcp-polyfill.js>
 [^ch09-20]: MCP-B documentation, “@mcp-b/webmcp-local-relay overview” and the tutorial “Connect a desktop agent with the relay” (retrieved November 2026). <https://docs.mcp-b.ai/tutorials/desktop-agent-relay>
