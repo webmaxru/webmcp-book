@@ -13,9 +13,12 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.ref }}
+      - name: Install book dependencies
+        run: python3 -m pip install -r tools/requirements.txt
       - name: Add the content and release metadata
         run: |
           set -euo pipefail
+          sed -i '/prepare-webmcp-polyfill-release.yml.*unlink()/d' tools/_prepare_webmcp_polyfill_release.py
           python3 tools/_prepare_webmcp_polyfill_release.py
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
