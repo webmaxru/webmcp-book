@@ -2,6 +2,12 @@
 
 This file records how the second edition was checked. Every chapter, listing, figure and status statement in the first edition (15 October 2026) was checked against the sources below on 2 November 2026, and each finding was either confirmed, corrected in the text or marked as unverified. The tables are the working records of that pass, one per manuscript file, 765 rows in total.
 
+## Appendix C follow-up: W3C WebMCP polyfill (18 November 2026)
+
+The npm package README for `@w3c/webmcp-polyfill` 0.1.1 was read on 18 November 2026. It documents installation and the `auto` entry point, registration, discovery and execution, types targeting `webmcp-types` 0.1.10, no runtime JavaScript dependencies, the secure-context requirement, and the native-API and browser-agent boundaries. It says declarative forms are not implemented and points to its testing notes for differences from the draft. The specification identifies itself as a Draft Community Group Report. No package or browser behaviour was tested for this addition.
+
+Sources: <https://www.npmjs.com/package/@w3c/webmcp-polyfill>, <https://github.com/w3c-oss/webmcp-polyfill/blob/main/TESTING.md>, <https://webmachinelearning.github.io/webmcp/>.
+
 ## Sources
 
 - Chrome's WebMCP documentation on developer.chrome.com: every page under <https://developer.chrome.com/docs/ai/webmcp> (overview, imperative API, declarative API, build tools, best practices, when to use WebMCP and MCP, evals, debugging and the related DevTools page), read in full on 2 November 2026 and compared with archived copies from before 15 October.

@@ -6,6 +6,12 @@ Each version is a Git tag `vX.Y.Z`. Its GitHub Release carries the PDF, the EPUB
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-11-18
+
+### Added
+
+- Appendix C: the W3C WebMCP polyfill, including installation, intended audiences, TypeScript definitions and the limits of polyfill and browser-agent support.
+
 ### Changed
 
 - Update Chapters 5, 9, 11, 14, 15 and 17 and Appendix A for WebMCP `outputSchema` (PR #254, merged 2 November 2026). Clarify that the member is optional, the native mismatch behavior remains unresolved in issue #92, and agent harnesses should validate before model delivery. Synchronize Chapter 9 and Chapter 17 listings with the companion demo repository.

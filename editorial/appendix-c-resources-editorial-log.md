@@ -17,3 +17,7 @@ the editor, 2 November 2026. Old: 3,307 words. New: about 4,000 words (Chrome pa
 - Corrected: dates of four Chrome pages, Mozilla/TAG status dates, charter status, MCP checks, package versions, website URL.
 - Removed: the chromestatus "Proposed" status word (not re-verified as a word; replaced by milestones).
 - Self-checks: 0 placeholders, 0 semicolons (chapter pointers "Chapter 15; Appendix B" became "Chapter 15 and Appendix B"), 0 raw HTML, footnotes defined and used.
+
+## 18 November 2026 — WebMCP polyfill
+- Added the W3C polyfill to C.7 in the book's author voice, with the install command, automatic entry point, intended audiences, secure-context and native-API boundaries, and links to the package and its testing notes.
+- Checked the package documentation and the Community Group draft on 18 November 2026. Version 0.1.1 targets webmcp-types 0.1.10. No new browser behaviour was observed for this addition.
