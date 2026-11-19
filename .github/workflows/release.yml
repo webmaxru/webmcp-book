@@ -106,10 +106,12 @@ jobs:
           name: editions-${{ env.TAG }}
           path: release/
           if-no-files-found: error
+          retention-days: 7
       - uses: actions/upload-artifact@v4
         with:
           name: release-notes
           path: release-notes.md
+          retention-days: 7
 
   publish:
     name: Publish the GitHub Release
