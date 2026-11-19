@@ -67,4 +67,4 @@ jobs:
             dist/*.pdf
             dist/*.epub
             dist/*.zip
-          retention-days: 14
+          retention-days: 3
