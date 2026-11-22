@@ -20,3 +20,18 @@ Manuscript: `manuscript/02-from-apis-to-tools.md`. Old text (15 October 2026): 5
 - Kept unchanged: all dates, names and numbers (2000, Swagger/SmartBear, OpenAPI 3.2.1 of 10 September 2026, JSON Schema 2020-12, ReAct October 2022, Toolformer February 2023, function calling June 2023 and its quotes, Structured Outputs August 2024 with 100 % vs < 40 %, plug-ins 23 March 2023 with partners, GPTs November 2023, MCP 25 November 2024, AAIF 9 December 2025 with founders and projects, A2A 9 April 2025 / 23 June 2025 / 1.0.0 / August 2026, repository created 5 August 2025), Table 2.1, Figures 2.1–2.2.
 - Corrected: compare-page quote and footnote (see above); footnotes ch02-4, ch02-16, ch02-22, ch02-25, ch02-26, ch02-28, ch02-29 carry November 2026 re-check notes, ch02-16 now names the page's authors.
 - Removed: the obsolete compare-page sentence only.
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: a tool is a name, a description for a model, and a JSON Schema. The envelope around that core kept changing, and until WebMCP every envelope stayed on the server.
+- What changed (voice/register), with one before/after pair if you changed the opening:
+  - The opening Trailhead history was left as it stood. The skim sentence was the register change.
+  - Before: “If you have built with function calling or MCP before, feel free to skim. If you haven’t, this is the shortest path to understanding why WebMCP looks the way it does.”
+  - After: “If you have built with function calling or MCP before, much of it will be familiar. If you haven’t, the chapter explains why WebMCP looks the way it does.”
+  - Also removed “Please remember that name.”, “Let’s slow down and see what actually happens”, and “so let’s name them now”. The claims those sentences introduced stayed.
+- Generalized: none. No Lars, Kari, or Jonas in this chapter.
+- Kept on purpose: “when I checked in November 2026” and “which I co-author”. All dates, names, percentages, Table 2.1, Figures 2.1 and 2.2, footnotes, the epigraph, and the H1. “And no compiler will tell you.” and “That worked in papers.” stay as limits.
+- Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
+  - None.

@@ -27,3 +27,20 @@ the editor, v2 rewrite, 2 November 2026. Voice target: Maxim’s his voice profi
 
 - The GitHub user frmoretto wrote to the author and gave his name, Francesco Marinoni Moretto, and his GitHub profile shows the same name. He is now named in the text (“Francesco Marinoni Moretto (GitHub: frmoretto)” on first mention, “Marinoni Moretto” after that) and in notes ch16-26 and ch17-35. This replaces the handle-only note above.
 - New section “WebMCP and protocol checkout (UCP)” after “WebMCP and backend MCP in one plan”, from his suggestion. Every fact was checked against primary sources on 4 November 2026 (live `/.well-known/ucp` fetches on three stores, the UCP 2026-08-25 specification, Shopify’s changelog and Checkout WebMCP documentation). His map is cited as a secondary source. Where the specifications are silent, the text says so. VALIDATION.md rows 21–29. No semicolons in the new prose.
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: WebMCP converts visits a site already has, and Trailhead’s product team still has to choose journeys, measurement, ownership, and the split with backend MCP. The Monday planning frame stays. The named characters do not.
+- What changed (voice/register), with one before/after pair if you changed the opening:
+  - Before: “Trailhead’s product team meets on Monday mornings in a room above the warehouse in Lillestrøm. This Monday, Kari, who runs product, has written exactly one question on the whiteboard.”
+  - After: “Trailhead’s product team meets on Monday mornings. This Monday the product lead has written exactly one question on the whiteboard.”
+  - Heading renamed to “The product question”. “Let’s be precise” and “Please note” removed. The two claims that followed (presence, and the unsettled `agentInvoked`) stay.
+  - “the clearest way I know” is now “explains the split … in two lines”, so the superlative is not stated as fact. Both Chrome sentences stay.
+  - “The Chrome guide I mentioned earlier” is now “The Chrome guide cited earlier”. The co-author credit (“André Cipriani Bandarra and I co-authored”) stays.
+  - “Personally for me, this is the cheapest seat at the table you will ever get” is now “Sending findings back is a low-cost way to influence the standard.”
+  - “These are the questions I would ask” is now “I recommend these questions, in roughly this order.”
+- Generalized: Kari to “the product lead”, Jonas to “the front-end lead”. Warehouse in Lillestrøm and “Kari is impressed” dropped. “take upstairs” is now “a plan to take to the rest of the company.” “I hear this comparison in almost every planning conversation about agents” is now the prescribed sentence “Planning discussions about agents often start from an SEO analogy.”
+- Kept on purpose: the whiteboard question, the other product questions, the branch, four tool calls instead of forty clicks, 4,000 NOK, Monday, the measurement wrapper, attribution, origin-trial caution, and every quote, table, figure, listing, and footnote. “I” for the co-authored guide, “In my tests”, “the simplest approach I can defend”, “I am not a lawyer”, “I fetched”, and “the three profiles I fetched”. “The good news” / “The bad news” stay because each states a real limit (measurable calls, no caller identity).
+- Flags: The “almost every planning conversation” frequency is generalized. Do not read “often” as a measured rate. “Cheapest seat … you will ever get” is no longer stated. “Low-cost” is the remaining cost claim, and it is the author’s judgment, not a measured price.

@@ -5,21 +5,21 @@
 >
 > — Anthropic, “Piloting Claude in Chrome”[^ch01-1]
 
-## A tent, a deadline and a very patient robot
+## A worked example: shopping by actuation
 
-Lars has a hiking trip in Jotunheimen in three weeks and no tent. On Tuesday evening he opens Trailhead, a Norwegian outdoor-gear store, and instead of clicking through it himself he types into his browser’s assistant panel: “Find me a two-person tent under 4,000 kroner that’s in stock, compare the two best-rated ones, and put the better one in my cart.” Then he goes to make tea.
+A customer has a hiking trip in Jotunheimen in three weeks and no tent. On Tuesday evening the customer opens Trailhead, a Norwegian outdoor-gear store, and types into the browser’s assistant panel instead of clicking through the store: “Find me a two-person tent under 4,000 kroner that’s in stock, compare the two best-rated ones, and put the better one in my cart.”
 
 The assistant starts working the only way most of today’s agents can. It takes a screenshot of the Trailhead homepage and sends it to a model, together with a snapshot of the page structure. The model decides that the magnifying-glass icon is probably search, so the agent clicks it and types “tent”. Another screenshot. The results page has a filter sidebar: a price slider, a “Capacity” accordion that starts collapsed, and an “In stock only” toggle styled as a little pill. The agent drags the slider, overshoots, takes another screenshot, reads the label (“0 – 4 350 kr”) and nudges it back. It opens the accordion, ticks “2 persons” and waits while the product grid reloads. On the first attempt it reads the grid before the new results arrive, and starts comparing tents that are not on the page anymore.
 
 Eventually it opens two product pages, one after another, scrolls each of them to the specifications table, copies weights and pack sizes out of the pixels and picks a winner. On the product page it meets a size selector, a colour swatch and a quantity stepper. It chooses “Moss”, clicks “Add to cart”, and a drawer slides in offering a matching footprint at 20 per cent off. Is that a confirmation? Or an upsell that has to be dismissed before the cart updates? The agent takes another screenshot and thinks about it.
 
-By the time Lars is back with his tea, the job is done. Probably. It took dozens of model calls, a minute or two of wall-clock time and a fair amount of luck. If Trailhead had shipped a redesign that afternoon, or if the filter sidebar had loaded a bit slower, the agent might have put the wrong tent in the cart (or no tent at all), and neither Lars nor Trailhead would ever know why.
+By the time the customer returns, the job is done. The outcome is still uncertain. It took dozens of model calls, a minute or two of wall-clock time and a fair amount of luck. If Trailhead had shipped a redesign that afternoon, or if the filter sidebar had loaded a bit slower, the agent might have put the wrong tent in the cart (or no tent at all), and neither the customer nor Trailhead would ever know why.
 
-I have written about service workers and offline web apps for years, and watching an agent shop like this reminds me of a site without a service worker on a train: everything works, until it doesn’t. This chapter is about that gap, between what browser agents are already asked to do and the way they have to do it today. We look at what browser agents are, how they operate websites, where that breaks, what it costs, and why the website (not only the agent) has a stake in fixing it. At the end I introduce the projects we build throughout the book and say what the book covers and what it doesn’t.
+A site without a service worker on a bad connection works until it doesn’t. This chapter is about that gap, between what browser agents are already asked to do and the way they have to do it today: what browser agents are, how they operate websites, where that breaks, what it costs, and why the website (not only the agent) has a stake in fixing it. The chapter then introduces the projects that run through the book, and what the book covers and what it doesn’t.
 
 ## Agents in the browser
 
-The WebMCP specification opens its terminology section with a definition I am happy to borrow. An *agent* is “an autonomous assistant that can understand a user’s goals and take actions on the user’s behalf to achieve them.” Today, the spec adds, these are typically built on large language model (LLM) platforms “interacting with users via text-based chat interfaces.”[^ch01-2] What makes an agent a *browser* agent is where it acts. The spec defines a browser agent as an agent “provided by or through the browser that could be built directly into the browser or hosted by it, for example, via an extension or plug-in.”[^ch01-2]
+The WebMCP specification opens its terminology section with the following definition. An *agent* is “an autonomous assistant that can understand a user’s goals and take actions on the user’s behalf to achieve them.” Today, the spec adds, these are typically built on large language model (LLM) platforms “interacting with users via text-based chat interfaces.”[^ch01-2] What makes an agent a *browser* agent is where it acts. The spec defines a browser agent as an agent “provided by or through the browser that could be built directly into the browser or hosted by it, for example, via an extension or plug-in.”[^ch01-2]
 
 Two years ago that described research demos. In the autumn of 2026 it describes products millions of people can install. They come in three broad shapes, and the difference is where the agent lives relative to the page it acts on (Figure 1.1).
 
@@ -39,7 +39,7 @@ A close relative is the agent that runs a browser for you somewhere else. OpenAI
 
 ### In the page
 
-The third shape is easy to miss: an agent that a website ships inside itself. A support assistant in the corner of a SaaS dashboard, a shopping helper on a store’s product pages, a copilot inside a document editor. These agents are part of the site (or embedded into it by a third party), and they act on the page from within. The WebMCP explainer counts them explicitly: tools “can be invoked by AI agents, including those built into the browser, hosted in iframes, or running in extensions.”[^ch01-9] A page-embedded agent can even run its model on the user’s device. Chrome’s Prompt API exposes Gemini Nano, a model that runs locally in the browser and needs no network connection after its first download.[^ch01-10] As a PWA person I find this one especially nice: an agent that keeps working offline. Chapter 7 builds an agent of this kind, and the book’s Test Agent project uses the same idea to exercise tools.
+The third shape is easy to miss: an agent that a website ships inside itself. A support assistant in the corner of a SaaS dashboard, a shopping helper on a store’s product pages, a copilot inside a document editor. These agents are part of the site (or embedded into it by a third party), and they act on the page from within. The WebMCP explainer counts them explicitly: tools “can be invoked by AI agents, including those built into the browser, hosted in iframes, or running in extensions.”[^ch01-9] A page-embedded agent can even run its model on the user’s device. Chrome’s Prompt API exposes Gemini Nano, a model that runs locally in the browser and needs no network connection after its first download.[^ch01-10] The agent can keep working offline. Chapter 7 builds an agent of this kind, and the book’s Test Agent project uses the same idea to exercise tools.
 
 All three shapes share one constraint. Whoever built the agent, it ends up in front of a web page that was designed for people, and it has to figure out how to use it.
 
@@ -60,7 +60,7 @@ That generality is the big strength of actuation. It needs nothing from the webs
 
 ## Where actuation breaks
 
-The explainer is blunt about the weakness. Many of the challenges faced by assistive technology “also apply to AI agents that struggle to navigate existing human-first interfaces when agent-first ‘tools’ are not available,” and “even when agents succeed, simple operations often require multiple steps and can be slow or unreliable.”[^ch01-9] Lars’s tent shopping touched most of the failure modes. I sort them into four groups.
+The explainer is blunt about the weakness. Many of the challenges faced by assistive technology “also apply to AI agents that struggle to navigate existing human-first interfaces when agent-first ‘tools’ are not available,” and “even when agents succeed, simple operations often require multiple steps and can be slow or unreliable.”[^ch01-9] The customer’s tent shopping touched most of the failure modes. They fall into four groups.
 
 ### Layout changes
 
@@ -76,7 +76,7 @@ People resolve this kind of ambiguity from experience. Agents resolve it by gues
 
 ### Multi-step forms and live state
 
-Real tasks are rarely one click. Booking, checkout, filing a support ticket and changing a subscription are sequences of steps, and each step depends on the state left by the previous one: a filtered result list, a selected time slot, an item in a cart, a half-filled form. Single-page applications change that state asynchronously, and much of it is invisible. An agent that reads the page too early sees stale results, as Lars’s agent did. An agent that reads it too late may miss a toast message that has already faded away. Every extra step is one more observation, one more model call and one more chance to drift.
+Real tasks are rarely one click. Booking, checkout, filing a support ticket and changing a subscription are sequences of steps, and each step depends on the state left by the previous one: a filtered result list, a selected time slot, an item in a cart, a half-filled form. Single-page applications change that state asynchronously, and much of it is invisible. An agent that reads the page too early sees stale results, as the customer’s agent did. An agent that reads it too late may miss a toast message that has already faded away. Every extra step is one more observation, one more model call and one more chance to drift.
 
 ### Hostile content
 
@@ -84,17 +84,17 @@ The fourth failure mode is newer, and it’s the one that worries browser makers
 
 Anthropic published its own numbers the same month. In red-team testing of 123 prompt-injection test cases across 29 attack scenarios, browser use without the new mitigations showed “a 23.6% attack success rate”. The mitigations brought it down to 11.2 per cent, and a set of browser-specific attacks (form fields hidden in the DOM, for example) went from 35.7 per cent to zero.[^ch01-1] Better, but not zero across the board, and the company said explicitly that it wanted “to get these percentages much closer to zero” before a wide release.[^ch01-1]
 
-Prompt injection is not only an actuation problem, of course. Any agent that reads untrusted text has it, agents that call tools included, and Chapter 12 deals with it at length. But actuation makes it worse in a specific way. When everything on the page is input for the model, the page’s *content* and its *controls* look exactly the same. A structured interface draws a line between the two.
+Prompt injection is not only an actuation problem. Any agent that reads untrusted text has it, agents that call tools included, and Chapter 12 deals with it at length. But actuation makes it worse in a specific way. When everything on the page is input for the model, the page’s *content* and its *controls* look exactly the same. A structured interface draws a line between the two.
 
 ## The bill: cost, latency and reliability
 
-Let’s say actuation worked every time. It would still be expensive, because of the shape of the loop. Every step costs at least one model call, and every call carries an observation.
+Even if actuation worked every time, it would still be expensive, because of the shape of the loop. Every step costs at least one model call, and every call carries an observation.
 
-Observations are not small. Anthropic’s documentation for its computer use tool notes that long agent loops “accumulate screenshots quickly (roughly 1,000–1,800 input tokens each).”[^ch01-12] A task like Lars’s, a few dozen steps, spends tens of thousands of input tokens on screenshots alone, and more if the agent keeps older screenshots in the history so the model can see what changed. DOM and accessibility-tree snapshots trade pixels for text, but they are often no smaller. None of that is the model reasoning about tents. It is the model working out where the buttons are.
+Observations are not small. Anthropic’s documentation for its computer use tool notes that long agent loops “accumulate screenshots quickly (roughly 1,000–1,800 input tokens each).”[^ch01-12] A task like the customer’s, a few dozen steps, spends tens of thousands of input tokens on screenshots alone, and more if the agent keeps older screenshots in the history so the model can see what changed. DOM and accessibility-tree snapshots trade pixels for text, but they are often no smaller. None of that is the model reasoning about tents. It is the model working out where the buttons are.
 
 Latency follows from the same arithmetic. Each step is a round trip to a model plus the time the page needs to react. Anthropic lists latency first among the limitations of computer use: it “might be too slow compared to regular human-directed computer actions,” so developers should “focus on use cases where speed isn’t critical.”[^ch01-12] OpenAI, introducing agent mode in Atlas, called it “an early experience” that “may make mistakes on complex workflows,” and said it was improving “reliability, latency and complex task success.”[^ch01-4]
 
-Reliability is the hardest cost to see, because it shows up as a percentage on a benchmark and not as a line on an invoice. WebArena, a benchmark built from fully functional websites in four common domains (e-commerce, social forums, collaborative software development and content management), gave the field its first sobering number in 2023: the best GPT-4-based agent of that time completed 14.41 per cent of tasks end to end, against 78.24 per cent for humans.[^ch01-14] Agents have improved fast since then. OpenAI later reported that its Computer-Using Agent reached 58.1 per cent on WebArena and 87 per cent on WebVoyager, a benchmark of simpler tasks on live websites, while noting that it “still needs more improvements to close the gap with human performance on more complex benchmarks like WebArena.”[^ch01-11] These numbers will keep climbing, so please check the current figures instead of trusting mine. But the structure of the problem stays the same. An agent that has to rediscover the interface on every visit is always one misread away from failure, and the more steps a task takes, the more misreads it can collect.
+Reliability is the hardest cost to see, because it shows up as a percentage on a benchmark and not as a line on an invoice. WebArena, a benchmark built from fully functional websites in four common domains (e-commerce, social forums, collaborative software development and content management), gave the field its first sobering number in 2023: the best GPT-4-based agent of that time completed 14.41 per cent of tasks end to end, against 78.24 per cent for humans.[^ch01-14] Agents have improved fast since then. OpenAI later reported that its Computer-Using Agent reached 58.1 per cent on WebArena and 87 per cent on WebVoyager, a benchmark of simpler tasks on live websites, while noting that it “still needs more improvements to close the gap with human performance on more complex benchmarks like WebArena.”[^ch01-11] These numbers will keep climbing, so check the current figures before you rely on the ones printed here. But the structure of the problem stays the same. An agent that has to rediscover the interface on every visit is always one misread away from failure, and the more steps a task takes, the more misreads it can collect.
 
 > **Still in flux:** Benchmark results for browser agents move every few months, and vendors report them on different task sets, step budgets and dates. The figures in this section are the ones published in the cited sources: the original 2023 WebArena baselines and the results OpenAI published for its Computer-Using Agent. Treat them as illustrations of the gap, not as a current league table.
 
@@ -115,11 +115,11 @@ Table 1.1 sums up the difference.
 
 *Table 1.1 — Actuation and structured tools compared.*
 
-Please look at the last row. Structured interaction isn’t free: somebody has to build the tools, and that somebody is the site. So the next question is “why would a website bother?” (and not “how do agents get better at clicking?”).
+Structured interaction isn’t free: somebody has to build the tools, and that somebody is the site. So the next question is “why would a website bother?” (and not “how do agents get better at clicking?”).
 
 ## Why sites have a stake
 
-It is tempting to call agent reliability the agent maker’s problem. The agent is theirs, the model is theirs, the bill is theirs. But let’s look at the tent purchase from Trailhead’s side.
+It is tempting to call agent reliability the agent maker’s problem. The agent is theirs, the model is theirs, the bill is theirs. Consider the tent purchase from Trailhead’s side.
 
 *The site loses the sale when the agent fails.* An agent that gives up on a confusing filter sidebar doesn’t file a bug report. It tells the user it couldn’t do it, or it goes to a competitor whose site happened to be easier to operate. A site that agents can use reliably is, quite literally, a better shop for customers who send agents.
 
@@ -129,7 +129,7 @@ It is tempting to call agent reliability the agent maker’s problem. The agent 
 
 *The site already has the code.* Everything an agent needs to search Trailhead’s catalogue, add an item to the cart or read the cart back already exists in Trailhead’s front end, because the human interface needs it too. The explainer’s goal of *code reuse* says exactly this: “Any task that a user can accomplish through a page’s UI can be turned into a tool by reusing much of the page’s existing client-side code.”[^ch01-15]
 
-Put these four points together and agent-readiness stops being a favour to agent vendors. It becomes ordinary product work, like accessibility, search-engine optimisation or a good mobile layout: a way to make your product work for how people arrive at it now. Personally for me, this is the strongest argument of all: the web has adapted to new kinds of visitors before.
+Put these four points together and agent-readiness stops being a favour to agent vendors. It becomes ordinary product work, like accessibility, search-engine optimisation or a good mobile layout: a way to make your product work for how people arrive at it now. The web has adapted to new kinds of visitors before.
 
 ## Humans and agents in the same tab
 
@@ -143,11 +143,11 @@ What these safeguards have in common is that the agent decides when to ask. The 
 
 The WebMCP explainer puts this cooperation first among its goals. The very first item is to “enable human-in-the-loop workflows,” supporting “cooperative scenarios where users delegate tasks to AI agents while maintaining visibility, history, and control over web pages.”[^ch01-15] Its non-goals tell just as much. WebMCP is not meant for “fully autonomous workflows” where no browser interface is present, and it is not a “replacement of human interfaces”: “The human web interface remains primary,” and “agent tools augment rather than replace user interaction.”[^ch01-15] Chrome’s documentation states the matching limitation candidly. While tools may work in headless environments, the API is “primarily designed for local browser workflows with a human in the loop.”[^ch01-7]
 
-This is the picture I’d like you to carry through the book. The page stays the user’s page. The agent is a capable assistant sitting next to the user, and the site gives it proper tools instead of leaving it to poke at buttons. When an action matters, the site shows its own confirmation, in its own interface, and the user clicks it. Fjord Table’s `book_table` tool does exactly this in Chapter 5.
+The page stays the user’s page. The agent is a capable assistant sitting next to the user, and the site gives it proper tools instead of leaving it to poke at buttons. When an action matters, the site shows its own confirmation, in its own interface, and the user clicks it. Fjord Table’s `book_table` tool does exactly this in Chapter 5.
 
 ## Structured interaction, briefly
 
-What would it take for Lars’s agent to do its job without guessing? Trailhead would need a way to tell the agent, in a form a model can use directly, what it offers: “I can search products by query, category, maximum price and stock status. I can compare two to four products. I can add a product to the cart. I can show you the cart.” Each capability would have a name, a plain-language description and a precise description of its inputs. And calling it would run Trailhead’s own code in Lars’s tab, updating the page he is looking at.
+What would it take for the customer’s agent to do its job without guessing? Trailhead would need a way to tell the agent, in a form a model can use directly, what it offers: “I can search products by query, category, maximum price and stock status. I can compare two to four products. I can add a product to the cart. I can show you the cart.” Each capability would have a name, a plain-language description and a precise description of its inputs. And calling it would run Trailhead’s own code in the customer’s tab, updating the page the customer is looking at.
 
 That is a *tool*, in the sense the AI industry has used the word since 2023. Chapter 2 explains how tools became the common unit of agent capability, from function calling in model APIs to OpenAPI-based plug-ins and agent protocols. Chapter 3 covers the Model Context Protocol, which standardised tools for backend services. Chapter 4 introduces WebMCP, which brings the same idea into the page. Its specification describes the result in one sentence: pages that use WebMCP “can be thought of as Model Context Protocol servers that implement tools in client-side script instead of on the backend.”[^ch01-2]
 
@@ -165,7 +165,7 @@ Concepts are easier to hold on to when they are attached to something you build.
 
 *Helpdesk Widget* is a support widget made by a fictional vendor, Supportly, and embedded in a fictional accounting dashboard, Ledgerly. The widget and the dashboard come from different origins, which is exactly where the web’s security model gets interesting. Its tools (`search_articles`, `create_ticket` and `get_ticket_status`) are the book’s test case for cross-origin rules and page-embedded agents in Chapter 7, and for the threat models in Chapter 12.
 
-*Test Agent* is optional. It is a minimal agent harness, built either as an extension or as an in-page agent using Chrome’s on-device model through the Prompt API. You can use it to call your tools and run evaluations without depending on any particular commercial assistant. We build it in Chapter 9, and Chapter 14 runs it as the in-page counterpart to its eval harness.
+*Test Agent* is optional. It is a minimal agent harness, built either as an extension or as an in-page agent using Chrome’s on-device model through the Prompt API. You can use it to call your tools and run evaluations without depending on any particular commercial assistant. Chapter 9 builds it, and Chapter 14 runs it as the in-page counterpart to its eval harness.
 
 | Project | What it is | What it teaches | Main chapters |
 |---|---|---|---|

@@ -40,3 +40,17 @@ Additions (all sourced): Chrome best practices of 30 October (four quotes), "As 
 Removals: the sentence "Trailhead uses `usewebmcp`, because Chrome's documentation points to it" (no longer true). Nothing else technical was removed.
 
 Kept as first-edition evidence (not re-run on 2 November): the Angular Signal Forms observations (listings unchanged), the MCP-B guide quotes (third-party docs, not re-fetched).
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: In a framework the WebMCP API stays the same. What changes is which component or injector registers a tool, and when that registration is aborted, without churning `toolchange` or stranding a call that is already running.
+- What changed (voice/register), with one before/after pair if you changed the opening:
+  - Before: “The good news first: the API doesn’t change in a framework. … So this chapter is about getting the “who” and the “when” right. We tie registration…”
+  - After: “The API doesn’t change in a framework. … This chapter gets the “who” and the “when” right. It ties registration…”
+  - Removed “Let’s have a look”, “Bottomline:”, “Please note:”, filler “of course”, “I think it’s worth saying why”, and “as we’ll see shortly”. Tutorial “we” (“we look”, “we built”, “we’ll see”) became “this chapter” or a forward reference to the cart page. “I won’t print untested code” became “this chapter doesn’t print untested code”, with the missing Vue demo still the reason.
+- Generalized: “the app logic we already have” became “existing application logic”. Same claim. No frequency claim was turned into a fact.
+- Kept on purpose: “I’m one of its co-authors” (Chrome best-practices byline). The Chromium 156 probe, the StrictMode `AbortError`, and the `inputSchema: null` failure. Short results that carry a limit (“It isn’t.”, “Your app can.”). No Lars, Kari, or Jonas in this chapter. Code fences, tables, figures, footnotes, listing paths, and the H1 were not edited.
+- Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
+  - None.

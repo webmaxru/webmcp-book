@@ -50,3 +50,20 @@ All three redrawn from scratch in the APM palette (indigo page, amber agent, tea
 - `trailhead/app.js` (not printed in the book): registration failure now calls `agentTools.abort()`, rolling back the tools already registered, as Chrome’s best practices recommend.
 - README status lines updated to 2 Nov 2026 and Chromium 156.0.8078.4.
 - `npm install --no-save playwright@1.64.1`, `node tests/run-tests.mjs`: 73/73. `node_modules` deleted afterwards.
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: Hints inform an agent and do not enforce anything. A call’s signal, errors, and `toolchange` are what the page can actually rely on.
+- What changed (voice/register), with one before/after pair if you changed the opening:
+  - Before: “Let’s tie those ends up. For that we leave the restaurant and go shopping. Trailhead, the Norwegian outdoor-gear store whose backend MCP server we built in Chapter 3, now gets its in-page tools.”
+  - After: “The examples leave the restaurant for the shop. Trailhead, the Norwegian outdoor-gear store whose backend MCP server Chapter 3 built, now gets its in-page tools.”
+  - “I left” / “I never explained” is now Chapter 5 leaving the loose ends. “The good news”, “Please note”, and “in simple words” are gone. The API-stability claim, the Chrome 156 build limit, and the “hints are not protection” claim stay. “One more detail worth noticing”, “it is worth stating”, “brings us”, and “We will meet” are cut. The cart-snapshot claim, the caller retry rule, and the later rejection stay.
+- Generalized:
+  - “For a purchase I can live with that cost” is not restated as a fact that a second prompt is acceptable. What remains is the safety claim: the page’s own confirmation is still the only arrangement that stays safe whichever browser and agent the user has.
+- Kept on purpose:
+  - Tests and limits: “I ran”, “the build I tested”, “I haven’t tested 157 or later”, “I tested”, “I couldn’t produce”, “in my tests”, “I reproduced”. “I found no primary source”. Co-authorship with André Cipriani Bandarra, and with Alexandra Klepper and François Beaufort. “My rules” for the error split, marked as the author’s advice rather than a spec rule. “Aborting it means ‘I no longer want the result’” stays. That “I” is the caller, not the author. Beaufort’s “I don’t think” stays inside the quotation.
+- Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
+  - The author’s personal acceptance of a double confirmation on checkout was removed and not replaced with a general claim that the cost is acceptable.
+  - A quoted spec note still reads “the lifetime of an specific invocation.” Left as a quotation.

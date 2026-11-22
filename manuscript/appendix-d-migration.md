@@ -105,7 +105,7 @@ navigator.modelContext.registerTool({
 navigator.modelContext.unregisterTool('search_availability');
 ```
 
-In Chromium 156 neither listing works (tested). `'modelContext' in navigator` is `false`, so Listing D.1’s guard quietly skips everything: no error, and no tools. Listing D.2 has no guard and throws a `TypeError` on its first line. Guess which failure is the dangerous one? The quiet one. The page keeps working for people, and agents simply find nothing.
+In Chromium 156 neither listing works (tested). `'modelContext' in navigator` is `false`, so Listing D.1’s guard quietly skips everything: no error, and no tools. Listing D.2 has no guard and throws a `TypeError` on its first line. The quiet failure is the dangerous one. The page keeps working for people, and agents simply find nothing.
 
 ## D.3 After: the current shape
 
@@ -192,7 +192,7 @@ Tested in Chromium 156: both tools register, `getTools()` returns them with thei
 
 ## D.4 Keeping the “swap the tool set” pattern
 
-To be fair to `provideContext()`, it had one genuinely useful property: a single-page app could switch views and replace the whole tool list in one call. It was removed because the same call let any script on the page wipe out tools it didn’t own.[^appd-3] Chapter 5 tells that story. Listing D.4 keeps the useful half. A tool set owns one `AbortController`, and `replace()` aborts it and registers the new tools under a fresh one. In simple words, it can only ever remove its own tools.
+To be fair to `provideContext()`, it had one genuinely useful property: a single-page app could switch views and replace the whole tool list in one call. It was removed because the same call let any script on the page wipe out tools it didn’t own.[^appd-3] Chapter 5 tells that story. Listing D.4 keeps the useful half. A tool set owns one `AbortController`, and `replace()` aborts it and registers the new tools under a fresh one. It can only ever remove its own tools.
 
 **Listing D.4** `appendices/d-migration/after/tool-set.js` — a view-scoped tool set that replaces `provideContext()`
 
@@ -247,7 +247,7 @@ In Chromium 156 with `WebMCPTesting`, `webmcpStatus()` returns `'current'` (test
 
 ## D.6 From the first edition to now (October to November 2026)
 
-If you followed the first edition of this book, I have good news: you don’t need to port anything. The draft of 27 October 2026 has the same IDL as the 15 October draft the first edition used, line for line (I compared the two IDL indexes), and every listing in this appendix ran unchanged in the same Chromium 156 build.[^appd-13] What moved in those weeks is around the API, not in it.
+If you followed the first edition of this book, you don’t need to port anything. The draft of 27 October 2026 has the same IDL as the 15 October draft the first edition used, line for line (I compared the two IDL indexes), and every listing in this appendix ran unchanged in the same Chromium 156 build.[^appd-13] What moved in those weeks is around the API, not in it.
 
 **Table D.3 — What changed between the first edition and November 2026, and what to do**
 

@@ -8,7 +8,7 @@
 
 The last five chapters took WebMCP apart. Chapter 4 registered Fjord Table’s first tool. Chapter 5 went through `registerTool()` line by line and added `book_table` with its confirmation dialog. Chapter 6 covered annotations, the life of a call and its errors, Chapter 7 crossed frames and origins, and Chapter 8 turned the restaurant’s forms into tools with HTML attributes. Each chapter built just enough of the site to make its point.
 
-Now let’s put the pieces back together and take one small app all the way: from an empty browser profile, through a working local setup, to a page that real visitors can load with an origin-trial token. On the way we’ll answer the practical questions every team asks on its first day with WebMCP. How do I switch it on? What happens in browsers that don’t have it? How do I see what an agent sees, and how do I call my tools without waiting for an assistant to decide to? Can a desktop agent reach my tools? And what has to be on the server when the page goes live?
+This chapter puts the pieces back together and takes one small app all the way: from an empty browser profile, through a working local setup, to a page that real visitors can load with an origin-trial token. It answers the practical questions every team asks on its first day with WebMCP. How do you switch it on? What happens in browsers that don’t have it? How do you see what an agent sees, and how do you call your tools without waiting for an assistant to decide to? Can a desktop agent reach your tools? And what has to be on the server when the page goes live?
 
 The app is Fjord Table again, small on purpose: one page, one search form, one booking dialog and two tools. That leaves room for the parts of the job that have nothing to do with the API itself, and that’s where most things go wrong in practice. The page has to work for every visitor, whether their browser has WebMCP or not. It has to fail quietly when a policy, an insecure origin or a missing script takes the tools away. And it needs a way to be driven by something other than a person, so you can test it on every commit.
 
@@ -20,7 +20,7 @@ The companion repository's folder `chapters/09-first-webmcp-app/` holds the app,
 
 For local development, Chrome puts WebMCP behind a flag. Open `chrome://flags/#enable-webmcp-testing`, set it to Enabled and relaunch the browser.[^ch09-1] Chrome’s feature entry dates the developer trial to Chrome 146, so any recent desktop Chrome has it.[^ch09-3] Chrome 156 has been the Stable release since 20 October 2026, and WebMCP is still off by default there: the flag (or a trial token) is still what switches it on.[^ch09-22] The tools you’ll meet later in this chapter state their own minimum. The Model Context Tool Inspector, for example, asks for the “WebMCP for testing” flag on Chrome 150.0.7861.0 or later.[^ch09-4]
 
-Please note: the flag is a switch for one profile on one machine. It changes nothing for your visitors, and you should never ask them to turn it on. Its job is to give you the real implementation while you build: the real `document.modelContext`, the real validation of names and descriptions, the real errors and the real DevTools panel.
+The flag is a switch for one profile on one machine. It changes nothing for your visitors, and you should never ask them to turn it on. Its job is to give you the real implementation while you build: the real `document.modelContext`, the real validation of names and descriptions, the real errors and the real DevTools panel.
 
 If you automate Chromium, for tests or for screenshots, the same switch is a command-line feature, as Chapter 8 showed:
 
@@ -75,9 +75,9 @@ Registration works the same way as for any Chrome origin trial. You choose the t
 
 ## Progressive enhancement, for real
 
-Every chapter so far has opened its listings with the same line: `if ('modelContext' in document)`. That line is necessary, of course. But it’s not a plan. A real app has to answer a few more questions. What does the page do when the API is missing? When does it try a polyfill, and what happens if the polyfill doesn’t load? What happens when the API is present but registration is refused? And how does the page tell you, the developer, which of these happened?
+Every chapter so far has opened its listings with the same line: `if ('modelContext' in document)`. That line is necessary. It’s not a plan. A real app has to answer a few more questions. What does the page do when the API is missing? When does it try a polyfill, and what happens if the polyfill doesn’t load? What happens when the API is present but registration is refused? And how does the page tell you, the developer, which of these happened?
 
-I’ve been writing about service workers since 2017, and this part feels very familiar: a service worker is also an enhancement of a page that has to work without it. Fjord Table answers these questions in three layers:
+A service worker is also an enhancement of a page that has to work without it. Fjord Table answers these questions in three layers:
 
 1. **The page works first.** The search form, the list of slots and the booking dialog are plain HTML and JavaScript. They load and work for every visitor, in every browser, before any WebMCP code runs. Nothing in the WebMCP layer can stop them.
 2. **A small module decides what the page can offer agents.** It runs once at start-up and returns a mode, `native`, `polyfill` or `off`, with a reason when it’s off (Listing 9.2).
@@ -294,7 +294,7 @@ if (params.has('test-agent') && webmcp.mode !== 'off') {
 
 Part 1 is the page, and it runs before anything else. Part 2 asks Listing 9.2 for a mode. Only when the answer isn’t `off` does it import the tools module, which keeps the tool code out of the critical path for browsers that can’t use it. Registration sits in a `try` block, because that’s where a blocking permissions policy shows up. Part 3 loads a development harness, the Test Agent, which the next sections describe.
 
-Have a look at the `AbortController` in part 2. In the first edition, this code passed `new AbortController().signal` straight to `registerFjordTools()` and kept no reference to the controller. That works for the common failure: under a blocking policy, the very first `registerTool()` call rejects, and nothing is registered. But what if `search_availability` registers and `book_table` is then refused? The agent would see a search tool with no way to book, half a workflow. Chrome’s best-practices guide was updated on 30 October 2026 with a rule for exactly this: “The page must expose either the complete tool surface or none of it. Roll back the whole batch on failure instead of leaving half a workflow callable.”[^ch09-23] So the page now keeps the controller and aborts it in the `catch` block. Because both tools were registered with its signal, one `abort()` withdraws whichever of them made it. A test refuses the second registration on purpose and checks that `getTools()` then returns an empty list.[^ch09-2]
+In the first edition, this code passed `new AbortController().signal` straight to `registerFjordTools()` and kept no reference to the controller. That works for the common failure: under a blocking policy, the very first `registerTool()` call rejects, and nothing is registered. But what if `search_availability` registers and `book_table` is then refused? The agent would see a search tool with no way to book, half a workflow. Chrome’s best-practices guide was updated on 30 October 2026 with a rule for exactly this: “The page must expose either the complete tool surface or none of it. Roll back the whole batch on failure instead of leaving half a workflow callable.”[^ch09-23] So the page now keeps the controller and aborts it in the `catch` block. Because both tools were registered with its signal, one `abort()` withdraws whichever of them made it. A test refuses the second registration on purpose and checks that `getTools()` then returns an empty list.[^ch09-2]
 
 The status line at the top of the page is a convenience for developers. It reports, in words, which path the page took. Table 9.2 records the original Chromium 156 run, which used the MCP-B polyfill. The current demo uses the W3C package; see the newer test run for its results.[^ch09-w3c-run]
 
@@ -322,9 +322,9 @@ With the tools registered, the next question is whether they look right from the
 
 ### The DevTools WebMCP pane
 
-Let’s start with the tool you already have open. Chrome DevTools has a WebMCP pane in the Application panel. Its **Available tools** list shows each tool’s name and description “as they appear to the AI agent,” with a counter of how many times each was called. Its **Invoked tools** log records every call: the status (Completed, Canceled, In Progress or Error), the exact input the agent sent, and the output or error that came back. You can filter the log by status, by name, and by whether a tool is declarative or imperative.[^ch09-10]
+Chrome DevTools has a WebMCP pane in the Application panel. Its **Available tools** list shows each tool’s name and description “as they appear to the AI agent,” with a counter of how many times each was called. Its **Invoked tools** log records every call: the status (Completed, Canceled, In Progress or Error), the exact input the agent sent, and the output or error that came back. You can filter the log by status, by name, and by whether a tool is declarative or imperative.[^ch09-10]
 
-The pane can also call a tool for you. Select a tool, fill in the parameters and press **Run tool**. Or pick a past invocation and replay it with its arguments pre-filled.[^ch09-10] This is the quickest loop while you write a tool: change the code, reload, run it from the pane, read the output. It bypasses the model entirely, so a failure here is your bug and not the agent’s choice :)
+The pane can also call a tool for you. Select a tool, fill in the parameters and press **Run tool**. Or pick a past invocation and replay it with its arguments pre-filled.[^ch09-10] This is the quickest loop while you write a tool: change the code, reload, run it from the pane, read the output. It bypasses the model entirely, so a failure here is your bug and not the agent’s choice.
 
 For Fjord Table, open the pane and run `search_availability` with a date and a party size. The slots appear in the page, because the tool calls `showSlots()`. Then run `book_table` with one of the returned times. The booking dialog opens, and the call shows as In Progress until you confirm or cancel in the page. That’s the consequential path from Chapter 5, now visible from the agent’s side.
 
@@ -531,9 +531,9 @@ export async function createPromptPlanner() {
 
 On every turn, the planner describes the task, the tools with their schemas and the transcript to the model, and constrains the answer to a small JSON shape: either the next call, with the tool name limited to an `enum` of the tools actually on the page, or `done` with an answer. The planner doesn’t use a tool-calling feature of the Prompt API. It uses only the structured output Chrome documents.
 
-Some important things to notice here. Look at the label on the transcript: “data from the page, not instructions.” Tool results are page content, and page content can carry prompt injection. A production agent needs much stronger defenses than a label. The example extension, for instance, encodes or wraps results from tools marked `untrustedContentHint`.[^ch09-11] Chapter 12 covers the threat in full.
+The label on the transcript says “data from the page, not instructions.” Tool results are page content, and page content can carry prompt injection. A production agent needs much stronger defenses than a label. The example extension, for instance, encodes or wraps results from tools marked `untrustedContentHint`.[^ch09-11] Chapter 12 covers the threat in full.
 
-What was actually tested here is limited, so let me state it plainly. In the Playwright build of Chromium 156, `LanguageModel` exists, and `availability()` reported `"downloadable"`: the model wasn’t on the machine.[^ch09-2] The test suite doesn’t download it. Instead, it replaces `LanguageModel` with a stub that replays two answers, and checks three things: that the planner offers exactly the page’s two tool names in the `enum`, that the second prompt includes the first call’s result, and that the Test Agent finishes with the stubbed answer. That shows the planner’s code is correct. It says nothing about how well the on-device model plans. To try that, open the page with `?test-agent` in a Chrome where the model is available, create the planner from a click handler (downloading the model needs a user gesture[^ch09-13]), and run a task.
+What was actually tested here is limited. In the Playwright build of Chromium 156, `LanguageModel` exists, and `availability()` reported `"downloadable"`: the model wasn’t on the machine.[^ch09-2] The test suite doesn’t download it. Instead, it replaces `LanguageModel` with a stub that replays two answers, and checks three things: that the planner offers exactly the page’s two tool names in the `enum`, that the second prompt includes the first call’s result, and that the Test Agent finishes with the stubbed answer. That shows the planner’s code is correct. It says nothing about how well the on-device model plans. To try that, open the page with `?test-agent` in a Chrome where the model is available, create the planner from a click handler (downloading the model needs a user gesture[^ch09-13]), and run a task.
 
 ### The browser agent’s view, in CI
 
@@ -541,7 +541,7 @@ The Test Agent sees tools from inside the page. A browser agent sees them from o
 
 ## Polyfills and bridges
 
-A polyfill gives a page a WebMCP context where the browser does not provide one. A bridge connects a page's tools to an agent outside the browser. They solve different problems, so let's look at them separately.
+A polyfill gives a page a WebMCP context where the browser does not provide one. A bridge connects a page's tools to an agent outside the browser. They solve different problems.
 
 ### The W3C polyfill
 
@@ -690,7 +690,7 @@ Fjord Table is now a complete, if small, agent-ready app. The companion folder `
 
 The original suite ran in Chromium 156 with the MCP-B polyfill, native WebMCP and a mock. On 18 November, the updated W3C demo passed 21 browser and static checks in Chromium 159.0.8154.6, plus seven output-schema tests. The optional listing comparison was not enabled in that run.[^ch09-w3c-run] Chapter 10 moves to the bigger project, the Trailhead store, and to the questions a component framework raises: tools that come and go with views, shared state, and routing.
 
-Bottomline: the API calls in this chapter fit on one screen. Everything around them, the flag, the secure context, the fallbacks, the rollback, the tests and the token, is what makes it an app.
+The API calls in this chapter fit on one screen. Everything around them, the flag, the secure context, the fallbacks, the rollback, the tests and the token, is what makes it an app.
 
 ## Chapter summary
 

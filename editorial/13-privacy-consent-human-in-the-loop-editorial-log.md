@@ -21,3 +21,17 @@ All claims checked (VALIDATION.md 37 rows).
 - Footnote ids: new notes use ch13-40 to ch13-43 so the old ids keep their meaning; 33 defined, 33 referenced.
 - Figures 13.1 and 13.2 redrawn and re-rendered (13.1 fixed after inspection: the execute label sat on the browser box, the commit-point note crossed the page lifeline).
 - Placeholder grep: zero. Raw HTML in prose: zero (the role="status" paragraph is in a code span).
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: The page cannot see what the agent already asked, so a consequential tool has to wait for the person’s own confirmation, and a trusted click is still not proof that a person clicked.
+- What changed (voice/register), with one before/after pair if you changed the opening:
+  - Before: “First we’ll split the responsibility for consent between the agent, the browser and the page. Then we build Trailhead’s checkout…”
+  - After: “First it splits the responsibility for consent between the agent, the browser and the page. Then it builds Trailhead’s checkout…”
+  - Removed “Let’s build that rule”, “So let’s be precise”, “And please note”, and “Have a look at”. “that we met in Chapter 5” became “that Chapter 5 already covered”.
+- Generalized: “the most direct answer I know” became “a direct answer”. The superlative was the author’s ranking and was not kept as a fact.
+- Kept on purpose: “I recommend this trade-off for money” replaces “Personally for me”. The recommendation stays marked as the author’s, not as a spec rule, and the behavior it describes was already in Listing 13.2. “a page I co-authored” stays. Quoted agent speech “I’ve opened the order for you to confirm” stays. No Lars, Kari, or Jonas. Five fences, two figures, 33 footnotes, and 75 baseline quotes were not edited. There is no table.
+- Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
+  - None. The commit-point trade-off is now explicitly the author’s recommendation. The chapter does not claim a spec requires the order to finish after the click.

@@ -4,7 +4,7 @@
 >
 > — W3C, Community and Business Groups FAQ[^appc-1]
 
-WebMCP keeps moving after a book is printed, so this appendix is less a reading list than a map of where to look. It lists the primary sources the chapters rely on, grouped by who publishes them, with one line on what each one is good for. Then it maps the folders of the book’s demos repository to the chapters, and it ends with the short routine I use to track changes myself.
+WebMCP keeps moving after a book is printed, so this appendix is less a reading list than a map of where to look. It lists the primary sources the chapters rely on, grouped by who publishes them, with one line on what each one is good for. Then it maps the folders of the book’s demos repository to the chapters, and it ends with a short routine for tracking changes.
 
 The resources in the second edition were fetched again on 2 November 2026, with two kinds of exception you should know about. The polyfill entry in Section C.7 was checked on 18 November 2026. The npmjs.com package pages serve a bot check to scripts, so for packages I give the npm registry’s own record, which is what `npm install` reads. And the book’s own repositories in Section C.9 open only for readers who have access to them.[^appc-2] Dates in the annotations are the dates printed on the pages themselves.
 
@@ -153,7 +153,7 @@ Chrome’s WebMCP documentation is a small set of pages, and they change more of
 
 ## C.6 Packages the chapters use
 
-The middle column is what the demos pin, which is what the npm registry reported as `latest` on 15 October 2026 (except Angular, where the demos pin 22.2.2). The right column is what the registry reported on 2 November 2026.[^appc-2] Several of these change weekly, so please pin them. The demos stay on the October versions unless a chapter says otherwise.
+The middle column is what the demos pin, which is what the npm registry reported as `latest` on 15 October 2026 (except Angular, where the demos pin 22.2.2). The right column is what the registry reported on 2 November 2026.[^appc-2] Several of these change weekly, so pin them. The demos stay on the October versions unless a chapter says otherwise.
 
 **Table C.1 — npm packages used in the chapters and demos**
 
@@ -192,7 +192,7 @@ The packages’ registry records (the npmjs.com pages show the same data to a br
 
 ## C.7 Community projects and framework guides
 
-- **W3C WebMCP polyfill** (`@w3c/webmcp-polyfill`). Want to build and test tools before a browser exposes the native API? This open-source JavaScript package gives a page `document.modelContext` so you can register tools, discover them and call them. It is useful both for web developers exposing app features and for people building in-page agents or extensions that can reach the page's tools. You can also use it to try the draft before giving feedback.
+- **W3C WebMCP polyfill** (`@w3c/webmcp-polyfill`). This open-source JavaScript package gives a page `document.modelContext` so you can register tools, discover them and call them before a browser exposes the native API. It is useful both for web developers exposing app features and for people building in-page agents or extensions that can reach the page's tools. You can also use it to try the draft before giving feedback.
   <https://www.npmjs.com/package/@w3c/webmcp-polyfill>
   <https://github.com/w3c-oss/webmcp-polyfill>
 

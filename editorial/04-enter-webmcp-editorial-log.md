@@ -23,3 +23,22 @@ Skills loaded: personal-author-voice (his voice profile, the Book 2 voice report
 - Corrected or added: compare-page epigraph source and wording, Table 4.1 rows, Chrome release status, TAG and charter sections, footnote dates.
 - Checks: `check()` lint clean (no placeholders, no prose semicolons, no raw HTML), every image path exists, Listing 4.1 and 4.2 byte-identical to `search-availability.js` and the new `dev/in-page-agent.js`, Fjord Table `npm test`, `test:chrome` and `typecheck` pass on Chromium 156.0.8078.4.
 - Figure 4.1 redrawn as SVG in the APM palette (indigo for page and person, amber for the agent, teal for the browser), no title text inside the image, same five-step story as the first edition.
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: WebMCP lets the page register tools that run in the user’s tab, with the user’s session, while the browser mediates. The API is in origin trials, and the standards argument is unresolved as of 2 November 2026.
+- What changed (voice/register), with one before/after pair if you changed the opening:
+  - The Ingrid scene and the heading “Two Fridays at Fjord Table” stayed. The second paragraph no longer announces itself.
+  - Before: “Let’s see how that request plays out on most of the web today.”
+  - After: “On most of the web today, the agent takes a screenshot…”
+  - Also removed “In simple words”, “As we’ll see”, “Let’s have a look”, “Let’s say”, “Please note”, “Please treat”, “with some charm”, “Bottomline”, “and a bit less exciting”, “We now have the idea”, the aside “If you have ever seen”, “I see this as a feature”, “I can’t say I mind :)”, “As a service worker person, I have a soft spot”, and “something I’ve done for years with service worker APIs”. Tutorial “we” became “Chapter 3 builds”, “Chapter 8 looks”, and “The next section”.
+- Generalized: none under the contract’s name list. Ingrid stays the Fjord Table customer.
+- Kept on purpose: “I present it as community history, not as established fact.” “I recommend reading it in full.” “I’m one of its co-authors.” The McGhee quotation “I was just a guy with a dream.” Listings 4.1 and 4.2, both fences, Table 4.1, Table 4.2, Figure 4.1, all footnotes, the epigraph, and the H1. Every status date and name checked below is still in the chapter.
+- Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
+  - None. Ingrid is a named fictional customer. The contract’s generalization list is Lars, Kari, and Jonas only, so she was left.
+
+## Reconciliation (22 November 2026)
+
+Ingrid is now “a guest” / “the guest”, the same treatment as Lars. The Wednesday booking, the party of four, Friday at about seven, the window, and the email interruption stay. The `fetch`-handler aside (“anyone who has maintained…”) was cut. The rejection reason (declaration separated from implementation, sprawling `switch` statements) stays. `guest: 'Ingrid Hansen'` in Chapter 8 is inside a code listing and was not changed.

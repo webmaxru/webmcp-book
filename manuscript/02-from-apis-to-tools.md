@@ -13,7 +13,7 @@ Now imagine the requests landing on Trailhead’s engineering team over a few ye
 
 Each request is reasonable. Each one describes the same capability (a name, a sentence about what it does and a schema for its inputs) in a slightly different place. That repetition is the story of this chapter. It explains how the *tool*, a named, described, schema-typed capability that a model can choose to call, became the common unit of agent capability, why the industry kept reinventing the envelope around it, and why the browser tab was the last big place left without one.
 
-There is no code in this chapter, but it introduces the vocabulary the rest of the book relies on. If you have built with function calling or MCP before, feel free to skim. If you haven’t, this is the shortest path to understanding why WebMCP looks the way it does.
+There is no code in this chapter, but it introduces the vocabulary the rest of the book relies on. If you have built with function calling or MCP before, much of it will be familiar. If you haven’t, the chapter explains why WebMCP looks the way it does.
 
 ## Before tools: APIs for programs
 
@@ -23,7 +23,7 @@ APIs designed for programs come with an assumption that becomes important later 
 
 That assumption pushed the industry towards machine-readable API descriptions, so that client code, documentation and tests could be generated instead of written by hand. The one that won is the *OpenAPI Specification*. It started as the Swagger Specification, which SmartBear Software donated to what became the OpenAPI Initiative, an open governance project under the Linux Foundation.[^ch02-3] An OpenAPI document lists an API’s operations, their parameters, request bodies and responses. The latest published version is 3.2.1, dated 10 September 2026 (still the latest when I checked in November 2026).[^ch02-4]
 
-Inside OpenAPI documents, the shapes of request and response bodies are described with *JSON Schema*, a vocabulary for saying what a JSON value must look like: its type, its properties, which of them are required, which strings are allowed. JSON Schema has its own specification, and its current version is called 2020-12.[^ch02-5] Please remember that name. JSON Schema is the thread running through every stage of this chapter, and WebMCP’s `inputSchema` is a JSON Schema too.
+Inside OpenAPI documents, the shapes of request and response bodies are described with *JSON Schema*, a vocabulary for saying what a JSON value must look like: its type, its properties, which of them are required, which strings are allowed. JSON Schema has its own specification, and its current version is called 2020-12.[^ch02-5] JSON Schema is the thread running through every stage of this chapter, and WebMCP’s `inputSchema` is a JSON Schema too.
 
 So by the early 2020s the web already had a common language for describing capabilities to programs. What it didn’t have was a caller that could read a description and decide on its own when to use it.
 
@@ -45,7 +45,7 @@ Reliability came next. A model that produces JSON “that adheres to the functio
 
 ### The round trip, step by step
 
-Let’s slow down and see what actually happens in a function call, because WebMCP keeps exactly the same shape. Take Trailhead’s mobile assistant, built on a model API with function calling, and a customer who types “any two-person tents under 4,000 kroner in stock?”
+WebMCP keeps exactly the same shape as a function call. Take Trailhead’s mobile assistant, built on a model API with function calling, and a customer who types “any two-person tents under 4,000 kroner in stock?”
 
 1. *The application declares its tools.* Together with the conversation, it sends the model a list of tool definitions. One of them is `search_products`, with a description (“Search Trailhead’s catalogue by keyword, category, maximum price in NOK and stock status”) and a JSON Schema saying that `query` is a required string, `category` is one of five values, `maxPrice` is a number and `inStockOnly` is a boolean.
 1. *The model decides.* It reads the request and the tool descriptions and concludes that this question needs a search. Instead of answering in prose, it returns a structured call: the tool name and a JSON object of arguments, with `query` set to “two-person tent”, `category` to “tents”, `maxPrice` to 4000 and `inStockOnly` to true.
@@ -55,7 +55,7 @@ Let’s slow down and see what actually happens in a function call, because WebM
 
 Notice what the model never does: it never touches Trailhead’s systems directly. It only proposes calls. Everything that has an effect happens in code the developer controls, and that’s also where checks, logging and confirmations go. Notice, too, that the model’s choice depends almost entirely on two pieces of text, the tool name and its description, plus the schema. Those three things are the whole interface between the model and the capability.
 
-Three properties of function calling carry straight through to WebMCP, so let’s name them now:
+Three properties of function calling carry straight through to WebMCP:
 
 - *The description is written for a model.* It is not API reference documentation for a developer. In a sentence or two, it has to tell a model when this tool is the right choice and when it isn’t. Chapter 11 is about writing these well.
 - *The schema is the contract.* It tells the model which arguments are valid, and it gives the receiving code a way to check them. In WebMCP, as Chapter 5 shows, the browser passes the schema to the agent but does not validate calls against it, so your code still has to.

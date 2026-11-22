@@ -17,3 +17,16 @@ the editor, 2 November 2026. Targeted edit as planned (a glossary is reference t
 - Added footnotes appb-32 (open PRs), appb-33 (Imperative API page), appb-34 (spec §6.3.4).
 - Removed: nothing.
 - Self-check: 0 placeholders, 0 semicolons outside code, 0 raw HTML, footnotes all defined and used.
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: The glossary stays a reference. Section B.2 no longer defines fictional people who have been removed from the chapters this pass was allowed to edit.
+- What changed (voice/register), with one before/after pair if you changed the opening:
+  - Before: “Section B.2 covers the book’s running examples and the people in them.”
+  - After: “Section B.2 covers the book’s running examples.”
+  - Deleted the B.2 entries **Kari** and **Lars** only. No other entry was rewritten.
+- Generalized: nothing inside a surviving definition. The two deleted entries were the character definitions.
+- Kept on purpose: every B.1 term, Fjord Table, Helpdesk Widget, Ledgerly, Supportly, Test Agent, Trailhead, and “I checked every entry again against the 27 October 2026 draft”. Footnotes untouched. No renumbering.
+- Flags: None. Lars remains a Chapter 1 character outside this assignment. The glossary no longer defines him, per the contract, so a reader of Chapter 1 will not find a B.2 entry. Jonas was never an entry.

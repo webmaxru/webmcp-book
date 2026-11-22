@@ -24,3 +24,21 @@ Read before drafting: his voice profile (measured profile of Maxim's pre-2023 po
 - Fidelity — kept unchanged: every quote, number and date from the old text (Gemini in Chrome Sept 2025 quotes, Atlas Oct 2025 and its retirement, Comet tagline, Claude in Chrome 1,000 users / Dec 2025, Operator → ChatGPT agent July 2025, Prompt API, CUA quotes and 58.1 % / 87 %, Anthropic 123 cases / 29 scenarios / 23.6 % / 11.2 % / 35.7 %, 1,000–1,800 tokens per screenshot, WebArena 14.41 % / 78.24 %, all explainer and Chrome-docs quotes), Tables 1.1 and 1.2, the project descriptions and chapter numbers.
 - Corrected per the validation notes: spec date 15 October → 27 October 2026 (text and footnote ch01-2); implementation-status sentence re-dated to 2 November 2026 and extended with the Chrome (149) and Edge (150) origin-trial lines that the page lists; "moving target" callout now says the edition was re-checked in early November 2026; "(retrieved November 2026)" added to the footnotes of the docs pages re-read (ch01-2, ch01-7, ch01-9, ch01-15, ch01-16).
 - Removed: nothing technical. The old line "Chrome and Edge are both running origin trials" is kept (still true: Chrome OT 149→162, Edge OT until 30 March 2027).
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: browser agents already shop by actuation, which is fragile and costly, and the site has a stake in offering structured tools while the user is still in the tab.
+- What changed (voice/register), with one before/after pair if you changed the opening:
+  - Before: “Lars has a hiking trip in Jotunheimen in three weeks and no tent. On Tuesday evening he opens Trailhead, a Norwegian outdoor-gear store, and instead of clicking through it himself he types into his browser’s assistant panel: [the quoted request]. Then he goes to make tea.”
+  - After: “A customer has a hiking trip in Jotunheimen in three weeks and no tent. On Tuesday evening the customer opens Trailhead, a Norwegian outdoor-gear store, and types into the browser’s assistant panel instead of clicking through the store: [the same quoted request].”
+  - The return is now “By the time the customer returns, the job is done. The outcome is still uncertain.” Heading renamed to “A worked example: shopping by actuation”. Taste and autobiography removed (service-worker train memory, “I am happy to borrow”, “As a PWA person”, “I sort them”, “of course”, “Let’s say”, “Please look”, “let’s look”, “Personally for me”, “I’d like you to carry”, “trusting mine”, “We build it”). The service-worker comparison stays as a bad-connection analogy. “Another screenshot.” stays.
+- Generalized: Lars to “a customer” / “the customer”. Tea errand dropped. “Probably.” became “The outcome is still uncertain.” The author’s ranking “the strongest argument of all” was not kept as a fact. “trusting mine” became a check of the figures printed in the chapter.
+- Kept on purpose: Trailhead, Jotunheimen, the shopping quotation, “Moss”, 20 per cent off, the actuation loop, every cited number, date, and quotation, “When I re-checked” (2 November 2026), project names and tool names, Tables 1.1 and 1.2, Figures 1.1–1.3, all footnotes, the H1, and `{sample: true}`. Fjellheim 2 Tent, 3,499 NOK, order TH-100231, Posten, Saturday, the laptop, and the tab are not in this chapter. No in-file reference to the old heading.
+- Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
+  - None in the chapter. VALIDATION.md still calls Lars an established fictional example. Left untouched, per the contract.
+
+## Reconciliation (22 November 2026)
+
+“It is also Trailhead’s problem” restored the original move into the four site-side points: “Consider the tent purchase from Trailhead’s side.” No claim added.

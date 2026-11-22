@@ -4,9 +4,9 @@
 >
 > — WebMCP specification, §3 Supporting concepts[^appa-1]
 
-This is the page I keep open while I write tool code, and I hope it earns the same place on your second screen. It collects the whole WebMCP surface in one spot: the WebIDL, every dictionary member, the three events, the Permissions Policy feature and the exceptions each method can reject with. It doesn’t teach (the chapters do that), so each section points back to the chapter that explains the idea.
+This appendix collects the whole WebMCP surface in one spot: the WebIDL, every dictionary member, the three events, the Permissions Policy feature and the exceptions each method can reject with. It doesn’t teach (the chapters do that), so each section points back to the chapter that explains the idea.
 
-Everything here was checked against the WebMCP Draft Community Group Report dated 27 October 2026, read on 2 November 2026.[^appa-2] The good news first: its IDL is the same, line for line, as the 15 October draft the first edition of this book was written against. What changed in those twelve days is prose (a written-up section on the same-origin policy, new text on agent-ecosystem risks, a fourth editor), not API. If you wrote code against the October shape, it still matches the spec.
+Everything here was checked against the WebMCP Draft Community Group Report dated 27 October 2026, read on 2 November 2026.[^appa-2] Its IDL is the same, line for line, as the 15 October draft the first edition of this book was written against. What changed in those twelve days is prose (a written-up section on the same-origin policy, new text on agent-ecosystem risks, a fourth editor), not API. If you wrote code against the October shape, it still matches the spec.
 
 Every behaviour marked “tested” was observed in Chromium 156.0.8078.4 with the `WebMCPTesting` feature switched on, which is what `chrome://flags/#enable-webmcp-testing` turns on in Chrome.[^appa-3] Chrome 156 has been the stable channel since 20 October 2026, and Chrome 157 is due on 3 November 2026.[^appa-23] The probes behind the tables live in the book’s demos repository, in `appendices/a-api-reference/`, and I re-ran all 25 of them on 2 November 2026: they all pass. Where Chromium and the draft disagree, the tables show both columns.
 
@@ -151,7 +151,7 @@ The wording in Table A.2 paraphrases the draft’s dictionary descriptions.[^app
 | `signal` | `AbortSignal` | Aborting it unregisters the tool. If it’s already aborted, `registerTool()` rejects with the signal’s abort reason. |
 | `exposedTo` | `sequence<USVString>` | Origins of other documents in the same tree that may see and call this tool. Each entry must parse as a URL with a potentially trustworthy origin, or the call rejects with `SecurityError`. |
 
-Both members come from the draft’s registration steps.[^appa-5][^appa-8] Tested in Chromium 156: an already-aborted signal rejects with `AbortError` (the default abort reason), and `exposedTo: ['http://example.com']` rejects with `SecurityError: Only secure origins are allowed in the exposedTo list.` Please note: unregistering a tool doesn’t cancel calls already in flight. Chrome’s documentation dates that behaviour to Chrome 153,[^appa-24] and Chapter 6 shows how to live with it.
+Both members come from the draft’s registration steps.[^appa-5][^appa-8] Tested in Chromium 156: an already-aborted signal rejects with `AbortError` (the default abort reason), and `exposedTo: ['http://example.com']` rejects with `SecurityError: Only secure origins are allowed in the exposedTo list.` Unregistering a tool doesn’t cancel calls already in flight. Chrome’s documentation dates that behaviour to Chrome 153,[^appa-24] and Chapter 6 shows how to live with it.
 
 ## A.3 `getTools(options)` and `RegisteredTool`
 
@@ -260,7 +260,7 @@ The draft names five platform failures for a tool execution and maps each one to
 | Target document unloaded mid-call (iframe removed) | `executeTool()` | `AbortError` | **`UnknownError`** |
 | Caller aborts the `signal` mid-call | `executeTool()` | The signal’s abort reason | `AbortError` ✓, and `toolcancel` fires |
 
-A ✓ means Chromium agrees with the draft, and bold marks a difference. Chromium’s `UnknownError` comes with two different messages. For a tool that threw, it says “Tool was executed but the invocation failed. For example, the script function threw an error”. For a missing or forged tool and for a removed frame, it says “The operation failed for an unknown transient reason (e.g. out of memory).” The messages aren’t part of any contract, so please don’t parse them.
+A ✓ means Chromium agrees with the draft, and bold marks a difference. Chromium’s `UnknownError` comes with two different messages. For a tool that threw, it says “Tool was executed but the invocation failed. For example, the script function threw an error”. For a missing or forged tool and for a removed frame, it says “The operation failed for an unknown transient reason (e.g. out of memory).” The messages aren’t part of any contract, so don’t parse them.
 
 Chapter 7 observed the same `UnknownError` for forged names and origins and for a frame that went away mid-call, and the same `NotAllowedError` under a blocking policy. Until Chromium and the draft line up, I treat the two names as one family, and Listing A.2 does exactly that.
 

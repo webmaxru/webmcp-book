@@ -44,3 +44,17 @@ Same as Chapter 6: one combined rewrite, section by section, with the voice prof
 - No code change (the IDL and the algorithms the demo exercises are unchanged since 15 Oct).
 - README status lines updated to 2 Nov 2026, 30 checks.
 - `npm install --no-save playwright@1.64.1`, `node tests/run-tests.mjs`: 30/30. `node_modules` deleted afterwards.
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: Cross-origin tools reach an agent only when the embedder, the provider and the consumer each opt in, and the kind of agent changes which gates apply.
+- What changed (voice/register), with one before/after pair if you changed the opening:
+  - Before: “Before the gates, let’s be precise about who is looking.”
+  - After: “The gates depend on which kind of agent is looking.”
+  - Dropped “In simple words”, the “I bet you have seen that happen” aside, “I will quote it where it belongs”, tutorial “As we saw”, “my own answer”, and the smiley on the worker comparison. “Listing 7.9 is a practical response in code” keeps the limit (it works, and every extension still reinvents the bookkeeping).
+- Generalized: The tag-manager aside. The sentence still says a marketing team’s tag manager can add iframes. It no longer suggests the reader has seen that.
+- Kept on purpose: “my build” / “I haven’t tested 157 or later”; “Where Chromium and the draft disagree, I say so”; “I recommend reading it in full”; “so I tested it”; “I can’t tell from the comment” and the origin-trial limit; “My answer here is the tool’s owner”; “My view, for what it’s worth”. “by the way” and “Please note one data point that doesn’t match” stay because each sits inside a baseline quote span the fidelity checker requires unchanged.
+- Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
+  - `check_fidelity.py` reports the same three missing quote strings as unmodified HEAD. Each string runs across a fenced listing (7.1, 7.2, and 7.6/Table 7.3), so it is not a contiguous substring while the fences stay. Fences (10), tables (3), figures (2) and footnotes (31) match the baseline. No fence was edited.
