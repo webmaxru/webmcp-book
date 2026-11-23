@@ -25,4 +25,6 @@ appendix-a-api-reference.md
 appendix-b-glossary.md
 appendix-c-resources.md
 appendix-d-migration.md
+appendix-e-tool-interface.md
+appendix-f-possible-upcoming-changes.md
 about-the-author.md
