@@ -6,7 +6,7 @@
 
 This glossary collects the terms the book uses, defined the way the chapters use them. Each entry ends with a pointer to the chapter that introduces the term, and sometimes to the chapter that goes deepest. Where a definition comes from outside the book, from the WebMCP draft, the MCP specification, the W3C Process, MDN or Chrome’s documentation, a footnote names the page. Those pages were first read on 14 and 15 October 2026, and I checked every entry again against the 27 October 2026 draft and the pages as they stood on 2 November 2026.
 
-Code identifiers are in `code font` and sort as if they had no punctuation, so `document.modelContext` sits under D and `:tool-form-active` under T. Section B.2 covers the book’s running examples and the people in them.
+Code identifiers are in `code font` and sort as if they had no punctuation, so `document.modelContext` sits under D and `:tool-form-active` under T. Section B.2 covers the book’s running examples.
 
 > **Still in flux: the vocabulary itself**
 >
@@ -363,10 +363,6 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 **Fjord Table.** A small restaurant on the Oslo waterfront and its booking site, built in plain HTML, CSS and JavaScript modules. Its tools are `search_availability` (date, party size 1 to 12, optional time and seating) and the consequential `book_table`. *Introduced in Chapter 1, built in Chapters 4 and 5, declarative version in Chapter 8, end to end in Chapter 9 and under test in Chapter 14.*
 
 **Helpdesk Widget.** A support widget made by the vendor Supportly and embedded in the Ledgerly dashboard. Its tools are `search_articles` (read-only), `create_ticket` (consequential) and `get_ticket_status`, with ticket IDs shaped like `SUP-1042`. It is the book’s case study for Permissions Policy, `exposedTo` and `fromOrigins`, in-page agents and cross-origin threats. *Introduced in Chapter 1, Chapter 7, redesigned in Chapter 11 and threat model in Chapter 12.*
-
-**Kari.** Trailhead’s head of product, whose whiteboard questions frame the business chapter and the closing chapter. *Chapter 16 and Chapter 17.*
-
-**Lars.** The Trailhead customer in Chapter 1 who asks his browser’s assistant to find him a tent for a trip to Jotunheimen. *Chapter 1.*
 
 **Ledgerly.** The fictional SaaS dashboard (`https://app.ledgerly.example`) that embeds the Helpdesk Widget: the host page, the embedder that sets the Permissions Policy. *Chapter 7.*
 

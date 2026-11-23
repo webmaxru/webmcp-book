@@ -24,3 +24,18 @@ Every number, API name, URL and claim from the Oct 15 text checked (see VALIDATI
 - Removed deliberately: the "TODO" wording for §6.3.4 (obsolete, and the word would trip the placeholder lint), #326 and #334 from the open-questions list in the summary.
 - Images: figure-12-1.png and figure-12-2.png re-rendered from figures/src on 2 Nov 2026 and inspected.
 - Placeholder grep (TODO, TBD, FIXME, XXX, [insert, [[, lorem, coming soon, to be published): zero. Raw HTML in prose: zero (the only angle brackets are inside code spans and fences). Footnotes: 45 defined, 45 referenced (ch12-42 unused as an id), all `ch12-` prefixed.
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: WebMCP does not grant the page new powers. It adds a model that reads page text and acts with the user’s session, and the page has to validate, label, and confirm on its own side of that boundary.
+- What changed (voice/register), with one before/after pair if you changed the opening:
+  - Before: “Let’s start with the good news. WebMCP doesn’t give a page any power it didn’t have before.”
+  - After: “WebMCP doesn’t give a page any power it didn’t have before.”
+  - Removed “In simple words”, “Let’s have a look at what it checks”, “I’m sure”, and the tutorial “we’ll” in the opening, the length-budget pointer, and “As we saw”. “Please note what the shaper does not do” became “Note what the shaper does not do.”
+- Generalized: “I bet this is the most common real-world WebMCP bug you will ship” became “This is an easy WebMCP bug to ship.” “Most common” was not kept as a fact. The next sentences still report the Chromium `executeTool()` calls: a 50,000-character `query` and an undeclared `accountEmail` both reached `execute`.
+- Kept on purpose: “a page I co-authored.” “We’ll follow the unresolved elicitation design” and “we can now quote the spec… Here we look at them as security controls” were restored after the checker treated each clause as part of a span between `allow="tools"` quotes. No Lars, Kari, or Jonas. Code fences, the table, both figures, footnotes, listing paths, and the H1 were not edited.
+- Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
+  - The frequency claim in “the most common real-world WebMCP bug” was the author’s bet. It is now “an easy WebMCP bug to ship”, supported only by the demonstration in the same paragraph.
+  - `python3 /tmp/check_fidelity.py` prints one missing quote, the same quote it prints against `HEAD`. The span runs from the prose after one `allow="tools"` through Listing 12.4’s fence to the next `allow="tools"`. All 85 baseline quote strings are present once fences are removed. Fences (7), the table (1), figures (2), and footnotes (45) hash-match the baseline. The fence was not edited.

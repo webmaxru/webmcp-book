@@ -18,3 +18,13 @@ the editor, 2 November 2026. Old: 2,659 words. New: about 3,660 words (new Secti
 - Added: #361, #204 status, React/Vue package pointers, spec anchor change, best-practices guidance, Chrome release dates, open PRs.
 - Removed: nothing.
 - Self-checks: 0 placeholders (note: footnote appd-12 quotes the historical identifier `unregisterTool("add-todo")` from the 2025 explainer, lowercase inside code; flag if the build lint is case-insensitive), 0 semicolons in prose, 0 raw HTML, listings byte-identical.
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: Migration facts, tables, and code stayed. Three blog lines were rewritten into the claim they were announcing.
+- What changed (voice/register), with one before/after pair if you changed the opening: Before: “In simple words, it can only ever remove its own tools.” After: “It can only ever remove its own tools.” “Guess which failure is the dangerous one? The quiet one.” became “The quiet failure is the dangerous one.” “I have good news: you don’t need to port anything” became “you don’t need to port anything.” The comparison that follows (“I compared the two IDL indexes”) stayed.
+- Generalized: None.
+- Kept on purpose: “I checked the merge times”, “I re-ran all 20 checks”, “I compared the two IDL indexes”, and “My advice for today”. “To be fair to `provideContext()`” stayed because the next clause is the useful property of that API, not an announcer. No Lars, Kari, or Jonas in this file.
+- Flags (gaps, unsupported claims, likely factual problems). Write "None" if none. The still-in-flux note still lists `outputSchema` (#254) as an open pull request that would change the API. Appendix A, and Chapter 15’s Table 15.1, say #254 merged on 2 November 2026. Left as written. Migration dates and listings were not edited.

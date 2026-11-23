@@ -10,9 +10,9 @@ Every tool you register has two readers. The first one is the browser. It checks
 
 Everything the model knows about a tool comes from four places. The name and the description are read before any call. The input schema tells it what to send. The result, including any error, tells it what happened and what to do next. Nothing else reaches it. Not your code, not your intentions, not the comment above the function. The specification describes the description member as “a natural language description of the tool’s functionality” that “helps agents understand when and how to use the tool,”[^ch11-2] and that’s about all the help the platform gives. Making the text good is your job.
 
-Chapters 5 and 6 gave Trailhead and Fjord Table working tools and a set of rules that were enough to get started. Chapter 10 left us with a sharper question: Trailhead’s tools work, but are they the *right* tools? In this chapter we treat tool design as product design. We’ll decide how many tools to offer and how coarse to make them, name and describe them within a character budget, write schemas that leave little room for misreading, word results and errors so that the model does the right thing next, and keep all that agent-facing text in step with the interface people see.
+Chapters 5 and 6 gave Trailhead and Fjord Table working tools and a set of rules that were enough to get started. Chapter 10 left a sharper question: Trailhead’s tools work, but are they the *right* tools? This chapter treats tool design as product design. It decides how many tools to offer and how coarse to make them, names and describes them within a character budget, writes schemas that leave little room for misreading, words results and errors so that the model does the right thing next, and keeps all that agent-facing text in step with the interface people see.
 
-We’ll work on two projects. Trailhead gets a redesigned catalogue and cart. The Helpdesk Widget from Chapter 7, which Supportly embeds in Ledgerly, gets its three tools rewritten from the model’s side. Every rule comes with a check you can run. The demos folder for this chapter has a small lint for tool definitions and a validator that reads the same schema the agent sees, and its test suite runs every tool in Chromium 156 with WebMCP enabled.[^ch11-3]
+This chapter uses two projects. Trailhead gets a redesigned catalogue and cart. The Helpdesk Widget from Chapter 7, which Supportly embeds in Ledgerly, gets its three tools rewritten from the model’s side. Every rule comes with a check you can run. The demos folder for this chapter has a small lint for tool definitions and a validator that reads the same schema the agent sees, and its test suite runs every tool in Chromium 156 with WebMCP enabled.[^ch11-3]
 
 ## Tool strategy and budget
 
@@ -20,7 +20,7 @@ We’ll work on two projects. Trailhead gets a redesigned catalogue and cart. Th
 
 A tool that is never called still costs the agent something. The explainer is blunt about it: “Every registered tool (its name, description, and input schema) consumes tokens in the model prompt, adds to inference latency, and increases the potential for tool confusion or hallucination.” It warns that “dozens or hundreds” of tools can “severely degrade agent performance or lead agent browsers to drop tools or fail to process them.”[^ch11-4] Chrome’s best-practices guide says the same thing more gently. There is no maximum, but “each tool takes up part of the context window and adds to the time for completion,” and “the more tools you provide and the more the tools have overlap, the harder it is for the agent to pick correctly.”[^ch11-5]
 
-“Drop tools or fail to process them” isn’t a hypothetical anymore. In September 2026 a developer posted a data point to the Community Group from jjhub, a code-review app whose page registered one tool per operation, 126 in total. Descriptions were short (a median of 94 characters) and every schema was a flat object. ChatGPT’s browser answered with “WebMCP is disabled for this page because the site’s WebMCP configuration exceeds supported limits.” Zero tools, no exception, nothing the page could observe. Chrome showed no error and handed the agent the same flat list of 126. The team rewrote registration to keep at most 20 tools registered at any time.[^ch11-25] Please note what that means for you: the limit exists, it differs between agents, and your page won’t be told when it hits it.
+“Drop tools or fail to process them” isn’t a hypothetical anymore. In September 2026 a developer posted a data point to the Community Group from jjhub, a code-review app whose page registered one tool per operation, 126 in total. Descriptions were short (a median of 94 characters) and every schema was a flat object. ChatGPT’s browser answered with “WebMCP is disabled for this page because the site’s WebMCP configuration exceeds supported limits.” Zero tools, no exception, nothing the page could observe. Chrome showed no error and handed the agent the same flat list of 126. The team rewrote registration to keep at most 20 tools registered at any time.[^ch11-25] The limit exists, it differs between agents, and your page won’t be told when it hits it.
 
 Nobody has published a number for WebMCP. The closest figure I found comes from a different platform. OpenAI’s function-calling guide suggests aiming “for fewer than 20 functions available at the start of a turn at any one time,” and calls that “just a soft suggestion.”[^ch11-6] Use it as a sanity check, and don’t chase it. Keep in mind that your page isn’t the only thing in the agent’s context, either. The agent may have tools from other tabs, its own built-in tools and tools from MCP servers, and your page’s tools compete with all of them.
 
@@ -60,7 +60,7 @@ Three tests work well in practice:
 
 The Helpdesk Widget passes all three tests with three tools. Searching articles reads. Opening a ticket writes, and the person confirms it in the widget. Checking a ticket reads text written by people. Folding “search, and if nothing helps, open a ticket” into one tool would save a call and lose the confirmation boundary.
 
-Chrome’s best-practices page adds a nice counterweight: “Trust the agent to complete the task.” Instead of writing rigid instructions, “assume the agent is able to understand what is required to complete the task, rather than expecting the agent to manage an exact flow of steps.”[^ch11-5] In other words, a tool set is a vocabulary. You give the agent good verbs, and it composes them.
+Chrome’s best-practices page adds a counterweight: “Trust the agent to complete the task.” Instead of writing rigid instructions, “assume the agent is able to understand what is required to complete the task, rather than expecting the agent to manage an exact flow of steps.”[^ch11-5] In other words, a tool set is a vocabulary. You give the agent good verbs, and it composes them.
 
 ### Collections, skills and other ways to scale
 
@@ -68,7 +68,7 @@ What should an application with a hundred tools do? WebMCP has no answer yet, bu
 
 Issue #161, opened on 3 April 2026, proposes “skills”: a `registerSkill()` call that bundles tool names with workflow instructions and context, because “Tools can tell agents what a site can do, but Skills tell agents how to do it well.”[^ch11-8] Issue #167 proposed lazy schemas, a `disabled` flag and an `updateTool()` method, and it’s closed now.[^ch11-9] The explainer sums up where things stand: “WebMCP does not currently define an in-place `updateTool()` method, lazy schemas, or disabled and grouped tool states.”[^ch11-4]
 
-> **Still in flux:** Neither tool collections (#255) nor skills (#161) is in the 27 October 2026 draft, and both issues are open.[^ch11-7][^ch11-8] Until something lands, the tools you have for scaling are the ones Chapter 10 used: register by page state, keep the default set small and remove tools that don’t apply. jjhub’s loader tools show how far you can get with plain `registerTool()` and an `AbortSignal`. Please note also that the skills strawman’s sample instructions include lines such as “Always mention 30-day return policy before checkout.” Chapter 12 treats exactly that kind of text, an instruction to the agent placed in tool metadata, as a risk. Whatever form grouping takes, expect agents to read it with the same suspicion they bring to descriptions.
+> **Still in flux:** Neither tool collections (#255) nor skills (#161) is in the 27 October 2026 draft, and both issues are open.[^ch11-7][^ch11-8] Until something lands, the tools you have for scaling are the ones Chapter 10 used: register by page state, keep the default set small and remove tools that don’t apply. jjhub’s loader tools show how far you can get with plain `registerTool()` and an `AbortSignal`. The skills strawman’s sample instructions include lines such as “Always mention 30-day return policy before checkout.” Chapter 12 treats exactly that kind of text, an instruction to the agent placed in tool metadata, as a risk. Whatever form grouping takes, expect agents to read it with the same suspicion they bring to descriptions.
 
 ## Naming, descriptions and character budgets
 
@@ -82,7 +82,7 @@ Parameter names deserve the same care. Anthropic’s example is to name a parame
 
 ### What a description has to say
 
-The description is read every time the agent considers your tool, so every sentence has to earn its place. I use a four-part template and drop any part that the name already makes obvious:
+The description is read every time the agent considers your tool, so every sentence has to earn its place. Use a four-part template and drop any part that the name already makes obvious:
 
 1. **What it does, as a verb and an object.** “Search Supportly’s help articles…”
 2. **When it’s the right tool**, especially compared with its neighbours. “…for how-to answers about Ledgerly.”
@@ -91,7 +91,7 @@ The description is read every time the agent considers your tool, so every sente
 
 Chrome’s guide asks for the same core. A clear description “should describe what the tool does and when to use it,” and you should “rely on positive language and preferences instead of negative language, such as limitations.” Its example puts “This tool can create a calendar event, scheduled for a specific date and time” against “Don’t use this tool for weather.”[^ch11-5] The reason is practical. A prohibition names a task the tool doesn’t do, which puts that task in the model’s mind. And it never ends, because there is always another thing the tool doesn’t do.
 
-Anthropic suggests imagining how you “would describe your tool to a new hire on your team,” and making explicit the context you would otherwise bring implicitly: “specialized query formats, definitions of niche terminology, relationships between underlying resources.”[^ch11-1] OpenAI calls the same idea “the intern test”: “Can an intern/human correctly use the function given nothing but what you gave the model?”[^ch11-6] For a web page, the implicit context is usually the product’s vocabulary. Ledgerly users say “export”, Supportly calls a ticket’s state `waiting_on_user`, Trailhead writes prices in NOK. Say so.
+Anthropic suggests imagining how you “would describe your tool to a new hire on your team,” and making explicit the context you would otherwise bring implicitly: “specialized query formats, definitions of niche terminology, relationships between underlying resources.”[^ch11-1] OpenAI calls the same idea “the intern test”: “Can an intern/human correctly use the function given nothing but what you gave the model?”[^ch11-6] For a web page, the implicit context is usually the product’s vocabulary. Ledgerly users say “export”, Supportly calls a ticket’s state `waiting_on_user`, and Trailhead writes prices in NOK. Put that vocabulary in the description.
 
 Three things don’t belong in a description:
 
@@ -101,7 +101,7 @@ Three things don’t belong in a description:
 
 ### Parameter descriptions
 
-Every parameter needs a description, and the most useful ones are short and concrete. A good parameter description says what the value means, gives its format or unit, shows one realistic example and, where it matters, says where the value comes from. Let’s compare Trailhead’s two versions of `sku`:
+Every parameter needs a description, and the most useful ones are short and concrete. A good parameter description says what the value means, gives its format or unit, shows one realistic example and, where it matters, says where the value comes from. Trailhead’s two versions of `sku`:
 
 - Chapter 6: “Product SKU from search_products.”
 - This chapter: “SKU from search_products. Footwear SKUs end in the EU size, e.g. TH-BOOT-FJELL-42.”
@@ -180,7 +180,7 @@ Running it over the earlier versions of the tools in this book is instructive. T
 
 Source: `tests/run-tests.mjs` in the demos folder, run on 2 November 2026.[^ch11-3]
 
-None of these is a bug in the sense Chapters 6 and 7 cared about. The tools worked, and the tests passed. They are exactly the gaps a model fills with guesses, though. An undescribed `priority` enum invites the agent to choose `high` for anything that sounds unpleasant. Let’s see how to say what each value means.
+None of these is a bug in the sense Chapters 6 and 7 cared about. The tools worked, and the tests passed. They are exactly the gaps a model fills with guesses, though. An undescribed `priority` enum invites the agent to choose `high` for anything that sounds unpleasant. The next section shows how to say what each value means.
 
 ## Schemas that reduce ambiguity
 
@@ -206,9 +206,9 @@ Chapter 5 established that the browser doesn’t validate arguments against `inp
 
 A bare enum tells the agent which strings are allowed. It doesn’t say what they mean. For many parameters the meaning is obvious (`'tents'`). For others it isn’t, and the difference matters. The widget’s `priority` is the clearest case. To a model, `high` and `normal` are adjectives. To Supportly’s support team they are promises: a high-priority ticket gets a reply within four hours and pulls someone off other work.
 
-JSON Schema can say both things. `oneOf` means the value “must be valid against exactly one of the given subschemas,”[^ch11-17] and a subschema can be a single `const` value, which “is used to restrict a value to a single value.”[^ch11-18] Each subschema can also carry a `title`, which JSON Schema describes as preferably short text about the data.[^ch11-19] Put together, a list of `{ const, title }` pairs is an enum in which every value has its own explanation. In Chapter 8 we saw that Chrome’s declarative implementation generates a similar structure for a `<select>`, an `anyOf` list that pairs each option value with its visible text as a `title`. That isn’t an accident. The visible label is exactly what a person reads to choose.
+JSON Schema can say both things. `oneOf` means the value “must be valid against exactly one of the given subschemas,”[^ch11-17] and a subschema can be a single `const` value, which “is used to restrict a value to a single value.”[^ch11-18] Each subschema can also carry a `title`, which JSON Schema describes as preferably short text about the data.[^ch11-19] Put together, a list of `{ const, title }` pairs is an enum in which every value has its own explanation. Chapter 8 shows that Chrome’s declarative implementation generates a similar structure for a `<select>`, an `anyOf` list that pairs each option value with its visible text as a `title`. That isn’t an accident. The visible label is exactly what a person reads to choose.
 
-Listing 11.2 defines the widget’s priorities once, in a module that both the widget’s form and its tools import. That second fact turns out to matter as much as the first, and we’ll come back to it later in this chapter.
+Listing 11.2 defines the widget’s priorities once, in a module that both the widget’s form and its tools import. That second fact turns out to matter as much as the first, and this chapter returns to it later.
 
 **Listing 11.2** `helpdesk/copy.js` — One source for the widget’s words
 
@@ -237,15 +237,15 @@ export const COPY = {
 
 The titles describe each level in terms the agent can match against what the user said (“nothing is blocked”, “cannot work”). They also state the consequence (“Reply within 4 hours”), so that the agent can tell the user what to expect. Chromium 156 passed the `oneOf` array through registration unchanged, and `getTools()` returned all three `{ const, title }` pairs exactly as written (*observed*).[^ch11-3]
 
-There is a cost, of course. The widget’s `create_ticket` definition grew from 415 characters in Chapter 7 to 1,014 in this chapter, and most of the growth is the three titles and the parameter descriptions (*measured*).[^ch11-3] It’s still well inside Chrome’s budgets, because the budgets apply to individual descriptions rather than whole schemas. But it’s real context the agent pays for on every turn. Spend it where a wrong choice is expensive. `priority` qualifies. Trailhead’s `category` doesn’t, because its values say what they are.
+There is a cost. The widget’s `create_ticket` definition grew from 415 characters in Chapter 7 to 1,014 in this chapter, and most of the growth is the three titles and the parameter descriptions (*measured*).[^ch11-3] It’s still well inside Chrome’s budgets, because the budgets apply to individual descriptions rather than whole schemas. But it’s real context the agent pays for on every turn. Spend it where a wrong choice is expensive. `priority` qualifies. Trailhead’s `category` doesn’t, because its values say what they are.
 
-Chrome’s best-practices page has a related lesson about a select field for honorifics. A model “may make the wrong choice,” and the page advises against “adding narrow rules to patch this issue.” Make the field optional and let the agent ask the user instead.[^ch11-5] A `oneOf` list with good titles is for values the agent can choose correctly from the conversation. A value only the person knows is a question, and we’ll see in a moment how a result can ask it.
+Chrome’s best-practices page has a related lesson about a select field for honorifics. A model “may make the wrong choice,” and the page advises against “adding narrow rules to patch this issue.” Make the field optional and let the agent ask the user instead.[^ch11-5] A `oneOf` list with good titles is for values the agent can choose correctly from the conversation. A value only the person knows is a question, and a later section shows how a result can ask it.
 
 > **Still in flux:** Which JSON Schema, and does the agent see `title`? The draft cites JSON Schema without naming a dialect or subset. On 5 March 2026 the Community Group resolved that the browser should be responsible for schema validation and that the spec should “codify a subset”. Pull request #289, which implemented that, was closed unmerged on 1 October 2026, and issue #92 is still open.[^ch11-20] The discussion didn’t stop there. On 16 October a repository collaborator argued in #92 for making both `inputSchema` and `outputSchema` required, so that “a loose object schema” becomes “an explicit choice”, and on 30 October Johann Hofmann replied with “Full support from security for requiring and validating these schemas in the spec.”[^ch11-20] MCP’s tools specification defaults to the 2020-12 dialect when no `$schema` is present.[^ch11-21] `oneOf`, `const` and `title` are all core keywords, and Chromium preserves them. Whether a particular agent shows subschema titles to its model is up to the agent, because to the browser the schema is a string. If you depend on the titles, test with the agents you care about (Chapter 14 covers evals). And write every tool with a schema today. If #92 goes the way the thread is leaning, a schema will stop being optional.
 
 ### One schema, two jobs: validate with the schema you published
 
-“Validate strictly in code, loosely in schema” is Chrome’s rule,[^ch11-5] and in Chapter 6 we followed it with hand-written checks in every `execute`. That works, but it creates a drift risk. The schema says `maximum: 10`, the code checks `> 12`, and nobody notices until an agent is told one thing and refused for another.
+“Validate strictly in code, loosely in schema” is Chrome’s rule,[^ch11-5] and Chapter 6 followed it with hand-written checks in every `execute`. That works, but it creates a drift risk. The schema says `maximum: 10`, the code checks `> 12`, and nobody notices until an agent is told one thing and refused for another.
 
 Listing 11.3 removes the duplication. `checkArgs()` validates the arguments against the same schema object the tool registered, using only the core keywords this book recommends. It returns a Chapter 6 style failure whose message names the field and repeats that field’s own description.
 
@@ -331,7 +331,7 @@ The trick is in the last argument of each message: `props[key].description`. Eve
 }
 ```
 
-Please note that this isn’t a full JSON Schema validator, and it isn’t meant to be one. It doesn’t resolve `$ref`, it ignores keywords it doesn’t know and it stops at the first problem. If your schemas need more, use a real validator library. For tools written the way this chapter recommends, flat objects with a handful of described properties, forty lines are enough. And they guarantee that what you tell the agent and what you enforce are the same thing.
+This isn’t a full JSON Schema validator, and it isn’t meant to be one. It doesn’t resolve `$ref`, it ignores keywords it doesn’t know and it stops at the first problem. If your schemas need more, use a real validator library. For tools written the way this chapter recommends, flat objects with a handful of described properties, forty lines are enough. And they guarantee that what you tell the agent and what you enforce are the same thing.
 
 The validator is only the first line of defence. Chrome’s guide on building tools is explicit that strict schemas help the agent pick the right tool, while “the application code must enforce trust boundaries”: authorization, exact identifiers, known subjects and sequence safety. “Enforcement belongs in your application logic, beyond readOnlyHint or untrustedContentHint.”[^ch11-24] `checkArgs()` answers “is this argument well formed?”. Whether this account may open a ticket, or whether that ticket belongs to this account, is still your service’s question, and the widget answers it later in this chapter.
 
@@ -447,8 +447,6 @@ export async function registerCatalogTools(signal) {
 }
 ```
 
-Let’s have a look at the numbered comments.
-
 ① Each product carries exactly the fields Trailhead’s canonical result shape defines: SKU, name, price with its currency, rating and a boolean for stock. The stock *count* stays private. The agent doesn’t need it, and competitors don’t either.
 
 ② When there are more matches than fit, the result says how many, how many it’s showing and which parameters would narrow the search. A broad search for “tent” in the demo matched 16 products. The result listed 10, said `"Showing 10 of 16. Add category or maxPrice to narrow the search."`, and came to 1,312 characters, inside the 1,500 budget (*observed in Chromium 156*).[^ch11-3] An empty result isn’t an error either. It returns an empty list and a note suggesting broader words.
@@ -463,7 +461,7 @@ Let’s have a look at the numbered comments.
 
 Chapter 6 set the convention. Tool-level failures are results, not exceptions, shaped `{ status: 'error', code, message }`, with a stable code for programs and a sentence for the model. The specification allows exactly this. Its error table “only tracks the list of platform-defined failures,” and “tool execution failures defined by tool authors can also be reported to the tool caller in the response JSON string.”[^ch11-23] MCP takes the same position. Its tools specification says that tool execution errors “contain actionable feedback that language models can use to self-correct and retry with adjusted parameters,” that they are reported in results with `isError: true`, and that clients “SHOULD provide tool execution errors to language models to enable self-correction.”[^ch11-21] Chrome’s guide on building tools puts it in one line: the response “should act as a guide rather than a dead end.”[^ch11-24]
 
-In Chapter 6 I promised a closer look at the wording. Here are the rules I apply to every `message`:
+The wording of every `message` follows these rules:
 
 1. **Name the thing that was wrong.** `"quantity" must be a whole number.` beats `Invalid input.` If more than one argument could be at fault, say which.
 2. **Show what right looks like, with an example from the real data.** “Ticket ID as the user sees it, e.g. SUP-1042.” Anthropic contrasts “opaque error codes or tracebacks” with messages that “clearly communicate specific and actionable improvements.”[^ch11-1]
@@ -595,13 +593,13 @@ export async function registerCartTools(signal) {
 
 ③ The limited-edition jacket allows two per customer. A request for three is `refused`, and the message says what the agent should do instead of “fixing” it: ask the user. The sold-out tent takes the same path, and so does Chapter 6’s `OUT_OF_STOCK`, a business-rule refusal (“only three left”) that uses `status: 'refused'` for exactly this reason.
 
-The line between `error` and `refused` is a judgment call at the edges. The test I use: *would a good human assistant make this change without checking with the person?* Reformatting a date, yes. Picking a shoe size, buying fewer jackets or waiting an hour to open a ticket, no.
+The line between `error` and `refused` is a judgment call at the edges. A practical test: *would a good human assistant make this change without checking with the person?* Reformatting a date, yes. Picking a shoe size, buying fewer jackets or waiting an hour to open a ticket, no.
 
 ### The same request, twice
 
 There is one more refusal worth designing for, and it has nothing to do with the arguments being wrong. Agents retry. A call times out, the agent isn’t sure whether it went through, and it sends the same call again. People do the same thing when they press a submit button twice. For a read-only tool that’s harmless. For a tool that creates something, it’s a second ticket, a second booking or a second order.
 
-The build-tools guide calls this a duplication conflict and suggests an idempotency key: “use the exact order details to ensure a single request wasn’t sent repeatedly by mistake,” and if it was, “reject it.”[^ch11-24] For the widget, the exact details are the subject, the body and the priority. If an identical ticket was opened in the past hour, `create_ticket` doesn’t open the form again. It returns `refused` with the code `DUPLICATE_TICKET` and the ID of the ticket that already exists, so the agent can tell the person where their request went. Please note the choice of status. The arguments were perfectly valid, and changing them to get around the check would be the worst possible fix. You’ll see the check in the widget’s code in Listing 11.8.
+The build-tools guide calls this a duplication conflict and suggests an idempotency key: “use the exact order details to ensure a single request wasn’t sent repeatedly by mistake,” and if it was, “reject it.”[^ch11-24] For the widget, the exact details are the subject, the body and the priority. If an identical ticket was opened in the past hour, `create_ticket` doesn’t open the form again. It returns `refused` with the code `DUPLICATE_TICKET` and the ID of the ticket that already exists, so the agent can tell the person where their request went. The status is chosen on purpose. The arguments were perfectly valid, and changing them to get around the check would be the worst possible fix. You’ll see the check in the widget’s code in Listing 11.8.
 
 ## Keeping agent-facing text in step with the UI
 
@@ -611,7 +609,7 @@ A WebMCP page describes itself twice. Once to people, in labels, buttons, help t
 
 Drift hurts in both directions. An agent that uses words the page doesn’t show confuses the person watching (“I’ve set priority to urgent”, and there is no urgent). A page whose tool accepts what its form rejects lets the agent do things a person can’t, which Chapter 13 identifies as a parity and accessibility problem. The explainer asks for synchronized state because “AI agents and human users collaborate in the same browser session,”[^ch11-4] and Chrome asks you to “update the interface state after functions are completed,” because agents “may rely on the interface to plan next steps.”[^ch11-5] Shared words are the static half of the same idea.
 
-Since 30 October 2026 Chrome’s best-practices page says it as an architectural rule, too: “Share the application service.” Keep “the visible user interface (UI), WebMCP tools, and testing environments in sync by sharing a single application service for validation, permissions, and side effects.”[^ch11-5] Chapter 10 did that for Trailhead’s logic. Here we do it for the widget’s words, with three practices.
+Since 30 October 2026 Chrome’s best-practices page says it as an architectural rule, too: “Share the application service.” Keep “the visible user interface (UI), WebMCP tools, and testing environments in sync by sharing a single application service for validation, permissions, and side effects.”[^ch11-5] Chapter 10 did that for Trailhead’s logic. This section does it for the widget’s words, with three practices.
 
 **One source for the words.** Listing 11.2 already put the widget’s titles, priority labels and limits in one module. The form and the tools both import it, so the agent’s `title` for `create_ticket` is the label on the button a person presses, and the `title` of each priority is the text of each option in the form. The specification says the tool’s `title` is used by the browser “to reference the tool in the user interface” and recommends that it be localized to the user’s language,[^ch11-2] so a shared string is also the natural home for its translations.
 
@@ -812,7 +810,7 @@ Figure 11.3 compares what the agent reads before any call, for the earlier and c
 
 ![Figure 11.3 — Characters the agent reads per tool definition, earlier versions (Listings 6.2, 6.7 and 7.3) and this chapter’s, measured with measureTools() in Chromium 156. Every definition grew, and most of the growth is parameter descriptions and priority titles.](images/figure-11-3.png)
 
-Every tool got longer, and the widget roughly doubled, from 955 to 1,850 characters. That is the honest trade-off of this chapter. Good design isn’t about making definitions as short as possible. It’s about making every character a decision. The additions are parameter descriptions with examples, one sentence about what each tool returns and three priority titles. All five definitions still fit Chrome’s budgets, and the lint found nothing in any of them (*observed*).[^ch11-3] The duplicate check didn’t add a single character, by the way. It lives in the result, where the agent reads it only when it matters.
+Every tool got longer, and the widget roughly doubled, from 955 to 1,850 characters. That is the honest trade-off of this chapter. Good design isn’t about making definitions as short as possible. It’s about making every character a decision. The additions are parameter descriptions with examples, one sentence about what each tool returns and three priority titles. All five definitions still fit Chrome’s budgets, and the lint found nothing in any of them (*observed*).[^ch11-3] The duplicate check didn’t add a single character. It lives in the result, where the agent reads it only when it matters.
 
 What the lint can’t tell you is whether a real model now picks the right tool and fills it in correctly more often. Inspection can’t answer that, evaluation can. Chrome’s guide recommends evaluation-driven development, with code-based checks for rule-based outputs such as character limits and LLM-as-a-judge for the rest,[^ch11-5] and Anthropic’s article reports that “even small refinements to tool descriptions can yield dramatic improvements.”[^ch11-1] Chapter 14 builds that eval loop for Trailhead and the widget.
 

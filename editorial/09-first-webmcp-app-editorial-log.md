@@ -42,3 +42,18 @@ Corrections and additions (per the validation notes and primary sources, see the
 Removals: none of the technical content.
 
 Figures: 9.2 was a card grid in the first edition. It's now a hub: the page with its two tools in the middle, six ways to reach them around it, colour-coded browser tooling (teal) versus agents (amber). 9.1 adds the new rollback branch (magenta). 9.3 keeps the facts of the old timeline and marks Chrome 156 Stable.
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: A first WebMCP app is the page, a start-up decision, and thin tools over the same functions, with a scripted way to call them and a token when the page leaves localhost.
+- What changed (voice/register), with one before/after pair if you changed the opening:
+  - Before: “Now let’s put the pieces back together and take one small app all the way: … On the way we’ll answer the practical questions every team asks on its first day with WebMCP. How do I switch it on? … how do I call my tools …”
+  - After: “This chapter puts the pieces back together and takes one small app all the way: … It answers the practical questions every team asks on its first day with WebMCP. How do you switch it on? … how do you call your tools …”
+  - Also dropped “Please note:”, “of course” on the feature-detection line, “Have a look at the AbortController”, “Let’s start with the tool you already have open”, “Some important things to notice here”, “so let me state it plainly”, “so let's look at them separately”, and both smileys’ worth of “:)” on the DevTools pane. The service-worker sentence no longer carries a biography.
+- Generalized: “I’ve been writing about service workers since 2017, and this part feels very familiar” was removed. The analogy stays: a service worker is an enhancement of a page that has to work without it. The 2017 history and “feels very familiar” are not restated as facts.
+- Kept on purpose: “I didn’t run the two extensions for this chapter”; “which I co-author”; “another page I co-author”; the Prompt API limit (`"downloadable"`, the suite does not download the model). “every team asks” is the chapter’s existing wording. “Bottomline:” at the close stays because it sits inside a baseline quote span.
+- Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
+  - “the practical questions every team asks” is an unsupported universal. It was already in the chapter. Left as written.
+  - The closing “Bottomline:” was a blog label. A later check showed it was not a real quotation (the baseline span crossed a fence). The label is gone. The sentence is unchanged: the API calls fit on one screen, and the surrounding work is what makes the app.

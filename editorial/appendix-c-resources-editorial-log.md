@@ -21,3 +21,13 @@ the editor, 2 November 2026. Old: 3,307 words. New: about 4,000 words (Chrome pa
 ## 18 November 2026 — WebMCP polyfill
 - Added the W3C polyfill to C.7 in the book's author voice, with the install command, automatic entry point, intended audiences, secure-context and native-API boundaries, and links to the package and its testing notes.
 - Checked the package documentation and the Community Group draft on 18 November 2026. Version 0.1.1 targets webmcp-types 0.1.10. No new browser behaviour was observed for this addition.
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: Resource list. Entries, URLs, versions, and dates stayed. Three scaffolding phrases came out.
+- What changed (voice/register), with one before/after pair if you changed the opening: Before: “and it ends with the short routine I use to track changes myself.” After: “and it ends with a short routine for tracking changes.” “so please pin them” became “so pin them.” The polyfill opener “Want to build and test tools before a browser exposes the native API?” was folded into the following sentence. No resource was deleted.
+- Generalized: None.
+- Kept on purpose: “when I last checked”, “for packages I give the npm registry’s own record”, “Two of them carry my name in the byline”, and the bylines “and me”. No Lars, Kari, or Jonas in this file.
+- Flags (gaps, unsupported claims, likely factual problems). Write "None" if none. None.

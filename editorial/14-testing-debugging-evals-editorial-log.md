@@ -20,3 +20,19 @@ All claims checked (VALIDATION.md 57 rows).
 - Removed: nothing technical. The old phrase “on 15 October … still open” for #92 became the 2 November state.
 - Footnotes renumbered by first appearance (33 notes, all prefixed ch14-).
 - Self-check: 0 placeholders, 0 prose semicolons, 0 raw HTML, both image paths exist, no undefined or unused footnotes.
+
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: A WebMCP tool needs ordinary tests of `execute` and a separate eval of whether a model turns a person’s words into the right call. The chapter builds both in five layers and says what each layer can and cannot prove.
+- What changed (voice/register), with one before/after pair if you changed the opening:
+  - Before: “We will do exactly that, and this chapter starts there. […] Let’s build both, in five layers (Figure 14.1).”
+  - After: “This chapter does exactly that, and it starts there. […] The chapter builds both, in five layers (Figure 14.1).”
+  - Removed “In simple words”, “For me, this is the most important test in the file”, “Is running both redundant? Not at all.”, “Bottomline”, “One more thing to keep in mind”, “please treat it”, and the exclamation after “that same case”. Tutorial “we” in “we use later”, “we have used”, and “we will reuse” became “this chapter” or “reappear”.
+- Generalized: The ranking “the most important test in the file” was deleted. The next sentence still says the browser passes the callback any object and does not check `inputSchema`. “Most important” was not restated as a fact.
+- Kept on purpose: “a page I co-authored”, “I have not observed either in a browser”, “49 when I first counted, on 15 October”, and “I haven’t tested that combination”. “We ran it five times” and “Then we noticed” stay as the record of the 14 October run. “Please note: the issue reports the same behaviour in Chrome 158.0.8119.0” was restored. That clause sits inside a baseline quote span that begins at the ASCII quotes in “returns "hi"” / `'"hi"'`. No Lars, Kari, or Jonas. Nine fences, four tables, two figures, 34 footnotes, and 72 baseline quotes hash-match or remain present.
+- Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
+  - The parenthetical “I’m a member of that group myself” was removed in the first pass and restored in reconciliation. It is a factual disclosure next to the contributor-license requirement, not a blog aside.
+  - “Most first bugs with WebMCP are not logic bugs at all” was already in the chapter and was left as written. The paragraph lists registration mistakes. It does not count them.
+  - “Turn the most common bad inputs into new eval cases” was left. It refers to inputs the site’s own `INVALID_ARGUMENT` rate has already counted, not to a general frequency.

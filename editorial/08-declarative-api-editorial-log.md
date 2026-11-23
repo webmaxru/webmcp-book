@@ -42,3 +42,17 @@ Corrections (per the validation notes and primary sources, see the validation fi
 
 Removals: none of the technical content. Only time-relative framing ("six days before this chapter was written", "The explainer still calls the cancel event `toolcanceled`").
 
+## Pass: serious technical prose (22 November 2026)
+
+Register override: professional developer book. Blog scaffolding and named fictional people reduced. Protected spans unchanged.
+
+- Point: Chrome can turn an existing form into a tool with a few attributes, and that behaviour is an implementation fact about Chromium 156, not a specification.
+- What changed (voice/register), with one before/after pair if you changed the opening:
+  - Before: “Let’s look at Fjord Table’s booking page the way an agent would. … Pretty much the same list, right? … Can we just say “this form is a tool” … In Chrome’s implementation, we can.”
+  - After: “Fjord Table’s booking page already had the shape of a tool, long before anyone typed `registerTool()`. … A tool definition is that same list … Can the markup say “this form is a tool” … In Chrome’s implementation, the markup can.”
+  - Also dropped “Have a look”, “Let’s follow these steps”, “Some important things to notice here”, the “Bottomline” label on the form-reset rule, “Personally for me”, and the smiley after “you started them”.
+- Generalized: “Personally for me, this is the strongest argument that the declarative idea will come back” became “The TAG comment is one argument that the declarative idea will come back”. The ranking “strongest” is not stated as fact.
+- Kept on purpose: “when I re-checked”, “so I tested it”, “I re-ran” / “17 of 17”, “than I tested”, “when I removed `toolname`”, “I’m one of its co-authors”, “In my tests” / “I haven’t used it”, “what I observed”, “I didn’t test it”, “I can’t tell you (I haven’t seen its plans)”, “my tests”, “The details I observed”, “I expected the agent to keep waiting. It didn’t.”, “Other limits I found”, “no error my code could catch”, “That’s how I re-validated”. Left in place because they sit inside baseline quote spans: “We’ll come back to it below”, “which makes sense if you think about it”, “Useful, of course.”
+- Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
+  - None in the claims. The three phrases above were blog register. A later check showed the baseline “quote” crossed a fence, so they were not real quotations. Reconciliation removed “of course”, “which makes sense if you think about it”, and “We’ll come back to it below”. The observations and the forward reference stay.
+

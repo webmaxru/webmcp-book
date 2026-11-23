@@ -4,17 +4,17 @@
 >
 > — Chrome for Developers, “WebMCP”[^ch16-1]
 
-## The question on Kari’s whiteboard
+## The product question
 
-Trailhead’s product team meets on Monday mornings in a room above the warehouse in Lillestrøm. This Monday, Kari, who runs product, has written exactly one question on the whiteboard: *What do we ship for agents, and how will we know it worked?*
+Trailhead’s product team meets on Monday mornings. This Monday the product lead has written exactly one question on the whiteboard: *What do we ship for agents, and how will we know it worked?*
 
-Jonas, the front-end lead, has spent the last month with the earlier chapters of this book. He has a branch where `search_products` and `add_to_cart` are registered with `document.modelContext`, and he can show an agent finding a two-person tent under 4,000 NOK and putting it in the cart in four tool calls instead of forty clicks. Kari is impressed. She is also the person who has to explain all this to the rest of the company, so her questions are not about `AbortSignal`. Will agents find us? Which journeys first? Do we lose the customer to the assistant? What do we measure? Who owns the descriptions? And what happens if the standard changes, or never ships?
+The front-end lead has spent the last month with the earlier chapters of this book and has a branch where `search_products` and `add_to_cart` are registered with `document.modelContext`. An agent can find a two-person tent under 4,000 NOK and put it in the cart in four tool calls instead of forty clicks. The product lead has to explain all this to the rest of the company, so the questions are not about `AbortSignal`. Will agents find us? Which journeys first? Do we lose the customer to the assistant? What do we measure? Who owns the descriptions? And what happens if the standard changes, or never ships?
 
-This chapter is for the people in that room. You can read most of it without the code, and the code that is here is short: a catalog that treats tools as product surface, a budget check for CI, a measurement wrapper and an attribution helper, all for Trailhead. Every listing runs, and the tests live in the book’s demos repository.[^ch16-2]
+This chapter is for the people who have to answer that question. You can read most of it without the code, and the code that is here is short: a catalog that treats tools as product surface, a budget check for CI, a measurement wrapper and an attribution helper, all for Trailhead. Every listing runs, and the tests live in the book’s demos repository.[^ch16-2]
 
 ## Agent-readiness is not the new SEO (yet)
 
-I hear this comparison in almost every planning conversation about agents. Twenty-five years ago companies learned to describe their pages for crawlers, so now they will learn to describe their features for agents. Part of it holds. A WebMCP tool’s name and description are text written for a machine reader, and their quality decides whether that reader uses your feature correctly. Chrome’s guidance on descriptions reads like a copywriting brief: “use verbs that describe exactly what happens”, describe “what the tool does and when to use it”, and “rely on positive language” rather than lists of limitations.[^ch16-3] Agents also choose between tools, and Chrome’s evaluation guide lists “Agent fails to select the correct tool” as the first failure mode to test for.[^ch16-4] Writing good tool copy is a skill worth having in-house, just as SEO copy once was.
+Planning discussions about agents often start from an SEO analogy. Twenty-five years ago companies learned to describe their pages for crawlers, so now they will learn to describe their features for agents. Part of it holds. A WebMCP tool’s name and description are text written for a machine reader, and their quality decides whether that reader uses your feature correctly. Chrome’s guidance on descriptions reads like a copywriting brief: “use verbs that describe exactly what happens”, describe “what the tool does and when to use it”, and “rely on positive language” rather than lists of limitations.[^ch16-3] Agents also choose between tools, and Chrome’s evaluation guide lists “Agent fails to select the correct tool” as the first failure mode to test for.[^ch16-4] Writing good tool copy is a skill worth having in-house, just as SEO copy once was.
 
 The analogy breaks at the step that made SEO valuable in the first place: discovery. A search engine indexes your pages before anyone visits them, and that index sends you visitors you didn’t have. WebMCP has nothing like it. Chrome’s own overview lists this as a limitation: “Clients and browsers must visit a site directly to know if it has callable tools.”[^ch16-1] Chrome’s comparison with MCP says the same from the other side. For an MCP server, “the user or the app adds the server”. For WebMCP, “the page registers them dynamically in the active session”.[^ch16-5] There is no central registry of WebMCP sites, no crawler that reads `registerTool()` calls and no ranking for tools.
 
@@ -46,7 +46,7 @@ Chrome’s guide on building effective tools, which André Cipriani Bandarra and
 - *Book and buy.* Adding to a cart, reserving, checking out. High value, and consequential at the last step.
 - *Support.* Filing a claim, finding an order, opening a ticket. Chrome’s use-case guide includes a warranty claim, and its overview puts “Help your customers get support” first among its examples.[^ch16-9][^ch16-1]
 
-Then rank the candidates. These are the questions I would ask, in roughly this order.
+Then rank the candidates. I recommend these questions, in roughly this order.
 
 1. *How badly does actuation fail here today?* If agents already complete the journey reliably, a tool adds little. Custom date pickers, steppers, infinite scroll and multi-step modals are the usual suspects.
 1. *What is a completion worth?* An abandoned checkout costs more than an abandoned “About us” page.
@@ -56,7 +56,7 @@ Then rank the candidates. These are the questions I would ask, in roughly this o
 
 ![Figure 16.1 — Prioritizing Trailhead’s candidate journeys. Value per completion runs up, risk if the agent gets it wrong runs right. Start top-left, add the top-right journeys once the confirmation UX is in place, and leave the bottom row for later.](images/figure-16-1.png)
 
-For Trailhead, Figure 16.1 gives an order that Kari can defend. Product search and comparison come first: read-only, heavily used and backed by code the React app already has (Chapter 10 builds them in React). The cart comes next, because adding an item is reversible and the cart badge makes the result visible. Checkout comes third, as a tool that opens the checkout summary and stops there. The customer places the order with their own click, which is how the canonical `checkout` tool works throughout this book. Order status and returns come later. Order status is already served by the backend MCP server from Chapter 3, and returns involve policy questions the team hasn’t answered yet.
+For Trailhead, Figure 16.1 gives an order the product lead can defend. Product search and comparison come first: read-only, heavily used and backed by code the React app already has (Chapter 10 builds them in React). The cart comes next, because adding an item is reversible and the cart badge makes the result visible. Checkout comes third, as a tool that opens the checkout summary and stops there. The customer places the order with their own click, which is how the canonical `checkout` tool works throughout this book. Order status and returns come later. Order status is already served by the backend MCP server from Chapter 3, and returns involve policy questions the team hasn’t answered yet.
 
 **Table 16.2 — Trailhead’s first release**
 
@@ -74,7 +74,7 @@ Five tools is a deliberate number. It is small enough for every tool to have an 
 
 The strategic fear behind many agent discussions is disintermediation. The assistant becomes the storefront, your site becomes a supplier behind it, and your brand shrinks to a line in a chat transcript. WebMCP’s authors share this fear and designed against it. One of the explainer’s stated goals is “Prevent web content disintermediation”, which it explains as preventing “disintermediation of web apps by backend integrations by adapting front-ends for use by agents, rather than replacing them”. Its non-goals include “replacement of human interfaces”: “The human web interface remains primary”, and agent tools “augment rather than replace user interaction.”[^ch16-11] Chrome puts it more sharply in the line quoted in Chapter 4: “Instead of your application being a guest within an agent, the agent is a guest on your platform.”[^ch16-5]
 
-That framing is accurate about the mechanics. Let’s be precise about what it does and doesn’t give you.
+That framing is accurate about the mechanics.
 
 What it gives you is presence. Tools live in your tab and they are ephemeral: “Once the user navigates away from the page or closes the tab, the page’s WebMCP tools become unavailable.”[^ch16-5] Your tool runs your code and can update your interface while the user watches. That is why Chrome says tools “execute on your webpage visibly” and keep “your brand and human-centered design choices intact”.[^ch16-1] If `search_products` renders its results in Trailhead’s own grid, the customer sees Trailhead’s photography, prices and reviews, not a reformatted list in a chat bubble.
 
@@ -163,7 +163,7 @@ Three details matter here. The descriptions say what the tool does and what it r
 
 ## Measuring agent-driven conversion
 
-Kari’s second question was how they will know it worked. The good news: WebMCP is unusually measurable. Every tool call runs your own `execute` callback in your own page, so ordinary front-end analytics can see each call, its outcome and its timing. The bad news: you will know *that* an agent called you, but not *which* agent, or *why*.
+The other half of that question is how the team will know it worked. The good news: WebMCP is unusually measurable. Every tool call runs your own `execute` callback in your own page, so ordinary front-end analytics can see each call, its outcome and its timing. The bad news: you will know *that* an agent called you, but not *which* agent, or *why*.
 
 ### What the platform tells you
 
@@ -171,7 +171,7 @@ Look at what your callback receives. In the specification’s IDL, `execute` get
 
 `ModelContext` also fires two events: `toolactivated`, dispatched when the execution of a tool begins, and `toolcancel`, dispatched when an execution is cancelled. Both carry only a `toolName`.[^ch16-17] In my tests on 2 November 2026, Chromium 156 with the WebMCP testing flag fired `toolactivated` on `document.modelContext` for each in-page `executeTool()` call, in the same order as the calls.[^ch16-2] The events are handy for a lightweight counter that doesn’t touch tool code, but they can’t tell you whether a call succeeded.
 
-The declarative API, which Chapter 8 covers and which left the specification on 8 October 2026, adds an `agentInvoked` member to `SubmitEvent` so that form handlers can tell agent submissions from human ones.[^ch16-18] The imperative API has no equivalent, and it doesn’t need one: a call to `execute` *is* an agent call. Please note that even `agentInvoked` is not settled ground. In the W3C charter discussion at the end of October, Shopify’s Ilya Grigorik called it “unspecified and incomplete” and asked for a general way to attribute agent-originated interaction to the page it acts on (webmcp issue #365).[^ch16-26]
+The declarative API, which Chapter 8 covers and which left the specification on 8 October 2026, adds an `agentInvoked` member to `SubmitEvent` so that form handlers can tell agent submissions from human ones.[^ch16-18] The imperative API has no equivalent, and it doesn’t need one: a call to `execute` *is* an agent call. Even `agentInvoked` is not settled ground. In the W3C charter discussion at the end of October, Shopify’s Ilya Grigorik called it “unspecified and incomplete” and asked for a general way to attribute agent-originated interaction to the page it acts on (webmcp issue #365).[^ch16-26]
 
 ### Recording outcomes
 
@@ -314,7 +314,7 @@ Figure 16.2 shows the resulting funnel, and Table 16.3 lists the metrics Trailhe
 | Assisted order rate and value | Listing 16.3 | Do sessions with agent help end in orders? |
 | Checkout opened → order placed | Listings 16.2–16.3 | Do customers confirm what agents prepare? |
 
-The same numbers feed the tools themselves. The Chrome guide I mentioned earlier ends its production advice with exactly this loop: “Once the tool is deployed, analyze your interaction logs to identify where agents struggle or deviate from expected paths. Use those insights to continuously update your evals and tool definitions.”[^ch16-25]
+The same numbers feed the tools themselves. The Chrome guide cited earlier ends its production advice with exactly this loop: “Once the tool is deployed, analyze your interaction logs to identify where agents struggle or deviate from expected paths. Use those insights to continuously update your evals and tool definitions.”[^ch16-25]
 
 Two cautions belong in the report next to these numbers. First, *assisted is not caused*. A customer who uses an agent may be a more determined buyer to begin with, so compare assisted sessions with similar unassisted ones before you claim a lift, and run a holdout (tools off for a sample of sessions) if the decision is big enough. Second, today’s numbers are an origin-trial sample. Only users whose browser runs WebMCP and whose agent consumes it reach your tools at all. The project’s implementation-status page lists origin trials in Chrome and Edge, experimental support in Brave’s Leo, support in ChatGPT Desktop, and Meta’s Ray-Ban Display glasses as an integration that is announced but not yet available.[^ch16-20] At least one large platform is not waiting: in the same charter discussion, Ilya Grigorik wrote that “Shopify deploys WebMCP across millions of storefronts.”[^ch16-26] Still, treat early volumes as a signal of where your tools work and where they don’t, not as a market forecast.
 
@@ -336,7 +336,7 @@ WebMCP doesn’t change your pricing. What it does is surface pricing and policy
 
 ## WebMCP and backend MCP in one plan
 
-The last strategy question is whether WebMCP replaces Trailhead’s backend MCP server from Chapter 3. It doesn’t, and the explainer says so: WebMCP “is designed to complement, not replace, existing backend-focused protocols like MCP.”[^ch16-11] Chrome’s comparison guide has the clearest way I know to explain the split to a non-technical audience: “MCP is a call center. It’s available from anywhere, at any time.” And: “WebMCP is an in-store expert. It’s available only while the user is on your page.” Chrome’s recommendation is to use both: “Manage core logic with MCP”, so your server acts as “a foundational service layer” that is “platform-agnostic and always available to agents”, and “Build a contextual UI with WebMCP” for in-browser work “while the user has your website open.”[^ch16-5]
+The last strategy question is whether WebMCP replaces Trailhead’s backend MCP server from Chapter 3. It doesn’t, and the explainer says so: WebMCP “is designed to complement, not replace, existing backend-focused protocols like MCP.”[^ch16-11] Chrome’s comparison guide explains the split to a non-technical audience in two lines: “MCP is a call center. It’s available from anywhere, at any time.” And: “WebMCP is an in-store expert. It’s available only while the user is on your page.” Chrome’s recommendation is to use both: “Manage core logic with MCP”, so your server acts as “a foundational service layer” that is “platform-agnostic and always available to agents”, and “Build a contextual UI with WebMCP” for in-browser work “while the user has your website open.”[^ch16-5]
 
 ![Figure 16.3 — One plan, two surfaces. Trailhead’s catalog and order services sit behind both its backend MCP server (available anywhere, no UI) and its WebMCP tools (in the open tab, with the customer watching). The same eval suites and owners cover both.](images/figure-16-3.png)
 
@@ -358,7 +358,7 @@ Which record does a dispute rely on? Neither specification says. UCP gives the m
 
 ## Who owns the tools
 
-Kari’s last question, who owns all this, is the one most teams get wrong. A tool looks like code, so it gets owned like code. In reality a tool definition has at least four parts, and they belong to different people.
+The last of the opening questions, who owns all this, is the one most teams get wrong. A tool looks like code, so it gets owned like code. In reality a tool definition has at least four parts, and they belong to different people.
 
 - The *name and description* are copy. The model reads them, and they decide whether a tool gets called at all. They deserve the care you give to checkout microcopy, and someone with a product or content role should approve changes.
 - The *input schema and result shape* are an API contract. Engineering owns them, with the usual review for breaking changes.
@@ -407,7 +407,7 @@ The numbers come from Chrome’s tool-security guidance, which recommends 500 ch
 | Agent metrics | Analytics | Product | Weekly report (Table 16.3) |
 | Spec and trial tracking | One named engineer | Tech lead | Release notes reviewed each Chrome milestone, versions pinned in test reports |
 
-The last row deserves emphasis. WebMCP is a Community Group draft in origin trials, and it changes. Chapter 15 records the churn, and Chapter 17 the open questions. Someone has to read the release notes, watch the issues that affect your tools and pin what each test run used. The Chrome guide puts it as “Record and isolate the specification revision, browser version, agent client, and model during testing to track compatibility drift.”[^ch16-25] And someone has to send the team’s findings back. Chrome’s origin-trial announcement describes the trial as a way of “gathering user feedback, with the goal of informing future iterations of the API”, and its documentation invites feedback on the API shape in the explainer’s repository and Chromium bugs for implementation problems.[^ch16-23][^ch16-22] A company that runs WebMCP in production and never reports what it learned is leaving its influence on the standard unused. Personally for me, this is the cheapest seat at the table you will ever get.
+The last row deserves emphasis. WebMCP is a Community Group draft in origin trials, and it changes. Chapter 15 records the churn, and Chapter 17 the open questions. Someone has to read the release notes, watch the issues that affect your tools and pin what each test run used. The Chrome guide puts it as “Record and isolate the specification revision, browser version, agent client, and model during testing to track compatibility drift.”[^ch16-25] And someone has to send the team’s findings back. Chrome’s origin-trial announcement describes the trial as a way of “gathering user feedback, with the goal of informing future iterations of the API”, and its documentation invites feedback on the API shape in the explainer’s repository and Chromium bugs for implementation problems.[^ch16-23][^ch16-22] A company that runs WebMCP in production and never reports what it learned is leaving its influence on the standard unused. Sending findings back is a low-cost way to influence the standard.
 
 > **Still in flux:** a few open threads could change these plans.
 >
@@ -423,7 +423,7 @@ The last row deserves emphasis. WebMCP is a Community Group draft in origin tria
 
 ## Trailhead’s plan on one page
 
-By the end of Monday, Kari’s whiteboard holds a plan she can take upstairs.
+By the end of Monday, the product lead has a plan to take to the rest of the company.
 
 1. *Release 1: discover and decide.* `search_products` and `compare_products`, read-only, with results rendered in Trailhead’s own grid and comparison table. Measurement and attribution from day one (Listings 16.2–16.4).
 1. *Release 2: the cart and the checkout handoff.* `add_to_cart`, `get_cart` and `checkout`, with checkout stopping at the summary and the customer’s click placing the order. The confirmation design comes from Chapter 13.

@@ -7,11 +7,11 @@
 
 ## Back to Listing 4.1
 
-Chapter 4 ended with about twenty-five lines of JavaScript: Fjord Table’s first tool, `search_availability`, registered on `document.modelContext` and wrapped around the same function the site’s date picker already calls. It was there to give you a feel for the API, so we moved past most of the details quickly. In this chapter we go back over it slowly.
+Chapter 4 ended with about twenty-five lines of JavaScript: Fjord Table’s first tool, `search_availability`, registered on `document.modelContext` and wrapped around the same function the site’s date picker already calls. It was there to give you a feel for the API, so Chapter 4 moved past most of the details quickly. This chapter goes back over it slowly.
 
-Here is the listing again, unchanged except for numbered markers. Each marker matches a section of this chapter.
+Here is the tool again, with numbered markers for the sections of this chapter. This copy is not Listing 4.1 plus comments. It also declares an `outputSchema`, which Listing 4.1 does not, so Listing 4.1 is not a contiguous excerpt of the runnable file.
 
-**Listing 5.1** `fjord-table/search-availability.js` (excerpt, with numbered markers added) — Listing 4.1 again, annotated
+**Listing 5.1** `fjord-table/search-availability.js` (excerpt, with numbered markers added) — annotated registration, including `outputSchema`
 
 ```js
 // Progressive enhancement: do nothing where WebMCP isn't available.
@@ -62,7 +62,7 @@ Everything below was checked against the WebMCP Draft Community Group Report dat
 
 ![Figure 5.1 — The life of a WebMCP tool, from registration through discovery to a call and its result. Everything that crosses between the page and an agent crosses as a JSON string.](images/figure-5-1.png)
 
-Figure 5.1 is a map of the whole chapter. Please notice where the boundaries are. Your page never hands the agent a live JavaScript object, and the agent never hands your page one either. Your schema is turned into a string at registration time, the agent’s arguments arrive as a string that the browser parses for you, and your result leaves as a string. Most of the rules in this chapter follow from that one fact.
+Figure 5.1 is a map of the whole chapter. Your page never hands the agent a live JavaScript object, and the agent never hands your page one either. Your schema is turned into a string at registration time, the agent’s arguments arrive as a string that the browser parses for you, and your result leaves as a string. Most of the rules in this chapter follow from that one fact.
 
 ## Where the API lives
 
@@ -109,13 +109,13 @@ dictionary ModelContextRegisterToolOptions {
 
 Every `Document` gets its own `ModelContext` object when it’s created, and the getter always returns that same object.[^ch05-2] Inside it, the browser keeps what the spec calls a *model context*: a *tool map* whose keys are tool names and whose values are *tool definitions*.[^ch05-4] When the document goes away, its tool map goes with it. Chapter 4 called tools *ephemeral and tab-bound*, and this is what that means at the API level: a tool belongs to one document, and a navigation to a new page starts with an empty map. You never have to clean up tools on `pagehide`.
 
-`ModelContext` is also an `EventTarget`. It fires `toolchange` when the set of tools changes, `toolactivated` when a call begins and `toolcancel` when one is cancelled.[^ch05-2] We’ll use the first one in Chapter 6, and the other two when we look at the lifecycle of a call.
+`ModelContext` is also an `EventTarget`. It fires `toolchange` when the set of tools changes, `toolactivated` when a call begins and `toolcancel` when one is cancelled.[^ch05-2] Chapter 6 uses the first one, and the section on the lifecycle of a call uses the other two.
 
 ### Why `document`, and why there is no `provideContext()`
 
 You’ll still find tutorials that start with `navigator.modelContext.provideContext({ tools: [...] })`. That code reflects two decisions that were later reversed, and the reasons for both explain the shape of the current API.
 
-The first was `provideContext()`. It replaced the whole set of tools in one call, and its partner `clearContext()` removed them all. In February 2026 issue #101 pointed out a problem for sites that run third-party scripts: `registerTool()` refused a duplicate name, but `provideContext()` cleared the existing tools first. So any script on the page could wipe out the site’s “official” tool and register a look-alike that proxied every call and saw whatever the user and the agent exchanged.[^ch05-5] The editors concluded that the methods had to go. Pull request #132 removed both on 5 March 2026, and the editors said that new kinds of context, if they come, should arrive as new APIs.[^ch05-5] The same discussion set a principle that still shapes the API: you shouldn’t be able to unregister a tool you didn’t register, just as you can’t remove an event listener you didn’t add.[^ch05-6] We’ll come back to that principle when we get to unregistration.
+The first was `provideContext()`. It replaced the whole set of tools in one call, and its partner `clearContext()` removed them all. In February 2026 issue #101 pointed out a problem for sites that run third-party scripts: `registerTool()` refused a duplicate name, but `provideContext()` cleared the existing tools first. So any script on the page could wipe out the site’s “official” tool and register a look-alike that proxied every call and saw whatever the user and the agent exchanged.[^ch05-5] The editors concluded that the methods had to go. Pull request #132 removed both on 5 March 2026, and the editors said that new kinds of context, if they come, should arrive as new APIs.[^ch05-5] The same discussion set a principle that still shapes the API: you shouldn’t be able to unregister a tool you didn’t register, just as you can’t remove an event listener you didn’t add.[^ch05-6] The unregistration section returns to that principle.
 
 The second decision was `navigator`. Issue #173 noted that a `Window` (and therefore its `Navigator`) can outlive the document it started with: when a frame navigates away from its initial `about:blank` document, the new document reuses the same `Window`. With tools attached to `navigator`, tools registered on the blank document would leak into the next one. Chromium had already moved its internal storage to the document. The spec followed in pull request #177, merged on 19 May 2026, and pull request #184 then moved the getter itself to `Document` on 27 May.[^ch05-7]
 
@@ -233,7 +233,7 @@ The name is the only member the browser checks closely. The rule in the registra
 
 The character set isn’t arbitrary. MCP’s current tools specification recommends the same set and the same 1–128 length, but only as SHOULD-level advice.[^ch05-15] WebMCP enforces it. If your site also runs a backend MCP server (Chapter 3), you can give a tool the same name in both places.
 
-Uniqueness is per document, not per tab. Issue #234 records a developer finding that a top-level page and a same-origin iframe can each register `search`, and an in-page agent’s `getTools()` then returns two tools with the same name and origin, distinguished only by their `window`.[^ch05-16] Chapter 7 deals with that. Within a single page, the duplicate check also has a security purpose: it’s what stops a later script from silently replacing a tool you registered first, which was exactly the problem `provideContext()` had (see “Why `document`” above). The draft makes the check twice: once on entry, and again after the schema has been serialized, because a `toJSON()` method inside the schema can run script that registers another tool under the same name in between (pull request #347).[^ch05-17] An edge case, of course, but not a harmless one: in Chromium 156 the same sequence crashed the page’s renderer, and it still did on 2 November 2026.[^ch05-3][^ch05-18]
+Uniqueness is per document, not per tab. Issue #234 records a developer finding that a top-level page and a same-origin iframe can each register `search`, and an in-page agent’s `getTools()` then returns two tools with the same name and origin, distinguished only by their `window`.[^ch05-16] Chapter 7 deals with that. Within a single page, the duplicate check also has a security purpose: it’s what stops a later script from silently replacing a tool you registered first, which was exactly the problem `provideContext()` had (see “Why `document`” above). The draft makes the check twice: once on entry, and again after the schema has been serialized, because a `toJSON()` method inside the schema can run script that registers another tool under the same name in between (pull request #347).[^ch05-17] An edge case, but not a harmless one: in Chromium 156 the same sequence crashed the page’s renderer, and it still did on 2 November 2026.[^ch05-3][^ch05-18]
 
 The rules say what the browser will accept. Chrome’s guidance covers what agents handle well. Name tools with verbs that say exactly what happens, and separate doing something from starting something: `create-event` should create the event, while `start-event-creation-process` should only bring the user to the form.[^ch05-1] Chrome’s security guide also suggests keeping tool and parameter names to about 30 characters (Table 5.4).[^ch05-19] Fjord Table uses `snake_case` verbs: `search_availability` searches, `book_table` books.
 
@@ -376,9 +376,9 @@ function checkBookingInput({ date, time, partySize }) {
 }
 ```
 
-Let’s look at what the schema leaves out. There’s no name, phone or email, for the privacy reasons we just discussed, and no `additionalProperties: false`, in line with “loosely in schema.” The `time` description tells the agent where valid values come from (“from search_availability”), which links the two tools without a scripted sequence. Chrome’s guide calls that “trust the agent”.[^ch05-1]
+The schema has no name, phone or email, for the privacy reasons just discussed, and no `additionalProperties: false`, in line with “loosely in schema.” The `time` description tells the agent where valid values come from (“from search_availability”), which links the two tools without a scripted sequence. Chrome’s guide calls that “trust the agent”.[^ch05-1]
 
-Look also at what `execute` does when something goes wrong. It doesn’t throw. It returns a result with a `status`, a `code` and a sentence that tells the agent what to do next, using the result vocabulary Chapter 11 sets out in full. The reason is in the next section.
+When something goes wrong, `execute` doesn’t throw. It returns a result with a `status`, a `code` and a sentence that tells the agent what to do next, using the result vocabulary Chapter 11 sets out in full. The reason is in the next section.
 
 Finally, note the confirmation step. `bookingPanel.confirmWithUser()` isn’t a WebMCP API. It’s Fjord Table’s ordinary booking form, filled in and shown to the user, who presses Confirm the same way they would without an agent. The draft has no standard API for asking the user something in the middle of a call. Chapter 4 described the `requestUserInteraction()` debate, and Part IV returns to it. Until that’s settled, the site’s own UI is the most dependable way to keep the user in the loop for a consequential tool.
 
@@ -403,7 +403,7 @@ The callback type returns a `Promise`, but you can write a plain function too: W
 
 ### Resolve when the page agrees
 
-When should a tool report success? Chrome’s best-practices guide answers it in its 30 October 2026 update: “Only resolve a tool execution with success when the output matches the application state.”[^ch05-1] For `search_availability`, that’s why `bookingPanel.showSlots(slots)` runs before the `return`: by the time the agent reads the slots, the panel shows the same slots. For `book_table`, the guest’s confirmation and the booking reference come back from the site’s own booking flow, and only then does the tool return `booked`. In simple words: the agent and the user should never be looking at two different truths.
+When should a tool report success? Chrome’s best-practices guide answers it in its 30 October 2026 update: “Only resolve a tool execution with success when the output matches the application state.”[^ch05-1] For `search_availability`, that’s why `bookingPanel.showSlots(slots)` runs before the `return`: by the time the agent reads the slots, the panel shows the same slots. For `book_table`, the guest’s confirmation and the booking reference come back from the site’s own booking flow, and only then does the tool return `booked`. The agent and the user should never be looking at two different truths.
 
 ### What happens to your return value
 
@@ -431,7 +431,7 @@ Sources: the specification’s “invoke the execute callback” steps and tool 
 
 Two rows deserve emphasis.
 
-*A callback that returns nothing fails, for now.* Under the current draft, a tool that does its job and falls off the end of the function produces an error for the caller, not an empty success, because `JSON.stringify(undefined)` is `undefined`. Chromium 156 doesn’t follow the draft here: it resolves the call with the nine-character string `undefined`, which an agent will read as a strange success.[^ch05-3] And this row is likely to change. In issue #361, opened on 23 October 2026 with the same Chrome behaviour confirmed in Chrome 158 and in stable Chrome 156, François Beaufort replied on 26 October that `undefined` shouldn’t reject, because “tools that perform an action and return nothing are very common”, and proposed mapping it to `null`, so the result becomes the string `"null"`. Functions, symbols and `BigInt` values would keep failing.[^ch05-34] That proposal isn’t in the draft yet. Bottomline: always return something, even if it’s only `{ status: 'ok' }`. Then the question doesn’t matter in any of the three worlds.
+*A callback that returns nothing fails, for now.* Under the current draft, a tool that does its job and falls off the end of the function produces an error for the caller, not an empty success, because `JSON.stringify(undefined)` is `undefined`. Chromium 156 doesn’t follow the draft here: it resolves the call with the nine-character string `undefined`, which an agent will read as a strange success.[^ch05-3] And this row is likely to change. In issue #361, opened on 23 October 2026 with the same Chrome behaviour confirmed in Chrome 158 and in stable Chrome 156, François Beaufort replied on 26 October that `undefined` shouldn’t reject, because “tools that perform an action and return nothing are very common”, and proposed mapping it to `null`, so the result becomes the string `"null"`. Functions, symbols and `BigInt` values would keep failing.[^ch05-34] That proposal isn’t in the draft yet. Until it is, always return something, even if it’s only `{ status: 'ok' }`. Then the question doesn’t matter in any of the three worlds.
 
 *Throwing tells the agent almost nothing.* When your callback rejects, the caller gets a `DOMException` named `OperationError` (in Chromium 156, `UnknownError`, see the callout below), and that’s all. The spec passes only the name of the failure across, “rather than any internal JavaScript exception object or message,” so that implementation details and stack traces don’t leak across origins.[^ch05-31] Your carefully worded error message never reaches the agent, and an agent that can’t see why a call failed can’t fix it. That’s why Listing 5.4 *returns* its failures. Chrome’s tool-building guide gives the same advice: a response to a bad call “should act as a guide rather than a dead end”, with messages such as “Invalid date format. Provide the date in YYYY-MM-DD format.”[^ch05-30] Keep `throw` for real bugs. Anything the agent can recover from should be a return value.
 
@@ -441,7 +441,7 @@ The platform-defined failures, which you don’t control, form a short list in t
 
 What *shape* should a result have? The draft doesn’t say. Chrome’s Imperative API examples return plain strings (“Booked 2 passenger(s) on flight …”).[^ch05-8] The explainer’s main example returns an MCP-style `{ content: [{ type: 'text', text: '…' }] }` object.[^ch05-36] Fjord Table returns small JSON objects. All three are valid under the draft, because all three serialize. The differences show up downstream: how a given browser agent presents your string to its model, and how much your in-page agent has to parse.
 
-My advice for now: return a small, flat object with a `status` field and short, readable values. It reads well to a model when stringified, it’s easy for an in-page agent to parse (Listing 4.2 already does `JSON.parse(json).slots`), and it fits Chrome’s 1,500-character output budget without a truncation scheme of your own. Of course, it also sidesteps the whole string-quoting question from issue #361.
+My advice for now: return a small, flat object with a `status` field and short, readable values. It reads well to a model when stringified, it’s easy for an in-page agent to parse (Listing 4.2 already does `JSON.parse(json).slots`), and it fits Chrome’s 1,500-character output budget without a truncation scheme of your own. It also sidesteps the whole string-quoting question from issue #361.
 
 > **Still in flux:** Results are the part of the API that moves most.
 >
@@ -491,15 +491,15 @@ agentTools.abort();   // the tool is gone
 
 When the signal aborts, the browser runs its abort steps. It removes the tool from the map, notifies documents with `toolchange` as it does for registration, and rejects the registration promise with the signal’s reason (which has no effect if the promise has already resolved).[^ch05-12][^ch05-43] Pull request #147 introduced the signal on 26 March 2026, and pull request #202 added the rejection on 17 June.[^ch05-6][^ch05-44]
 
-The design follows from the principle in issue #130: only the code that registered a tool should be able to unregister it. An `unregisterTool(name)` method would let any script on the page remove any tool whose name it could guess. The platform already had a model for this: `addEventListener()` accepts a `signal` that removes the listener when aborted, and the editors pointed to that precedent.[^ch05-6] In simple words, whoever holds the controller holds the right to remove the tool.
+The design follows from the principle in issue #130: only the code that registered a tool should be able to unregister it. An `unregisterTool(name)` method would let any script on the page remove any tool whose name it could guess. The platform already had a model for this: `addEventListener()` accepts a `signal` that removes the listener when aborted, and the editors pointed to that precedent.[^ch05-6] Whoever holds the controller holds the right to remove the tool.
 
 Three behaviours are worth knowing before you build on this.
 
 - *One controller can remove many tools.* Register several tools with the same signal, and a single `abort()` removes them all. That suits a view that owns a group of tools.
 - *An aborted signal doesn’t register.* If the signal is already aborted when you call `registerTool()`, nothing is registered and the promise rejects with the abort reason. If you abort before the promise settles, the tool is removed and the promise rejects. Listing 5.3 treats both cases as normal.[^ch05-12]
-- *Unregistering doesn’t cancel calls already running.* The spec is explicit: unregistration “does not cancel an execution that has already invoked its `ToolExecuteCallback`,” even when the callback unregisters its own tool. The registration signal controls whether the tool is *available*, and the per-call signal controls one *call*.[^ch05-43] Chrome’s guide says the same: since Chrome 153, unregistering a tool no longer cancels in-flight executions.[^ch05-8] If Ingrid closes the booking view while `book_table` is waiting for her to confirm, the call carries on until the view’s own code ends it.
+- *Unregistering doesn’t cancel calls already running.* The spec is explicit: unregistration “does not cancel an execution that has already invoked its `ToolExecuteCallback`,” even when the callback unregisters its own tool. The registration signal controls whether the tool is *available*, and the per-call signal controls one *call*.[^ch05-43] Chrome’s guide says the same: since Chrome 153, unregistering a tool no longer cancels in-flight executions.[^ch05-8] If the guest closes the booking view while `book_table` is waiting for confirmation, the call carries on until the view’s own code ends it.
 
-That last point connects to another rule from the best-practices update of 30 October 2026, “establish explicit commit points”: define when cancellation can still stop a change, and remember that “if you receive a later abort signal, it’s possible the change was not cancelled and still completed.”[^ch05-1] Chapter 6 builds on it when we get to cancellation.
+That last point connects to another rule from the best-practices update of 30 October 2026, “establish explicit commit points”: define when cancellation can still stop a change, and remember that “if you receive a later abort signal, it’s possible the change was not cancelled and still completed.”[^ch05-1] Chapter 6 builds on it in the cancellation section.
 
 ### Registering by page state
 

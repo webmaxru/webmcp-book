@@ -10,7 +10,7 @@ Fjord Table is a page. Its tools live in a few module scripts, its booking view 
 
 Most of the web you’ll make agent-ready doesn’t look like that. It looks like Trailhead: a single-page store written in React, where “the page” is a tree of components that mount and unmount while the person searches, compares and checks out. State lives in stores that several components share, and the URL changes without a document ever reloading. In that world `registerTool()` raises questions Fjord Table never had to answer. Which component owns a tool? What happens to the tool when that component unmounts? What does React’s development mode do to code that registers something in an effect? And when an agent is halfway through a checkout and the person presses Back, who is responsible for the dialog that is still waiting for an answer?
 
-The good news first: the API doesn’t change in a framework. `document.modelContext` is still one object per document, tools are still registered with a dictionary and removed by aborting a signal, and every call still arrives with its own cancellation signal.[^ch10-2] What changes is who calls those methods, and when. So this chapter is about getting the “who” and the “when” right. We tie registration to component and dependency-injection lifecycles, keep tools thin over the app logic we already have, let the set of tools follow the route, unregister without breaking calls that are already running, and keep the agent and the person in step about what changed.
+The API doesn’t change in a framework. `document.modelContext` is still one object per document, tools are still registered with a dictionary and removed by aborting a signal, and every call still arrives with its own cancellation signal.[^ch10-2] What changes is who calls those methods, and when. This chapter gets the “who” and the “when” right. It ties registration to component and dependency-injection lifecycles, keeps tools thin over existing application logic, lets the set of tools follow the route, unregisters without breaking calls that are already running, and keeps the agent and the person in step about what changed.
 
 The main example is Trailhead, the outdoor-gear store that runs through Parts III to VI. Table 10.1 lists the tools it ends this chapter with, and where each one lives.
 
@@ -26,7 +26,7 @@ The main example is Trailhead, the outdoor-gear store that runs through Parts II
 
 The React code builds with Vite 8.3.4 and TypeScript 7.0.2 against React 19.3.1, React Router 8.4.0 and `usewebmcp` 6.0.3. Those were the current versions on npm on 14 October 2026, and on 2 November 2026 they still were.[^ch10-3] Every listing is in the book’s companion repository, together with Playwright tests that run the built app twice: once against a small mock of `document.modelContext`, and once against Chromium 156’s own implementation with the `WebMCPTesting` feature switched on.[^ch10-4] When this chapter says “in Chromium 156”, it means one of those tests. (Chrome 156 reached the Stable channel on 20 October 2026, so the version the tests use is no longer a preview.[^ch10-21])
 
-Later in the chapter we look at Vue briefly, and then leave React for Angular, which ships its own experimental WebMCP support built on dependency injection and Signal Forms.
+Later, this chapter looks at Vue briefly, and then leaves React for Angular, which ships its own experimental WebMCP support built on dependency injection and Signal Forms.
 
 ## What a framework integration has to do
 
@@ -83,8 +83,6 @@ export function useAgentTool(tool: AgentTool, enabled = true): void {
 }
 ```
 
-Let’s have a look at the numbered comments.
-
 ① A ref holds the tool from the latest render. It’s updated in a layout effect, so it’s current before any passive effect or agent call can read it. The function registered with the browser never changes: it looks up `latest.current.execute` at call time, so every call runs against current state.
 
 ② The effect’s dependency is a serialized copy of the agent-facing metadata. A re-render that changes only state leaves that string the same, and nothing is re-registered. A new description produces a new string, and React runs the cleanup (unregister) and then the effect again (register).
@@ -101,7 +99,7 @@ It isn’t. The specification runs the abort steps synchronously when the signal
 
 ### The bug only a real browser caught
 
-The first version of Listing 10.1 copied the metadata out of the serialized string with `JSON.parse()`. It passed every test against the mock and failed against Chromium. The reason is a small one. `JSON.stringify()` turns a missing `inputSchema` into `null`, and Chromium 156 rejects `inputSchema: null` with a `TypeError`: “Failed to read the 'inputSchema' property from 'ModelContextTool': Failed to convert value to 'object'.” An `undefined` member, on the other hand, is simply treated as absent, which is what Web IDL dictionaries do.[^ch10-7] The mock had been more forgiving than the browser. The fix was to read the metadata from the ref instead, and the mock now rejects `null` the way Chromium does. Bottomline: run your tests against a real implementation as well as a mock. Chapter 14 comes back to this.
+The first version of Listing 10.1 copied the metadata out of the serialized string with `JSON.parse()`. It passed every test against the mock and failed against Chromium. The reason is a small one. `JSON.stringify()` turns a missing `inputSchema` into `null`, and Chromium 156 rejects `inputSchema: null` with a `TypeError`: “Failed to read the 'inputSchema' property from 'ModelContextTool': Failed to convert value to 'object'.” An `undefined` member, on the other hand, is simply treated as absent, which is what Web IDL dictionaries do.[^ch10-7] The mock had been more forgiving than the browser. The fix was to read the metadata from the ref instead, and the mock now rejects `null` the way Chromium does. Run your tests against a real implementation as well as a mock. Chapter 14 comes back to this.
 
 ### The whole set, or none of it
 
@@ -109,7 +107,7 @@ Since 30 October 2026 Chrome’s best-practices page (I’m one of its co-author
 
 A hook per tool doesn’t give you that for free. Each hook registers its own tool, so if one registration fails (a name that is already taken, for example), its siblings stay registered. The raw API makes the batch version easy, though, because one `AbortSignal` can be passed to several `registerTool()` calls. In a quick probe in Chromium 156, two tools registered with the same signal disappeared together when it was aborted. A batch of two in which the second name was already taken got one fulfilled promise and one rejected with an `InvalidStateError`, and aborting the shared signal removed the tool that had made it in. So an all-or-nothing hook is Listing 10.1 with an array: one controller, every registration on its signal, and `controller.abort()` as soon as any of the promises rejects.
 
-Trailhead doesn’t need that, and I think it’s worth saying why. Its four app-wide tools don’t form a workflow that breaks when one of them is missing: search is useful without a cart, and the cart is useful without a comparison. The one step that does depend on the others, `checkout`, lives on its own page with its own lifetime, as we’ll see shortly. If your tools only make sense together (a wizard with a `start_return` and a `confirm_return`, say), register them as one batch.
+Trailhead doesn’t need that. Its four app-wide tools don’t form a workflow that breaks when one of them is missing: search is useful without a cart, and the cart is useful without a comparison. The one step that does depend on the others, `checkout`, lives on its own page with its own lifetime, as the cart page shows later in this chapter. If your tools only make sense together (a wizard with a `start_return` and a `confirm_return`, say), register them as one batch.
 
 ## React: two hooks
 
@@ -194,7 +192,7 @@ Compare it with Listing 10.1, and you’ll see the same contract. The hook regis
 
 Two details in the listing deserve a closer look.
 
-**Schema-driven types.** The schemas are imported from modules where they are declared `as const`. With a literal schema, `useWebMCP` infers the type of the handler’s `input` from it, using the `webmcp-types` definitions. That’s why `input.skus.join(',')` in `compare_products` type-checks: TypeScript knows that `skus` is an array of strings.[^ch10-12] Please note: the inference is only a type. The package says it plainly: the schema “is registered as metadata”, and “the hook passes runtime input to the handler without validation or transformation”.[^ch10-12] The browser doesn’t validate calls either (Chapter 5), so every handler in Trailhead still checks its input in code.
+**Schema-driven types.** The schemas are imported from modules where they are declared `as const`. With a literal schema, `useWebMCP` infers the type of the handler’s `input` from it, using the `webmcp-types` definitions. That’s why `input.skus.join(',')` in `compare_products` type-checks: TypeScript knows that `skus` is an array of strings.[^ch10-12] The inference is only a type. The package says it plainly: the schema “is registered as metadata”, and “the hook passes runtime input to the handler without validation or transformation”.[^ch10-12] The browser doesn’t validate calls either (Chapter 5), so every handler in Trailhead still checks its input in code.
 
 **No `inputSchema` on `get_cart`.** A tool that takes no input can leave the schema out. Chromium 156 accepts that, and the hook passes the member only when you set it.
 
@@ -314,7 +312,7 @@ The store is ordinary TypeScript. `add()` and `placeOrder()` update a snapshot a
 
 One more property of this store turns out to matter later. Every change creates a new snapshot object, so the identity of the snapshot is a version number for free. Keep that in mind until the checkout section.
 
-You can use whatever state library your app already has, of course. What matters is that the state a tool needs doesn’t belong to a component that might unmount.
+You can use whatever state library your app already has. What matters is that the state a tool needs doesn’t belong to a component that might unmount.
 
 ## Routing and per-view tool sets
 
@@ -554,9 +552,9 @@ Chromium 156 dispatches both events. `toolactivated` arrives as a `ToolActivated
 
 Since 16 October 2026 Chrome’s imperative-API page has a Vue section too. It says Vue “has experimental support for WebMCP using the @vueuse/core package”, with a `useWebMCP` composable “tied to the current Vue scope lifecycle” that “also supports reactive and conditional tool registration, and automatically normalizes execution results”.[^ch10-8]
 
-VueUse’s documentation describes the same contract we built in Listing 10.1, in Vue terms. The tool registers when the composable runs and unregisters when the scope is disposed. Name, description, schema, annotations and `enabled` accept refs or getters, and changing one of the agent-facing fields registers the tool again, while `execute` is read live at call time, “so a changing closure never churns the registration”. Results are normalized exactly as in Chrome’s React hook: a string becomes a `content` block, a thrown value becomes an `isError` result. The composable returns `isSupported`, `isRegistered` and `error`.[^ch10-23]
+VueUse’s documentation describes the same contract as Listing 10.1, in Vue terms. The tool registers when the composable runs and unregisters when the scope is disposed. Name, description, schema, annotations and `enabled` accept refs or getters, and changing one of the agent-facing fields registers the tool again, while `execute` is read live at call time, “so a changing closure never churns the registration”. Results are normalized exactly as in Chrome’s React hook: a string becomes a `content` block, a thrown value becomes an `isError` result. The composable returns `isSupported`, `isRegistered` and `error`.[^ch10-23]
 
-There is no Vue version of Trailhead in the demos folder, so I won’t print untested code here. If your app is written in Vue, the five jobs from the beginning of this chapter are your checklist, and VueUse’s composable ticks all of them.
+There is no Vue version of Trailhead in the demos folder, so this chapter doesn’t print untested code. If your app is written in Vue, the five jobs from the beginning of this chapter are your checklist, and VueUse’s composable ticks all of them.
 
 ## Angular: tools in the injector
 

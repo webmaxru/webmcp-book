@@ -4,15 +4,15 @@
 >
 > — Anthropic, “Introducing the Model Context Protocol”[^ch03-1]
 
-## A tent, an order and a protocol
+## A worked example: a shop the assistant can call
 
-Lars is planning three nights in Jotunheimen at the end of October. He has two questions for his AI assistant. Is there a two-person tent under 4,000 kroner that Trailhead, his favourite Norwegian outdoor-gear shop, actually has in stock? And where is the order he placed last week? He doesn’t have Trailhead’s website open. He is in the assistant’s desktop app, and the assistant answers both questions in one go: the Fjellheim 2 Tent at 3,499 NOK, in stock, rated 4.6, and order TH-100231, shipped with Posten, arriving on Saturday.
+A customer is planning three nights in Jotunheimen at the end of October. The customer has two questions for an AI assistant. Is there a two-person tent under 4,000 kroner that Trailhead, a Norwegian outdoor-gear shop, actually has in stock? And where is the order placed last week? The customer doesn’t have Trailhead’s website open. The customer is in the assistant’s desktop app, and the assistant answers both questions in one go: the Fjellheim 2 Tent at 3,499 NOK, in stock, rated 4.6, and order TH-100231, shipped with Posten, arriving on Saturday.
 
-No browser was involved. The assistant didn’t scrape Trailhead’s product pages or guess its way through a tracking form. Somebody at Trailhead had written a small server that offers two operations, `search_products` and `get_order_status`, each with a name, a plain-language description and a JSON Schema for its inputs. Lars (or his company’s IT department) had added that server to the assistant once. From then on the model could see the two tools, decide when to use them and call them with structured arguments. The server ran Trailhead’s own code and sent back structured results.
+No browser was involved. The assistant didn’t scrape Trailhead’s product pages or guess its way through a tracking form. Somebody at Trailhead had written a small server that offers two operations, `search_products` and `get_order_status`, each with a name, a plain-language description and a JSON Schema for its inputs. The customer (or the customer’s IT department) had added that server to the assistant once. From then on the model could see the two tools, decide when to use them and call them with structured arguments. The server ran Trailhead’s own code and sent back structured results.
 
 That arrangement is the *Model Context Protocol* (MCP), and it is the subject of this chapter. Why does a book about WebMCP need a whole chapter on it? For two reasons. First, WebMCP borrows MCP’s vocabulary almost word for word: tools, descriptions, input schemas, annotations, results. Chapter 4 quotes the WebMCP specification’s description of a page that uses it, a Model Context Protocol server that implements tools “in client-side script instead of on the backend”, and that description only means something once you have seen a backend one. Second, most products that become agent-ready will end up with both: a backend MCP server for the moments when the user is anywhere, and WebMCP tools for the moments when the user is on the site. Trailhead will have both by the end of this book.
 
-So this chapter is practical. We look at MCP’s architecture and wire format, at what servers and clients offer each other, and at the big change in the current revision, 2026-07-28, which removed the handshake and made the protocol stateless. Then we build Trailhead’s backend MCP server with the official TypeScript SDK, run it over both standard transports, and test it with an SDK client and the MCP Inspector. Every listing in this chapter runs, and every one of them is in the book’s companion repository, with its tests.
+This chapter is practical. It looks at MCP’s architecture and wire format, at what servers and clients offer each other, and at the big change in the current revision, 2026-07-28, which removed the handshake and made the protocol stateless. It then builds Trailhead’s backend MCP server with the official TypeScript SDK, runs it over both standard transports, and tests it with an SDK client and the MCP Inspector. Every listing in this chapter runs, and every one of them is in the book’s companion repository, with its tests.
 
 ## Where MCP came from
 
@@ -34,9 +34,9 @@ Figure 3.1 puts the three together, with Trailhead’s server on the right.
 
 ![Figure 3.1 — MCP’s client–host–server architecture. The host runs one client per server. Each client speaks JSON-RPC 2.0 to its server over stdio or Streamable HTTP. Trailhead’s server offers two tools, one resource and one prompt, and calls Trailhead’s own catalogue and order services.](images/figure-3-1.png)
 
-The interesting part of the architecture is not the boxes but the walls between them. Among MCP’s stated design principles are that “Servers should be extremely easy to build”, with the host handling the complex orchestration, and that “Servers should not be able to read the whole conversation, nor ‘see into’ other servers.”[^ch03-4] Trailhead’s server never sees what Lars said to his assistant before he asked about tents, and it can’t see that the same assistant is also connected to his calendar. It receives one structured request at a time and answers it. The host decides what to send, and the host decides what the model sees of the answer.
+The interesting part of the architecture is not the boxes but the walls between them. Among MCP’s stated design principles are that “Servers should be extremely easy to build”, with the host handling the complex orchestration, and that “Servers should not be able to read the whole conversation, nor ‘see into’ other servers.”[^ch03-4] Trailhead’s server never sees what the customer said to the assistant before asking about tents, and it can’t see that the same assistant is also connected to the customer’s calendar. It receives one structured request at a time and answers it. The host decides what to send, and the host decides what the model sees of the answer.
 
-Please keep that division of labour in mind, because WebMCP changes it. There the page is the server, the browser plays the host, and the tool runs inside the very tab the user is looking at, with the user’s session. In MCP the server is deliberately kept at arm’s length.
+WebMCP changes that division of labour. There the page is the server, the browser plays the host, and the tool runs inside the very tab the user is looking at, with the user’s session. In MCP the server is deliberately kept at arm’s length.
 
 ## The wire: JSON-RPC 2.0, one request at a time
 
@@ -44,7 +44,7 @@ MCP messages are JSON-RPC 2.0 messages.[^ch03-2] JSON-RPC is a small, old and st
 
 How the messages travel is the job of a *transport*. The 2026-07-28 revision defines two standard ones.[^ch03-6]
 
-- *stdio.* The host launches the server as a child process, and the two talk over standard input and output. Each message is one line of JSON. The binding is strict about it: the server “MUST NOT write anything to its stdout that is not a valid MCP message”, though it may log to stderr.[^ch03-7] This is the transport for local servers: a developer tool, a file-system server, or Trailhead’s server running on Lars’s laptop.
+- *stdio.* The host launches the server as a child process, and the two talk over standard input and output. Each message is one line of JSON. The binding is strict about it: the server “MUST NOT write anything to its stdout that is not a valid MCP message”, though it may log to stderr.[^ch03-7] This is the transport for local servers: a developer tool, a file-system server, or Trailhead’s server running on the customer’s laptop.
 - *Streamable HTTP.* The server exposes a single HTTP endpoint (conventionally `/mcp`), and the client sends each JSON-RPC message as its own POST. The server answers either with a single JSON object or with a Server-Sent Events stream scoped to that one request, carrying progress notifications followed by the final response.[^ch03-8] This is the transport for remote servers, the kind Trailhead would run in production for all its customers.
 
 ### The handshake that went away
@@ -111,7 +111,7 @@ The response says three things. The server speaks protocol version 2026-07-28. I
 
 Capability negotiation hasn’t disappeared. It has moved. Instead of being agreed once at the start of a session, it happens on every request. The client declares its capabilities in each request’s `_meta`, and the server advertises its own in the `server/discover` result. Both sides must respect what the other has declared.[^ch03-4] If a client asks for a version the server doesn’t support, the server answers with error code `-32022`, `UnsupportedProtocolVersionError`, listing the versions it does support, and the client can retry with one of them.[^ch03-12]
 
-Why does this matter? Because a stateless server is far easier to run: “Any request can now land on any server instance behind a plain round-robin load balancer without needing shared storage.”[^ch03-9] Service workers taught me the same lesson years ago: the browser can stop them at any moment, so the code that survives is the code that keeps no state between events. Figure 3.2 compares the two styles.
+Why does this matter? Because a stateless server is far easier to run: “Any request can now land on any server instance behind a plain round-robin load balancer without needing shared storage.”[^ch03-9] A service worker has the same constraint: the browser can stop it at any moment, so the code that survives is the code that keeps no state between events. Figure 3.2 compares the two styles.
 
 ![Figure 3.2 — The two eras of MCP. Up to revision 2025-11-25, a client opens a session with an initialize handshake and later requests depend on it. From 2026-07-28, every request carries its own version, identity and capabilities, server/discover is optional, and when a tool needs input from the user mid-call, the server answers input_required and the client retries with the answers.](images/figure-3-2.png)
 
@@ -177,7 +177,7 @@ Elicitation is the MCP feature WebMCP most visibly lacks, and the gap is a live 
 
 ## Building Trailhead’s MCP server
 
-Time to build. Trailhead’s backend server is small on purpose. It offers the two tools from the book’s project list, `search_products` and `get_order_status`, plus the returns-policy resource and the packing-list prompt, so that you have seen all three server features in working code. It’s written in plain JavaScript modules for Node.js, so it runs without a build step, and it uses the official MCP TypeScript SDK, which ships its own type definitions for anyone who prefers TypeScript.
+Trailhead’s backend server is small on purpose. It offers the two tools from the book’s project list, `search_products` and `get_order_status`, plus the returns-policy resource and the packing-list prompt, so that you have seen all three server features in working code. It’s written in plain JavaScript modules for Node.js, so it runs without a build step, and it uses the official MCP TypeScript SDK, which ships its own type definitions for anyone who prefers TypeScript.
 
 ### The SDK, version 2
 
@@ -463,7 +463,7 @@ A server is only half of a conversation. In this section we talk to Trailhead’
 
 Listing 3.8 is a complete MCP client in about a dozen lines. It launches the stdio server as a child process, lists the tools and calls `search_products` with the question from the start of the chapter.
 
-**Listing 3.8** `trailhead-mcp-server/src/client.js` — a minimal client that asks Lars’s question
+**Listing 3.8** `trailhead-mcp-server/src/client.js` — a minimal client that asks the customer’s question
 
 ```js
 import { Client } from '@modelcontextprotocol/client';
@@ -512,7 +512,7 @@ Tools: search_products, get_order_status
 }
 ```
 
-Listing 3.9 shows what the client and the server actually said to each other for Lars’s second question. Like Listing 3.1, it was captured from the stdio pipe by a small logging proxy in the repository, and the tests check that the listing still matches the live exchange.
+Listing 3.9 shows what the client and the server actually said to each other for the customer’s second question. Like Listing 3.1, it was captured from the stdio pipe by a small logging proxy in the repository, and the tests check that the listing still matches the live exchange.
 
 **Listing 3.9** `trailhead-mcp-server/wire/listing-3-9.txt` — a `tools/call` request and response, captured over stdio
 
@@ -606,7 +606,7 @@ The second direction is *MCP Apps*, an official extension that lets a server ret
 
 For Trailhead, an MCP App could show a real comparison table of two tents, with photos and an “Add to cart” button, inside the chat: a small piece of Trailhead’s website carried into the conversation.
 
-WebMCP is the mirror image. MCP Apps bring the site’s UI into the agent’s conversation. WebMCP brings the agent’s tools into the site’s UI, the real one, in the user’s real tab. Chrome’s documentation frames the difference with a line I use as the epigraph of Chapter 4: “Instead of your application being a guest within an agent, the agent is a guest on your platform.”[^ch03-31] Both answers exist because both situations exist. When Lars is in his assistant, an MCP App is the best Trailhead can do. When Lars is on trailhead.example with the assistant panel open, the page itself can do better.
+WebMCP is the mirror image. MCP Apps bring the site’s UI into the agent’s conversation. WebMCP brings the agent’s tools into the site’s UI, the real one, in the user’s real tab. Chrome’s documentation frames the difference with the epigraph of Chapter 4: “Instead of your application being a guest within an agent, the agent is a guest on your platform.”[^ch03-31] Both answers exist because both situations exist. When the customer is in the assistant, an MCP App is the best Trailhead can do. When the customer is on trailhead.example with the assistant panel open, the page itself can do better.
 
 ## Spec versioning: what “2026-07-28 (latest)” means for authors
 
