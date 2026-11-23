@@ -10,7 +10,7 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 
 > **Still in flux: the vocabulary itself**
 >
-> WebMCP is a Community Group draft, and its words move with it. During 2026 the entry point has changed objects, two methods have gone, the annotations have moved into their own dictionary and the declarative attributes have left the specification (Appendix D). Entries marked *removed* or *proposed* describe things you will meet in older code, in Chrome’s trial or in open issues, but not in the 27 October 2026 draft. And a few entries describe open pull requests that could change the vocabulary again, such as a `Tool` interface in place of `RegisteredTool`.
+> WebMCP is a Community Group draft, and its words move with it. During 2026 the entry point has changed objects, two methods have gone, the annotations have moved into their own dictionary, the declarative attributes have left the specification (Appendix D) and `getTools()` has changed from a `RegisteredTool` dictionary to a `Tool` interface (Appendix E). Entries marked *removed* or *proposed* describe things you will meet in older code, in Chrome’s trial or in open issues, but not in the 23 November 2026 draft. One open explainer, pull request #375, would move the API again (Appendix F).
 
 ## B.1 Terms, A to Z
 
@@ -128,7 +128,7 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 
 ### G
 
-**`getTools()`.** The `ModelContext` method an in-page agent uses to list the tools it may call, from its own document and from frames that exposed tools to it. It resolves with `RegisteredTool` objects, sorted by name. *Chapter 7.*
+**`getTools()`.** The `ModelContext` method an in-page agent uses to list the tools it may call, from its own document and from frames that exposed tools to it. It resolves with `Tool` objects, sorted by name. Before Chrome 160.0.8173.0 the entries were `RegisteredTool` dictionaries. *Chapter 7 and Appendix E.*
 
 ### H
 
@@ -212,7 +212,7 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 
 **origin-trial token.** The signed string that enables a trial feature on a registered origin, delivered in a `<meta http-equiv="origin-trial">` tag or an `Origin-Trial` response header. *Chapter 9 and Chapter 15.*
 
-**`outputSchema`.** A JSON Schema describing a tool’s result. MCP has one, paired with `structuredContent`. WebMCP doesn’t yet. Pull request #254 proposes adding it to both the tool definition and `RegisteredTool`, and it was still open on 2 November 2026.[^appb-32] *Chapter 3 (MCP) and Chapter 17 (WebMCP).*
+**`outputSchema`.** A JSON Schema describing a tool’s result. MCP has one, paired with `structuredContent`. WebMCP’s is optional on `ModelContextTool` and on `Tool`. Pull request #254 added it and merged on 2 November 2026. A tool registered without one has `outputSchema` `null` on the `Tool` object. The specification does not yet require `executeTool()` to reject a mismatch (issue #92).[^appb-32] *Chapter 3 (MCP), Chapter 5 and Chapter 17.*
 
 **output injection.** Prompt injection that rides out of your tool in its result, for example in user-generated content the tool returns. Mark such tools with `untrustedContentHint`. *Chapter 12.*
 
@@ -246,7 +246,7 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 
 **`registerTool()`.** The method that adds a tool to a document: `document.modelContext.registerTool(tool, { signal, exposedTo })`. There is no `unregisterTool()`. Aborting the signal unregisters. *Chapter 4 and in detail in Chapter 5.*
 
-**RegisteredTool.** The dictionary `getTools()` returns for each visible tool: its name, title, description, input schema, annotations, and the window and origin it came from. You pass it back to `executeTool()`. Pull request #348, open on 2 November 2026, proposes replacing this dictionary with a `Tool` interface identified by a unique ID, which would fix races between unregistering and executing a tool.[^appb-32] *Chapter 7 and Appendix A.*
+**RegisteredTool.** *Removed from the draft on 19 November 2026.* The dictionary `getTools()` used to return: name, title, description, schemas, annotations, `window` and `origin`. Pull request #348 replaced it with `Tool`. Chrome before 160.0.8173.0 still returns the dictionary. Read `tool.source !== undefined ? tool.source : tool.window`, and do not build these objects by hand (Appendix E).[^appb-32] *Chapter 7, Appendix A and Appendix E.*
 
 **`requestUserInteraction()`.** *Not in the draft.* An early method for asking the user something during a tool call. It still appears on Chrome’s security page. Issue #165 discussed what should replace it, and pull request #204, open on 2 November 2026, proposes `requestUserInput()`, with interactive, form and URL modes modelled on MCP elicitation.[^appb-32] Until something lands, confirmation belongs in your page. *Chapter 4, Chapter 13 and Appendix D.*
 
@@ -298,7 +298,9 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 
 **title.** An optional, human-readable label in a tool definition, for display in browser UI. `getTools()` returns an empty string when it’s missing (issue #224). *Chapter 5 and Chapter 11.*
 
-**tool.** A capability offered to a model as a name, a description written for the model and a schema for its input, plus code that runs when called. In WebMCP a tool is registered by a page and runs in the user’s tab. *Chapter 1 and history in Chapter 2.*
+**`Tool`.** The interface `getTools()` returns for each visible tool, in the 23 November 2026 draft: `name`, `title`, `description`, `inputSchema`, `outputSchema`, `annotations`, `source` and `origin`. A missing schema or annotations value is `null`. `source` is a `WindowProxy`, or `null` if the registering document is no longer fully active. `executeTool()` takes this object and runs that registration, not whatever tool now has the same name. It is not structured-cloneable. The dictionary it replaced is *RegisteredTool*.[^appb-32] *Chapter 7, Appendix A and Appendix E.*
+
+**tool.** A capability offered to a model as a name, a description written for the model and a schema for its input, plus code that runs when called. In WebMCP a tool is registered by a page and runs in the user’s tab. The interface object is `Tool`, above. *Chapter 1 and history in Chapter 2.*
 
 **tool poisoning.** Prompt injection planted in your own tool descriptions, for example by a compromised dependency that registers or rewrites tools. *Chapter 12.*
 
@@ -405,6 +407,6 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 [^appb-29]: Chrome DevTools Protocol, tip-of-tree, “WebMCP” domain: `WebMCP.enable`, `WebMCP.invokeTool`, `WebMCP.cancelInvocation`, `WebMCP.toolsAdded` and related types. Read 15 October 2026. <https://chromedevtools.github.io/devtools-protocol/tot/WebMCP/>
 [^appb-30]: Chrome for Developers, “WebMCP”, section on local testing with `chrome://flags/#enable-webmcp-testing`. Read 15 October 2026. <https://developer.chrome.com/docs/ai/webmcp>
 [^appb-31]: Model Context Protocol specification, version 2026-07-28, Schema Reference, `ToolAnnotations`: `title`, `readOnlyHint` (default false), `destructiveHint` (default true), `idempotentHint` (default false) and `openWorldHint` (default true), the second and third “meaningful only when `readOnlyHint == false`”. Read 15 October 2026. <https://modelcontextprotocol.io/specification/2026-07-28/schema#toolannotations>
-[^appb-32]: webmachinelearning/webmcp pull requests #254 “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`” (François Beaufort, last updated 26 October 2026), #348 “Introduce the `Tool` interface” (Dominic Farolino, opened 15 October 2026, last updated 27 October 2026) and #204 “Replace requestUserInteraction with requestUserInput” (Brandon Walderman, last updated 29 October 2026), all open. Read 2 November 2026 through the GitHub API. <https://github.com/webmachinelearning/webmcp/pulls>
+[^appb-32]: webmachinelearning/webmcp pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`” (François Beaufort, merged 2 November 2026), and pull request #348, “Introduce the `Tool` interface” (Dominic Farolino, merged 19 November 2026). The published draft that includes both is dated 23 November 2026. <https://github.com/webmachinelearning/webmcp/pull/348>
 [^appb-33]: Chrome for Developers, “Imperative API” (last updated 16 October 2026). Version notes: the `debugging` annotation is available from Chrome 156. Framework section: “React has experimental support for WebMCP using the use-webmcp-tool package.” Version from the npm registry, read 2 November 2026. <https://developer.chrome.com/docs/ai/webmcp/imperative-api>
 [^appb-34]: WebMCP specification, Draft Community Group Report, 27 October 2026, §6.3.4 “Interaction with the Same-Origin Policy”, §6.3.4.1 “Two-Sided Opt-In” and §6.3.4.2 “Residual Risks” (added by pull request #326, merged 27 October 2026). Read 2 November 2026. <https://webmachinelearning.github.io/webmcp/#interaction-with-same-origin-policy>

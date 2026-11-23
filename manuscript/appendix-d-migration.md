@@ -247,7 +247,7 @@ In Chromium 156 with `WebMCPTesting`, `webmcpStatus()` returns `'current'` (test
 
 ## D.6 From the first edition to now (October to November 2026)
 
-If you followed the first edition of this book, you don’t need to port anything. The draft of 27 October 2026 has the same IDL as the 15 October draft the first edition used, line for line (I compared the two IDL indexes), and every listing in this appendix ran unchanged in the same Chromium 156 build.[^appd-13] What moved in those weeks is around the API, not in it.
+If you followed the first edition of this book, the draft of 27 October 2026 has the same IDL as the 15 October draft the first edition used, line for line (I compared the two IDL indexes), and every listing in this appendix ran unchanged in the same Chromium 156 build.[^appd-13] What moved between those two drafts is around the API, not in it. The November changes are the callout after Table D.3.
 
 **Table D.3 — What changed between the first edition and November 2026, and what to do**
 
@@ -261,7 +261,7 @@ If you followed the first edition of this book, you don’t need to port anythin
 
 > **Still in flux: the next migration**
 >
-> Four open pull requests would change the API again if they merge: `Tool` as an interface instead of the `RegisteredTool` dictionary (#348), `outputSchema` (#254), `requestUserInput()` (#204) and an `openWorldHint` annotation (#355). Only the first one could break existing code, and only code that builds or copies `RegisteredTool` objects by hand. Appendix A, Section A.9, lists what each would change.[^appd-20] My advice for today is simple: treat what `getTools()` returns as opaque, pass it back to `executeTool()` as it is, and return objects from every tool.
+> `outputSchema` (#254) merged on 2 November 2026, and the `Tool` interface (#348) merged on 19 November 2026. Code that builds or copies `RegisteredTool` objects by hand, or that reads `tool.window`, has to change. Appendix E is that migration: use `tool.source !== undefined ? tool.source : tool.window` until Chrome 160 is stable on 5 January 2027, skip a `null` `source`, and copy fields explicitly instead of stringifying or spreading the tool. What is still open, and not part of that migration, is `requestUserInput()` (#204), an `openWorldHint` annotation (#355), and the generic-calling explainer (#375, Appendix F).[^appd-20] Treat what `getTools()` returns as opaque, pass it back to `executeTool()` as it is, and return objects from every tool.
 
 ## D.7 Checklist
 
@@ -282,7 +282,7 @@ If you followed the first edition of this book, you don’t need to port anythin
 - In Chromium 156 old code fails quietly: `navigator.modelContext` doesn’t exist, guarded code registers nothing, and unguarded code throws.
 - Register one tool per call and unregister by aborting the signal you passed. A small tool-set helper (Listing D.4) keeps the view-switching convenience of `provideContext()` without its risk, and now rolls back a failed set.
 - The execute callback’s second argument is `{ signal }`. `requestUserInteraction()` is gone until a new design lands, so confirmation belongs in your page.
-- Code written for the book’s first edition needs no porting: the 27 October 2026 draft has the same IDL. Return objects, keep `getTools()` results opaque, and watch the four open pull requests.
+- Code written for the book’s first edition matched the 27 October 2026 IDL. Since then, `outputSchema` (#254) and the `Tool` interface (#348) have merged. Read `getTools()` with Appendix E, keep those objects opaque, and pass them back to `executeTool()` unchanged.
 
 [^appd-1]: webmachinelearning/webmcp README, section “Future Exploration: Declarative API”, as changed on 8 October 2026 (its last change as of 2 November 2026) (retrieved November 2026). <https://github.com/webmachinelearning/webmcp#future-exploration-declarative-api>
 [^appd-2]: webmachinelearning/webmcp commit history (`git log` of `main` and `index.bs`), read 14 October 2026 (head 1636b33) and again on 15 October 2026 (head 3279798, 15 October 2026). Every date in Table D.1 was re-checked against the commits that day. Merge times for pull requests #132, #184 and #205 were read from the GitHub API the same day. <https://github.com/webmachinelearning/webmcp/commits/main/index.bs>
@@ -303,6 +303,6 @@ If you followed the first edition of this book, you don’t need to port anythin
 [^appd-17]: webmachinelearning/webmcp pull request #204, “Replace requestUserInteraction with requestUserInput”, by Brandon Walderman, opened 9 June 2026, last updated 29 October 2026, open on 2 November 2026. <https://github.com/webmachinelearning/webmcp/pull/204>
 [^appd-18]: Chrome for Developers, “Imperative API” (last updated 16 October 2026), the React section (`use-webmcp-tool`, `useWebMCP` hook) and the new Vue section (`@vueuse/core`, `useWebMCP` composable) (retrieved November 2026). <https://developer.chrome.com/docs/ai/webmcp/imperative-api>
 [^appd-19]: webmachinelearning/webmcp pull request #326, “Document cross-origin tool exposure and two-sided opt-in in Section 6.”, merged 27 October 2026. The new section is at <https://webmachinelearning.github.io/webmcp/#interaction-with-same-origin-policy>. Pull request: <https://github.com/webmachinelearning/webmcp/pull/326>
-[^appd-20]: webmachinelearning/webmcp pull requests #348, #254, #204 and #355, all open on 2 November 2026 (states read from the GitHub API). <https://github.com/webmachinelearning/webmcp/pulls>
+[^appd-20]: webmachinelearning/webmcp pull request #254, merged 2 November 2026, and pull request #348, merged 19 November 2026. Pull requests #204 and #355 were open on 2 November 2026. Pull request #375 was open on 23 November 2026. <https://github.com/webmachinelearning/webmcp/pulls>
 [^appd-21]: Chromium Dash, release schedule: Chrome 156 stable since 20 October 2026, Chrome 157 stable date 3 November 2026 (retrieved November 2026). Origin trial milestones from Chrome Platform Status, feature 5117755740913664 (trial extended to Chrome 162). <https://chromiumdash.appspot.com/schedule>
 [^appd-22]: Chrome for Developers, “WebMCP best practices” (published 18 May 2026, last updated 30 October 2026), section “Enforce architectural constraints”: register tools all at once, establish explicit commit points (retrieved November 2026). <https://developer.chrome.com/docs/ai/webmcp/best-practices>

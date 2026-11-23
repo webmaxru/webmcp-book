@@ -6,15 +6,15 @@
 
 This appendix collects the whole WebMCP surface in one spot: the WebIDL, every dictionary member, the three events, the Permissions Policy feature and the exceptions each method can reject with. It doesn’t teach (the chapters do that), so each section points back to the chapter that explains the idea.
 
-Everything here was checked against the WebMCP Draft Community Group Report dated 27 October 2026, read on 2 November 2026.[^appa-2] Its IDL is the same, line for line, as the 15 October draft the first edition of this book was written against. What changed in those twelve days is prose (a written-up section on the same-origin policy, new text on agent-ecosystem risks, a fourth editor), not API. If you wrote code against the October shape, it still matches the spec.
+The IDL in Listing A.1 was checked against the WebMCP Draft Community Group Report dated 23 November 2026.[^appa-2] The 27 October 2026 draft, which matched the 15 October draft line for line, is the draft the Chromium 156 probes were written against. Two IDL changes have landed since that draft. Pull request #254, merged 2 November 2026, added optional `outputSchema`. Pull request #348, merged 19 November 2026, replaced `RegisteredTool` with the `Tool` interface. Appendix E is how to read both generations of `getTools()`. The exception names are otherwise the ones in the October draft.
 
 Every behaviour marked “tested” was observed in Chromium 156.0.8078.4 with the `WebMCPTesting` feature switched on, which is what `chrome://flags/#enable-webmcp-testing` turns on in Chrome.[^appa-3] Chrome 156 has been the stable channel since 20 October 2026, and Chrome 157 is due on 3 November 2026.[^appa-23] The probes behind the tables live in the book’s demos repository, in `appendices/a-api-reference/`, and I re-ran all 25 of them on 2 November 2026: they all pass. Where Chromium and the draft disagree, the tables show both columns.
 
 ## A.1 The interface at a glance
 
-Listing A.1 is the specification’s IDL index, unabridged. It’s short, and that tells you something: the whole imperative API is three methods, three events and seven dictionaries.
+Listing A.1 is the specification’s IDL index, unabridged. It’s short, and that tells you something: the whole imperative API is three methods, three events and the `Tool` interface.
 
-**Listing A.1** `appendices/a-api-reference/webmcp.idl` — the WebMCP IDL, from the specification’s IDL index (27 October 2026 draft)
+**Listing A.1** `appendices/a-api-reference/webmcp.idl` — the WebMCP IDL, from the specification’s IDL index (23 November 2026 draft)
 
 ```webidl
 partial interface Document {
@@ -24,8 +24,8 @@ partial interface Document {
 [Exposed=Window, SecureContext]
 interface ModelContext : EventTarget {
   Promise<undefined> registerTool(ModelContextTool tool, optional ModelContextRegisterToolOptions options = {});
-  Promise<sequence<RegisteredTool>> getTools(optional ModelContextGetToolOptions options = {});
-  Promise<DOMString> executeTool(RegisteredTool tool, optional object inputObject, optional ModelContextExecuteToolOptions options = {});
+  Promise<sequence<Tool>> getTools(optional ModelContextGetToolOptions options = {});
+  Promise<DOMString> executeTool(Tool tool, optional object inputObject, optional ModelContextExecuteToolOptions options = {});
 
   attribute EventHandler ontoolchange;
   attribute EventHandler ontoolactivated;
@@ -70,18 +70,19 @@ dictionary ModelContextExecuteToolOptions {
   AbortSignal signal;
 };
 
-dictionary RegisteredTool {
-  required DOMString name;
+[Exposed=Window, SecureContext]
+interface Tool {
+  readonly attribute DOMString name;
   // `title` can be exposed as a `DOMString` since it was taken in by a
   // `USVString`, meaning all unmatched surrogate processing has already been
   // done, and there's no need to do it again on tool exposure.
-  DOMString title;
-  required DOMString description;
-  object inputSchema;
-  object outputSchema;
-  required Window window;
-  required USVString origin;
-  ToolAnnotations annotations;
+  readonly attribute DOMString title;
+  readonly attribute DOMString description;
+  readonly attribute object? inputSchema;
+  readonly attribute object? outputSchema;
+  readonly attribute WindowProxy? source;
+  readonly attribute USVString origin;
+  readonly attribute object? annotations;
 };
 
 [Exposed=Window, SecureContext]
@@ -153,7 +154,7 @@ The wording in Table A.2 paraphrases the draft’s dictionary descriptions.[^app
 
 Both members come from the draft’s registration steps.[^appa-5][^appa-8] Tested in Chromium 156: an already-aborted signal rejects with `AbortError` (the default abort reason), and `exposedTo: ['http://example.com']` rejects with `SecurityError: Only secure origins are allowed in the exposedTo list.` Unregistering a tool doesn’t cancel calls already in flight. Chrome’s documentation dates that behaviour to Chrome 153,[^appa-24] and Chapter 6 shows how to live with it.
 
-## A.3 `getTools(options)` and `RegisteredTool`
+## A.3 `getTools(options)` and `Tool`
 
 ```js
 const tools = await document.modelContext.getTools({ fromOrigins });
@@ -161,18 +162,18 @@ const tools = await document.modelContext.getTools({ fromOrigins });
 
 Returns the tools an in-page agent may see. To be precise: the tools of every document in the tab’s frame tree that is allowed the `tools` feature, is same-origin with the caller or listed in `fromOrigins`, and has exposed the tool to the caller’s origin. The list is sorted by `name`.[^appa-9] The browser’s own agent doesn’t use this method (it has an internal mechanism).[^appa-6] Chapter 7 builds an in-page agent on it.
 
-**Table A.4 — `RegisteredTool` members, as `getTools()` returns them**
+**Table A.4 — `Tool` members, as `getTools()` returns them (23 November 2026)**
 
 | Member | Type | Notes |
 |---|---|---|
 | `name` | `DOMString` | As registered. |
 | `title` | `DOMString` | The empty string when no title was given (tested: `""` in Chromium 156). |
 | `description` | `DOMString` | As registered. |
-| `inputSchema` | `object` | Parsed back from the stored JSON string. Absent when none was given. |
-| `outputSchema` | `object` | Parsed back from the stored JSON string. Optional and absent when none was given. |
-| `window` | `Window` | The window of the document that registered the tool. |
+| `inputSchema` | `object` or `null` | Parsed back from the stored JSON string. `null` when none was given. Chromium 156 omitted the member instead. |
+| `outputSchema` | `object` or `null` | Parsed back from the stored JSON string. `null` when none was given. Chromium 156 dropped it. |
+| `source` | `WindowProxy` or `null` | The registering document’s window, or `null` if that document is no longer fully active. The member was `window` before Chrome 160.0.8173.0. |
 | `origin` | `USVString` | That document’s serialized origin. |
-| `annotations` | `ToolAnnotations` | Present only when the tool was registered with annotations. |
+| `annotations` | `object` or `null` | `null` when the tool was registered without annotations. |
 
 `fromOrigins` follows the same rule as `exposedTo`: every entry must be a URL with a potentially trustworthy origin, or `getTools()` rejects with `SecurityError`.[^appa-10] Tested: an insecure origin and a string that isn’t a URL both reject that way in Chromium 156.
 
@@ -190,7 +191,7 @@ Returns the tools an in-page agent may see. To be precise: the tools of every do
 const text = await document.modelContext.executeTool(tool, { query: 'tent' }, { signal });
 ```
 
-Runs a tool on the document that registered it and resolves with the result as a string. `tool` is a `RegisteredTool`, usually one that `getTools()` returned. The browser looks the tool up again by `name` in the document behind `tool.window` and checks that document’s origin against `tool.origin`, so a hand-made dictionary can’t reach a tool it couldn’t see. A missing `inputObject` becomes `{}`. The options take one member, `signal`: aborting it rejects the promise with the signal’s reason and cancels the execution in the target document.[^appa-6] Chrome’s documentation adds one case the draft doesn’t spell out: when the tool triggers a navigation, the call returns `null` instead of a result.[^appa-24] Pass an object as `inputObject`, too. Chrome deprecated JSON-string input arguments in Chrome 155.[^appa-24]
+Runs a tool on the document that registered it and resolves with the result as a string. `tool` is a `Tool` from `getTools()`. The algorithm uses an internal id that script cannot read, and the tool’s internal window reference. If that document is no longer fully active, the call rejects with `InvalidStateError` before the id is consulted. The public `source` getter is `null` in that same case. If the id is gone, or the tool is not exposed to the caller, the call rejects with `NotFoundError`. A hand-made dictionary is not a `Tool` and cannot reach a tool. A `Tool` from a registration that has since been replaced rejects with `NotFoundError`. Before Chrome 160 the argument was a `RegisteredTool` dictionary and the lookup used `name` and `window` (Appendix E). A missing `inputObject` becomes `{}`. The options take one member, `signal`: aborting it rejects the promise with the signal’s reason and cancels the execution in the target document.[^appa-6] Chrome’s documentation adds one case the draft doesn’t spell out: when the tool triggers a navigation, the call returns `null` instead of a result.[^appa-24] Pass an object as `inputObject`, too. Chrome deprecated JSON-string input arguments in Chrome 155.[^appa-24]
 
 **Table A.5 — What `executeTool()` resolves with (tested, Chromium 156)**
 
@@ -322,30 +323,30 @@ The rows in Table A.8 are from Chrome’s declarative API page (published 18 May
 
 ## A.9 Proposals that would change this page
 
-Nothing below is in the specification. These are open pull requests that touch the IDL or the tables above, as of 15 November 2026. PR #254, which added `outputSchema`, merged on 2 November 2026 and is now reflected in Tables A.1 and A.4.[^appa-29] I list them because the day one of them merges, a table in this appendix goes out of date, and you might want to know which one before your code tells you.
+Nothing below is in the specification. These are open pull requests that would still touch the IDL or the tables above. PR #254, which added `outputSchema`, merged on 2 November 2026 and is in Tables A.1 and A.4. PR #348, which replaced `RegisteredTool` with `Tool`, merged on 19 November 2026 and is in Listing A.1 and Table A.4 (Appendix E).[^appa-29] I list what is still open because the day one of them merges, a table in this appendix goes out of date.
 
-**Table A.9 — Open pull requests against the API, 15 November 2026**
+**Table A.9 — Open pull requests against the API, as checked on 23 November 2026**
 
 | Pull request | Opened by, last update | What it would change | What it means for your code |
 |---|---|---|---|
-| #348, “Introduce the `Tool` interface” | Dominic Farolino, 27 October 2026 | Replaces the `RegisteredTool` dictionary with a `Tool` interface keyed by a unique ID, which fixes races between unregistering and executing a tool and opens the way to executing tools from opaque-origin documents (issue #349). | In-page agents that pass what `getTools()` returned straight back to `executeTool()` should keep working. Code that builds a `RegisteredTool` by hand, or copies and serializes one, is the code to watch. |
+| #375, “Introduce generic tool calling explainer” | Dominic Farolino, 6 November 2026, open on 23 November 2026 | A different API: `window.toolManager`, `getTools()` on `Window`, and `tool.execute()`. Not a change to the merged `Tool` interface. | Do not write to it. Appendix F. |
 | #204, “Replace requestUserInteraction with requestUserInput” | Brandon Walderman, 29 October 2026 | A way for a tool to ask the user for input through the agent, with `interactive`, `form` and `url` modes, aligned with MCP elicitation. | Additive. Until it lands, confirmation stays in your own page (Chapter 13). |
 | #355, “Clarify annotation defaults and add openWorldHint” (draft) and #358, “Say that a hint a tool leaves out is not an assurance” | Kenneth Christiansen, 20 October 2026 | A fifth annotation and clearer wording on what a missing hint means. | Additive. The second one is prose only. |
 
-> **Tip:** Watching these is cheap. Subscribe to the four pull requests on GitHub, and re-run the probes in `appendices/a-api-reference/` whenever one of them merges or a new Chrome version reaches stable. The checks named “Chromium differs” are written to fail on purpose when Chromium catches up with the draft.
+> **Tip:** Watching these is cheap. Subscribe to the open pull requests on GitHub, and re-run the probes in `appendices/a-api-reference/` whenever one of them merges or a new Chrome version reaches stable. The checks named “Chromium differs” are written to fail on purpose when Chromium catches up with the draft. Chrome 160 changes the shape of `getTools()` even though those probes were written for Chromium 156 (Appendix E).
 
 ## A.10 Summary
 
-- The API is `document.modelContext` with three methods, `registerTool(tool, { signal, exposedTo })`, `getTools({ fromOrigins })` and `executeTool(tool, input, { signal })`, plus three events: `toolchange`, `toolactivated` and `toolcancel`. The 27 October 2026 draft has the same IDL as the 15 October one.
+- The API is `document.modelContext` with three methods, `registerTool(tool, { signal, exposedTo })`, `getTools({ fromOrigins })` and `executeTool(tool, input, { signal })`, plus three events: `toolchange`, `toolactivated` and `toolcancel`. `getTools()` returns `Tool` objects. The 27 October 2026 draft returned `RegisteredTool` dictionaries.
 - Unregister by aborting the signal. There’s no `unregisterTool()`, `provideContext()` or `clearContext()` any more (Appendix D).
 - The `tools` Permissions Policy feature, default `'self'`, gates all three methods. Without it you get `NotAllowedError`. Cross-origin access needs all three opt-ins, which the draft now calls two-sided opt-in.
 - `exposedTo` and `fromOrigins` accept only potentially trustworthy origins. Anything else is a `SecurityError`.
 - Chromium 156 reports most execution failures as `UnknownError` where the draft says `NotFoundError`, `OperationError` or `AbortError`, and it resolves results the draft would reject or quote. The spec’s editors say the draft is right about strings. Handle errors by family and return objects.
 - The declarative form attributes left the specification on 8 October 2026 but still work in Chrome.
-- Three open pull requests (`Tool` interface, `requestUserInput` and `openWorldHint`) could change this page. `outputSchema` is in the current draft.
+- `outputSchema` is in the current draft, and it is `null` on a `Tool` when the tool was registered without one. Open proposals that could still change this page are `requestUserInput` (#204), `openWorldHint` (#355) and the generic-calling explainer (#375, Appendix F). The `Tool` interface is already in the draft.
 
 [^appa-1]: WebMCP specification, Draft Community Group Report, 27 October 2026, §3 Supporting concepts: the tool execution error table (“tool not found” → `NotFoundError`, “invalid input” → `DataError`, “tool rejected” and “unserializable result” → `OperationError`, “target document unloaded” → `AbortError`) and the note that tool execution errors are not exposed to the web (retrieved November 2026). <https://webmachinelearning.github.io/webmcp/#tool-execution-error>
-[^appa-2]: WebMCP specification, Draft Community Group Report dated 27 October 2026, editors Brandon Walderman (Microsoft), Khushal Sagar (Google), Dominic Farolino (Google) and Samuel Dallstream (Microsoft, added on 20 October 2026 by pull request #352), published by the W3C Web Machine Learning Community Group (retrieved November 2026). I compared its IDL index with the 15 October 2026 draft used for the first edition: they are identical. The changes in between include pull requests #326 (two-sided opt-in, merged 27 October 2026) and #334 (agent ecosystem risks, merged 20 October 2026), neither of which touches the IDL or the exception names. <https://webmachinelearning.github.io/webmcp/>
+[^appa-2]: WebMCP specification, Draft Community Group Report dated 23 November 2026, editors Brandon Walderman (Microsoft), Khushal Sagar (Google), Dominic Farolino (Google) and Samuel Dallstream (Microsoft), published by the W3C Web Machine Learning Community Group (retrieved 23 November 2026). The 27 October 2026 IDL index matched the 15 October 2026 draft. Pull request #348 (merged 19 November 2026) is the later IDL change: `Tool` replaces `RegisteredTool`. <https://webmachinelearning.github.io/webmcp/>
 [^appa-3]: Chrome for Developers, “WebMCP” overview (published 18 May 2026, last updated 7 October 2026), section “Local WebMCP”: the `chrome://flags/#enable-webmcp-testing` flag (retrieved November 2026). <https://developer.chrome.com/docs/ai/webmcp>
 [^appa-4]: WebMCP specification, §4.1 Extensions to Document and the IDL index: `partial interface Document { [SecureContext, SameObject] readonly attribute ModelContext modelContext; }`. <https://webmachinelearning.github.io/webmcp/#idl-index>
 [^appa-5]: WebMCP specification, §4.2, the `registerTool(tool, options)` method steps: the “tools” check, the name, description and duplicate checks, `inputSchema` serialization and the checks repeated after it, the already-aborted signal, `exposedTo` parsing, and the abort steps that unregister the tool. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool>
@@ -372,6 +373,6 @@ Nothing below is in the specification. These are open pull requests that touch t
 [^appa-26]: webmachinelearning/webmcp issue #361, about how `executeTool()` serializes strings and `undefined` in the spec and in Chrome, opened 23 October 2026, with François Beaufort’s reply of 26 October 2026. Open on 2 November 2026. <https://github.com/webmachinelearning/webmcp/issues/361>
 [^appa-27]: WebMCP specification, §6.3.4 Interaction with the Same-Origin Policy and §6.3.4.1 Enforcing Same-Origin Isolation via Two-Sided Opt-In, added by pull request #326, “Document cross-origin tool exposure and two-sided opt-in in Section 6.”, merged 27 October 2026 (retrieved November 2026). <https://github.com/webmachinelearning/webmcp/pull/326>
 [^appa-28]: webmachinelearning/webmcp pull request #350, “Editorial: sync explainers with spec”, merged 16 October 2026. <https://github.com/webmachinelearning/webmcp/pull/350>
-[^appa-29]: webmachinelearning/webmcp pull requests #348, #204, #355 and #358, all open on 15 November 2026 (states and dates read from the GitHub API); pull request #254 merged on 2 November 2026 and is no longer in the table. <https://github.com/webmachinelearning/webmcp/pulls>
+[^appa-29]: webmachinelearning/webmcp pull request #348, merged 19 November 2026, and pull request #254, merged 2 November 2026. Pull requests #204 and #355 were open on 2 November 2026. Pull request #375 was open on 23 November 2026 (Appendix F). <https://github.com/webmachinelearning/webmcp/pulls>
 
 [^appa-output-schema]: webmachinelearning/webmcp pull request #254, merged 2 November 2026, and issue #92, open on 15 November 2026. <https://github.com/webmachinelearning/webmcp/pull/254> <https://github.com/webmachinelearning/webmcp/issues/92>

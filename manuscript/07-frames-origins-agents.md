@@ -283,18 +283,18 @@ The reason for strictness. A registered tool’s `execute` callback “always ru
 
 Why both sides have to agree. The section calls this “Why Two-Sided Opt-In Matters”: mutual consent “prevents both unauthorized cross-origin actuation and unsolicited tool-list pollution.” Without the provider’s opt-in, a malicious parent page could invoke internal tools inside an embedded third-party widget. Without the consumer’s opt-in, a compromised iframe “could unilaterally expose tools with deceptive names or prompt-injected descriptions” into the parent’s `getTools()` results.[^ch07-19] The section’s own code example is a parent at `https://app.example.com` calling `getTools({ fromOrigins: [...] })` and a widget at `https://widget.example.org` registering with `exposedTo` — Ledgerly and Supportly under other names.
 
-What stays risky. The section names two residual risks. Even after mutual opt-in, the two origins remain separate trust domains: providers must treat arguments as untrusted input, callers must treat cross-origin descriptions and results as untrusted data, and callers “should inspect origin and window on each RegisteredTool to disambiguate tools” with the same name (Listing 7.5 does that). And an agent working across several origins may carry state from one into tool calls on another. The spec calls this “a general risk of agentic browsing across the web rather than a WebMCP-specific threat.”[^ch07-19] Chapter 12 picks up both.
+What stays risky. The section names two residual risks. Even after mutual opt-in, the two origins remain separate trust domains: providers must treat arguments as untrusted input, callers must treat cross-origin descriptions and results as untrusted data, and callers should inspect `origin` and `source` on each `Tool` to tell same-named tools apart (the 27 October draft said `window` on each `RegisteredTool`). Listing 7.5 keys tools by origin and name.[^ch07-19] And an agent working across several origins may carry state from one into tool calls on another. The spec calls this “a general risk of agentic browsing across the web rather than a WebMCP-specific threat.”[^ch07-19] Chapter 12 picks up both.
 
 ## `getTools()` and `executeTool()`: building an in-page agent
 
-With the gates open, Ledgerly can build its assistant. The two methods are small. Listing 7.4 shows their shape from the specification’s IDL, which is unchanged since the first edition.
+With the gates open, Ledgerly can build its assistant. The two methods are small. Listing 7.4 is their shape in the 23 November 2026 draft. The 27 October draft used a `RegisteredTool` dictionary here. Appendix E is the migration.
 
-**Listing 7.4** `ModelContext` — discovery and execution, from the specification’s IDL (27 October 2026 draft, abridged)
+**Listing 7.4** `ModelContext` — discovery and execution, from the specification’s IDL (23 November 2026 draft, abridged)
 
 ```webidl
 partial interface ModelContext {
-  Promise<sequence<RegisteredTool>> getTools(optional ModelContextGetToolOptions options = {});
-  Promise<DOMString> executeTool(RegisteredTool tool,
+  Promise<sequence<Tool>> getTools(optional ModelContextGetToolOptions options = {});
+  Promise<DOMString> executeTool(Tool tool,
                                  optional object inputObject,
                                  optional ModelContextExecuteToolOptions options = {});
 };
@@ -302,14 +302,16 @@ partial interface ModelContext {
 dictionary ModelContextGetToolOptions { sequence<USVString> fromOrigins; };
 dictionary ModelContextExecuteToolOptions { AbortSignal signal; };
 
-dictionary RegisteredTool {
-  required DOMString name;
-  DOMString title;
-  required DOMString description;
-  object inputSchema;
-  required Window window;
-  required USVString origin;
-  ToolAnnotations annotations;
+[Exposed=Window, SecureContext]
+interface Tool {
+  readonly attribute DOMString name;
+  readonly attribute DOMString title;
+  readonly attribute DOMString description;
+  readonly attribute object? inputSchema;
+  readonly attribute object? outputSchema;
+  readonly attribute WindowProxy? source;
+  readonly attribute USVString origin;
+  readonly attribute object? annotations;
 };
 ```
 
@@ -317,10 +319,12 @@ dictionary RegisteredTool {
 
 ### What `getTools()` returns
 
-`getTools()` resolves to a list of `RegisteredTool` dictionaries.[^ch07-21] Most members repeat what the tool’s owner registered: `name`, `title`, `description`, a deep copy of `inputSchema`, and the four annotation hints. Two members are new:
+`getTools()` resolves to a list of `Tool` objects.[^ch07-21] Most members repeat what the tool’s owner registered: `name`, `title`, `description`, a deep copy of `inputSchema` and of `outputSchema`, and the annotations. A schema or an annotations object that was not provided is `null`, not `undefined`. A missing `title` is still `""`. Two members locate the tool:
 
-- `window` is the `Window` of the document that registered the tool. In the tests it was strictly equal to the iframe’s `contentWindow`.
-- `origin` is the serialized origin of that document. The draft explains that it matters for cross-origin tools, because the consumer “cannot otherwise get the tool’s origin from its window.”[^ch07-21]
+- `source` is the `WindowProxy` of the document that registered the tool, or `null` if that document is no longer fully active. In Chromium 156 the member was `window`, and in the tests it was strictly equal to the iframe’s `contentWindow`. This edition has not re-tested that equality for `source` on Chrome 160. The specification’s getter returns that browsing context’s `WindowProxy`.
+- `origin` is the serialized origin of that document. The draft explains that it matters for cross-origin tools, because the consumer cannot otherwise get the tool’s origin from `source`.[^ch07-21]
+
+Read `source` with the fallback in Appendix E (`tool.source !== undefined ? tool.source : tool.window`) until Chrome 160 is stable on 5 January 2027. A `null` `source` means the registering document is gone; `??` would hide that null. Do not `JSON.stringify` a `Tool` or spread it. Both produce an empty result, and `structuredClone` throws a `DataCloneError`.[^ch07-32]
 
 The list covers every document in the caller’s *top-level* frame tree: the method walks the inclusive descendants of the tab’s top-level document, not just the caller’s own descendants.[^ch07-8] That is why the widget, a child frame, could find Ledgerly’s tools above it. Documents in other tabs, popups and openers aren’t included. Issue #227, open since 21 July 2026, argues that discovery should cover the whole browsing context group, and it now has a concrete proposal attached (more on that at the end of the chapter).[^ch07-22] The list is sorted by tool name across all frames, which the tests confirmed: Ledgerly’s `find_invoice` came back between Supportly’s `create_ticket` and `get_ticket_status`. Don’t rely on list position to tell frames apart.
 
@@ -363,11 +367,11 @@ export function watchTools(onChange, signal) {
 
 `executeTool(tool, input, { signal })` runs a tool “on the document it was registered on” and resolves to “the stringified result of the tool’s execution.”[^ch07-20] Chapter 6 followed a call from the agent’s side, so here are only the cross-origin details.
 
-**It takes a dictionary, not a handle.** The first argument is a `RegisteredTool` dictionary. Because it’s a dictionary, any object with the right members will do. In Chromium a shallow copy of a tool from `getTools()` executed normally (tested). What the browser checks is that `window` is a real `Window` in the same tab, that the target document’s origin matches `origin`, that a tool with that `name` exists there, and that it is exposed to the caller.[^ch07-23] You can get a cross-origin `Window` reference only from the frame tree, so in practice the dictionary comes from `getTools()`.
+**It takes the object `getTools()` returned, not a dictionary you built.** The argument is a `Tool`. Callers cannot fabricate one. `executeTool()` looks the tool up by the internal id stored on that object, not by name. If the tool has been unregistered, the call rejects with `NotFoundError` even when a new tool has since been registered under the same name.[^ch07-23] In Chromium 156, when the value was still a `RegisteredTool` dictionary, a shallow copy of a tool from `getTools()` executed normally (tested). That copy is not a `Tool`, and it will not keep working on Chrome 160.
 
-**It doesn’t let you probe.** If any of those last three checks fails, the draft rejects with the same `NotFoundError`, on purpose. A note explains that this “prevents a cross-origin caller from using fabricated `RegisteredTool` dictionaries to probe” the target’s current origin or to “enumerate private tools not exposed” to the caller.[^ch07-23] Chromium 156 gives one answer for all of them too, only with a different name: a copy with a made-up `name` and a copy with a forged `origin` both rejected with `UnknownError` and the same message, “The operation failed for an unknown transient reason” (tested). The spirit of the rule holds, the exception name doesn’t match yet. That is spec lag and not a different design. The draft itself used `UnknownError` for these cases until 8 October 2026, when pull request #339 (commit b206dae) replaced it with `NotFoundError` and the other specific names, and Chromium 156 still implements the older text.[^ch07-30]
+**It doesn’t let you probe.** If the id is gone, or the tool is not exposed to the caller, the draft rejects with the same `NotFoundError`, so the caller cannot tell those two cases apart.[^ch07-23] The 27 October draft used that same error name to stop a caller from probing with a fabricated dictionary. Chromium 156 gave one answer for a made-up `name` and a forged `origin`, only under a different name: both rejected with `UnknownError` and the message “The operation failed for an unknown transient reason” (tested). The draft itself used `UnknownError` for these cases until 8 October 2026, when pull request #339 (commit b206dae) replaced it with `NotFoundError` and the other specific names, and Chromium 156 still implements the older text.[^ch07-30]
 
-> **Still in flux:** Pull request #348, “Introduce the `Tool` interface”, opened by editor Dominic Farolino on 15 October 2026 and last updated on 27 October, would replace the `RegisteredTool` dictionary with a `Tool` interface keyed by an internal identifier. That would fix races between unregistration and execution, and it would make the “any object with the right members” trick above impossible. A related issue, #349, asks for a way to execute tools registered by opaque-origin documents. Both were open on 2 November 2026.[^ch07-31] If #348 lands, code that only ever passes tools it got from `getTools()` (like Listings 7.5 to 7.7) keeps working. Code that builds tool dictionaries by hand won’t.
+> **Note:** Pull request #348 merged on 19 November 2026. Chrome 160.0.8173.0 is where `Tool` replaces `RegisteredTool`. Appendix E has the fallback. Issue #349, executing a tool whose document has an opaque origin, is still unresolved: `executeTool()` rejects that case with `NotSupportedError`.[^ch07-31] Listings 7.5 to 7.7 already pass through the object `getTools()` returned, which is what the new interface requires.
 
 **Only a name crosses back.** When a tool fails, the caller sees a `DOMException` whose name comes from a small table of platform failures. The draft says that passing only the error’s name, rather than “any internal JavaScript exception object or message thrown in targetDocument,” prevents “leaking provider implementation details or stack traces across origins.”[^ch07-23] The tests checked this from the attacker’s side: the widget registered a tool that threw `new Error('db password is hunter2')`, and Ledgerly’s agent got `UnknownError: Tool was executed but the invocation failed…` with no trace of the message. Recoverable failures still belong in the return value, as Listing 7.3 does with `{ status: 'error', code: 'INVALID_INPUT', message: '"priority" must be low, normal or high.' }`, using the result vocabulary Chapter 11 sets out.
 
@@ -513,6 +517,14 @@ Listings 7.8 to 7.10 are a minimal tool inspector built that way.
 ```js
 // Runs in every matching frame, in the extension's isolated world.
 // It shares the frame's DOM and origin, so it sees the frame's own tools.
+
+// `null` means the registering document is gone. `??` would replace that
+// null with `window`. Remove the fallback when Chrome 160 reaches Stable
+// (5 January 2027).
+function toolSource(tool) {
+  return tool.source !== undefined ? tool.source : tool.window;
+}
+
 async function report() {
   if (!('modelContext' in document)) return;
   try {
@@ -521,9 +533,13 @@ async function report() {
       type: 'tools',
       origin: location.origin,
       tools: tools
-        .filter((t) => t.window === window)      // this frame's tools only
-        .map(({ name, description, inputSchema, annotations }) =>
-          ({ name, description, inputSchema, annotations })),
+        .filter((t) => toolSource(t) === window)
+        .map((t) => ({
+          name: t.name,
+          description: t.description,
+          inputSchema: t.inputSchema ?? null,
+          annotations: t.annotations ?? null,
+        })),
     });
   } catch (err) {
     chrome.runtime.sendMessage({ type: 'tools', origin: location.origin, error: err.name });
@@ -534,7 +550,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
   if (msg.type !== 'execute') return;
   (async () => {
     const tools = await document.modelContext.getTools();
-    const tool = tools.find((t) => t.name === msg.name && t.window === window);
+    const tool = tools.find((t) => t.name === msg.name && toolSource(t) === window);
     if (!tool) return reply({ error: 'NotFound' });
     try {
       reply({ result: await document.modelContext.executeTool(tool, msg.args) });
@@ -570,7 +586,7 @@ async function runTool(tabId, frameId, name, args) {
 self.toolInspector = { frames, runTool };
 ```
 
-The design runs one content script in each frame and has each script report only its own frame’s tools, filtered with `tool.window === window`. That comparison works across the isolated world: the `window` member of a tool from the content script’s own frame was strictly equal to the content script’s `window` (tested). The service worker then knows every frame’s tools, keyed by tab and frame ID, and can run a tool in a specific frame with `chrome.tabs.sendMessage(…, { frameId })`. In the test, the worker’s catalog showed Ledgerly’s frame with `find_invoice` and Supportly’s frame with its three tools, and a `search_articles` call routed to Supportly’s frame came back with the article about bank feeds.
+The design runs one content script in each frame and has each script report only its own frame’s tools, filtered with `toolSource(tool) === window`. A `null` `source` fails that test, so a document that is no longer fully active is left out. The fields are copied onto a plain object before `sendMessage`, because a `Tool` is not structured-cloneable. In Chromium 156 the `window` member of a tool from the content script’s own frame was strictly equal to the content script’s `window` (tested). The `source` comparison is what the 23 November specification specifies, and it was not re-tested on Chrome 160 for this edition. The service worker then knows every frame’s tools, keyed by tab and frame ID, and can run a tool in a specific frame with `chrome.tabs.sendMessage(…, { frameId })`. In the test, the worker’s catalog showed Ledgerly’s frame with `find_invoice` and Supportly’s frame with its three tools, and a `search_articles` call routed to Supportly’s frame came back with the article about bank feeds.
 
 ### Notice what that bypassed
 
@@ -598,13 +614,13 @@ My view, for what it’s worth: build your tools as if the general reading might
 
 Issue #227 deserves a closer look, because its proposal touches every listing in the second half of this chapter. On 26 October 2026, following a Community Group resolution, Khushal Sagar posted a concrete design.[^ch07-22] `document.modelContext` would keep only the provider side: `registerTool()` and the `toolactivated` and `toolcancel` events. The consumer side (`getTools()`, `executeTool()` and `toolchange`) would move to a new object, provisionally called `ModelContextClient`, available as `modelContextClient` on any window the caller holds a reference to, so `window.parent.modelContextClient` or `window.opener.modelContextClient`. `exposedTo` would still decide which tools a consumer sees. The same shape would extend to workers, which could register tools on their own global, with the page reaching them through `new Worker(…).modelContextClient` or the service worker controller. Mozilla’s Benjamin VanderSloot agreed with “the bulk of the proposal” while noting that openers increase the attack surface.
 
-Nothing of this is in the draft. If it lands, Listing 7.5 would call `getTools()` on a client object instead of `document.modelContext`, and discovery would reach beyond one tab’s frame tree. The three gates, the `origin` and `window` members, the name-only errors and the advice in this chapter would all carry over. That worker idea is close to Jake Archibald’s “general way to call functions in other environments.”
+Nothing of this is in the draft. If it lands, Listing 7.5 would call `getTools()` on a client object instead of `document.modelContext`, and discovery would reach beyond one tab’s frame tree. The three gates, `origin` and `source`, the name-only errors and the advice in this chapter would all carry over. That worker idea is close to Jake Archibald’s “general way to call functions in other environments.” Pull request #375 is the explainer that writes this direction down. It was open on 23 November 2026 and is not the API in this chapter (Appendix F).
 
-> **Still in flux:** Four open items could change this chapter’s API surface: #236 (reposition WebMCP as a general cross-environment call mechanism, and possibly a second permissions policy),[^ch07-1] #227 (discovery across the browsing context group, with the `ModelContextClient` proposal),[^ch07-22] #317 (let the host decide which frames may expose and use tools, and possibly allow `*` in `exposedTo`)[^ch07-12] and pull request #348 (the `Tool` interface).[^ch07-31] All four were still open on 2 November 2026.
+> **Still in flux:** Three open items could still change this chapter’s API surface: #236 (reposition WebMCP as a general cross-environment call mechanism, and possibly a second permissions policy),[^ch07-1] #227 (discovery across the browsing context group, with the `ModelContextClient` proposal),[^ch07-22] and #317 (let the host decide which frames may expose and use tools, and possibly allow `*` in `exposedTo`).[^ch07-12] Those three were still open on 2 November 2026, and #236’s explainer, pull request #375, was still open on 23 November 2026. The `Tool` interface is no longer in that list. Pull request #348 merged on 19 November 2026.[^ch07-31]
 
 ## The Helpdesk Widget so far
 
-The demos repository folder `chapters/07-frames-origins-agents/` contains everything in this chapter as runnable code. `npm start` serves Ledgerly on `http://localhost:47101` and Supportly on `http://127.0.0.1:47102`, two different origins that are both potentially trustworthy, and rewrites the production origins in the listings to those local ones as it serves them. The files themselves are byte-for-byte the listings. A few small files that the book doesn’t print fill the gaps: the widget’s page and its in-memory helpdesk backend, the confirmation card, Ledgerly’s assistant wiring and its rule-based planner, and a dev-only `document.modelContext` mock. The folder’s README maps every file to its listing.
+The demos repository folder `chapters/07-frames-origins-agents/` contains everything in this chapter as runnable code. `npm start` serves Ledgerly on `http://localhost:47101` and Supportly on `http://127.0.0.1:47102`, two different origins that are both potentially trustworthy, and rewrites the production origins in the listings to those local ones as it serves them. The files themselves matched the listings on that date. Listing 7.9 has since grown a `source`/`window` fallback for Chrome 160 (Appendix E). That fallback was not part of the 2 November run. On Chromium 156 it still selects the same tools, because `source` is absent and `window` is the member the tests compared. A few small files that the book doesn’t print fill the gaps: the widget’s page and its in-memory helpdesk backend, the confirmation card, Ledgerly’s assistant wiring and its rule-based planner, and a dev-only `document.modelContext` mock. The folder’s README maps every file to its listing.
 
 `npm test` runs 30 checks: syntax checks for every script and the manifest, a unit test of the agent loop against the mock, 17 behavioural tests in Chromium 156 with WebMCP enabled across the two origins (Tables 7.1 and 7.3 come from them), and one test that loads Listings 7.8 to 7.10 as an unpacked extension in full Chromium. All 30 passed on 2 November 2026.
 
@@ -617,10 +633,10 @@ Chapter 11 returns to the widget to ask how its tools should be designed and des
 - **Gate 2, exposure.** `registerTool(tool, { exposedTo })` lists the origins that may see and call a tool. Same-origin callers always can. Non-secure origins reject with `SecurityError`, and there is no wildcard.
 - **Gate 3, request.** `getTools({ fromOrigins })` lists the origins the caller wants tools from. Gates 2 and 3 fail silently: a missing tool just isn’t in the list.
 - Since 27 October 2026 the specification explains the model in §6.3.4, “Interaction with the Same-Origin Policy”: three independent gates, two-sided opt-in against both unauthorized actuation and tool-list pollution, and residual risks that remain after both sides agree.
-- `getTools()` covers the whole top-level frame tree, sorted by name, and each `RegisteredTool` carries `window` and `origin`. Key tools by origin and name, because names are unique only per document. `toolchange` tells you to re-read the list, not what changed.
-- `executeTool()` returns a string, passes cancellation through to the target (`toolcancel`), and lets only an exception name cross origins. The draft uses one `NotFoundError` for forged names, forged origins and unexposed tools. Chromium 156 uses `UnknownError` for those and for thrown errors, navigations and removed frames, because it still follows the draft as it was before 8 October 2026.
+- `getTools()` covers the whole top-level frame tree, sorted by name, and each `Tool` carries `source` and `origin` (`window` before Chrome 160). Key tools by origin and name, because names are unique only per document. `toolchange` tells you to re-read the list, not what changed. Pass the object `getTools()` returned to `executeTool()`. Do not rebuild it.
+- `executeTool()` returns a string, passes cancellation through to the target (`toolcancel`), and lets only an exception name cross origins. The 23 November draft uses one `NotFoundError` when the tool’s id is gone and when the tool is not exposed to the caller. The 27 October draft used that name for a forged name or origin. Chromium 156 uses `UnknownError` for those cases and for thrown errors, navigations and removed frames, because it still follows the draft as it was before 8 October 2026.
 - Extensions can use the page API from content scripts, in every frame (tested with the testing flag). A content script counts as same-origin with its frame, so it sees tools whatever their `exposedTo`. `exposedTo` limits web origins, not installed software.
-- Still open: a dedicated WebExtensions API (#74), discovery beyond one tab and a separate consumer object (#227), host control and possibly a second policy (#317, #236), the `Tool` interface (#348), and whether WebMCP becomes a general cross-environment call mechanism (#236).
+- Still open: a dedicated WebExtensions API (#74), discovery beyond one tab and a separate consumer object (#227), host control and possibly a second policy (#317, #236), and whether WebMCP becomes a general cross-environment call mechanism (pull request #375, Appendix F). The `Tool` interface (#348) merged on 19 November 2026.
 
 Chapter 8 turns from JavaScript to HTML: the declarative API, which lets a form become a tool.
 
@@ -645,10 +661,10 @@ Chapter 8 turns from JavaScript to HTML: the declarative API, which lets a form 
 [^ch07-17]: Julia Pagnucco, “Document cross-origin tool exposure and two-sided opt-in in Section 6.3.4”, webmachinelearning/webmcp pull request #326, opened 28 September 2026, merged 27 October 2026. <https://github.com/webmachinelearning/webmcp/pull/326>
 [^ch07-18]: WebMCP specification, 27 October 2026, §4.2, “notify documents of a tool change”, including the note on `toolchange` timing. <https://webmachinelearning.github.io/webmcp/#notify-documents-of-a-tool-change>
 [^ch07-19]: WebMCP specification, 27 October 2026, §6.3.4 Interaction with the Same-Origin Policy, §6.3.4.1 Enforcing Same-Origin Isolation via Two-Sided Opt-In and §6.3.4.2 Residual Risks. Retrieved November 2026. <https://webmachinelearning.github.io/webmcp/#interaction-with-same-origin-policy>
-[^ch07-20]: WebMCP specification, 27 October 2026, §4.2 ModelContext Interface (IDL) and §4.2.4–§4.2.6. <https://webmachinelearning.github.io/webmcp/#model-context-container>
-[^ch07-21]: WebMCP specification, 27 October 2026, §4.2.6 RegisteredTool Dictionary. <https://webmachinelearning.github.io/webmcp/#registered-tool>
+[^ch07-20]: WebMCP specification, Draft Community Group Report, 23 November 2026, §4.2 ModelContext Interface (IDL) and §4.2.4–§4.2.6 (retrieved 23 November 2026). The 27 October 2026 draft had the same methods with `RegisteredTool` in place of `Tool`. <https://webmachinelearning.github.io/webmcp/#model-context-container>
+[^ch07-21]: WebMCP specification, 23 November 2026, §4.2.6 Tool Interface, including `source`, `origin`, and `null` for a missing schema or annotations (retrieved 23 November 2026). The 27 October draft called this dictionary `RegisteredTool` and named the window member `window`. <https://webmachinelearning.github.io/webmcp/#tool-interface>
 [^ch07-22]: “Tool discovery should not be limited to a single traversable navigable”, webmachinelearning/webmcp issue #227, opened 21 July 2026, open as of 2 November 2026, including Khushal Sagar’s proposal of 26 October 2026 (`ModelContextClient`) and the replies of 30 October 2026. <https://github.com/webmachinelearning/webmcp/issues/227>
-[^ch07-23]: WebMCP specification, 27 October 2026, §4.2, `executeTool()` method steps and their notes on fabricated `RegisteredTool` dictionaries and on passing only a tool execution error across origins. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-executetool>
+[^ch07-23]: WebMCP specification, 23 November 2026, §4.2, `executeTool()` method steps: lookup by the `Tool`’s internal id, `NotFoundError` when that id is gone or the tool is not exposed, and the note that callers cannot fabricate a `Tool` (retrieved 23 November 2026). The 27 October draft described the same error as a defence against fabricated `RegisteredTool` dictionaries. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-executetool>
 [^ch07-24]: WebMCP specification, 27 October 2026, §3.1 Pending tool executions (“cancel a pending tool execution”) and §4.3.2 ToolCancelEvent Interface. <https://webmachinelearning.github.io/webmcp/#pending-tool-executions>
 [^ch07-25]: WebMCP specification, 27 October 2026, §3 Supporting concepts, the tool execution error table, and §3.1 unloading document cleanup steps. <https://webmachinelearning.github.io/webmcp/#supporting-concepts>
 [^ch07-26]: GoogleChromeLabs, “Example Agentic Chrome Extension to test WebMCP”, README (retrieved November 2026), including the on-device backend’s `chrome://flags/#prompt-api-tool-use` requirement. <https://github.com/GoogleChromeLabs/webmcp-extension>
@@ -656,4 +672,5 @@ Chapter 8 turns from JavaScript to HTML: the declarative API, which lets a form 
 [^ch07-28]: Chrome for Developers, “Content scripts” (Chrome Extensions documentation), sections “Work in isolated worlds” and “Specify frames” (`all_frames`). Read 14 October 2026. <https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts>
 [^ch07-29]: “WebExtensions API to enumerate and invoke tools”, webmachinelearning/webmcp issue #74, opened 3 February 2026, open as of 2 November 2026, with comments, including Kenneth Christiansen’s comment of 20 October 2026 referring to the TPAC 2026 breakout session (w3c/tpac2026-breakouts issue #84). <https://github.com/webmachinelearning/webmcp/issues/74>
 [^ch07-30]: webmachinelearning/webmcp pull request #339, “Replace UnknownError with specific DOMException types.” (merged 8 October 2026 as commit b206dae). <https://github.com/webmachinelearning/webmcp/pull/339>
-[^ch07-31]: Dominic Farolino, “Introduce the `Tool` interface”, webmachinelearning/webmcp pull request #348 (opened 15 October 2026, last updated 27 October 2026), and issue #349, “Allow `executeTool()` to execute tools registered by opaque-origin documents”. Both open as of 2 November 2026. <https://github.com/webmachinelearning/webmcp/pull/348>
+[^ch07-31]: Dominic Farolino, “Introduce the `Tool` interface”, webmachinelearning/webmcp pull request #348 (opened 15 October 2026, merged 19 November 2026). Issue #349, “Allow `executeTool()` to execute tools registered by opaque-origin documents”, is still marked unresolved in the 23 November 2026 `executeTool()` steps. <https://github.com/webmachinelearning/webmcp/pull/348>
+[^ch07-32]: Compatibility of `Tool` with `JSON.stringify`, object spread and `structuredClone`, and the Chrome 160.0.8173.0 rollout: see Appendix E and its notes.
