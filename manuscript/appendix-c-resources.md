@@ -275,7 +275,7 @@ Every folder in the demos repository has a README that maps its files to listing
 | `chapters/17-the-road-ahead/` | 17 | Future-proofing: tools as plain data, one adapter that knows the API shape (feature detection, input validation, one signal for the whole catalog), and a probe that reports what a browser supports, from `navigator.modelContext` to whether `outputSchema` survives `getTools()`. |
 | `appendices/a-api-reference/` | Appendix A | The WebMCP IDL and the 25 probes behind Appendix A’s tables, run in Chromium 156. |
 | `appendices/d-migration/` | Appendix D | Before-and-after migration listings, with the “after” code (including the all-or-nothing tool set) tested in Chromium 156. |
-| `appendices/e-tool-interface/` | Appendix E | `read-tool.js`, the `source ?? window` reader for Chrome 160 and earlier Chrome. Not part of the Chromium 156 probe set. |
+| `appendices/e-tool-interface/` | Appendix E | `read-tool.js`, the `source`/`window` reader for Chrome 160 and earlier Chrome. A `null` `source` is skipped. Not part of the Chromium 156 probe set. |
 | — | Appendix F | No demo. The listing is an excerpt of open pull request #375, not code to ship. |
 
 

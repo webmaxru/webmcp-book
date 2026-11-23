@@ -9,7 +9,7 @@
 
 Three weeks after the Monday meeting in Chapter 16, Trailhead’s first release is live behind the origin trial. Agents can search and compare tents, the measurement wrapper is counting outcomes, and the front-end lead has stopped getting paged about the adapter. The product lead’s new question is: *What are we betting on, and what happens if we lose the bet?*
 
-Everything in the previous sixteen chapters was checked against the specification on a particular day and against what one browser actually did. Both will move. The Community Group draft I read for this chapter is dated 27 October 2026.[^ch17-2] Chrome’s origin trial runs to Chrome 162, and Chrome Platform Status still lists the feature as “Proposed”, with no shipping milestone.[^ch17-3] Edge’s trial expires on 30 March 2027.[^ch17-4] Several of the questions that will decide what WebMCP becomes are being argued in threads that got new comments in the last week of October, during and right after TPAC, the W3C’s annual meeting week (26 to 30 October).
+Everything in the previous sixteen chapters was checked against the specification on a particular day and against what one browser actually did. Both will move. The Community Group draft I read for most of this chapter is dated 27 October 2026.[^ch17-2] I checked the paragraphs on the `Tool` interface against the draft dated 23 November 2026. Chrome’s origin trial runs to Chrome 162, and Chrome Platform Status still lists the feature as “Proposed”, with no shipping milestone.[^ch17-3] Edge’s trial expires on 30 March 2027.[^ch17-4] Several of the questions that will decide what WebMCP becomes are being argued in threads that got new comments in the last week of October, during and right after TPAC, the W3C’s annual meeting week (26 to 30 October).
 
 So this chapter is a map of those questions, plus a way to build so that your work survives the answers. It groups the questions into five (Figure 17.1): what a tool can declare, what happens during a single call, what happens when the work outlives the document, who gets to see a tool, and what the platform as a whole becomes. For each one, this chapter gives the state of play as of 2 November 2026 and a practical response now. Then come three competing futures, a checklist, and three short listings that Trailhead uses to keep its bets small.
 
@@ -301,7 +301,7 @@ export async function registerCatalog(catalog, { signal, exposedTo } = {}) {
 
 The adapter feature-detects the current entry point and registers nothing if it isn’t there, so the page works the same without WebMCP. It passes `outputSchema` through, even though Chromium 156 drops it today. It wraps each `run()` in input validation. A bad call gets Chapter 11’s error shape, `{ status: 'error', code: 'INVALID_ARGUMENT', message }`, with every problem listed in the message, so the agent can fix the call in one go. In my tests, a call with no `query` and a negative `maxPrice` reaches the page untouched in Chromium 156, and the adapter answers with both problems.[^ch17-11] One `AbortSignal` unregisters the whole catalog, as in Chapter 5. And registration is all or nothing (item 3). Every tool is registered with a signal that combines the caller’s signal with a batch controller of the adapter’s own, so if one `registerTool()` call rejects, aborting the batch removes the tools that already made it, and the error still reaches the caller. In Chromium 156 a second tool with the same name rejects, and the tests use exactly that to check the rollback. The input checker, `check-input.js`, is a small subset of JSON Schema written for these tests. In production, use a full validator.
 
-Listing 17.3 is the probe from item 11. It asks the browser what it actually supports: whether the current and the legacy entry points exist, whether the methods from the continuations explainer are there, whether `outputSchema` survives a round trip through `getTools()`, which annotations are kept and which options `execute` receives.
+Listing 17.3 is the probe from item 11. It asks the browser what it actually supports: whether the current and the legacy entry points exist, whether the methods from the continuations explainer are there, whether `outputSchema` survives a round trip through `getTools()`, which annotations are kept and which options `execute` receives. The schema check is `outputSchema != null`. On a `Tool` the attribute is always present, so `'outputSchema' in tool` stays true when the value is `null`. Chromium 156 omitted the member. Both an omitted member and a `null` schema fail that check, which is why the 2 November result below is false.
 
 **Listing 17.3** `chapters/17-the-road-ahead/src/probe.js` — A capability probe to run against each browser release
 
@@ -335,7 +335,9 @@ export async function probeWebMCP() {
       execute: async (_input, options = {}) => ({ options: Object.keys(options) }),
     }, { signal: controller.signal });
     const tool = (await mc.getTools()).find((t) => t.name === name);
-    report.outputSchemaReflected = 'outputSchema' in tool;
+    // A Tool always has the attribute. A missing schema is null.
+    // Chromium 156 omitted the member, which is also not a schema.
+    report.outputSchemaReflected = tool.outputSchema != null;
     report.annotationsKept = Object.keys(tool.annotations ?? {}).sort();
     const raw = await mc.executeTool(tool, {});
     report.executeOptions = (typeof raw === 'string' ? JSON.parse(raw) : raw).options;
@@ -377,7 +379,7 @@ Will that something be called WebMCP in two years? Will it live on `document.mod
 
 ## Chapter summary
 
-- WebMCP is a Community Group draft (27 October 2026) in origin trials that run to Chrome 162 and, in Edge, to 30 March 2027. Chrome Platform Status lists it as “Proposed”. Chrome plans to ship the imperative API first. The declarative API left the spec on 8 October and is an explainer again.
+- WebMCP is a Community Group draft (23 November 2026; the October reading of this chapter used the 27 October draft) in origin trials that run to Chrome 162 and, in Edge, to 30 March 2027. Chrome Platform Status lists it as “Proposed”. Chrome plans to ship the imperative API first. The declarative API left the spec on 8 October and is an explainer again.
 - Weigh open questions by where they live: explainer, issue, resolution, pull request or Chromium experiment. Track the spec, the explainers and Chromium separately.
   - PR #254 added optional `outputSchema` to the spec on 2 November. Issue #92 remains open on validation behavior. Chromium 156 still drops the member from `getTools()`; agent harnesses should validate declared results before returning them to a model.
 - Multimodal results, file inputs, streaming and progress are open (#41, #81, #82). The editor prefers a web-shaped design to MCP’s content model (#86). Return compact JSON and references, and show rich output on the page.

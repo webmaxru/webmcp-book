@@ -24,11 +24,11 @@ This book’s own browser tests were run on Chromium 156. They were not re-run o
 | Missing `title` | `""` | `""`. The 23 November specification still has inline issue #224 on whether to drop that default |
 | `JSON.stringify(tool)` | The dictionary’s own fields | `"{}"` |
 | `{...tool}` | A copy of the fields | An empty object |
-| `structuredClone(tool)` | Clones the dictionary | Throws. `Tool` is not serializable |
+| `structuredClone(tool)` | Clones the dictionary | Throws a `DataCloneError`. `Tool` is not serializable |
 | Stale tool after unregister and re-register under the same name | Could run the new tool | `executeTool(oldTool)` rejects with `NotFoundError` |
 | Two calls to `getTools()` | Distinct dictionaries | Distinct objects, never `===`, even while the tool stays registered |
 
-The `null` defaults are in the `getTools()` steps: a missing schema or a missing annotations dictionary is stored as `null`, not left absent.[^appe-2] `JSON.stringify`, object spread and `structuredClone` are recorded as compatibility notes in the pull request, not as separate algorithms in the specification. They follow from `Tool` being an interface: the attributes live on the prototype, and the interface is not declared serializable.[^appe-1]
+The `null` defaults are in the `getTools()` steps: a missing schema or a missing annotations dictionary is stored as `null`, not left absent.[^appe-2] `JSON.stringify`, object spread and `structuredClone` are recorded as compatibility notes in the pull request, not as separate algorithms in the specification.[^appe-1] `JSON.stringify` and object spread copy enumerable own properties. The attributes live on the prototype, so stringify returns the string `"{}"` and a spread copies nothing. `structuredClone` throws a `DataCloneError` because the interface is not declared serializable.
 
 Chrome’s documentation logs a tool and shows `source`, `title: ""` and `outputSchema: null`.[^appe-5] That is the inspector walking the getters. It is not the string `JSON.stringify` would produce.
 
@@ -43,11 +43,14 @@ Read the attributes you need. Do not stringify the tool, do not spread it, and d
 ```js
 export async function readTools() {
   const tools = await document.modelContext.getTools();
-  return tools.map((tool) => {
-    // Remove the `tool.window` fallback when Chrome 160 reaches Stable
-    // (5 January 2027).
-    const source = tool.source ?? tool.window;
-    return {
+  const readable = [];
+  for (const tool of tools) {
+    // `null` means the registering document is gone. `??` would replace
+    // that null with `window`. Remove the `window` fallback when Chrome
+    // 160 reaches Stable (5 January 2027).
+    const source = tool.source !== undefined ? tool.source : tool.window;
+    if (source == null) continue;
+    readable.push({
       name: tool.name,
       title: tool.title,
       description: tool.description,
@@ -56,12 +59,13 @@ export async function readTools() {
       outputSchema: tool.outputSchema ?? null,
       annotations: tool.annotations ?? null,
       source,
-    };
-  });
+    });
+  }
+  return readable;
 }
 ```
 
-`tool.source ?? tool.window` is the compatible read. On Chrome 160, `source` is a `WindowProxy` or `null`, and the right-hand side is not used. On earlier Chrome, `source` is `undefined`, so the expression is the old `window` member. A `source` of `null` means the registering document is gone. Skip that tool. It cannot be run.
+`tool.source !== undefined ? tool.source : tool.window` is the compatible read. On Chrome 160, `source` is a `WindowProxy` or `null`, and it is never `undefined`, so the expression does not read `window`. On earlier Chrome, `source` is `undefined`, so the expression is the old `window` member. `??` is the wrong operator here: it replaces `null` as well as `undefined`, and a `null` `source` means the registering document is no longer fully active. Listing E.1 drops that tool. Calling `executeTool()` on it rejects with `InvalidStateError`, which is the specification’s check for a document that is not fully active, before the internal id is consulted.[^appe-2]
 
 Destructuring (`const { name } = tool`) does call the getters, so it still works. Spreading does not. The same split is why Listing 7.9 copies fields by name before it sends them to the extension’s service worker.
 
@@ -69,7 +73,7 @@ Pass the object from `getTools()` through to `executeTool()` unchanged. A hand-b
 
 ## E.3 What to change in existing code
 
-1. Replace every read of `tool.window` with `tool.source ?? tool.window`. Delete the fallback after 5 January 2027.
+1. Replace every read of `tool.window` with `tool.source !== undefined ? tool.source : tool.window`. Delete the fallback after 5 January 2027. Skip a `null` result.
 2. Treat a missing schema or missing annotations as `null`, not as a missing property. `value ?? null` covers both Chrome generations.
 3. Copy fields into a plain object before `JSON.stringify`, object spread, `postMessage` or `structuredClone`.
 4. Keep passing the object `getTools()` returned into `executeTool()`. Do not rebuild it.
@@ -81,8 +85,8 @@ Chapter 7 is the chapter that uses `getTools()` and `executeTool()`. Appendix A 
 ## Notes
 
 [^appe-1]: Dominic Farolino, “Introduce the `Tool` interface”, webmachinelearning/webmcp pull request #348 (opened 15 October 2026, merged 19 November 2026). The pull request description records the compatibility changes: missing `inputSchema` and `annotations` are `null` rather than `undefined`, `JSON.stringify(tool)` returns `"{}"`, object spread copies nothing, and `structuredClone(tool)` throws because `Tool` is not serializable. <https://github.com/webmachinelearning/webmcp/pull/348>
-[^appe-2]: WebMCP specification, Draft Community Group Report, 23 November 2026, §4.2 ModelContext (`getTools()` returns `sequence<Tool>`, `executeTool()` takes a `Tool`) and §4.2.6 Tool Interface, including the `getTools()` steps that set a missing schema or annotations to `null`, the `source` getter, and the note that a stale `Tool` rejects with `NotFoundError` after an unregister-and-reregister (retrieved 23 November 2026). <https://webmachinelearning.github.io/webmcp/#tool-interface>
-[^appe-3]: François Beaufort, “Support the WebMCP Tool interface”, GoogleChromeLabs/webmcp-extension pull request #105 (opened 18 November 2026, open on 23 November 2026). It states that `getTools()` returns `Tool` objects starting in Chrome 160.0.8173.0, and that a `tool.window` fallback can be removed when Chrome 160 reaches Stable. <https://github.com/GoogleChromeLabs/webmcp-extension/pull/105>
+[^appe-2]: WebMCP specification, Draft Community Group Report, 23 November 2026, §4.2 ModelContext (`getTools()` returns `sequence<Tool>`, `executeTool()` takes a `Tool`) and §4.2.6 Tool Interface, including the `getTools()` steps that set a missing schema or annotations to `null`, the `source` getter, the `executeTool()` step that rejects with `InvalidStateError` when the registering document is not fully active, and the note that a stale `Tool` rejects with `NotFoundError` after an unregister-and-reregister (retrieved 23 November 2026). <https://webmachinelearning.github.io/webmcp/#tool-interface>
+[^appe-3]: François Beaufort, “Support the WebMCP Tool interface”, GoogleChromeLabs/webmcp-extension pull request #105 (opened 18 November 2026, merged 23 November 2026). It states that `getTools()` returns `Tool` objects starting in Chrome 160.0.8173.0, and that a `tool.window` fallback can be removed when Chrome 160 reaches Stable. Chromium Dash records the linked commit in canary 160.0.8173.0 (retrieved 23 November 2026). The pull request’s helper is `tool.source ?? tool.window ?? null`; this appendix tests `!== undefined` so that a `null` `source` stays `null`. <https://github.com/GoogleChromeLabs/webmcp-extension/pull/105> <https://chromiumdash.appspot.com/commit/8d7371ff0e6e38bea93b9ff2bb594fb2b788fdbe>
 [^appe-4]: Chromium release schedule, milestone 160: stable date 5 January 2027 (retrieved 23 November 2026). <https://chromiumdash.appspot.com/schedule>
 [^appe-5]: Chrome for Developers, “WebMCP Imperative API”, “Discover tools” (page last updated 20 November 2026, retrieved 23 November 2026). The logged tool shows `source`, `title: ""` and `outputSchema: null`. <https://developer.chrome.com/docs/ai/webmcp/imperative-api>
 [^appe-6]: webmachinelearning/webmcp issue #349, “Allow `executeTool()` to execute tools registered by opaque-origin documents”. The 23 November 2026 specification still rejects an opaque `Tool` origin with `NotSupportedError`, and its `executeTool()` steps still point at #349 as unresolved (retrieved 23 November 2026). <https://github.com/webmachinelearning/webmcp/issues/349>

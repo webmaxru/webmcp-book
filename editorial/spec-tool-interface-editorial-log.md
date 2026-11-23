@@ -14,4 +14,8 @@ Searched the manuscript for `RegisteredTool`, `#348`, and `tool.window`. Teachin
 
 Same register as the editorial branch: direct technical prose, no new anecdotes, no new certainty about untested browser behaviour. “I have not observed” stays where the chapter already had it.
 
-Detail, including the listing ledger and the unverified build number, is in `editorial/fidelity-ledger-tool-interface.md`.
+Detail, including the listing ledger, is in `editorial/fidelity-ledger-tool-interface.md`.
+
+## Review pass
+
+A second reading against `index.bs`, the published draft, pull requests #348 and #375, and extension pull request #105 (merged 23 November 2026) corrected the `source` read: `??` replaces a `null` `source`, so the listings test `!== undefined` and skip a null result. Listing 17.3 now treats a reflected schema as a non-null value. The chapter 15 status line is the 23 November draft. Chromium Dash records canary 160.0.8173.0 for the commit linked from pull request #105.

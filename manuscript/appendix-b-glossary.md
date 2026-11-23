@@ -246,7 +246,7 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 
 **`registerTool()`.** The method that adds a tool to a document: `document.modelContext.registerTool(tool, { signal, exposedTo })`. There is no `unregisterTool()`. Aborting the signal unregisters. *Chapter 4 and in detail in Chapter 5.*
 
-**RegisteredTool.** *Removed from the draft on 19 November 2026.* The dictionary `getTools()` used to return: name, title, description, schemas, annotations, `window` and `origin`. Pull request #348 replaced it with `Tool`. Chrome before 160.0.8173.0 still returns the dictionary. Read `tool.source ?? tool.window`, and do not build these objects by hand (Appendix E).[^appb-32] *Chapter 7, Appendix A and Appendix E.*
+**RegisteredTool.** *Removed from the draft on 19 November 2026.* The dictionary `getTools()` used to return: name, title, description, schemas, annotations, `window` and `origin`. Pull request #348 replaced it with `Tool`. Chrome before 160.0.8173.0 still returns the dictionary. Read `tool.source !== undefined ? tool.source : tool.window`, and do not build these objects by hand (Appendix E).[^appb-32] *Chapter 7, Appendix A and Appendix E.*
 
 **`requestUserInteraction()`.** *Not in the draft.* An early method for asking the user something during a tool call. It still appears on Chrome’s security page. Issue #165 discussed what should replace it, and pull request #204, open on 2 November 2026, proposes `requestUserInput()`, with interactive, form and URL modes modelled on MCP elicitation.[^appb-32] Until something lands, confirmation belongs in your page. *Chapter 4, Chapter 13 and Appendix D.*
 

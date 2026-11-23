@@ -324,7 +324,7 @@ interface Tool {
 - `source` is the `WindowProxy` of the document that registered the tool, or `null` if that document is no longer fully active. In Chromium 156 the member was `window`, and in the tests it was strictly equal to the iframe’s `contentWindow`. This edition has not re-tested that equality for `source` on Chrome 160. The specification’s getter returns that browsing context’s `WindowProxy`.
 - `origin` is the serialized origin of that document. The draft explains that it matters for cross-origin tools, because the consumer cannot otherwise get the tool’s origin from `source`.[^ch07-21]
 
-Read `source` with the fallback in Appendix E (`tool.source ?? tool.window`) until Chrome 160 is stable on 5 January 2027. Do not `JSON.stringify` a `Tool` or spread it. Both produce an empty result, and `structuredClone` throws.[^ch07-32]
+Read `source` with the fallback in Appendix E (`tool.source !== undefined ? tool.source : tool.window`) until Chrome 160 is stable on 5 January 2027. A `null` `source` means the registering document is gone; `??` would hide that null. Do not `JSON.stringify` a `Tool` or spread it. Both produce an empty result, and `structuredClone` throws a `DataCloneError`.[^ch07-32]
 
 The list covers every document in the caller’s *top-level* frame tree: the method walks the inclusive descendants of the tab’s top-level document, not just the caller’s own descendants.[^ch07-8] That is why the widget, a child frame, could find Ledgerly’s tools above it. Documents in other tabs, popups and openers aren’t included. Issue #227, open since 21 July 2026, argues that discovery should cover the whole browsing context group, and it now has a concrete proposal attached (more on that at the end of the chapter).[^ch07-22] The list is sorted by tool name across all frames, which the tests confirmed: Ledgerly’s `find_invoice` came back between Supportly’s `create_ticket` and `get_ticket_status`. Don’t rely on list position to tell frames apart.
 
@@ -517,6 +517,14 @@ Listings 7.8 to 7.10 are a minimal tool inspector built that way.
 ```js
 // Runs in every matching frame, in the extension's isolated world.
 // It shares the frame's DOM and origin, so it sees the frame's own tools.
+
+// `null` means the registering document is gone. `??` would replace that
+// null with `window`. Remove the fallback when Chrome 160 reaches Stable
+// (5 January 2027).
+function toolSource(tool) {
+  return tool.source !== undefined ? tool.source : tool.window;
+}
+
 async function report() {
   if (!('modelContext' in document)) return;
   try {
@@ -525,9 +533,7 @@ async function report() {
       type: 'tools',
       origin: location.origin,
       tools: tools
-        // `source` on Chrome 160, `window` before it. Remove the
-        // fallback when Chrome 160 reaches Stable (5 January 2027).
-        .filter((t) => (t.source ?? t.window) === window)
+        .filter((t) => toolSource(t) === window)
         .map((t) => ({
           name: t.name,
           description: t.description,
@@ -544,7 +550,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
   if (msg.type !== 'execute') return;
   (async () => {
     const tools = await document.modelContext.getTools();
-    const tool = tools.find((t) => t.name === msg.name && (t.source ?? t.window) === window);
+    const tool = tools.find((t) => t.name === msg.name && toolSource(t) === window);
     if (!tool) return reply({ error: 'NotFound' });
     try {
       reply({ result: await document.modelContext.executeTool(tool, msg.args) });
@@ -580,7 +586,7 @@ async function runTool(tabId, frameId, name, args) {
 self.toolInspector = { frames, runTool };
 ```
 
-The design runs one content script in each frame and has each script report only its own frame’s tools, filtered with `(tool.source ?? tool.window) === window`. The fields are copied onto a plain object before `sendMessage`, because a `Tool` is not structured-cloneable. In Chromium 156 the `window` member of a tool from the content script’s own frame was strictly equal to the content script’s `window` (tested). The `source` comparison is what the 23 November specification specifies, and it was not re-tested on Chrome 160 for this edition. The service worker then knows every frame’s tools, keyed by tab and frame ID, and can run a tool in a specific frame with `chrome.tabs.sendMessage(…, { frameId })`. In the test, the worker’s catalog showed Ledgerly’s frame with `find_invoice` and Supportly’s frame with its three tools, and a `search_articles` call routed to Supportly’s frame came back with the article about bank feeds.
+The design runs one content script in each frame and has each script report only its own frame’s tools, filtered with `toolSource(tool) === window`. A `null` `source` fails that test, so a document that is no longer fully active is left out. The fields are copied onto a plain object before `sendMessage`, because a `Tool` is not structured-cloneable. In Chromium 156 the `window` member of a tool from the content script’s own frame was strictly equal to the content script’s `window` (tested). The `source` comparison is what the 23 November specification specifies, and it was not re-tested on Chrome 160 for this edition. The service worker then knows every frame’s tools, keyed by tab and frame ID, and can run a tool in a specific frame with `chrome.tabs.sendMessage(…, { frameId })`. In the test, the worker’s catalog showed Ledgerly’s frame with `find_invoice` and Supportly’s frame with its three tools, and a `search_articles` call routed to Supportly’s frame came back with the article about bank feeds.
 
 ### Notice what that bypassed
 
@@ -614,7 +620,7 @@ Nothing of this is in the draft. If it lands, Listing 7.5 would call `getTools()
 
 ## The Helpdesk Widget so far
 
-The demos repository folder `chapters/07-frames-origins-agents/` contains everything in this chapter as runnable code. `npm start` serves Ledgerly on `http://localhost:47101` and Supportly on `http://127.0.0.1:47102`, two different origins that are both potentially trustworthy, and rewrites the production origins in the listings to those local ones as it serves them. The files themselves matched the listings on that date. Listing 7.9 has since grown a `source ?? window` fallback for Chrome 160 (Appendix E). That fallback was not part of the 2 November run. On Chromium 156 it still selects the same tools, because `source` is absent and `window` is the member the tests compared. A few small files that the book doesn’t print fill the gaps: the widget’s page and its in-memory helpdesk backend, the confirmation card, Ledgerly’s assistant wiring and its rule-based planner, and a dev-only `document.modelContext` mock. The folder’s README maps every file to its listing.
+The demos repository folder `chapters/07-frames-origins-agents/` contains everything in this chapter as runnable code. `npm start` serves Ledgerly on `http://localhost:47101` and Supportly on `http://127.0.0.1:47102`, two different origins that are both potentially trustworthy, and rewrites the production origins in the listings to those local ones as it serves them. The files themselves matched the listings on that date. Listing 7.9 has since grown a `source`/`window` fallback for Chrome 160 (Appendix E). That fallback was not part of the 2 November run. On Chromium 156 it still selects the same tools, because `source` is absent and `window` is the member the tests compared. A few small files that the book doesn’t print fill the gaps: the widget’s page and its in-memory helpdesk backend, the confirmation card, Ledgerly’s assistant wiring and its rule-based planner, and a dev-only `document.modelContext` mock. The folder’s README maps every file to its listing.
 
 `npm test` runs 30 checks: syntax checks for every script and the manifest, a unit test of the agent loop against the mock, 17 behavioural tests in Chromium 156 with WebMCP enabled across the two origins (Tables 7.1 and 7.3 come from them), and one test that loads Listings 7.8 to 7.10 as an unpacked extension in full Chromium. All 30 passed on 2 November 2026.
 
@@ -628,7 +634,7 @@ Chapter 11 returns to the widget to ask how its tools should be designed and des
 - **Gate 3, request.** `getTools({ fromOrigins })` lists the origins the caller wants tools from. Gates 2 and 3 fail silently: a missing tool just isn’t in the list.
 - Since 27 October 2026 the specification explains the model in §6.3.4, “Interaction with the Same-Origin Policy”: three independent gates, two-sided opt-in against both unauthorized actuation and tool-list pollution, and residual risks that remain after both sides agree.
 - `getTools()` covers the whole top-level frame tree, sorted by name, and each `Tool` carries `source` and `origin` (`window` before Chrome 160). Key tools by origin and name, because names are unique only per document. `toolchange` tells you to re-read the list, not what changed. Pass the object `getTools()` returned to `executeTool()`. Do not rebuild it.
-- `executeTool()` returns a string, passes cancellation through to the target (`toolcancel`), and lets only an exception name cross origins. The draft uses one `NotFoundError` for forged names, forged origins and unexposed tools. Chromium 156 uses `UnknownError` for those and for thrown errors, navigations and removed frames, because it still follows the draft as it was before 8 October 2026.
+- `executeTool()` returns a string, passes cancellation through to the target (`toolcancel`), and lets only an exception name cross origins. The 23 November draft uses one `NotFoundError` when the tool’s id is gone and when the tool is not exposed to the caller. The 27 October draft used that name for a forged name or origin. Chromium 156 uses `UnknownError` for those cases and for thrown errors, navigations and removed frames, because it still follows the draft as it was before 8 October 2026.
 - Extensions can use the page API from content scripts, in every frame (tested with the testing flag). A content script counts as same-origin with its frame, so it sees tools whatever their `exposedTo`. `exposedTo` limits web origins, not installed software.
 - Still open: a dedicated WebExtensions API (#74), discovery beyond one tab and a separate consumer object (#227), host control and possibly a second policy (#317, #236), and whether WebMCP becomes a general cross-environment call mechanism (pull request #375, Appendix F). The `Tool` interface (#348) merged on 19 November 2026.
 

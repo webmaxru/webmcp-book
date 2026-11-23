@@ -32,7 +32,7 @@ After: abridged 23 November IDL. `sequence<Tool>`, `executeTool(Tool, ...)`, and
 
 Before: `.filter((t) => t.window === window)` and a destructure of `name`, `description`, `inputSchema`, `annotations`. The execute path compared `t.window === window`.
 
-After: `.filter((t) => (t.source ?? t.window) === window)`, an explicit field copy with `inputSchema` and `annotations` normalized by `?? null`, and the same `source ?? window` test when finding a tool to run. Comment names 5 January 2027 as the day to drop `window`.
+After the first draft of this branch: `.filter((t) => (t.source ?? t.window) === window)`. A review pass replaced that with `toolSource()`, which uses `tool.source !== undefined ? tool.source : tool.window`. `??` treats a `null` `source` as missing. The comment still names 5 January 2027 as the day to drop `window`. Fields are still copied by name, with `inputSchema` and `annotations` normalized by `?? null`.
 
 ### Listing A.1 — `appendices/a-api-reference/webmcp.idl`
 
@@ -42,7 +42,7 @@ After: both methods use `Tool`. The block is `interface Tool` with readonly attr
 
 ### Listing E.1 — new, `appendices/e-tool-interface/read-tool.js`
 
-New file for the demos repo. `readTools()` maps each tool to a plain object. `source` is `tool.source ?? tool.window`. Schemas and annotations use `?? null`. No `TODO` token.
+New file for the demos repo. `readTools()` maps each kept tool to a plain object. `source` is `tool.source !== undefined ? tool.source : tool.window`. A `null` or missing result is skipped. The first draft of this branch used `??`, which replaces a `null` `source`. Schemas and annotations use `?? null`. No `TODO` token.
 
 ### Listing F.1 — do not sync as runnable demo code
 
@@ -76,7 +76,17 @@ Excerpt of the unmerged `Tool` in pull request #375 (`name`, `source`, `origin`,
 
 ## Flagged
 
-- Chrome build 160.0.8173.0 is not in a Chromium release note that this pass found. Two statements of it were used: the author’s task summary, and François Beaufort’s pull request #105 on GoogleChromeLabs/webmcp-extension.
+- Chrome build 160.0.8173.0 is the canary deployment Chromium Dash records for commit `8d7371ff0e6e38bea93b9ff2bb594fb2b788fdbe`, the commit linked from François Beaufort’s webmcp-extension pull request #105 (merged 23 November 2026). It was not found in a separate Chrome release note. The “starting in” claim is still that pull request’s statement.
 - `source === window` for a same-frame content script was not re-tested on Chrome 160. The 23 November getter returns that browsing context’s `WindowProxy`. The Chromium 156 equality result was for `window`, not for `source`.
 - `webmcp-types` 0.2.0 is mentioned only inside Beaufort’s pull request. This pass did not read the npm registry, and the book’s earlier “0.1.10” sentences were left as statements about 2 November 2026.
-- Pull requests #204 and #355 were confirmed open on 23 November 2026. Their descriptions in Appendix A are still the book’s 2 November summaries, not a re-read of every comment.
+- Pull requests #204 and #355 were confirmed open on 23 November 2026 (#204 last updated 18 November, #355 last updated 4 November). Their descriptions in Appendix A are still the book’s 2 November summaries, not a re-read of every comment.
+
+## Review pass, 23 November 2026
+
+Checked the published draft (header date 23 November 2026, Tool interface §4.2.6), `index.bs` on main, pull requests #348 and #375, extension pull request #105 (merged the same day), the Chrome imperative-API page (last updated 20 November 2026; the logged tool shows `source`, `title: ""`, `outputSchema: null`), and the Chromium 160 schedule (`stable_date` 2027-01-05).
+
+Listing changes in this pass, for the demos sync:
+
+- Listing 7.9. `tool.source ?? tool.window` became `toolSource()`, defined as `tool.source !== undefined ? tool.source : tool.window`. A `null` `source` is not the current window, so the filter still drops it.
+- Listing E.1. Same test. Tools whose source is `null` or missing are omitted. The first draft returned them with `source` collapsed by `??`.
+- Listing 17.3. `outputSchemaReflected` is `tool.outputSchema != null`. `'outputSchema' in tool` is true for every `Tool`, including one whose schema is `null`. On Chromium 156 the member is absent, so the recorded result stays `false`.

@@ -34,29 +34,29 @@ Read in this order. Word counts are `wc -w` on the Markdown source (code include
 | [`part-2.md`](manuscript/part-2.md) | **Part II: The WebMCP API in Depth** | 9 |  |
 | [`05-registering-tools.md`](manuscript/05-registering-tools.md) | Chapter 5: Registering Tools with document.modelContext | 10,642 | 11 % |
 | [`06-annotations-lifecycle-errors.md`](manuscript/06-annotations-lifecycle-errors.md) | Chapter 6: Annotations, Lifecycle and Errors | 10,918 | 14 % |
-| [`07-frames-origins-agents.md`](manuscript/07-frames-origins-agents.md) | Chapter 7: Frames, Origins and Page-Embedded Agents | 9,438 | 15 % |
+| [`07-frames-origins-agents.md`](manuscript/07-frames-origins-agents.md) | Chapter 7: Frames, Origins and Page-Embedded Agents | 9,512 | 15 % |
 | [`08-declarative-api.md`](manuscript/08-declarative-api.md) | Chapter 8: The Declarative API: Forms as Tools | 9,370 | 11 % |
 | [`part-3.md`](manuscript/part-3.md) | **Part III: Building Agent-Ready Apps** | 7 |  |
 | [`09-first-webmcp-app.md`](manuscript/09-first-webmcp-app.md) | Chapter 9: Your First WebMCP App, End to End | 9,451 | 22 % |
 | [`10-webmcp-in-frameworks.md`](manuscript/10-webmcp-in-frameworks.md) | Chapter 10: WebMCP in Frameworks | 9,936 | 20 % |
 | [`11-designing-tools.md`](manuscript/11-designing-tools.md) | Chapter 11: Designing Tools Agents Can Actually Use | 12,371 | 21 % |
 | [`part-4.md`](manuscript/part-4.md) | **Part IV: Trust: Security, Privacy and Consent** | 9 |  |
-| [`12-threat-models.md`](manuscript/12-threat-models.md) | Chapter 12: Threat Models for Tool-Exposing Pages | 8,355 | 14 % |
+| [`12-threat-models.md`](manuscript/12-threat-models.md) | Chapter 12: Threat Models for Tool-Exposing Pages | 8,391 | 14 % |
 | [`13-privacy-consent-human-in-the-loop.md`](manuscript/13-privacy-consent-human-in-the-loop.md) | Chapter 13: Privacy, Consent and the Human in the Loop | 7,073 | 11 % |
 | [`part-5.md`](manuscript/part-5.md) | **Part V: Shipping and the Ecosystem** | 8 |  |
-| [`14-testing-debugging-evals.md`](manuscript/14-testing-debugging-evals.md) | Chapter 14: Testing, Debugging and Evals | 12,594 | 20 % |
-| [`15-browser-support-and-standards.md`](manuscript/15-browser-support-and-standards.md) | Chapter 15: Browser Support and the Standards Road | 10,978 | 6 % |
+| [`14-testing-debugging-evals.md`](manuscript/14-testing-debugging-evals.md) | Chapter 14: Testing, Debugging and Evals | 12,608 | 20 % |
+| [`15-browser-support-and-standards.md`](manuscript/15-browser-support-and-standards.md) | Chapter 15: Browser Support and the Standards Road | 11,037 | 6 % |
 | [`part-6.md`](manuscript/part-6.md) | **Part VI: Strategy and the Future** | 8 |  |
 | [`16-product-and-business-implications.md`](manuscript/16-product-and-business-implications.md) | Chapter 16: Product and Business Implications | 8,853 | 10 % |
-| [`17-the-road-ahead.md`](manuscript/17-the-road-ahead.md) | Chapter 17: The Road Ahead | 8,617 | 7 % |
-| [`appendix-a-api-reference.md`](manuscript/appendix-a-api-reference.md) | Appendix A: API Quick Reference (IDL, Attributes, Events, Errors) | 5,436 | 8 % |
-| [`appendix-b-glossary.md`](manuscript/appendix-b-glossary.md) | Appendix B: Glossary | 7,429 | 0 % |
-| [`appendix-c-resources.md`](manuscript/appendix-c-resources.md) | Appendix C: Resources and Further Reading | 4,272 | 0 % |
-| [`appendix-d-migration.md`](manuscript/appendix-d-migration.md) | Appendix D: Migration Notes: navigator.modelContext and provideContext() to document.modelContext | 3,690 | 20 % |
-| [`appendix-e-tool-interface.md`](manuscript/appendix-e-tool-interface.md) | Appendix E: From RegisteredTool to Tool | 1,276 | 5 % |
-| [`appendix-f-possible-upcoming-changes.md`](manuscript/appendix-f-possible-upcoming-changes.md) | Appendix F: Possible Upcoming Changes | 926 | 3 % |
+| [`17-the-road-ahead.md`](manuscript/17-the-road-ahead.md) | Chapter 17: The Road Ahead | 8,721 | 8 % |
+| [`appendix-a-api-reference.md`](manuscript/appendix-a-api-reference.md) | Appendix A: API Quick Reference (IDL, Attributes, Events, Errors) | 5,495 | 8 % |
+| [`appendix-b-glossary.md`](manuscript/appendix-b-glossary.md) | Appendix B: Glossary | 7,433 | 0 % |
+| [`appendix-c-resources.md`](manuscript/appendix-c-resources.md) | Appendix C: Resources and Further Reading | 4,275 | 0 % |
+| [`appendix-d-migration.md`](manuscript/appendix-d-migration.md) | Appendix D: Migration Notes: navigator.modelContext and provideContext() to document.modelContext | 3,710 | 20 % |
+| [`appendix-e-tool-interface.md`](manuscript/appendix-e-tool-interface.md) | Appendix E: From RegisteredTool to Tool | 1,432 | 6 % |
+| [`appendix-f-possible-upcoming-changes.md`](manuscript/appendix-f-possible-upcoming-changes.md) | Appendix F: Possible Upcoming Changes | 940 | 3 % |
 | [`about-the-author.md`](manuscript/about-the-author.md) | About the Author | 300 | 0 % |
-| | **Total** | **181,013** | 12 % |
+| | **Total** | **181,556** | 12 % |
 <!-- wordcount:end -->
 
 ## Manuscript conventions

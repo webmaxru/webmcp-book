@@ -46,7 +46,7 @@ None of this is in the 23 November draft. Chapters 5, 6 and 11 still describe th
 The rest of the file is labelled future work, not a proposal with IDL in the specification.
 
 - **Workers.** `ToolManager` on `WorkerGlobalScope`, `getTools()` on the worker’s owner, and a `ToolSource` that is either a `WindowProxy` or a `Worker`.
-- **A composed tool set.** One query would collect tools from descendant frames. The explainer says the query root, not the caller, should decide which frames count, and that permission policy is the wrong tool for that decision because it walks every ancestor. Iframes inside a shadow tree would be excluded unless the shadow tree opted in, because a same-origin `source` would otherwise reveal the shadow tree.
+- **A composed tool set.** One query would collect tools from descendant frames. The explainer says the query root, not the caller, should decide which frames count, and that permission policy is the wrong tool for that decision because it walks every ancestor. It says subtree discovery should likely stay out of a shadow tree unless that tree opts in, because a same-origin `source` would otherwise reveal the tree. That part is a recommendation, and the explainer does not settle it.
 - **Passing a `Tool` through `postMessage`.** A document could hand its handle to another document. The explainer lists three options for what `source` would be after that hand-off and does not pick one.
 
 Issue #236 is the thread this explainer comes from. Chapter 17 records that thread. If #375 lands, the migration is larger than Appendix E: registration, discovery and execution all move. Until it lands, keep tools on `document.modelContext`.
