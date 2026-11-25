@@ -1,0 +1,90 @@
+name: Approved book
+on:
+  workflow_run:
+    workflows: [Book approval signal, Book CI]
+    types: [completed]
+  issue_comment:
+    types: [created]
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Open PR number to recheck
+        required: true
+
+permissions: {}
+concurrency:
+  group: approved-book
+  cancel-in-progress: false
+jobs:
+  authorize:
+    if: github.ref == 'refs/heads/main' && (github.event_name != 'issue_comment' || (github.event.issue.pull_request && github.event.comment.user.login == 'webmaxru' && startsWith(github.event.comment.body, '/release-book ')))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      actions: read
+    outputs:
+      eligible: ${{ steps.inspect.outputs.eligible }}
+      pr: ${{ steps.inspect.outputs.pr }}
+      head: ${{ steps.inspect.outputs.head_sha }}
+      base: ${{ steps.inspect.outputs.base_sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - id: inspect
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python tools/book_release.py inspect
+
+  preflight:
+    needs: authorize
+    if: needs.authorize.outputs.eligible == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.authorize.outputs.base }}
+          path: trusted
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.authorize.outputs.head }}
+          path: book
+          fetch-depth: 0
+          persist-credentials: false
+      - env:
+          BASE: ${{ needs.authorize.outputs.base }}
+        run: python -I -B trusted/tools/release_policy.py --root book --base "$BASE" --content-only
+      - uses: ./trusted/.github/actions/build-editions
+        with:
+          root: book
+
+  merge:
+    needs: [authorize, preflight]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+      issues: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.authorize.outputs.base }}
+          fetch-depth: 0
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ needs.authorize.outputs.pr }}
+          HEAD: ${{ needs.authorize.outputs.head }}
+          BASE: ${{ needs.authorize.outputs.base }}
+        run: python tools/book_release.py merge --pr "$PR" --head "$HEAD" --base "$BASE"

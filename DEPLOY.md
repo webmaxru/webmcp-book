@@ -76,7 +76,9 @@ No other secrets, variables or Azure credentials are used. The workflow uses onl
 - a published GitHub Release (it builds the release's tag);
 - **Run workflow** in the Actions tab, optionally with a `ref`.
 
-Without the secret (a fork, a fresh clone), the workflow skips with a notice and stays green. Runs never overlap (concurrency group `swa-production`). The run summary shows the URL and the status codes of `/` and a missing page.
+The [approved content flow](RELEASING.md) does not rely on a bot merge or tag push triggering another workflow. After publishing a stable release, **Release** dispatches `deploy-swa` with `ref=vX.Y.Z`, waits for that run, and checks that its smoke test actually passed. Prereleases do not deploy. A manual content merge still deploys `main` on push; the live book may therefore be newer than its published version.
+
+Without the secret (a fork, a fresh clone), `deploy-swa` skips with a notice. The release controller treats a skipped smoke test as a failed deployment. Runs never overlap (concurrency group `swa-production`). The run summary shows the URL and the status codes of `/` and a missing page.
 
 ## Rolling back
 
