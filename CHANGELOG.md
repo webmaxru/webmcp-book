@@ -6,6 +6,18 @@ Each version is a Git tag `vX.Y.Z`. Its GitHub Release carries the PDF, the EPUB
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-11-25
+
+### Changed
+
+- The discovery and execution listings now use the draft's `Tool` interface instead of the `RegisteredTool` dictionary. Where older browsers expose `window`, the examples use it only if `source` is absent: a `null` source means the registering document is no longer available. Figure 5.2 and the API reference show the new shape.
+- Chapter 9 uses the W3C WebMCP polyfill (`@w3c/webmcp-polyfill@0.1.1`) in Listing 9.2 and distinguishes its page-level API from the desktop MCP bridge.
+- Revised the prose across all 17 chapters. Browser observations retain their original test versions; the Chrome 160 guidance is based on published sources, not a new browser run.
+
+### Added
+
+- Appendix E explains how to migrate code that reads or copies discovered tools. Appendix F covers the separate generic tool-calling proposal, not an API readers can rely on.
+
 ## [2.2.0] - 2026-11-18
 
 ### Added
