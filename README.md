@@ -13,7 +13,7 @@ This repository holds the manuscript of *Tools, Not Clicks: Building Agent-Ready
 | [`editorial/`](editorial/) | Editorial logs, one per chapter: the passes each chapter went through and what was checked. |
 | [`infra/`](infra/) | Azure Static Web Apps infrastructure for the web edition, with a one-command deploy. See [`DEPLOY.md`](DEPLOY.md) and [`CUSTOM-DOMAIN.md`](CUSTOM-DOMAIN.md). |
 | [`staticwebapp.config.json`](staticwebapp.config.json) | The web edition's hosting rules and security headers; the site build copies it into `dist/site/`. |
-| [`.github/workflows/`](.github/workflows/) | Book CI (lint and build on every pull request), Release (on a `v*` tag) and the web deploy. |
+| [`.github/workflows/`](.github/workflows/) | Book CI, the owner-approval controller, the dispatch-only Release workflow and the web deploy. |
 | [`.agents/skills/`](.agents/skills/) | Supporting agent instructions, not book content. |
 | [`CHANGELOG.md`](CHANGELOG.md), [`RELEASING.md`](RELEASING.md) | What changed in each version, and how to cut a release. |
 | [`VALIDATION.md`](VALIDATION.md) | How the second edition was checked against the Chrome documentation, the specification and the WebMCP repository, with every finding and its source. |
@@ -96,13 +96,13 @@ To preview the web edition: `python3 -m http.server -d dist/site 8000`, then ope
 
 ## Editions and releases
 
-Every release is a Git tag `vX.Y.Z` with a GitHub Release carrying the PDF, the EPUB and the HTML edition (zip), all built from that tag, with the version's [`CHANGELOG.md`](CHANGELOG.md) section as its notes. The current version is in [`tools/book.json`](tools/book.json) and on the book's copyright page. The web edition shows the release history at https://webmcp.salnikov.no/releases.html.
+Use [`/update-book check`](.github/prompts/update-book.prompt.md) for a read-only impact report, or `prepare` for a tested local content commit. Open a PR to `main`. Once **Book release preflight** passes, the owner's approval on the current head authorizes a squash merge. For the owner's own PR, use the exact comment `/release-book <full head SHA>` instead. The controller builds the merged revision, tags it, publishes the PDF, EPUB, offline HTML and checksums, and verifies the stable tag's web deploy. Notes come from that revision's [`CHANGELOG.md`](CHANGELOG.md).
 
 - **PDF**, 7 × 9.25 in, for reading, Leanpub and the KDP paperback.
 - **EPUB 3**, checked with EPUBCheck, for Leanpub, KDP (Kindle) and other e-book stores.
 - **Web edition**, deployed to Azure Static Web Apps on every change to `main` and on every release.
 - [Book CI](.github/workflows/ci.yml) lints the manuscript and builds all three editions on every pull request; the built files are attached to the run.
-- [`RELEASING.md`](RELEASING.md): version numbers, and how to cut, rebuild or roll back a release.
+- [`RELEASING.md`](RELEASING.md): version numbers, evidence, recovery and rollback. A manual merge bypasses approval and can deploy unreleased content.
 
 Version 1.0.0 (15 October 2026) was the first edition and was never tagged. Version 2.0.0 is the first tagged release.
 
