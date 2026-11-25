@@ -16,6 +16,7 @@ SOURCES = {
     "Chrome status": "https://chromestatus.com/api/v0/features/5117755740913664",
     "Chrome stable (Linux)": "https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux&num=1",
     "W3C polyfill": "https://registry.npmjs.org/@w3c/webmcp-polyfill/latest",
+    "W3C polyfill release": GH + "w3c-oss/webmcp-polyfill/releases/latest",
     "MCP specification": "https://modelcontextprotocol.io/specification/latest",
     "Companion demos": GH + "webmaxru/webmcp-book-demos/commits?sha=main",
 }
@@ -32,7 +33,8 @@ def survey(cfg, read=fetch):
     rows = []
     for name, url in SOURCES.items():
         try:
-            if url.startswith(GH):
+            commits = url.startswith(GH) and "/commits?" in url
+            if commits:
                 url += f"&since={since}T00:00:00Z&per_page=10"
             final, body = read(url)
             if name == "MCP specification":
@@ -42,15 +44,19 @@ def survey(cfg, read=fetch):
                 state = match[1]
             else:
                 obj = json.loads(body.removeprefix(")]}'\n"))
-                if url.startswith(GH):
+                if commits:
                     state = [{"date": c["commit"]["committer"]["date"], "change": c["commit"]["message"].splitlines()[0],
                               "source": c["html_url"]} for c in obj]
                 elif name == "Chrome status":
+                    stages = [stage for parent in obj["stages"] for stage in [parent, *parent.get("extensions", [])]]
                     state = {"updated": obj["updated"]["when"], "status": obj["browsers"]["chrome"]["status"]["text"],
                              "stages": [{"stage": s["stage_type"], "first": s.get("desktop_first"),
-                                         "last": s.get("desktop_last")} for s in obj["stages"] if s.get("desktop_first")]}
+                                         "last": s.get("desktop_last")} for s in stages
+                                        if s.get("desktop_first") or s.get("desktop_last")]}
                 elif name.startswith("Chrome stable"):
                     state = {"current": obj[0]["version"], "book_tested": cfg["chrome_version"]}
+                elif name == "W3C polyfill release":
+                    state = {"tag": obj["tag_name"], "source": obj["html_url"], "date": obj["published_at"]}
                 else:
                     state = obj["version"]
             rows.append({"source": name, "url": url, "state": state})

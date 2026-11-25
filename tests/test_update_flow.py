@@ -15,8 +15,12 @@ class UpstreamTests(unittest.TestCase):
                 return url, '[{"version":"160.0"}]'
             if "registry.npmjs" in url:
                 return url, "invalid json"
+            if "releases/latest" in url:
+                return url, '{"tag_name":"v0.2.0","html_url":"source","published_at":"date"}'
             if "chromestatus" in url:
-                return url, ")]}'\n" + '{"stages":[],"updated":{"when":"today"},"browsers":{"chrome":{"status":{"text":"trial"}}}}'
+                return url, (")]}'\n" + '{"stages":[{"stage_type":150,"desktop_first":149,"desktop_last":156,'
+                             '"extensions":[{"stage_type":151,"desktop_last":162}]}],"updated":{"when":"today"},'
+                             '"browsers":{"chrome":{"status":{"text":"trial"}}}}')
             if "specification/latest" in url:
                 return url.replace("latest", "2026-07-28"), "<html></html>"
             if "webmcp-book-demos" in url:
@@ -28,6 +32,8 @@ class UpstreamTests(unittest.TestCase):
         self.assertEqual(rows["Chrome stable (Linux)"]["state"], {"current": "160.0", "book_tested": "156"})
         self.assertEqual(rows["MCP specification"]["state"], "2026-07-28")
         self.assertEqual(rows["Chrome status"]["state"]["status"], "trial")
+        self.assertEqual(rows["Chrome status"]["state"]["stages"][-1]["last"], 162)
+        self.assertEqual(rows["W3C polyfill release"]["state"]["tag"], "v0.2.0")
         self.assertIn("offline", rows["Companion demos"]["unavailable"])
         self.assertIn("unavailable", rows["W3C polyfill"])
 
