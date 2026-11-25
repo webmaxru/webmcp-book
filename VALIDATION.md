@@ -1,4 +1,10 @@
-# Validation report — Tools, Not Clicks v2.0.0
+# Validation report — Tools, Not Clicks
+
+## Third edition: evidence since v2.2.0
+
+The 25 November 2026 release preparation packages changes already on `main`; it adds no new browser observations. The book-wide [fidelity ledger](editorial/fidelity-ledger.md) records the prose revision. The [Tool interface ledger](editorial/fidelity-ledger-tool-interface.md) records the 23 November draft, the changed listings and Figure 5.2, and separates those findings from the generic tool-calling proposal. No Chromium 160 probe was run. For the Chapter 9 polyfill example, [PR #11](https://github.com/webmaxru/webmcp-book/pull/11) records the companion demo's Chromium 159 checks and the listing comparison it did not run.
+
+## Second-edition baseline
 
 This file records how the second edition was checked. Every chapter, listing, figure and status statement in the first edition (15 October 2026) was checked against the sources below on 2 November 2026, and each finding was either confirmed, corrected in the text or marked as unverified. The tables are the working records of that pass, one per manuscript file, 765 rows in total.
 
