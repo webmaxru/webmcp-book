@@ -31,3 +31,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
 - Generalized: None.
 - Kept on purpose: “I re-ran all 25”, “I tested all of them”, “I treat the two names as one family”, and “I list them because”. Footnote checks (“I compared”, “I couldn’t check”) were not edited. No Lars, Kari, or Jonas in this file.
 - Flags (gaps, unsupported claims, likely factual problems). Write "None" if none. The fidelity checker reports one missing quote on this file, and it reported the same quote before this pass. The baseline string jumps from the A.4 heading to “Runs a tool” by skipping the `executeTool` code fence. The fence is still in the file. It was not restored by deleting the fence. Separately, this appendix treats pull request #254 (`outputSchema`) as merged on 2 November 2026. Chapter 15’s charter paragraph and summary, and Appendix D’s still-in-flux note, still call #254 an open pull request. Not corrected here.
+
+## Pass: waitForToolsUntil (27 November 2026)
+
+Appendix A’s IDL is the 24 November 2026 index, including `waitForToolsUntil`. New Section A.3. Old sections A.3–A.10 are now A.4–A.11. The method throws. Those throws were not in the Chromium 156 probes. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.

@@ -15,6 +15,8 @@ So this chapter is a map of those questions, plus a way to build so that your wo
 
 ![Figure 17.1 — The open questions, by layer, with their status as of 2 November 2026](images/figure-17-1.png)
 
+Figure 17.1 is that 2 November map. Table 17.1 adds one later row, for `waitForToolsUntil()`, from the 24 November draft. The figure was not redrawn.
+
 
 ## How to read an open question
 
@@ -26,7 +28,7 @@ One event from October shows why the distinction matters. On 8 October 2026 the 
 
 Table 17.1 summarises the questions this chapter covers.
 
-**Table 17.1 — Open questions that could change your tools, as of 2 November 2026**
+**Table 17.1 — Open questions that could change your tools.** The rows below were read on 2 November 2026, except the readiness row, which follows the 24 November draft.
 
 | Question | Where it lives | Status | What to do now |
 |---|---|---|---|
@@ -42,7 +44,8 @@ Table 17.1 summarises the questions this chapter covers.
 | Event ordering | Issue #332 | Open: spec and Chromium disagree | Don’t depend on `toolactivated` timing |
 | Sensitive reads | Issue #331 | Open | Treat sensitive reads like consequential ones |
 | Asking the user mid-call | Issue #165, PR #204 | Open, a new proposal on 26 Oct | Keep confirmation on your own page |
-| A generic call API | Issue #236, PR #375 | Open explainer, not merged (Appendix F). PR #348, the `Tool` interface, merged 19 Nov and is a different change (Appendix E) | Keep calls on `document.modelContext` |
+| A generic call API | Issue #236, PR #375 | Open explainer, not merged (Appendix F). Still open on 27 November 2026. PR #348, the `Tool` interface, merged 19 Nov and is a different change (Appendix E) | Keep calls on `document.modelContext` |
+| When a document’s tools are ready | Issue #328, PR #373 | `waitForToolsUntil()` merged 24 Nov. `tools ready` still starts `true`. #328 was still open on 27 Nov. `getTools()` does not wait | Call it around async registration, with `?.`, and keep retries inside the promise (Chapter 5) |
 
 
 ## Output schemas
@@ -238,7 +241,7 @@ Trailhead uses the following list as a release gate. None of it needs WebMCP to 
 
 1. **Keep tools as data plus functions.** Define each tool’s name, description, schemas and annotations as plain data, and its behaviour as a function over your domain code that doesn’t read the DOM (Listing 17.1). The same definitions can feed WebMCP, a backend MCP server (Chapter 3) or a service worker. Chrome’s best practices now say the same thing in their own words: share the application service between the UI and the tools.[^ch17-37]
   2. **Put the API shape in one file.** Only the adapter calls `document.modelContext` (Listing 17.2). When continuation support or a new exposure keyword arrives, or the API moves again (Appendix D covers the move onto `document`, Appendix E the move to `Tool`), one file changes. The adapter already passes `outputSchema` through.
-3. **Register all or nothing.** If one registration fails, roll back the ones before it, so an agent never sees half a catalog. That’s Chrome’s guidance too: “Register tools all at once” and “Roll back the whole batch on failure”.[^ch17-37]
+3. **Register all or nothing, and say when the batch is finished.** If one registration fails, roll back the ones before it, so an agent never sees half a catalog. That’s Chrome’s guidance too: “Register tools all at once” and “Roll back the whole batch on failure”.[^ch17-37] Pass the promise that includes that rollback to `waitForToolsUntil()`, if the method exists. `Promise.all()` can reject, and therefore settle, before the other registrations finish (Chapter 5).
 4. **Validate inputs yourself.** The browser doesn’t check calls against `inputSchema`, and native validation is still being argued (#92).[^ch17-12] Return an error result the agent can act on: `status: 'error'` with a code and a message, as in Chapter 11.
 5. **Write `outputSchema` now, and test results against it.** Browsers that don’t know it ignore it.[^ch17-11]
 6. **Finish each call in one document.** Keep cross-page state on the server, keyed by identifiers you return.
@@ -262,8 +265,15 @@ export function webmcpAvailable() {
     && typeof document.modelContext?.registerTool === 'function';
 }
 
-export async function registerCatalog(catalog, { signal, exposedTo } = {}) {
-  if (!webmcpAvailable()) return [];
+export function registerCatalog(catalog, { signal, exposedTo } = {}) {
+  if (!webmcpAvailable()) return Promise.resolve([]);
+  // The caller awaits this same promise. The catch below aborts before it rejects.
+  const done = registerBatch(catalog, { signal, exposedTo });
+  document.modelContext.waitForToolsUntil?.(done);
+  return done;
+}
+
+async function registerBatch(catalog, { signal, exposedTo } = {}) {
   // All or nothing: if one registration fails, the ones before it are rolled back.
   const batch = new AbortController();
   const batchSignal = signal ? AbortSignal.any([signal, batch.signal]) : batch.signal;
@@ -299,7 +309,7 @@ export async function registerCatalog(catalog, { signal, exposedTo } = {}) {
 }
 ```
 
-The adapter feature-detects the current entry point and registers nothing if it isn’t there, so the page works the same without WebMCP. It passes `outputSchema` through, even though Chromium 156 drops it today. It wraps each `run()` in input validation. A bad call gets Chapter 11’s error shape, `{ status: 'error', code: 'INVALID_ARGUMENT', message }`, with every problem listed in the message, so the agent can fix the call in one go. In my tests, a call with no `query` and a negative `maxPrice` reaches the page untouched in Chromium 156, and the adapter answers with both problems.[^ch17-11] One `AbortSignal` unregisters the whole catalog, as in Chapter 5. And registration is all or nothing (item 3). Every tool is registered with a signal that combines the caller’s signal with a batch controller of the adapter’s own, so if one `registerTool()` call rejects, aborting the batch removes the tools that already made it, and the error still reaches the caller. In Chromium 156 a second tool with the same name rejects, and the tests use exactly that to check the rollback. The input checker, `check-input.js`, is a small subset of JSON Schema written for these tests. In production, use a full validator.
+The adapter feature-detects the current entry point and registers nothing if it isn’t there, so the page works the same without WebMCP. `registerCatalog` returns the batch promise, and passes that same promise to `waitForToolsUntil()` when the method exists. The tools are registered one after another, so a rejection does not leave a later `registerTool()` still pending. The `abort()` in the `catch` runs before the rejection, so the wait covers the rollback. A parallel `Promise.all()` would settle on the first rejection while other registrations were still running (Chapter 5). On Chromium 156 the method is not part of the recorded tests. The optional call is a no-op there if the method is missing, which is the point of `?.`. This edition did not re-run the fourteen checks.[^ch17-42] It passes `outputSchema` through, even though Chromium 156 drops it today. It wraps each `run()` in input validation. A bad call gets Chapter 11’s error shape, `{ status: 'error', code: 'INVALID_ARGUMENT', message }`, with every problem listed in the message, so the agent can fix the call in one go. In my tests, a call with no `query` and a negative `maxPrice` reaches the page untouched in Chromium 156, and the adapter answers with both problems.[^ch17-11] One `AbortSignal` unregisters the whole catalog, as in Chapter 5. And registration is all or nothing (item 3). Every tool is registered with a signal that combines the caller’s signal with a batch controller of the adapter’s own, so if one `registerTool()` call rejects, aborting the batch removes the tools that already made it, and the error still reaches the caller. In Chromium 156 a second tool with the same name rejects, and the tests use exactly that to check the rollback. The input checker, `check-input.js`, is a small subset of JSON Schema written for these tests. In production, use a full validator.
 
 Listing 17.3 is the probe from item 11. It asks the browser what it actually supports: whether the current and the legacy entry points exist, whether the methods from the continuations explainer are there, whether `outputSchema` survives a round trip through `getTools()`, which annotations are kept and which options `execute` receives. The schema check is `outputSchema != null`. On a `Tool` the attribute is always present, so `'outputSchema' in tool` stays true when the value is `null`. Chromium 156 omitted the member. Both an omitted member and a `null` schema fail that check, which is why the 2 November result below is false.
 
@@ -315,6 +325,7 @@ export async function probeWebMCP() {
     legacyNavigatorModelContext: 'modelContext' in (globalThis.navigator ?? {}),
     getTools: typeof mc?.getTools === 'function',
     executeTool: typeof mc?.executeTool === 'function',
+    waitForToolsUntil: typeof mc?.waitForToolsUntil === 'function',
     resumeTool: typeof mc?.resumeTool === 'function',   // continuations explainer
     outputSchemaReflected: null,
     annotationsKept: null,
@@ -348,7 +359,7 @@ export async function probeWebMCP() {
 }
 ```
 
-The probe registers a tool, so run it on a test page in CI, not on production pages, where an agent could see the probe tool for the instant it exists. It cleans up with `abort()` in a `finally` block, and the tests check that nothing is left behind. Here is what it reported on 2 November 2026 in Chromium 156.0.8078.4 with `--enable-features=WebMCPTesting`:[^ch17-11]
+The probe registers a tool, so run it on a test page in CI, not on production pages, where an agent could see the probe tool for the instant it exists. It cleans up with `abort()` in a `finally` block, and the tests check that nothing is left behind. Here is what it reported on 2 November 2026 in Chromium 156.0.8078.4 with `--enable-features=WebMCPTesting`.[^ch17-11] That run did not include `waitForToolsUntil`. The field in Listing 17.3 was added with this edition, and the probe was not re-run. Chrome exposes the method with `ModelContext` from 160.0.8185.0. Whether the 2 November Chromium 156 build had it behind the earlier `WebMCPWaitForToolsUntil` flag was not checked.[^ch17-42]
 
 ```json
 {
@@ -379,7 +390,7 @@ Will that something be called WebMCP in two years? Will it live on `document.mod
 
 ## Chapter summary
 
-- WebMCP is a Community Group draft (23 November 2026; the October reading of this chapter used the 27 October draft) in origin trials that run to Chrome 162 and, in Edge, to 30 March 2027. Chrome Platform Status lists it as “Proposed”. Chrome plans to ship the imperative API first. The declarative API left the spec on 8 October and is an explainer again.
+- WebMCP is a Community Group draft (24 November 2026 for `waitForToolsUntil()`; the October reading of this chapter used the 27 October draft, and the `Tool` paragraphs used 23 November) in origin trials that run to Chrome 162 and, in Edge, to 30 March 2027. Chrome Platform Status lists it as “Proposed”. Chrome plans to ship the imperative API first. The declarative API left the spec on 8 October and is an explainer again.
 - Weigh open questions by where they live: explainer, issue, resolution, pull request or Chromium experiment. Track the spec, the explainers and Chromium separately.
   - PR #254 added optional `outputSchema` to the spec on 2 November. Issue #92 remains open on validation behavior. Chromium 156 still drops the member from `getTools()`; agent harnesses should validate declared results before returning them to a model.
 - Multimodal results, file inputs, streaming and progress are open (#41, #81, #82). The editor prefers a web-shaped design to MCP’s content model (#86). Return compact JSON and references, and show rich output on the page.
@@ -433,4 +444,5 @@ Will that something be called WebMCP in two years? Will it live on `document.mod
 [^ch17-40]: WebMCP specification, Draft Community Group Report, 27 October 2026, §6.2 Agent Baseline Capabilities, text added by pull request #334 (merged 20 October 2026). <https://github.com/webmachinelearning/webmcp/pull/334>
 [^ch17-41]: webmachinelearning/webmcp issue #361 (opened 23 October 2026), including François Beaufort’s comment of 26 October 2026: “The WPT assertions are wrong, and so is Chrome.” <https://github.com/webmachinelearning/webmcp/issues/361>
 
+[^ch17-42]: webmachinelearning/webmcp pull request #373, merged 24 November 2026, and Chromium commit `dc7d570dff77eca05dae42b1fa6e3b816205a94f` (25 November 2026, canary 160.0.8185.0). The commit message says `waitForToolsUntil()` had been gated by `WebMCPWaitForToolsUntil`, so origin-trial pages could not call it. <https://github.com/webmachinelearning/webmcp/pull/373> <https://chromiumdash.appspot.com/commit/dc7d570dff77eca05dae42b1fa6e3b816205a94f>
 [^ch17-output-schema]: GoogleChromeLabs/webmcp-extension pull request #98, “Add support for tool outputSchema” (open on 15 November 2026), describes validating results in the host before model delivery. <https://github.com/GoogleChromeLabs/webmcp-extension/pull/98>

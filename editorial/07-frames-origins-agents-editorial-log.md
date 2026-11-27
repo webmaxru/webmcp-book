@@ -58,3 +58,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
 - Kept on purpose: “my build” / “I haven’t tested 157 or later”; “Where Chromium and the draft disagree, I say so”; “I recommend reading it in full”; “so I tested it”; “I can’t tell from the comment” and the origin-trial limit; “My answer here is the tool’s owner”; “My view, for what it’s worth”. “by the way” and “Please note one data point that doesn’t match” stay because each sits inside a baseline quote span the fidelity checker requires unchanged.
 - Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
   - `check_fidelity.py` reports the same three missing quote strings as unmodified HEAD. Each string runs across a fenced listing (7.1, 7.2, and 7.6/Table 7.3), so it is not a contiguous substring while the fences stay. Fences (10), tables (3), figures (2) and footnotes (31) match the baseline. No fence was edited.
+
+## Pass: waitForToolsUntil (27 November 2026)
+
+Chapter 7 notes that `waitForToolsUntil()` throws `NotAllowedError` and that `getTools()` does not wait. Listing 7.4 is unchanged. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.

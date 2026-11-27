@@ -54,3 +54,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
 - Kept on purpose: “I’m one of its co-authors” (Chrome best-practices byline). The Chromium 156 probe, the StrictMode `AbortError`, and the `inputSchema: null` failure. Short results that carry a limit (“It isn’t.”, “Your app can.”). No Lars, Kari, or Jonas in this chapter. Code fences, tables, figures, footnotes, listing paths, and the H1 were not edited.
 - Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
   - None.
+
+## Pass: waitForToolsUntil (27 November 2026)
+
+Chapter 10 adds the route-change gap and Listing 10.12 (`on-route-change.js`). `usewebmcp`, VueUse and Angular were not re-read for this method. The Chromium 156 route tests were not re-run. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.

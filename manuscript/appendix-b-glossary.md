@@ -10,7 +10,7 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 
 > **Still in flux: the vocabulary itself**
 >
-> WebMCP is a Community Group draft, and its words move with it. During 2026 the entry point has changed objects, two methods have gone, the annotations have moved into their own dictionary, the declarative attributes have left the specification (Appendix D) and `getTools()` has changed from a `RegisteredTool` dictionary to a `Tool` interface (Appendix E). Entries marked *removed* or *proposed* describe things you will meet in older code, in Chrome’s trial or in open issues, but not in the 23 November 2026 draft. One open explainer, pull request #375, would move the API again (Appendix F).
+> WebMCP is a Community Group draft, and its words move with it. During 2026 the entry point has changed objects, two methods have gone, the annotations have moved into their own dictionary, the declarative attributes have left the specification (Appendix D), `getTools()` has changed from a `RegisteredTool` dictionary to a `Tool` interface (Appendix E) and `waitForToolsUntil()` was added on 24 November 2026 (Chapter 5). Entries marked *removed* or *proposed* describe things you will meet in older code, in Chrome’s trial or in open issues, but not in the 24 November 2026 draft. One open explainer, pull request #375, would move the API again (Appendix F). It was still open on 27 November 2026.
 
 ## B.1 Terms, A to Z
 
@@ -178,7 +178,7 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 
 **misrepresentation of intent.** Chapter 12’s fourth threat: a tool whose name or description says one thing while its code does another, whether by malice or by drift. *Chapter 12.*
 
-**ModelContext.** The interface of `document.modelContext`. It has three methods, `registerTool()`, `getTools()` and `executeTool()`, and three events, `toolchange`, `toolactivated` and `toolcancel`. *Chapter 5 and Appendix A.*
+**ModelContext.** The interface of `document.modelContext`. In the 24 November 2026 draft it has four methods, `registerTool()`, `waitForToolsUntil()`, `getTools()` and `executeTool()`, and three events, `toolchange`, `toolactivated` and `toolcancel`. *Chapter 5 and Appendix A.*
 
 **ModelContextTool.** The dictionary you pass to `registerTool()`: `name`, `title`, `description`, `inputSchema`, `execute` and `annotations`. *Chapter 5.*
 
@@ -194,13 +194,13 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 
 **`needs_input`.** The result status for a call that needs something only the user knows, shaped `{ status: 'needs_input', code: 'MISSING_INFORMATION', missing, message }`, where `missing` lists what to ask for (for example `missing: ['size']`). The agent asks the user, then calls again. *Chapter 11 and used in Chapter 13.*
 
-**NotAllowedError.** The `DOMException` the WebMCP methods reject with when the `tools` Permissions Policy doesn’t allow the document to use them. *Chapter 7 and Appendix A.*
+**NotAllowedError.** The `DOMException` raised when the `tools` Permissions Policy doesn’t allow the document to use WebMCP. `registerTool()`, `getTools()` and `executeTool()` reject a promise with it. `waitForToolsUntil()` throws it. *Chapter 7 and Appendix A.*
 
 **NotFoundError.** The `DOMException` the draft specifies when a called tool doesn’t exist in the target document (for example after it was unregistered), when the target’s origin doesn’t match the tool’s `origin`, or when the tool isn’t exposed to the caller. Chromium 156 reports `UnknownError` instead, which is spec lag, not a bug. *Chapter 5, Chapter 6 and Appendix A.*
 
 ### O
 
-**observation.** In the draft, the implementation-defined snapshot a browser agent takes of a page, which includes at least a tool map: every document in the frame tree with its origin and tools. *Chapter 7.*
+**observation.** In the draft, the implementation-defined snapshot a browser agent takes of a page, which includes at least a tool map: every document in the frame tree with its origin and tools. From the 24 November 2026 draft, each document’s entry also has a `tools ready` boolean. Toggling that flag does not by itself cause an observation. *Chapter 7 and Chapter 5.*
 
 **OpenAPI.** A standard way to describe HTTP APIs, which began as Swagger. ChatGPT plug-ins and GPT actions used it to give assistants tools. *Chapter 2.*
 
@@ -318,6 +318,8 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 
 **tool-level error.** A failure the tool reports as a value rather than an exception: `{ status: 'error', code, message }`, with a stable code and a sentence that tells the model how to fix the call. The draft allows this explicitly. The browser passes the result through as JSON. It is distinct from a platform error, a `DOMException` such as `NotFoundError` that the browser raises and the caller sees only by name. *Chapter 6 and wording in Chapter 11.*
 
+**tools ready.** A boolean on a document, in the 24 November 2026 draft. It is `true` when the set of `waitForToolsUntil()` promises is empty, and `false` while at least one remains. A promise leaves the set when it settles or when an implementation-defined timeout removes it. The specification starts it at `true`. Issue #328, still open on 27 November 2026, says a new document should start not-ready. An observation copies the flag. `getTools()` does not read it. *Chapter 5 and Appendix A.*
+
 **tools (Permissions Policy feature).** See *Permissions Policy*. *Chapter 7.*
 
 **TPAC.** The W3C’s annual meeting week, where groups meet in person. TPAC 2026 ran from 26 to 30 October in Dublin, and the Agentic Web charter was among the topics there. WebKit’s proposed path for agent work included a workshop around it. *Chapter 13 and Chapter 15.*
@@ -343,6 +345,8 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 **W3C (World Wide Web Consortium).** The standards body that hosts the Web Machine Learning Community Group and its WebMCP draft, and that would charter any Working Group to standardise it. *Chapter 4 and Chapter 15.*
 
 **W3C Council.** The body that decides a formal objection the W3C Team can’t resolve. *Chapter 15.*
+
+**`waitForToolsUntil(promise)`.** The `ModelContext` method added by pull request #373, merged 24 November 2026. The signature is `undefined waitForToolsUntil(Promise<any> promise)`. It tells tool consumers to wait until the promise settles, or until an implementation-defined timeout removes it. Several calls leave the document not-ready until every recorded promise has left the set. Fulfilment and rejection both count as leaving it, and so does that timeout. Chrome exposes it with `ModelContext` from 160.0.8185.0. In that revision a 10-second timer warns and the agent’s observation times out at 10 seconds. The document stays not ready until the promises settle. Call it as `waitForToolsUntil?.()` on older builds. *Chapter 5, Chapter 10 and Appendix A.*[^appb-35]
 
 **web-platform-tests (WPT).** The shared, cross-browser test suite for web standards. The draft links to its WebMCP tests, which in places follow Chromium where the draft says something else (issue #332). *Chapter 6 and Chapter 14.*
 
@@ -410,3 +414,4 @@ Code identifiers are in `code font` and sort as if they had no punctuation, so `
 [^appb-32]: webmachinelearning/webmcp pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`” (François Beaufort, merged 2 November 2026), and pull request #348, “Introduce the `Tool` interface” (Dominic Farolino, merged 19 November 2026). The published draft that includes both is dated 23 November 2026. <https://github.com/webmachinelearning/webmcp/pull/348>
 [^appb-33]: Chrome for Developers, “Imperative API” (last updated 16 October 2026). Version notes: the `debugging` annotation is available from Chrome 156. Framework section: “React has experimental support for WebMCP using the use-webmcp-tool package.” Version from the npm registry, read 2 November 2026. <https://developer.chrome.com/docs/ai/webmcp/imperative-api>
 [^appb-34]: WebMCP specification, Draft Community Group Report, 27 October 2026, §6.3.4 “Interaction with the Same-Origin Policy”, §6.3.4.1 “Two-Sided Opt-In” and §6.3.4.2 “Residual Risks” (added by pull request #326, merged 27 October 2026). Read 2 November 2026. <https://webmachinelearning.github.io/webmcp/#interaction-with-same-origin-policy>
+[^appb-35]: WebMCP specification, Draft Community Group Report, 24 November 2026, `waitForToolsUntil(promise)` (retrieved 27 November 2026), and Chromium commit `dc7d570dff77eca05dae42b1fa6e3b816205a94f`, canary 160.0.8185.0 (Chromium Dash, retrieved 27 November 2026). <https://github.com/webmachinelearning/webmcp/pull/373> <https://chromiumdash.appspot.com/commit/dc7d570dff77eca05dae42b1fa6e3b816205a94f>

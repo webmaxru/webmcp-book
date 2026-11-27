@@ -45,3 +45,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
 ## Reconciliation (22 November 2026)
 
 The claim that the demo validates every `run()` result against the printed `outputSchema` now states what the listing shows: the printed schema requires `products`, and Listing 17.2’s `{ status: 'error', code: 'INVALID_ARGUMENT', message }` would not validate against it. The code was not changed. The companion demo’s broader schema is a flag for the author, not a new description of the listing.
+
+## Pass: waitForToolsUntil (27 November 2026)
+
+Chapter 17 adds a table row, checklist item, and passes the batch promise from Listing 17.2 to `waitForToolsUntil?.()`, including the rollback abort. Listing 17.3 records the method. The printed 2 November JSON does not include that field. Figure 17.1 was not redrawn. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.

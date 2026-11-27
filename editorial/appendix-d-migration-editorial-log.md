@@ -28,3 +28,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
 - Generalized: None.
 - Kept on purpose: “I checked the merge times”, “I re-ran all 20 checks”, “I compared the two IDL indexes”, and “My advice for today”. “To be fair to `provideContext()`” stayed because the next clause is the useful property of that API, not an announcer. No Lars, Kari, or Jonas in this file.
 - Flags (gaps, unsupported claims, likely factual problems). Write "None" if none. The still-in-flux note still lists `outputSchema` (#254) as an open pull request that would change the API. Appendix A, and Chapter 15’s Table 15.1, say #254 merged on 2 November 2026. Left as written. Migration dates and listings were not edited.
+
+## Pass: waitForToolsUntil (27 November 2026)
+
+Appendix D no longer says nothing after 8 October changes the API shape. `waitForToolsUntil()` is named as additive, with optional chaining before Chrome 160.0.8185.0. Figure D.1 was not redrawn. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.

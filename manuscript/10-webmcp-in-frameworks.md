@@ -371,7 +371,7 @@ The tool exists only while `<CartPage>` is mounted, and `enabled: cart.itemCount
 
 The tool and the “Checkout” button both call `checkout()`. The button passes a signal that never aborts, the tool passes the execution signal the browser gives every call. That one difference is the subject of the next section.
 
-The tests walk through Figure 10.2 step by step in Chromium 156: four tools on `/`, still four on an empty `/cart`, five once `add_to_cart` has run, and four again after the person goes back to the shop.
+The tests walk through Figure 10.2 step by step in Chromium 156: four tools on `/`, still four on an empty `/cart`, five once `add_to_cart` has run, and four again after the person goes back to the shop. They read the tool list after each navigation has finished. They do not cover the interval in which the old route’s tools are already gone and the new route’s `registerTool()` calls have not settled. `waitForToolsUntil()` is the signal for that interval. Listing 10.12 is the call. Chapter 5 has the settlement rules.
 
 ## Unregistering without breaking in-flight calls
 
@@ -709,6 +709,37 @@ Notice also what the inferred schema lacks: descriptions. The field names are al
 
 > **Still in flux:** Every Angular function used in this section carries “Experimental” in its name and an `@experimental` tag, and the guide warns they may change outside major versions. Their history shows how quickly they move: registration became asynchronous in July 2026, tools gained a cancellation signal in August, annotations arrived in September, and the `debugging` annotation and a switch to the official `webmcp-types` definitions landed on the main branch in late October.[^ch10-18] [^ch10-20] [^ch10-24]
 
+## Holding an agent across a route change
+
+A single-page route change does not create a new document. The tools that belonged to the previous route have to be aborted, and the tools for the next route have to be registered, and both steps are asynchronous. An observation taken in the middle of that sees a catalog that is neither route. `toolchange` fires for each registration and each unregistration. It does not say that the batch is finished.
+
+`waitForToolsUntil()` does. Listing 10.12 aborts the previous controller, registers the next route’s tools, and passes one promise that settles only when every registration has settled. The optional call is there because Chrome exposes the method with `ModelContext` starting in 160.0.8185.0. On an earlier build that has `document.modelContext` and not this method, the call is skipped and registration still happens.[^ch10-25]
+
+`Promise.all()` is the wrong promise to pass. It rejects at the first `registerTool()` failure, and a rejection has settled, so agents can be told the tools are ready while the rest of the route is still registering. `Promise.allSettled()` waits for every call. It does not, by itself, remove the tools that succeeded. A route that must be all or nothing should abort the controller inside the same promise, which is what Listing 5.7 does, and pass that promise. A retry belongs in there too. A retry started after the promise has settled is a new gap, and it needs its own call.
+
+The hooks in this chapter (`useWebMCP`, Vue’s composable, Angular’s route providers) register from the framework lifecycle. This edition did not re-read `usewebmcp` 6.0.3, VueUse, or Angular 22.2 to see whether they call `waitForToolsUntil()`. Listing 10.12 is the raw call for a route change you handle yourself. Two calls are safe: the document is ready when every recorded promise has settled, or when each one has hit the implementation-defined timeout. Chapter 5 separates that timeout from Chrome’s 10-second warning and from the 10-second actor observation timeout. Neither was run for this chapter. The Chromium 156 route tests above are unchanged.
+
+**Listing 10.12** `chapters/10-webmcp-in-frameworks/on-route-change.js` — tell agents to wait out a route’s registrations
+
+```js
+let controller;
+
+export function onRouteChange(route) {
+  // Unregister the previous route's tools.
+  controller?.abort();
+  controller = new AbortController();
+
+  // allSettled, not all: one rejection must not end the wait early.
+  const toolsUpdated = Promise.allSettled(route.tools.map((tool) =>
+    document.modelContext.registerTool(tool, { signal: controller.signal })
+  ));
+
+  document.modelContext.waitForToolsUntil?.(toolsUpdated);
+}
+```
+
+Listing 10.12 assumes `document.modelContext` is already there, which is the same assumption as a route handler that calls `registerTool()` directly. It was not part of the Chromium 156 suite.
+
 ## Server rendering and other frameworks
 
 Two more situations deserve a paragraph each.
@@ -733,7 +764,7 @@ Chapter 11 steps back from mechanics to design. Trailhead’s tools work, but ar
 - If your tools only make sense together, register them as one batch: one shared signal, aborted as soon as any registration fails. That is what Chrome’s “register tools all at once” asks for.
 - Chrome’s documentation names `use-webmcp-tool` for React (since 16 October 2026) and `@vueuse/core` for Vue. Trailhead uses the community `usewebmcp` 6.0.3, which passes results through untouched, infers input types and supports `exposedTo`. Pin versions, and keep tool logic out of the hook call.
 - Keep tools thin: schema, validation and translation over one application service that the UI and the tests use too. Keep shared state in stores outside the component tree, so tools registered anywhere see the same cart as the person.
-- Let the route decide view-specific tools, but make static registration the default, as Chrome recommends. Trailhead ties only `checkout` to a view, and `enabled` hides it while the cart is empty.
+- Let the route decide view-specific tools, but make static registration the default, as Chrome recommends. Trailhead ties only `checkout` to a view, and `enabled` hides it while the cart is empty. On a route change, pass the registrations’ promise to `waitForToolsUntil?.()` so an observation does not land between the old catalog and the new one. Use `Promise.allSettled()`, and keep a rollback inside that promise if a partial route must not stay registered (Listing 10.12, Chapter 5).
 - Unregistering never cancels a running call. Only the execution signal does. Anything an in-flight call depends on, such as a pending confirmation, must outlive the component that registered the tool. Honour the execution signal by closing dialogs and rejecting.
 - Bind a consequential step to the exact state the person confirmed, and refuse it when that state changed. Know where your commit point is: an abort that arrives after it doesn’t undo anything.
 - Tell the agent what changed through return values, read-only tools and the tool set itself, and keep descriptions free of live state. Tell the person what the agent did with `toolactivated` and `toolcancel`.
@@ -765,3 +796,4 @@ Chapter 11 steps back from mechanics to design. Trailhead’s tools work, but ar
 [^ch10-22]: Chrome for Developers, “Declarative API” (last updated 25 September 2026), section on the `toolactivated` and `toolcancel` events, retrieved November 2026. <https://developer.chrome.com/docs/ai/webmcp/declarative-api>
 [^ch10-23]: VueUse documentation, “useWebMCP” (sections “Usage”, “Result normalization” and “Reactive & conditional registration”), VueUse 15.0.0, retrieved November 2026. <https://vueuse.org/core/usewebmcp/>
 [^ch10-24]: angular/angular pull requests #71123 “WebMCP `debugging` annotation” (merged 20 October 2026) and #71354 “refactor(core): use official webmcp-types” (merged 28 October 2026), both into the main branch. <https://github.com/angular/angular/pull/71123>
+[^ch10-25]: WebMCP specification, Draft Community Group Report, 24 November 2026, `waitForToolsUntil(promise)` (retrieved 27 November 2026), and Chromium commit `dc7d570dff77eca05dae42b1fa6e3b816205a94f` (25 November 2026), which Chromium Dash deploys in canary 160.0.8185.0. <https://github.com/webmachinelearning/webmcp/pull/373> <https://chromiumdash.appspot.com/commit/dc7d570dff77eca05dae42b1fa6e3b816205a94f>
