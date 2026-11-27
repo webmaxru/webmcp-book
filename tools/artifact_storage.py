@@ -44,17 +44,20 @@ def cleanup_previews(api, run_id, repo_id):
     producer(api, run, WORKFLOW)
     require(run["status"] == "completed" and run["conclusion"] == "success", "Preview producer did not succeed")
     artifacts = list(api.rows(f"actions/runs/{run_id}/artifacts", "artifacts"))
-    previews = [a for a in artifacts if a["name"].startswith("book-preview-v1-")]
+    expected_names = {preview_name(api.repo, repo_id, f"refs/{kind}/{run['head_branch']}", run_id, run["run_attempt"])
+                      for kind in ("heads", "tags")}
+    previews = [a for a in artifacts if a["name"] in expected_names]
+    uploaded = any(s["name"] == "Upload book preview" and s["conclusion"] == "success"
+                   for j in api.rows(f"actions/runs/{run_id}/jobs", "jobs") for s in j["steps"])
     if not previews:
+        require(not uploaded, "Replacement upload succeeded but its artifact identity is missing")
         print("No preview uploaded; nothing to replace.")
         return
     require(len(previews) == 1, "Ambiguous replacement preview")
     replacement = previews[0]
     ref = preview_identity(api, replacement, run, repo_id)
     require(not replacement["expired"], "Replacement preview expired")
-    require(any(s["name"] == "Upload book preview" and s["conclusion"] == "success"
-                for j in api.rows(f"actions/runs/{run_id}/jobs", "jobs") for s in j["steps"]),
-            "Replacement upload did not succeed")
+    require(uploaded, "Replacement upload did not succeed")
     replacement_id = int(replacement["id"])
     # Snapshot before deleting: pagination offsets must not move as we remove artifacts.
     candidates = list(api.rows("actions/artifacts", "artifacts"))
@@ -64,9 +67,13 @@ def cleanup_previews(api, run_id, repo_id):
                 or artifact["created_at"] > replacement["created_at"]):
             continue
         old_id = artifact["workflow_run"]["id"]
-        if old_id == run_id:
+        require(re.fullmatch(re.escape(prefix) + r"\d+-\d+", artifact["name"]), "Malformed preview identity")
+        old_attempt = int(artifact["name"].rsplit("-", 1)[1])
+        latest = api.api(f"actions/runs/{old_id}")
+        if latest["status"] != "completed":
             continue
-        old = api.api(f"actions/runs/{old_id}")
+        old = latest if latest["run_attempt"] == old_attempt else api.api(
+            f"actions/runs/{old_id}/attempts/{old_attempt}")
         if old["status"] != "completed":
             continue
         if old["workflow_id"] != run["workflow_id"] or old["path"].split("@")[0] != WORKFLOW:
@@ -74,15 +81,18 @@ def cleanup_previews(api, run_id, repo_id):
         if (old["run_number"], old["run_attempt"]) >= (run["run_number"], run["run_attempt"]):
             continue
         require(preview_identity(api, artifact, old, repo_id) == ref, "Preview ref changed")
-        # Reruns can restart between listing and deletion; never delete from a live attempt.
-        current = api.api(f"actions/runs/{old_id}")
-        if current["status"] != "completed" or current["run_attempt"] != old["run_attempt"]:
-            continue
-        preview_identity(api, artifact, current, repo_id)
+        replacement_run = api.api(f"actions/runs/{run_id}")
+        require(replacement_run["status"] == "completed" and replacement_run["conclusion"] == "success"
+                and replacement_run["run_attempt"] == run["run_attempt"],
+                "Replacement producer restarted; retaining previews")
         live = api.api(f"actions/artifacts/{replacement_id}")
         require(live["id"] == replacement_id and not live["expired"]
                 and live["name"] == replacement["name"], "Replacement is no longer available")
         preview_identity(api, live, run, repo_id)
+        # Reruns can restart between listing and deletion; never delete from a live attempt.
+        current = api.api(f"actions/runs/{old_id}")
+        if current["status"] != "completed" or current["run_attempt"] != latest["run_attempt"]:
+            continue
         api.api(f"actions/artifacts/{int(artifact['id'])}", "DELETE")
         print(f"Deleted superseded preview artifact {artifact['id']}")
 

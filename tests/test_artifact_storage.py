@@ -39,6 +39,7 @@ class PreviewCleanup(unittest.TestCase):
         self.fail = None
         self.restart = False
         self.reads = {}
+        self.attempts = {}
         self.pages = []
         test = self
 
@@ -85,6 +86,8 @@ class PreviewCleanup(unittest.TestCase):
                 data = {"artifacts": [a for a in self.artifacts if a["workflow_run"]["id"] == number]}
             elif path.endswith("/jobs"):
                 data = {"jobs": [{"steps": [{"name": "Upload book preview", "conclusion": self.upload}]}]}
+            elif "/attempts/" in path:
+                data = self.attempts[tuple(map(int, (path.split("/")[2], path.split("/")[-1])))]
             else:
                 number = int(path.split("/")[-1])
                 self.reads[number] = self.reads.get(number, 0) + 1
@@ -148,8 +151,21 @@ class PreviewCleanup(unittest.TestCase):
                 self.artifacts = saved
                 self.upload = self.runs[3]["conclusion"] = "success"
         self.artifacts = [a for a in self.artifacts if a["id"] != 3]
+        with self.assertRaisesRegex(storage.Rejected, "identity is missing"):
+            self.cleanup()
+        self.assertEqual(self.deleted, [])
+        self.upload = "skipped"
         self.cleanup()
         self.assertEqual(self.deleted, [])
+
+    def test_rerun_selects_current_upload_and_removes_completed_older_attempt(self):
+        self.attempts[3, 1] = copy.deepcopy(self.runs[3])
+        self.runs[3]["run_attempt"] = 2
+        replacement = artifact(10, self.runs[3])
+        self.artifacts.append(replacement)
+        self.cleanup()
+        self.assertEqual(self.deleted, [1, 2, 3])
+        self.assertNotIn(10, self.deleted)
 
     def test_api_errors_are_not_success(self):
         for route in [("GET", "actions/artifacts"), ("DELETE", "actions/artifacts/1")]:
