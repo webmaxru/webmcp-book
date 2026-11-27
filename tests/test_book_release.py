@@ -956,17 +956,25 @@ class Rehearsal(RehearsalBase):
         controller.deploy(self.client, self.tag)
         self.assertEqual(self.dispatched["deploy-swa.yml"], {"ref": "main", "inputs": {"ref": self.tag}})
 
-    def test_latest_and_the_live_site_follow_only_the_highest_stable_version(self):
-        self.tags = [{"name": "v2.2.0"}, {"name": "v2.4.0"}]
+    def test_an_older_stable_edition_is_published_without_latest_or_deployment(self):
+        self.tags.append({"name": "v2.10.0"})
+        self.published = [{"tag_name": "v2.10.0", "draft": False, "prerelease": False}]
         p = self.release_flow()
         self.assertEqual((self.release["draft"], self.release["make_latest"]), (False, "false"))
+        self.assertEqual(self.upload_calls(), 1)
         self.assertNotIn("actions/workflows/deploy-swa.yml/dispatches", self.written())
         self.assertIn("gh workflow run deploy-swa.yml -f ref=" + self.tag, p.stdout)
 
-    def test_a_higher_prerelease_does_not_take_latest_from_a_stable_version(self):
-        self.tags = [{"name": "v2.2.0"}, {"name": "v2.4.0-rc.1"}]
+    def test_higher_bare_tag_draft_and_prereleases_do_not_block_latest_or_deployment(self):
+        self.published = [
+            {"tag_name": "v2.2.0", "draft": False, "prerelease": False},
+            {"tag_name": "v3.0.0", "draft": True, "prerelease": False},
+            {"tag_name": "v4.0.0", "draft": False, "prerelease": True},
+            {"tag_name": "v5.0.0-rc.1", "draft": False, "prerelease": False},
+        ]
+        self.tags = [{"name": r["tag_name"]} for r in self.published] + [{"name": "v9.0.0"}]
         self.release_flow()
-        self.assertEqual(self.release["make_latest"], "true")
+        self.assertEqual((self.release["draft"], self.release["make_latest"]), (False, "true"))
         self.assertEqual(self.dispatched["deploy-swa.yml"], {"ref": "main", "inputs": {"ref": self.tag}})
 
     def test_the_deploy_gate_serves_released_content_only(self):

@@ -203,8 +203,8 @@ def release_plan(api, root, n, h, b, m, tag):
 
 
 def newest(api, tag):
-    """True when tag is the highest stable version, the only one that may be Latest or replace the live site."""
-    return latest(tag, [t["name"] for t in api.rows("tags")])
+    """Compare the candidate with published stable editions, including when its own release is still a draft."""
+    return latest(tag, editions(api))
 
 
 def publish(api, root, n, h, b, m, tag, folder):
@@ -341,7 +341,7 @@ def main():
             if newest(api, args.tag):
                 deploy(api, args.tag)
             else:
-                print(f"::notice::{args.tag} is published but is not the highest stable version, so the live "
+                print(f"::notice::{args.tag} is published but is not the highest published stable edition, so the live "
                       "site keeps the newer edition. To serve it anyway: gh workflow run deploy-swa.yml -f ref="
                       + args.tag)
 

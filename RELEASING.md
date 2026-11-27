@@ -21,21 +21,21 @@ Every book repository follows the same release flow. A repository conforms when 
 3. **Eligibility.**
    The pull request is open, not a draft, from the same repository, targets `main`, is mergeable, and its head contains the current `main`. Its files are content-only under the book's allowlist. "Book release preflight" is green on the exact head, and the version, CHANGELOG and evidence checks pass.
 4. **Authorization.**
-   Someone else's pull request: an owner Approve review on the current head. The owner's own pull request: an owner comment `/release-book <40-character head SHA>`. A later push, a CHANGES_REQUESTED review, a dismissed review or an edited or deleted comment revokes it. A non-owner never authorizes.
+   Someone else's pull request: the latest formal owner review is Approve on the current head; ordinary COMMENTED reviews neither authorize nor revoke. The owner's own pull request: any still-present, unedited owner comment with the exact whole body `/release-book <40-character lowercase head SHA>`; extra whitespace is invalid. A later push invalidates authorization for the old head. A CHANGES_REQUESTED or DISMISSED review from any reviewer, or any review-dismissal timeline event at its actual event time, requires fresh owner authorization strictly afterward. Editing or deleting an authorization comment removes that comment's authority, but unrelated, stale or invalid comments do not cancel another valid comment. A non-owner never authorizes. The identical `tests/test_approval_contract.py` exercises these decisions in all four books.
 5. **Merge.**
    A squash merge conditioned on the approved head SHA. The controller then dispatches `release.yml`, because merges made with `GITHUB_TOKEN` trigger no workflows.
 6. **Release.**
-   `release.yml` is dispatch-only, with the inputs `pr`, `head_sha`, `base_sha`, `merge_sha` and `tag`, and the concurrency group `book-publish`. Steps: plan, build from the merge commit, annotated tag, draft release, upload assets, publish, deploy the released tag, smoke test. Never clobber assets and never move a tag. A complete release is a no-op. A partial release or a provenance mismatch fails with no writes. Latest goes only to the highest stable version, and prereleases are never Latest. A fix is a new version.
+   `release.yml` is dispatch-only, with the inputs `pr`, `head_sha`, `base_sha`, `merge_sha` and `tag`, and the concurrency group `book-publish`. Steps: plan, build from the merge commit, annotated tag, draft release, upload assets, publish, deploy the released tag, smoke test. Never clobber assets and never move a tag. A complete published release is a no-op, including no redeployment. A partial release (tag-only, any existing draft, or incomplete published assets) or a provenance mismatch fails with no writes. Latest goes only to the highest published stable edition; bare tags, drafts and prereleases do not compete. A fix is a new version.
 7. **Deploy.**
-   Production serves only released editions. A push to `main` deploys only when the content equals the latest published release (the `published-source` job). The release deploys its own tag. A manual dispatch takes a released ref or sha, which is the rollback path.
+   Production serves only released editions. A push to `main` deploys only when the content equals the latest published stable release (the `published-source` job). After a new publication, the release automatically deploys its own tag only if it is the highest published stable edition; older editions and prereleases do not roll production back. The release waits for its exact deployment run and requires successful deployment and smoke-test steps; failure, timeout, missing credentials or skipped checks cannot be reported as a successful deployment. A manual deploy dispatch takes a published stable ref or sha, including an older edition, which is the explicit rollback path.
 8. **No other publisher.**
    A tag push, a label or a branch name never publishes. A manual merge to `main` bypasses the controller; the fix is a catch-up pull request with a higher version.
 9. **Pins.**
-   Runner `ubuntu-24.04`. `actions/checkout@v7`, `actions/setup-python@v7`, `actions/upload-artifact@v7`, `actions/download-artifact@v8` (a full commit SHA with a trailing `# v7.x.y` version comment is acceptable).
+   Runner `ubuntu-24.04`. `actions/checkout@v7`, `actions/setup-python@v7`, `actions/upload-artifact@v7`, `actions/download-artifact@v8`.
 
 ### Per-book settings
 
-What differs in this book, behind the identical workflow surface:
+These may differ between books and are documented in each repository: the format and build, the version file, scheme and tag format, the content allowlist, the evidence rules, the deploy target and domain, the catch-up pull request rules, and how upstream updates are scouted.
 
 | Setting | This book |
 | --- | --- |
@@ -47,7 +47,6 @@ What differs in this book, behind the identical workflow surface:
 | Deploy target and domain | Azure Static Web Apps (Free plan) through `deploy-swa.yml`, serving https://webmcp.salnikov.no. Secret `AZURE_STATIC_WEB_APPS_API_TOKEN`, concurrency group `swa-production`, smoke test of `/`. Setup: [DEPLOY.md](DEPLOY.md). |
 | Catch-up PR rules | A hand-merged content PR burns its version. The catch-up PR carries a version above the burned one and above the latest stable tag (`3.1.1` after a hand-merged `3.1.0`). It may consist of metadata, CHANGELOG and evidence only, because the content is already on `main`. See scenario 10. |
 | Upstream-update scouting | `/update-book check` (read-only impact report) and `/update-book prepare` (a tested local content commit), from [`update-book.prompt.md`](.github/prompts/update-book.prompt.md) and `tools/check_upstream.py`. It surveys the WebMCP draft, the Blink implementation, Chrome status and the stable Chrome version, the W3C polyfill, the MCP specification and the companion demos. Scouting only reads; it has no part in the release flow. |
-| Intentional refinement | After publishing, **Release book** deploys its own tag only if that tag is the highest stable version. Otherwise it prints a notice and the live site keeps the newer edition, so a stale recovery run cannot roll production back. A controller release is always the highest version, so normally this is the same as the contract's rule 7. |
 
 ## Prepare the edition
 
@@ -82,7 +81,7 @@ For someone else's non-draft PR, **webmaxru** submits an **Approve** review on i
 
 The controller, **Release approved book**, inspects review and CI events; a scheduled scan of up to 30 open PRs (at :17 and :47 past each hour) and **Release approved book → Run workflow → pr** can recover missed signals. None of those triggers grants approval. It runs from `main` only, repeats preflight with the validators from `main` (never the PR's own code), rechecks approval and the base, and requests a squash merge conditional on the approved SHA. The repository has no branch protection or ruleset, so nothing enforces this gate: **a manual merge bypasses it** (scenario 10). Because the web deploy is gated too (see [Deploy](#deploy)), a manual merge cannot put unreleased content on the site, but it publishes nothing either.
 
-The controller explicitly dispatches **Release book** because a `GITHUB_TOKEN` merge, tag or publication does not trigger the usual downstream events. Release book checks the merged PR, the approval as it stood at the merge, the exact tree, the squash parent, main ancestry and the version. It builds the merge commit *before* creating its annotated tag. A draft receives the PDF, EPUB, HTML zip and `SHA256SUMS.txt`; only then is it published, with notes from the same commit. Only the highest stable semver is marked Latest. For a stable version that is the highest, Release book then dispatches `deploy-swa` for that tag and waits for the deploy and smoke test. For store uploads see [Leanpub and KDP](README.md#leanpub).
+The controller explicitly dispatches **Release book** because a `GITHUB_TOKEN` merge, tag or publication does not trigger the usual downstream events. Release book checks the merged PR, the approval as it stood at the merge, the exact tree, the squash parent, main ancestry and the version. It builds the merge commit *before* creating its annotated tag. A draft receives the PDF, EPUB, HTML zip and `SHA256SUMS.txt`; only then is it published, with notes from the same commit. Only the highest published stable edition is marked Latest and automatically deployed. A higher tag without a published stable release does not count. For store uploads see [Leanpub and KDP](README.md#leanpub).
 
 ## Deploy
 
@@ -90,7 +89,7 @@ Production serves **released editions only**. [`deploy-swa`](.github/workflows/d
 
 | Start | What it deploys |
 | --- | --- |
-| **Release book**, right after it publishes a stable version | That release's own tag, if it is the highest stable version. Release book waits for the run and requires the smoke test to have passed. A prerelease never deploys. |
+| **Release book**, right after it publishes a stable version | Its own tag, if this is the highest published stable edition. Release book waits for the exact run returned by `deploy-swa` and requires its smoke test to pass. Older editions and prereleases do not trigger a deploy. |
 | A push to `main` | `main` itself, but only while its book content equals the latest published stable release. Otherwise the run is skipped with a notice and stays green. |
 | **deploy-swa → Run workflow** with `ref` | A published release tag (`vX.Y.Z`) or the full SHA of its commit: the rollback and retry path. Branches, drafts, prereleases, bare tags and unreleased commits are refused. |
 
@@ -155,7 +154,7 @@ The last rows matter: the web edition and the downloads are separate. Only the c
    gh release view vX.Y.Z
    ```
 
-**Result:** the PR is squash-merged, `vX.Y.Z` is an annotated tag on the merge commit, the release has the PDF, EPUB, HTML zip and `SHA256SUMS.txt`, it is Latest if it is the highest stable version, and the web edition is deployed from that tag and smoke-tested.
+**Result:** the PR is squash-merged, `vX.Y.Z` is an annotated tag on the merge commit, and the release has the PDF, EPUB, HTML zip and `SHA256SUMS.txt`. If this is the highest published stable edition, it becomes Latest and its web edition is deployed from that tag and smoke-tested. Otherwise the downloads are published but the live site stays on the newer edition.
 
 ### 2. Someone else's PR on a branch in this repository
 
