@@ -12,7 +12,9 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from release_policy import Rejected, git, latest, metadata, release_notes, require, validate
+sys.path.insert(0, str(Path(__file__).resolve().parent))  # find release_policy next to this file, whoever loads it
+from release_policy import (Rejected, git, is_stable, latest, metadata, release_notes, require, semver, unreleased,
+                            validate)
 
 OWNER = "webmaxru"
 CHECK = "Book release preflight"
@@ -55,20 +57,33 @@ def sha(value):
     return value
 
 
+def login(row):
+    return (row.get("user") or {}).get("login")
+
+
 def approved(pr, reviews, comments, timeline, until=None):
+    """Whether the owner authorized exactly this head, as of `until` (the merge time) or now.
+
+    Only the owner authorizes. Someone else's pull request: the owner's latest formal review is an Approve on the
+    head, and a comment-only review is neutral. The owner's own pull request: an owner comment that is exactly
+    `/release-book <head>` and was never edited. Either must come strictly after the barrier, the latest Request
+    changes or dismissed review by ANY reviewer or any review dismissal; only a fresh owner authorization crosses it.
+    """
     end = until or "9999"
     head = pr["head"]["sha"]
-    formal = [r for r in reviews if r["user"]["login"] == OWNER and r.get("submitted_at")
-              and r["submitted_at"] <= end and r["state"] in {"APPROVED", "CHANGES_REQUESTED", "DISMISSED"}]
-    ids = {r["id"] for r in formal}
-    barrier = max([""] + [r["submitted_at"] for r in formal if r["state"] != "APPROVED"] + [
-        e["created_at"] for e in timeline if e["event"] == "review_dismissed" and e["created_at"] <= end
-        and e.get("dismissed_review", {}).get("review_id") in ids])
-    if pr["user"]["login"] == OWNER:
-        return any(c["user"]["login"] == OWNER and c["body"] == f"/release-book {head}"
-                   and barrier < c["created_at"] <= end and c["updated_at"] <= end for c in comments)
-    return any(r["state"] == "APPROVED" and r["commit_id"] == head and r["submitted_at"] > barrier
-               for r in formal)
+    submitted = [r for r in reviews if r.get("submitted_at") and r["submitted_at"] <= end]
+    formal = sorted((r for r in submitted if login(r) == OWNER
+                     and r["state"] in {"APPROVED", "CHANGES_REQUESTED", "DISMISSED"}),
+                    key=lambda r: (r["submitted_at"], r["id"]))
+    vetoes = [r["submitted_at"] for r in submitted if r["state"] in {"CHANGES_REQUESTED", "DISMISSED"}]
+    dismissals = [e["created_at"] for e in timeline if e["event"] == "review_dismissed" and e["created_at"] <= end]
+    barrier = max([""] + vetoes + dismissals)
+    if login(pr) == OWNER:
+        return any(login(c) == OWNER and c.get("body") == f"/release-book {head}"
+                   and barrier < c["created_at"] <= end and c["updated_at"] == c["created_at"] for c in comments)
+    latest = formal[-1] if formal else None
+    return bool(latest and latest["state"] == "APPROVED" and latest.get("commit_id") == head
+                and latest["submitted_at"] > barrier)
 
 
 def approval(api, pr, until=None):
@@ -131,6 +146,12 @@ def output(**values):
             print(f"{key}={val}", file=f)
 
 
+def summarize(text):
+    if os.environ.get("GITHUB_STEP_SUMMARY"):
+        with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+            print(text, file=f)
+
+
 def merge(api, root, n, h, b):
     data = candidate(api, root, n, sha(h), sha(b))
     response = api.api(f"pulls/{n}/merge", "PUT", {"sha": h, "merge_method": "squash"})
@@ -181,6 +202,11 @@ def release_plan(api, root, n, h, b, m, tag):
     return False
 
 
+def newest(api, tag):
+    """Compare the candidate with published stable editions, including when its own release is still a draft."""
+    return latest(tag, editions(api))
+
+
 def publish(api, root, n, h, b, m, tag, folder):
     if release_plan(api, root, n, h, b, m, tag):
         return False
@@ -205,8 +231,7 @@ def publish(api, root, n, h, b, m, tag, folder):
     sizes = {p.name: p.stat().st_size for p in files}
     require({a["name"]: a["size"] for a in uploaded if a["state"] == "uploaded"} == sizes,
             "Upload incomplete; leaving draft untouched")
-    newest = latest(tag, [t["name"] for t in api.rows("tags")])
-    api.api(endpoint, "PATCH", {"draft": False, "make_latest": str(newest).lower()})
+    api.api(endpoint, "PATCH", {"draft": False, "make_latest": str(newest(api, tag)).lower()})
     return True
 
 
@@ -228,16 +253,75 @@ def deploy(api, tag):
     raise Rejected(f"Timed out waiting for deployment run {run_id}")
 
 
+def commit_of(root, tag):
+    try:
+        return git(root, "rev-parse", "--verify", "--quiet", f"refs/tags/{tag}^{{commit}}").strip()
+    except subprocess.CalledProcessError:
+        raise Rejected(f"Release tag {tag} is missing from this checkout") from None
+
+
+def editions(api):
+    """Tags of published stable releases, highest version first. A draft, a prerelease or a bare tag is no edition."""
+    tags = {r["tag_name"] for r in api.rows("releases")
+            if not r["draft"] and not r["prerelease"] and is_stable(r["tag_name"])}
+    return sorted(tags, key=lambda t: semver(t[1:]), reverse=True)
+
+
+def published_source(api, root, head, ref=""):
+    """Production serves released editions only: decide what the deploy may build.
+
+    Push to main: main itself, and only while its book content equals the latest published release.
+    Manual run (the rollback path): a published release tag, or the full SHA of its commit.
+    """
+    def verdict(deploy, note, sha="", tag=""):
+        return {"deploy": deploy, "sha": sha, "tag": tag, "note": note}
+
+    tags = editions(api)
+    if ref:
+        if is_stable(ref):
+            require(ref in tags, f"{ref} is not a published release")
+            return verdict(True, f"Deploying released edition {ref}.", commit_of(root, ref), ref)
+        require(re.fullmatch("[0-9a-f]{40}", ref),
+                "A manual deploy takes a release tag (vX.Y.Z) or the full 40-character commit SHA of one")
+        for tag in tags:
+            try:
+                if commit_of(root, tag) == ref:
+                    return verdict(True, f"Deploying released edition {tag}.", ref, tag)
+            except Rejected:
+                continue
+        raise Rejected(f"{ref} is not the commit of a published release")
+    head = sha(head)
+    if not tags:
+        return verdict(False, "No published release exists yet, so there is nothing to serve. Deploy skipped.")
+    tag = tags[0]
+    paths = unreleased(root, commit_of(root, tag), head)
+    if paths:
+        shown = ", ".join(paths[:10]) + (f" and {len(paths) - 10} more" if len(paths) > 10 else "")
+        return verdict(False, f"main carries book content that is not in the latest release {tag} ({shown}). "
+                              "Production serves released editions only, so the deploy is skipped. Release that "
+                              "content through the controller, or open a catch-up pull request with a higher "
+                              "version.", tag=tag)
+    return verdict(True, f"Book content equals the latest release {tag}; deploying {head[:12]}.", head, tag)
+
+
+def report(decision):
+    output(deploy=str(decision["deploy"]).lower(), sha=decision["sha"], tag=decision["tag"])
+    print(("" if decision["deploy"] else "::notice::") + decision["note"], flush=True)
+    summarize(("Deploy allowed. " if decision["deploy"] else "Deploy skipped. ") + decision["note"])
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("action", choices=["inspect", "merge", "release-plan", "publish"])
+    ap.add_argument("action", choices=["inspect", "merge", "release-plan", "publish", "published-source"])
     ap.add_argument("--root", default=".")
     ap.add_argument("--pr", type=int)
-    for k in ["head", "base", "merge", "tag"]:
+    for k in ["head", "base", "merge", "tag", "ref"]:
         ap.add_argument("--" + k)
     args = ap.parse_args()
     api = GitHub()
-    if args.action == "inspect":
+    if args.action == "published-source":
+        report(published_source(api, args.root, args.head, args.ref or ""))
+    elif args.action == "inspect":
         for number in event_numbers(api):
             try:
                 data = candidate(api, args.root, number)
@@ -254,7 +338,12 @@ def main():
         if args.action == "release-plan":
             output(recovery=str(release_plan(*params)).lower())
         elif publish(*params, "release") and "-" not in args.tag:
-            deploy(api, args.tag)
+            if newest(api, args.tag):
+                deploy(api, args.tag)
+            else:
+                print(f"::notice::{args.tag} is published but is not the highest published stable edition, so the live "
+                      "site keeps the newer edition. To serve it anyway: gh workflow run deploy-swa.yml -f ref="
+                      + args.tag)
 
 
 if __name__ == "__main__":
