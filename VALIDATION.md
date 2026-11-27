@@ -1,5 +1,11 @@
 # Validation report — Tools, Not Clicks
 
+## `waitForToolsUntil` (27 November 2026)
+
+Checked against the published draft of 24 November 2026, `index.bs` on `webmachinelearning/webmcp` `main` (merge commit `47e2b993`, the last commit that touches `index.bs` since the merge), pull request #373 (merged 24 November 2026, 03:10 UTC), and Chromium commit `dc7d570dff77eca05dae42b1fa6e3b816205a94f` (25 November 2026, canary 160.0.8185.0). No Chrome 160 probe was run. The listing ledger is [editorial/fidelity-ledger-wait-for-tools-until.md](editorial/fidelity-ledger-wait-for-tools-until.md).
+
+The specification’s `waitForToolsUntil` timer is implementation-defined and removes the promise. At that Chromium revision the renderer’s 10-second timer logs a warning and does not mark script tools ready. `kActorObservationDelayTimeout` defaults to 10 seconds and ends the agent observation wait. Issue #328 and pull request #375 were still open on 27 November 2026. Issue #374 was still open. `getTools()` does not wait.
+
 ## Third edition: evidence since v2.2.0
 
 The 25 November 2026 release preparation packages changes already on `main`; it adds no new browser observations. The book-wide [fidelity ledger](editorial/fidelity-ledger.md) records the prose revision. The [Tool interface ledger](editorial/fidelity-ledger-tool-interface.md) records the 23 November draft, the changed listings and Figure 5.2, and separates those findings from the generic tool-calling proposal. No Chromium 160 probe was run. For the Chapter 9 polyfill example, [PR #11](https://github.com/webmaxru/webmcp-book/pull/11) records the companion demo's Chromium 159 checks and the listing comparison it did not run.

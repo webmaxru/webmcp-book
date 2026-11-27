@@ -6,6 +6,10 @@ Each version is a Git tag `vX.Y.Z`. Its GitHub Release carries the PDF, the EPUB
 
 ## [Unreleased]
 
+### Added
+
+- `document.modelContext.waitForToolsUntil(promise)`, from WebMCP pull request #373 (merged 24 November 2026) and Chrome 160.0.8185.0. The specification’s timeout stays implementation-defined. Chrome’s 10 seconds, at the shipping commit, are a console warning and the agent observation timeout.
+
 ## [3.0.0] - 2026-11-25
 
 ### Changed

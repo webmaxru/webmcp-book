@@ -38,7 +38,7 @@ A third kind, the extension agent, sits between the two. It runs JavaScript, but
 
 ### The default is `'self'`
 
-Access to the whole API is gated behind a policy-controlled feature called `"tools"`, “which has a default allowlist of `'self'`.”[^ch07-6] Every method checks it first. `registerTool()`, `getTools()` and `executeTool()` each begin by asking whether the calling document is allowed to use the `tools` feature and, if not, return a promise rejected with a `NotAllowedError` `DOMException`.[^ch07-7] `getTools()` also skips any document in the tree that isn’t allowed to use the feature, and so does the tool-change notification.[^ch07-8]
+Access to the whole API is gated behind a policy-controlled feature called `"tools"`, “which has a default allowlist of `'self'`.”[^ch07-6] Every method checks it first. `registerTool()`, `getTools()` and `executeTool()` each begin by asking whether the calling document is allowed to use the `tools` feature and, if not, return a promise rejected with a `NotAllowedError` `DOMException`.[^ch07-7] `waitForToolsUntil()`, added on 24 November 2026, makes the same check and throws `NotAllowedError` instead of rejecting a promise (Chapter 5). `getTools()` also skips any document in the tree that isn’t allowed to use the feature, and so does the tool-change notification.[^ch07-8]
 
 With the default allowlist, that means:
 
@@ -287,7 +287,7 @@ What stays risky. The section names two residual risks. Even after mutual opt-in
 
 ## `getTools()` and `executeTool()`: building an in-page agent
 
-With the gates open, Ledgerly can build its assistant. The two methods are small. Listing 7.4 is their shape in the 23 November 2026 draft. The 27 October draft used a `RegisteredTool` dictionary here. Appendix E is the migration.
+With the gates open, Ledgerly can build its assistant. The two methods are small. Listing 7.4 is their shape in the 23 November 2026 draft, and the 24 November draft does not change these two lines. The 27 October draft used a `RegisteredTool` dictionary here. Appendix E is the migration. `waitForToolsUntil()` is not in this listing. It tells a browser agent that registration is unfinished. It does not make `getTools()` wait (Chapter 5). An in-page agent that calls `getTools()` still sees whatever is registered at that moment.
 
 **Listing 7.4** `ModelContext` — discovery and execution, from the specification’s IDL (23 November 2026 draft, abridged)
 

@@ -4,7 +4,9 @@
 >
 > — Dominic Farolino, pull request #375[^appf-1]
 
-Pull request #375, “Introduce generic tool calling explainer”, was open on 23 November 2026. It had not been merged. It adds one new file, `generalized-tool-calling.md`, and it does not change the specification. The text below is the state of that pull request on that date. It can still change, and it can be rejected.
+Pull request #375, “Introduce generic tool calling explainer”, was open on 23 November 2026 and was still open on 27 November 2026. It had not been merged. It adds one new file, `generalized-tool-calling.md`, and it does not change the specification. The text below is the state of that pull request on 23 November. On 27 November the pull request was still open, with 21 commits and a last update on 26 November. This pass re-read only the `ToolManager` declaration and the first `Tool` block. `waitForToolsUntil(Promise<any> promise)` is still on `ToolManager`, and Listing F.1 still matches that first `Tool` block. The rest of the file was not re-audited. It can still change, and it can be rejected.
+
+Pull request #373 is not this proposal. It merged on 24 November 2026 and added `waitForToolsUntil(Promise<any> promise)` to `document.modelContext` (Chapter 5). The explainer would move registration, including a method of the same signature, onto `window.toolManager`. That move has not happened. Nothing in this appendix is superseded by #373.
 
 It is not pull request #348. #348 merged on 19 November 2026 and is the `Tool` interface Appendix E describes: `getTools()` and `executeTool()` stay on `document.modelContext`, and `window` becomes `source`. #375 starts from Mozilla’s issues #236 and #237 and proposes a different split of the API. Where the two overlap, they overlap only in the idea of a tool handle. They are not the same change, and nothing in this appendix is the API to write against today.
 
@@ -53,4 +55,4 @@ Issue #236 is the thread this explainer comes from. Chapter 17 records that thre
 
 ## Notes
 
-[^appf-1]: Dominic Farolino, “Introduce generic tool calling explainer”, webmachinelearning/webmcp pull request #375 (opened 6 November 2026, open on 23 November 2026, not merged). The pull request adds `generalized-tool-calling.md` only. Authors named in the file: Dominic Farolino and Khushal Sagar. It cites issues #236 and #237. <https://github.com/webmachinelearning/webmcp/pull/375>
+[^appf-1]: Dominic Farolino, “Introduce generic tool calling explainer”, webmachinelearning/webmcp pull request #375 (opened 6 November 2026, still open on 27 November 2026, not merged, head `674ba1ae`). The pull request adds `generalized-tool-calling.md` only. Authors named in the file: Dominic Farolino and Khushal Sagar. It cites issues #236 and #237. On 27 November the explainer’s `ToolManager` still declares `undefined waitForToolsUntil(Promise<any> promise)`. <https://github.com/webmachinelearning/webmcp/pull/375>

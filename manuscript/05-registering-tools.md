@@ -58,7 +58,7 @@ if ('modelContext' in document) {                                   // ①
 
 The markers are: ① feature detection and secure contexts, ② the shape of `registerTool()` and the dictionary it takes, ③ names, titles and descriptions, ④ the input schema, ⑤ the `execute` callback and what happens to its return value, and ⑥ unregistration with an `AbortSignal`. Along the way Fjord Table gets its second tool, `book_table`, which is the one that actually changes something. The annotation line and the `signal` inside `execute` get a brief mention here and the full treatment in Chapter 6.
 
-Registration, as this chapter teaches it, was checked against the WebMCP Draft Community Group Report dated 27 October 2026, the newest draft on 2 November 2026. That part of the IDL matches the 15 October draft the first edition used. The changes in between were in prose, not in `registerTool()`.[^ch05-2] What `getTools()` returns did change later. Pull request #348, merged 19 November 2026, replaced `RegisteredTool` with a `Tool` interface (Chapter 7 and Appendix E). The draft that contains it is dated 23 November 2026. Where the chapter says what Chrome does, that was observed in Chromium 156 with the `WebMCPTesting` feature switched on, first on 15 October 2026 and again, with identical results, on 2 November 2026.[^ch05-3] Those observations are not a description of Chrome 160. Chrome’s developer documentation and the open issues in the `webmachinelearning/webmcp` repository were re-checked on 2 November, and the `Tool` change was checked against the specification on 23 November 2026. Where Chrome and the draft disagree, I say so.
+Registration, as this chapter teaches it, was checked against the WebMCP Draft Community Group Report dated 27 October 2026, the newest draft on 2 November 2026. That part of the IDL matches the 15 October draft the first edition used. The changes in between were in prose, not in `registerTool()`.[^ch05-2] What `getTools()` returns did change later. Pull request #348, merged 19 November 2026, replaced `RegisteredTool` with a `Tool` interface (Chapter 7 and Appendix E). The draft that contains it is dated 23 November 2026. Pull request #373, merged 24 November 2026, then added `waitForToolsUntil()`. The published draft of that date includes it. The Chromium 156 observations in this chapter were not re-run for that method. Where the chapter says what Chrome does, that was observed in Chromium 156 with the `WebMCPTesting` feature switched on, first on 15 October 2026 and again, with identical results, on 2 November 2026.[^ch05-3] Those observations are not a description of Chrome 160. Chrome’s developer documentation and the open issues in the `webmachinelearning/webmcp` repository were re-checked on 2 November, and the `Tool` change was checked against the specification on 23 November 2026. Where Chrome and the draft disagree, I say so.
 
 ![Figure 5.1 — The life of a WebMCP tool, from registration through discovery to a call and its result. Everything that crosses between the page and an agent crosses as a JSON string.](images/figure-5-1.png)
 
@@ -70,7 +70,7 @@ Figure 5.1 is a map of the whole chapter. Your page never hands the agent a live
 
 The specification adds a single attribute to `Document`:
 
-**Listing 5.2** WebMCP specification, IDL index (excerpt, 27 October 2026 draft) — the registration surface
+**Listing 5.2** WebMCP specification, IDL excerpt — the registration surface, including `waitForToolsUntil()` from the 24 November 2026 draft
 
 ```webidl
 partial interface Document {
@@ -81,6 +81,7 @@ partial interface Document {
 interface ModelContext : EventTarget {
   Promise<undefined> registerTool(ModelContextTool tool,
                                   optional ModelContextRegisterToolOptions options = {});
+  undefined waitForToolsUntil(Promise<any> promise);
   // getTools(), executeTool() and three event handlers omitted (Chapter 7, Chapter 6)
 };
 
@@ -534,7 +535,7 @@ export async function relabelBookingTools(locale) {
 }
 ```
 
-The best-practices page gained a related rule on 30 October 2026: “Register tools all at once: The page must expose either the complete tool surface or none of it. Roll back the whole batch on failure instead of leaving half a workflow callable.”[^ch05-1] Fjord Table’s booking view owns a single tool, so the rule is satisfied trivially. But if a view owns several tools that only make sense together (say `book_table` plus a `change_party_size` that edits the same draft), register them all with one controller, and if any registration fails, abort that controller so none of them stays behind. `registerAgentTool()` returns `false` on failure for exactly this kind of check.
+The best-practices page gained a related rule on 30 October 2026: “Register tools all at once: The page must expose either the complete tool surface or none of it. Roll back the whole batch on failure instead of leaving half a workflow callable.”[^ch05-1] Fjord Table’s booking view owns a single tool, so the rule is satisfied trivially. But if a view owns several tools that only make sense together (say `book_table` plus a `change_party_size` that edits the same draft), register them all with one controller, and if any registration fails, abort that controller so none of them stays behind. `registerAgentTool()` returns `false` on failure for exactly this kind of check. Those `registerTool()` calls are themselves asynchronous. An agent can observe the page while some of them are still pending. `waitForToolsUntil()`, in the section after the TypeScript listing, is how the page says the set is not ready yet.
 
 The last function in Listing 5.5 covers the remaining lifecycle question: how to *update* a tool. The draft has no `updateTool()`. The explainer’s guidance is that a tool’s implementation can change freely (your `execute` can call a function you replace later), but the parts the model reads, its name, description and schema, are “loaded into the model’s context statically,” so changing them means unregistering and registering again.[^ch05-28] Both steps fire `toolchange`, which tells agents to refresh. The spec warns about one race in this pattern: if a call arrives just as you re-register under the same name with a different schema, arguments written for the old schema can reach the new tool.[^ch05-25] Validation in code (Listing 5.4) handles that case too.
 
@@ -580,6 +581,60 @@ await document.modelContext?.registerTool({
 
 The inference depends on the schema keeping its literal types: write it inline, or mark a separate constant `as const`, as here. A property listed in `required` becomes a required field and the rest become optional, so the compiler makes you handle a missing `time`. (This listing type-checks with TypeScript 5.9 and webmcp-types 0.1.10, using stub declarations for Fjord Table’s own objects. I re-ran the check on 2 November 2026.) The types also catch the silent-drop problem from ②: a misspelled member such as `inputschema` is a compile error in an object literal. But the types describe *your* side of the boundary only. At run time the agent can still send anything, so `checkBookingInput()` stays.
 
+## Waiting while tools are still registering
+
+`registerTool()` returns a promise. A view that registers several tools, or that fetches a configuration before it registers any, is not finished when the function that started the work returns. A browser agent can take an observation in that gap and see a partial catalog. Issue #328 describes the race for the first load and for a route change. Pull request #373, merged 24 November 2026, adds `waitForToolsUntil()` for that race. It does not close the issue.[^ch05-49]
+
+The signature in the 24 November draft is `undefined waitForToolsUntil(Promise<any> promise)`. Listing 5.2 includes that line. The method returns `undefined`. Awaiting it does not wait for your tools. It records the promise you pass. You can call it more than once, and each call adds one promise. The document’s tools are ready when every recorded promise has settled. Fulfilment and rejection both count. The draft also arms an implementation-defined timer on each call. When that timer fires, the promise is removed from the pending set even if it has not settled, so a promise that never settles cannot keep the document not-ready forever.[^ch05-49]
+
+Pass the promise while it is still pending. In the Chromium tree at commit `dc7d570dff77eca05dae42b1fa6e3b816205a94f` (25 November 2026, canary 160.0.8185.0), a promise that has already settled is ignored. The specification would append it and then remove it. A call made after the work has finished does not cover that work.[^ch05-50]
+
+`getTools()` does not read this state. The pull request leaves that wiring, and any change to how `toolchange` is dispatched, for a follow-up. What the draft specifies is the observation a browser agent takes. Each document in that snapshot carries a `tools ready` boolean. The agent may use the flag, with its own heuristics and its own timeout, to decide whether to act or to wait for a later observation. Changing the flag does not by itself cause an observation.[^ch05-49]
+
+The boolean starts as `true`. Issue #328 was still open on 27 November 2026. The draft’s note on it says a new document should start not-ready, unless it is not allowed to use the `tools` feature, so a page can call `waitForToolsUntil()` before the first observation. The lifecycle point is not chosen. Until that lands, a page that registers tools after the document exists has to make the call itself. A document that never calls the method is ready, on the specification’s current text, from the moment it is created.[^ch05-51]
+
+Chrome’s 10 seconds are not that specification timer. At the same Chromium commit the renderer does not drop the promise after 10 seconds. The first unsettled promise starts a warning timer of 10 seconds, and the page then gets a console warning that agents may stop waiting. The comment on the constant says the delay matches the actor observation timeout. That timeout, `kActorObservationDelayTimeout`, defaults to 10 seconds and ends the agent’s observation wait. A browser test in that revision shows a script-tools wait finishing on the timeout while the promise is still pending. The document stays not ready until the promises settle. The commit’s own message is about shipping the method. It had been gated by a runtime feature named `WebMCPWaitForToolsUntil`, so an origin-trial page could not call it. The commit removes that flag and exposes the method wherever `ModelContext` is exposed. The 10-second warning was already in `model_context.cc` at that revision. I have not run Chrome 160.[^ch05-50]
+
+The same revision reports a frame as loading until `DOMContentLoaded`, and as waiting while a `waitForToolsUntil()` promise is outstanding. The commit message says an observation that waits on script tools waits at least until `DOMContentLoaded`. That is `GetScriptToolsReadyState` in Chromium. It is not the specification’s initial value of `true`.[^ch05-50]
+
+On a page that already has `document.modelContext`, call the method only if the build has it:
+
+```js
+document.modelContext.waitForToolsUntil?.(toolsUpdated);
+```
+
+Before Chrome 160.0.8185.0 that optional call does nothing when `ModelContext` exists and the method does not. If `modelContext` itself may be missing, stay behind the check in Listing 5.3 and do not evaluate `document.modelContext` here.
+
+`Promise.all()` rejects as soon as one `registerTool()` rejects. Rejection is settlement. If that combined promise is the only one you passed, the document becomes ready while the other registrations are still pending. `Promise.allSettled()` waits until every one of them has finished. A retry, or the abort that rolls a partial batch back, has to happen inside the promise you pass. Work that starts after that promise has settled is not covered.
+
+Listing 5.7 puts the rollback inside the promise. It was not run in Chromium 156, and it was not run on Chrome 160.
+
+**Listing 5.7** `chapters/05-registering-tools/wait-for-tools.js` — hold agents until every registration has settled, including the rollback
+
+```js
+// Pass a promise that is still pending. Promise.all() would reject on the
+// first failure and end the wait while other registerTool() calls are running.
+export function registerToolsWhenReady(tools, signal) {
+  const batch = new AbortController();
+  const batchSignal = signal ? AbortSignal.any([signal, batch.signal]) : batch.signal;
+  const toolsUpdated = (async () => {
+    const results = await Promise.allSettled(tools.map((tool) =>
+      document.modelContext.registerTool(tool, { signal: batchSignal })
+    ));
+    if (results.some((result) => result.status === 'rejected')) {
+      batch.abort();
+    }
+    return results;
+  })();
+  document.modelContext.waitForToolsUntil?.(toolsUpdated);
+  return toolsUpdated;
+}
+```
+
+The abort that removes the tools which did register is part of `toolsUpdated`, so the wait covers it. Chapter 10 uses the same method when a route changes and the previous route’s tools are aborted first. `toolchange` still fires once per registration and once per unregistration. Issue #374, open on 27 November 2026, asks whether those events should be coalesced. The draft still fires one event per change.[^ch05-52]
+
+The method throws. It does not return a rejected promise. A document that is not fully active throws `InvalidStateError`. A document that is not allowed to use `tools` throws `NotAllowedError`. Appendix A puts those next to the other exceptions. Neither throw was in the Chromium 156 probes.
+
 ## Seeing your tools
 
 Before you hand your tools to an agent, have a look at them yourself. Chrome DevTools has a WebMCP pane in the Application panel. It lists the tools registered on the current tab with their names and descriptions as agents see them, logs every call with its input, output and status, and lets you run a tool by hand with parameters you enter.[^ch05-48] Running `book_table` with `partySize: 40` and confirming that you get back a helpful `{ status: 'error', code: 'INVALID_INPUT' }` result, not a rejected call, takes a minute, and it tests exactly what this chapter has been about. Chapter 14 covers testing and evals properly.
@@ -604,7 +659,8 @@ Both tools wrap code Fjord Table already had, both put their results on screen b
 - The schema is stringified at registration and isn’t validated, and neither are calls against it. Whether schemas should become required and browser-validated is an active debate. Validate strictly in code, keep schemas simple and descriptive, and ask only for what the tool needs.
 - `execute(input, { signal })` receives a fresh object parsed from JSON. Its return value is serialized with `JSON.stringify()`: under the draft, `undefined`, `BigInt` and circular values fail (a proposal would turn `undefined` into `"null"`), and thrown errors reach the caller only as `OperationError`. Chromium 156 still says `UnknownError`, returns plain strings without quotes and turns `undefined` into the string `undefined`, and a Chrome documentation co-author has called the Chrome behaviour wrong. Resolve only when the page shows the same state, and return recoverable failures as values the agent can act on.
 - Unregister by aborting the `AbortSignal` passed at registration. One controller can remove many tools, and a view that owns several tools should register them as a batch. Unregistering doesn’t cancel a call that is already running, and changing what the model reads means unregistering and registering again.
-- Still open: whether `inputSchema` becomes required and who validates it, `outputSchema`, the `undefined` and plain-string results, continuation tokens (an explainer, not yet in the draft or in Chrome), `null` results after navigation, the old `UnknownError` in Chrome, a possible `Tool` interface, and small naming questions (`registerTool()`’s return value, empty titles, `execute` versus `run`).
+- `waitForToolsUntil(promise)` records that asynchronous registration is still in progress. Call it while the promise is pending. `Promise.allSettled()` covers every registration in the batch. `Promise.all()` can settle, by rejecting, while other registrations are still running. Put a retry or a rollback abort inside that same promise. The method returns `undefined` and throws `InvalidStateError` or `NotAllowedError`. `getTools()` does not wait. The specification’s timeout is implementation-defined. In Chrome 160.0.8185.0 a 10-second timer warns, and the agent observation times out at 10 seconds. The document stays not ready until the promises settle. Feature-detect with `waitForToolsUntil?.()`. None of that was re-tested in this book.
+- Still open: whether `inputSchema` becomes required and who validates it, native checks of `outputSchema` (issue #92), the `undefined` and plain-string results, continuation tokens (an explainer, not yet in the draft or in Chrome), `null` results after navigation, the old `UnknownError` in Chrome, when a new document should start not-ready (issue #328), and small naming questions (`registerTool()`’s return value, empty titles, `execute` versus `run`). The `Tool` interface has merged (Appendix E).
 
 Chapter 6 picks up where this one stops: the four annotation hints Fjord Table has been setting without explanation, the step-by-step lifecycle of a call with its `toolactivated` and `toolcancel` events, cancellation through the per-call signal, and how the platform errors in Table 5.5 reach the caller.
 
@@ -658,5 +714,9 @@ Chapter 6 picks up where this one stops: the four annotation hints Fjord Table h
 [^ch05-48]: Chrome for Developers, “Debug WebMCP tools”, the WebMCP pane in Chrome DevTools (Application panel, retrieved November 2026). <https://developer.chrome.com/docs/devtools/application/webmcp>
 
 [^ch05-output-schema]: webmachinelearning/webmcp pull request #254, “Add `outputSchema` to `ModelContextTool` and `RegisteredTool`”, merged 2 November 2026. <https://github.com/webmachinelearning/webmcp/pull/254>
+[^ch05-49]: WebMCP specification, Draft Community Group Report, 24 November 2026 (retrieved 27 November 2026): `waitForToolsUntil(promise)` in the `ModelContext` IDL and its method steps (append the promise, treat fulfilment and rejection as settlement, and an implementation-defined timeout that removes the promise), the non-normative description, and §5.2 Page observations (`tools ready` on an observed tool collection, and the note that toggling it does not cause an observation). Pull request #373, “Signal tool stability with waitForToolsUntil() for user agent observations”, merged 24 November 2026 at 03:10 UTC. Its description says wiring the wait into `getTools()`, and changing `toolchange` dispatch, is deferred. <https://webmachinelearning.github.io/webmcp/#dom-modelcontext-waitfortoolsuntil> <https://github.com/webmachinelearning/webmcp/pull/373>
+[^ch05-50]: Chromium commit `dc7d570dff77eca05dae42b1fa6e3b816205a94f`, “WebMCP: Ship waitForToolsUntil() with the WebMCP origin trial”, Khushal Sagar, 25 November 2026, `refs/heads/main@{#1754836}`, reviewed at <https://chromium-review.googlesource.com/c/chromium/src/+/8839808>. Chromium Dash records canary deployment 160.0.8185.0 (retrieved 27 November 2026): <https://chromiumdash.appspot.com/commit/dc7d570dff77eca05dae42b1fa6e3b816205a94f>. The commit removes the `WebMCPWaitForToolsUntil` runtime feature. At that revision, `ModelContext::waitForToolsUntil` in `third_party/blink/renderer/core/script_tools/model_context.cc` ignores an already-settled promise, and `kWaitForToolsWarningDelay` is 10 seconds and logs a console warning. It does not set script tools ready. `kActorObservationDelayTimeout` in `components/actor/core/actor_features.cc` defaults to 10 seconds. `RenderFrameHostImpl::GetScriptToolsReadyState` returns loading until `DOMContentLoaded`. No Chrome 160 run was made for this chapter.
+[^ch05-51]: webmachinelearning/webmcp issue #328, “Signaling tool stability to agents”, still open on 27 November 2026. The 24 November draft keeps the inline issue: `tools ready` should start false unless the document is not allowed to use `tools`, and the lifecycle point is unresolved. <https://github.com/webmachinelearning/webmcp/issues/328>
+[^ch05-52]: webmachinelearning/webmcp issue #374, “Batch toolChange notifications for tool registry changes”, opened 4 November 2026, still open on 27 November 2026. Pull request #373 adds the same question as an inline issue on the notify-documents steps. <https://github.com/webmachinelearning/webmcp/issues/374>
 [^ch05-output-validation]: webmachinelearning/webmcp issue #92, “Who owns the validation layer?”, open on 15 November 2026; the November comments continue to discuss output mismatch handling and do not establish native `executeTool()` rejection behavior. <https://github.com/webmachinelearning/webmcp/issues/92>
 [^ch05-output-extension]: GoogleChromeLabs/webmcp-extension pull request #98, “Add support for tool outputSchema”, open on 15 November 2026; the example validates results in the agent host before model delivery. <https://github.com/GoogleChromeLabs/webmcp-extension/pull/98>

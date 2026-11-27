@@ -82,6 +82,12 @@ Pass the object from `getTools()` through to `executeTool()` unchanged. A hand-b
 
 Chapter 7 is the chapter that uses `getTools()` and `executeTool()`. Appendix A is the IDL. The generic-calling proposal in pull request #375 is a different design and is not part of this migration (Appendix F).
 
+## E.4 A later Chrome 160 change
+
+`waitForToolsUntil()` is not part of the `Tool` migration. Pull request #373 merged on 24 November 2026, five days after #348. Chrome exposes `Tool` starting in 160.0.8173.0. It exposes `waitForToolsUntil()` with `ModelContext` starting in 160.0.8185.0, canary of commit `dc7d570dff77eca05dae42b1fa6e3b816205a94f` on 25 November 2026.[^appe-7] A page that has learned to read `source` can still be missing the method. Call it with `document.modelContext.waitForToolsUntil?.()`.
+
+The specification’s timeout is implementation-defined, and it removes the promise so the document’s tools are ready again. At that Chromium revision the renderer’s 10-second timer only logs a warning. The agent observation timeout also defaults to 10 seconds, and that timeout ends the agent’s wait. It does not mark the document ready. Chapter 5 has the steps. This appendix’s Chromium 156 limitation applies here too: no Chrome 160 probe was run.
+
 ## Notes
 
 [^appe-1]: Dominic Farolino, “Introduce the `Tool` interface”, webmachinelearning/webmcp pull request #348 (opened 15 October 2026, merged 19 November 2026). The pull request description records the compatibility changes: missing `inputSchema` and `annotations` are `null` rather than `undefined`, `JSON.stringify(tool)` returns `"{}"`, object spread copies nothing, and `structuredClone(tool)` throws because `Tool` is not serializable. <https://github.com/webmachinelearning/webmcp/pull/348>
@@ -90,3 +96,4 @@ Chapter 7 is the chapter that uses `getTools()` and `executeTool()`. Appendix A 
 [^appe-4]: Chromium release schedule, milestone 160: stable date 5 January 2027 (retrieved 23 November 2026). <https://chromiumdash.appspot.com/schedule>
 [^appe-5]: Chrome for Developers, “WebMCP Imperative API”, “Discover tools” (page last updated 20 November 2026, retrieved 23 November 2026). The logged tool shows `source`, `title: ""` and `outputSchema: null`. <https://developer.chrome.com/docs/ai/webmcp/imperative-api>
 [^appe-6]: webmachinelearning/webmcp issue #349, “Allow `executeTool()` to execute tools registered by opaque-origin documents”. The 23 November 2026 specification still rejects an opaque `Tool` origin with `NotSupportedError`, and its `executeTool()` steps still point at #349 as unresolved (retrieved 23 November 2026). <https://github.com/webmachinelearning/webmcp/issues/349>
+[^appe-7]: webmachinelearning/webmcp pull request #373, merged 24 November 2026. Chromium Dash, commit `dc7d570dff77eca05dae42b1fa6e3b816205a94f`, canary 160.0.8185.0 (retrieved 27 November 2026). The commit removes the `WebMCPWaitForToolsUntil` runtime feature. <https://github.com/webmachinelearning/webmcp/pull/373> <https://chromiumdash.appspot.com/commit/dc7d570dff77eca05dae42b1fa6e3b816205a94f>

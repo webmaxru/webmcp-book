@@ -24,7 +24,7 @@ The dates come from the commit history of the specification repository, `webmach
 | 8 October 2026 | Declarative API removed from the specification | #338, `14ae813`[^appd-10] |
 | 8 October 2026 | `UnknownError` replaced by specific exception names in `executeTool()` | #339, `b206dae`[^appd-11] |
 
-Two of these rows break old code outright: 5 March and 27 May. The others change details you’ll meet while porting. The two October rows don’t affect migration from `navigator`, but they explain what you see in Chrome today (Appendix A, Tables A.7 and A.8). And the table stops in October for a reason. The draft of 27 October 2026 has exactly the same IDL as the 15 October one, so nothing after 8 October changes the API shape (Section D.6).
+Two of these rows break old code outright: 5 March and 27 May. The others change details you’ll meet while porting. The two October rows don’t affect migration from `navigator`, but they explain what you see in Chrome today (Appendix A, Tables A.7 and A.8). And the table stops in October for a reason. The draft of 27 October 2026 has exactly the same IDL as the 15 October one. The IDL changes after that date are `outputSchema`, the `Tool` interface and `waitForToolsUntil()` (Section D.6).
 
 ![Figure D.1 — The WebMCP API shape, February to November 2026: from navigator.modelContext with provideContext() to document.modelContext with registerTool(tool, { signal }), a draft with no IDL change on 27 October, and the open proposals that could change code again.](images/figure-d-1.png)
 
@@ -261,7 +261,7 @@ If you followed the first edition of this book, the draft of 27 October 2026 has
 
 > **Still in flux: the next migration**
 >
-> `outputSchema` (#254) merged on 2 November 2026, and the `Tool` interface (#348) merged on 19 November 2026. Code that builds or copies `RegisteredTool` objects by hand, or that reads `tool.window`, has to change. Appendix E is that migration: use `tool.source !== undefined ? tool.source : tool.window` until Chrome 160 is stable on 5 January 2027, skip a `null` `source`, and copy fields explicitly instead of stringifying or spreading the tool. What is still open, and not part of that migration, is `requestUserInput()` (#204), an `openWorldHint` annotation (#355), and the generic-calling explainer (#375, Appendix F).[^appd-20] Treat what `getTools()` returns as opaque, pass it back to `executeTool()` as it is, and return objects from every tool.
+> `outputSchema` (#254) merged on 2 November 2026, and the `Tool` interface (#348) merged on 19 November 2026. Code that builds or copies `RegisteredTool` objects by hand, or that reads `tool.window`, has to change. Appendix E is that migration: use `tool.source !== undefined ? tool.source : tool.window` until Chrome 160 is stable on 5 January 2027, skip a `null` `source`, and copy fields explicitly instead of stringifying or spreading the tool. `waitForToolsUntil(promise)` (#373) merged on 24 November 2026. It does not change an existing call. On Chrome before 160.0.8185.0, call it with `document.modelContext.waitForToolsUntil?.()` (Chapter 5). What is still open, and not part of that migration, is `requestUserInput()` (#204), an `openWorldHint` annotation (#355), and the generic-calling explainer (#375, Appendix F).[^appd-20] Treat what `getTools()` returns as opaque, pass it back to `executeTool()` as it is, and return objects from every tool.
 
 ## D.7 Checklist
 
