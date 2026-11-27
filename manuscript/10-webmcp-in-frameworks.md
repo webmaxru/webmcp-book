@@ -713,7 +713,7 @@ Notice also what the inferred schema lacks: descriptions. The field names are al
 
 A single-page route change does not create a new document. The tools that belonged to the previous route have to be aborted, and the tools for the next route have to be registered, and both steps are asynchronous. An observation taken in the middle of that sees a catalog that is neither route. `toolchange` fires for each registration and each unregistration. It does not say that the batch is finished.
 
-`waitForToolsUntil()` does. Listing 10.12 aborts the previous controller, registers the next route’s tools with `Promise.allSettled()`, and passes that promise to `waitForToolsUntil?.()`. A `registerTool()` that rejects leaves the tools that succeeded registered. The optional call is there because Chrome exposes the method with `ModelContext` starting in 160.0.8185.0. On an earlier build that has `document.modelContext` and not this method, the call is skipped and registration still happens.[^ch10-25]
+`waitForToolsUntil()` does. Listing 10.12 aborts the previous controller, registers the next route’s tools with `Promise.allSettled()`, and passes that promise to `waitForToolsUntil?.()`. In that new batch, a rejected `registerTool()` leaves the tools that succeeded registered. The optional call is there because Chrome exposes the method with `ModelContext` starting in 160.0.8185.0. On an earlier build that has `document.modelContext` and not this method, the call is skipped and registration still happens.[^ch10-25]
 
 `Promise.all()` is the wrong promise to pass. It rejects at the first `registerTool()` failure, and a rejection has settled, so agents can be told the tools are ready while the rest of the route is still registering. `Promise.allSettled()` waits for every call. It leaves the tools that succeeded in place, which is what Listing 10.12 does. A route that must be all or nothing should abort the controller inside the same promise, which is what Listing 5.7 does, and pass that promise. A retry belongs in there too. A retry started after the promise has settled is a new gap, and it needs its own call.
 
@@ -745,7 +745,7 @@ export function onRouteChange(route) {
 }
 ```
 
-Listing 10.12 assumes `document.modelContext` is already there, which is the same assumption as a route handler that calls `registerTool()` directly. It returns the `Promise.allSettled()` promise. The `try` catches `InvalidStateError` and `NotAllowedError`. `waitForToolsUntil()` throws them synchronously, before it records the promise. Without that `try`, either throw would exit `onRouteChange` after the new `registerTool()` calls had started, and the caller would not receive the promise. Any other exception is rethrown. The listing was not part of the Chromium 156 suite.
+Listing 10.12 assumes `document.modelContext` is already there, which is the same assumption as a route handler that calls `registerTool()` directly. It returns the `Promise.allSettled()` promise. The `try` catches `InvalidStateError` and `NotAllowedError`. `waitForToolsUntil()` throws them synchronously, before it records the promise. Without that `try`, either throw would exit `onRouteChange` after the new `registerTool()` calls had started, and the caller would not receive the promise. The `catch` rethrows any other exception. The listing was not part of the Chromium 156 suite.
 
 ## Server rendering and other frameworks
 

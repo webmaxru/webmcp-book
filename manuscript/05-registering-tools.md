@@ -636,7 +636,7 @@ export function registerToolsWhenReady(tools, signal) {
 }
 ```
 
-The abort that removes the tools which did register is part of `toolsUpdated`, so the wait covers it when `waitForToolsUntil()` returns. The `registerTool()` calls have already started when `waitForToolsUntil()` runs. The method throws `InvalidStateError` or `NotAllowedError` synchronously, before it records the promise. The `try` handles those two names, so `return toolsUpdated` still runs and the caller receives the batch promise. Any other exception is rethrown.
+The abort that removes the tools which did register is part of `toolsUpdated`, so the wait covers it when `waitForToolsUntil()` returns. The `registerTool()` calls have already started when `waitForToolsUntil()` runs. The method throws `InvalidStateError` or `NotAllowedError` synchronously, before it records the promise. The `try` handles those two names, so `return toolsUpdated` still runs and the caller receives the batch promise. The `catch` rethrows any other exception.
 
 Chapter 10 uses the same method when a route changes and the previous route’s tools are aborted first. `toolchange` still fires once per registration and once per unregistration. Issue #374, open on 27 November 2026, asks whether those events should be coalesced. The draft still fires one event per change.[^ch05-52]
 
