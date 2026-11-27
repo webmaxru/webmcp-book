@@ -1,5 +1,6 @@
 """GitHub Actions controller. Never import or execute code from the PR in a write job."""
 import argparse
+import base64
 import hashlib
 import json
 import os
@@ -13,8 +14,8 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # find release_policy next to this file, whoever loads it
-from release_policy import (Rejected, git, is_stable, latest, metadata, release_notes, require, semver, unreleased,
-                            validate)
+from release_policy import (META, Rejected, classify, git, is_stable, latest, metadata, release_notes, require,
+                            semver, unreleased, validate)
 
 OWNER = "webmaxru"
 CHECK = "Book release preflight"
@@ -22,6 +23,10 @@ CHECK = "Book release preflight"
 
 class Stale(Rejected):
     """An approved, green pull request that cannot merge until its branch is updated from main."""
+
+
+class OutOfScope(Rejected):
+    """A tooling-only or mixed pull request. The controller never merges or releases tooling."""
 
 
 class GitHub:
@@ -114,6 +119,39 @@ def scope(api, pr):
             and pr["base"]["repo"]["full_name"] == api.repo, "Requires same repository and base main")
 
 
+def book_json(api, ref):
+    found = api.api(f"contents/{META}?ref={sha(ref)}", optional=True)
+    if found is None:
+        return {}
+    try:
+        data = json.loads(base64.b64decode(found["content"]))
+    except (KeyError, TypeError, ValueError):
+        data = None
+    require(isinstance(data, dict), f"Invalid {META} at {ref[:12]}")
+    return data
+
+
+def content_scope(api, pr, n):
+    """Tell tooling from book content by the paths GitHub lists for the PR, before any gate or Git work.
+
+    Uses the same allowlist and tools/book.json key rule as validate(), which stays the final authority.
+    """
+    files = list(api.rows(f"pulls/{n}/files"))
+    require(len(files) == pr["changed_files"], "The changed-file list is incomplete")
+    paths = {f["filename"] for f in files} | {f["previous_filename"] for f in files if f.get("previous_filename")}
+    if not paths:
+        return
+    meta = (book_json(api, pr["base"]["sha"]), book_json(api, pr["head"]["sha"])) if META in paths else ({}, {})
+    content, tooling = classify(paths, *meta)
+    if not content:
+        raise OutOfScope(f"PR #{n} is tooling-only (no book content changed: {', '.join(sorted(paths)[:5])}); the "
+                         "release controller never merges or releases tooling PRs. Merge it yourself once its "
+                         "checks are green.")
+    if tooling:
+        raise OutOfScope(f"PR #{n} mixes book content with tooling ({', '.join(sorted(tooling)[:5])}); split it: "
+                         "merge the tooling PR yourself, then authorize the content PR.")
+
+
 def fetch(root, ref):
     git(root, "fetch", "--quiet", "--no-tags", "origin", ref)
 
@@ -121,6 +159,7 @@ def fetch(root, ref):
 def candidate(api, root, n, head=None, base=None):
     pr = api.api(f"pulls/{n}")
     scope(api, pr)
+    content_scope(api, pr, n)
     require(pr["state"] == "open" and not pr["draft"] and pr["mergeable"] is True, "Not open and mergeable")
     h, b = sha(pr["head"]["sha"]), sha(pr["base"]["sha"])
     require((not head or head == h) and (not base or base == b), "PR moved")
@@ -137,8 +176,12 @@ def candidate(api, root, n, head=None, base=None):
     return {"pr": n, "head_sha": h, "base_sha": b, "tag": tag}
 
 
+def github_event():
+    return json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
+
+
 def event_numbers(api):
-    event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
+    event = github_event()
     if "inputs" in event:
         return [int(event["inputs"]["pr"])]
     if "comment" in event:
@@ -146,6 +189,28 @@ def event_numbers(api):
     if "workflow_run" in event and event["workflow_run"]["pull_requests"]:
         return [p["number"] for p in event["workflow_run"]["pull_requests"]][:20]
     return [p["number"] for p in api.api("pulls?state=open&base=main&sort=updated&per_page=30")]
+
+
+def targeted(api, n):
+    """Whether this run answers the owner about PR n, rather than scanning the open pull requests.
+
+    The owner asks with a manual dispatch, a `/release-book <head>` comment, or an Approve of the current head that
+    the approval signal relays. Every other trigger is a scan, and a scan stays quiet.
+    """
+    event = github_event()
+    if "inputs" in event:
+        return True
+    if "comment" in event:
+        comment = event["comment"]
+        return login(comment) == OWNER and bool(re.fullmatch(r"/release-book [0-9a-f]{40}", comment.get("body") or ""))
+    run = event.get("workflow_run") or {}
+    if run.get("name") != "Book approval signal" or (run.get("actor") or {}).get("login") != OWNER:
+        return False
+    pr = api.api(f"pulls/{n}")
+    try:
+        return login(pr) != OWNER and run.get("head_sha") == pr["head"]["sha"] and approval(api, pr)
+    except Rejected:
+        return False
 
 
 def output(**values):
@@ -341,6 +406,13 @@ def main():
             except Stale as e:
                 print(f"::warning::PR {number}: {e}", flush=True)
                 summarize(f"PR #{number} is {e}")
+                continue
+            except OutOfScope as e:
+                if targeted(api, number):
+                    print(f"::warning::{e}", flush=True)
+                    summarize(str(e))
+                else:
+                    print(f"PR {number}: {e}")
                 continue
             except Rejected as e:
                 print(f"PR {number}: {e}")
