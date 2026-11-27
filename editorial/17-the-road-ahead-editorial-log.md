@@ -49,3 +49,7 @@ The claim that the demo validates every `run()` result against the printed `outp
 ## Pass: waitForToolsUntil (27 November 2026)
 
 Chapter 17 adds a table row, checklist item, and passes the batch promise from Listing 17.2 to `waitForToolsUntil?.()`, including the rollback abort. Listing 17.3 records the method. The printed 2 November JSON does not include that field. Figure 17.1 was not redrawn. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.
+
+## Follow-up: synchronous throw (27 November 2026)
+
+Listing 17.2’s `registerCatalog` wraps `waitForToolsUntil?.()` in `try` and catches `InvalidStateError` and `NotAllowedError`. `return done` stays outside that `try`. `registerBatch`, including its rollback `catch`, is unchanged. Listing 17.1’s schema was not edited. The fourteen checks were not re-run. The exact `registerCatalog` text is in `editorial/fidelity-ledger-wait-for-tools-until.md`.
