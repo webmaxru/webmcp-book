@@ -95,6 +95,49 @@ Production serves **released editions only**. [`deploy-swa`](.github/workflows/d
 
 What counts as book content is defined once, in `tools/release_policy.py` (the allowlist that also limits a content PR), not repeated as path patterns in the workflow. Tooling, theme and workflow changes are not book content, so they deploy on push whenever `main` equals the latest release. While `main` carries unreleased content, a push deploys nothing: see scenarios 10 and 19. Secrets, setup and rollback details are in [DEPLOY.md](DEPLOY.md).
 
+## Temporary Actions storage and previews
+
+Pushes and pull requests still run the complete build and validation, but do not upload
+PDF, EPUB or ZIP bundles. Releases build their own editions; the website builds from
+source and never downloads a CI bundle. The checked-in workflows are authoritative:
+there is no workflow generator in this repository. The shared `build-editions` composite
+action builds and validates editions without uploading them.
+
+For a downloadable review copy, select **Actions > Book CI > Run workflow**, choose the
+source branch or tag, and enable **upload_preview**. The default is false. CLI equivalent:
+
+```sh
+gh workflow run ci.yml --ref <branch-or-tag> -f upload_preview=true
+```
+
+Previews expire after **one day**. Their `book-preview-v1` names bind the repository ID,
+book, full source ref (hashed without normalizing branch names), run ID and attempt.
+After a successful run, `preview-cleanup.yml` runs only trusted `main` code with
+`actions: write`; it never checks out or executes the preview source or downloads its
+contents. It obtains the replacement's uploaded artifact ID from that producing run,
+checks the successful upload step and artifact/run metadata, then deletes only older
+previews in the same namespace and workflow. Cleanup is serialized per source name
+without cancelling a running cleanup. The replacement, newer runs/uploads, active runs,
+other refs, diagnostics and release staging are preserved. Producer status is checked
+again before deletion. Active or concurrently restarted runs can leave temporary overlap
+until the next preview or one-day expiration; this is not an exactly-one guarantee.
+Failed uploads never replace the previous preview. API or identity failures fail cleanup
+visibly rather than reporting success.
+
+Release staging (`editions-<tag>`) retains its **seven-day** recovery window if publication,
+deployment, integrity verification or cleanup fails. After `publish` has finished (including
+its downstream deployment and smoke test), a separate trusted cleanup job downloads staging
+by the exact upload ID. It repeats the existing release provenance and published-asset checks,
+validates the staging checksums, matches every published asset's size and GitHub SHA-256 digest,
+and verifies all known consuming jobs succeeded before deleting only that run's staging ID.
+Missing digests or an unexpected consumer stop cleanup and retain staging. No release, release
+asset, tag or deployed file is deleted. Existing retry/no-op publication behavior is unchanged;
+old failed-run staging expires naturally rather than being swept by a later run.
+
+Retention changes do **not** shorten artifacts already uploaded with an older expiration.
+This change does not purge legacy artifacts. GitHub's included **500 MB** allowance is shared
+across the account, so other repositories can still consume it.
+
 ## Recovery and corrections
 
 Pushing a tag does not publish. If the squash succeeded but dispatch or build failed, run **Release book → Run workflow** on `main` with the `pr`, `head_sha`, `base_sha`, `merge_sha` and `tag` recorded in the merge job. Inputs are checked again, and the approval is judged as it stood at the merge: later events are ignored, but a change request or dismissal by anyone before the merge needs a fresh owner authorization after it. Manually merged, forged or mismatched revisions are not recovery candidates, and neither is a merge whose approving review or command comment was edited, deleted or dismissed afterwards. A matching published release with all four assets is a no-op. A lone tag, draft, incomplete asset set or wrong target stops recovery without writes. Inspect a partial publication before proceeding; never move a tag or overwrite published downloads.

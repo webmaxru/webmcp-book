@@ -106,10 +106,11 @@ class FlowSurfaceTests(unittest.TestCase):
         for name in ("approved-book.yml", "release.yml"):
             self.assertNotRegex(wf.read(name), r"pull_request_target|github\.head_ref|event\.pull_request\.head")
 
-    def test_only_the_merge_job_and_the_publish_job_can_write(self):
+    def test_only_dispatchers_and_isolated_cleanup_can_write(self):
         writers = {(name, job) for name in self.CONTROLLED for job, chunk in wf.jobs(name).items()
                    if "write" in wf.permissions(chunk).values()}
-        self.assertEqual(writers, {("approved-book.yml", "merge"), ("release.yml", "publish")})
+        self.assertEqual(writers, {("approved-book.yml", "merge"), ("release.yml", "publish"),
+                                   ("release.yml", "cleanup-staging")})
         self.assertEqual(wf.permissions(wf.jobs("approved-book.yml")["preflight"]), {"contents": "read"})
         self.assertEqual(wf.permissions(wf.jobs("release.yml")["build"]), {"contents": "read"})
         self.assertEqual(wf.permissions(wf.jobs("deploy-swa.yml")["published-source"]), {"contents": "read"})

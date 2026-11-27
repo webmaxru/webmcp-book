@@ -56,6 +56,8 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
+    outputs:
+      artifact-id: ${{ steps.staging.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -68,6 +70,7 @@ jobs:
           cp dist/*.pdf dist/*.epub dist/*.zip release/
           (cd release && sha256sum -- * > SHA256SUMS.txt)
       - uses: actions/upload-artifact@v7
+        id: staging
         with:
           name: editions-${{ inputs.tag }}
           path: release/
@@ -95,3 +98,30 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python tools/book_release.py publish --pr "$PR" --head "$HEAD" --base "$BASE" --merge "$MERGE" --tag "$TAG"
+
+  cleanup-staging:
+    needs: [build, publish]
+    if: needs.publish.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: read
+      issues: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@v8
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact-id }}
+          path: release
+          merge-multiple: true
+      - name: Verify published integrity and remove consumed staging
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STAGING_ID: ${{ needs.build.outputs.artifact-id }}
+        run: python tools/artifact_storage.py release --artifact-id "$STAGING_ID" --pr "$PR" --head "$HEAD" --base "$BASE" --merge "$MERGE" --tag "$TAG"

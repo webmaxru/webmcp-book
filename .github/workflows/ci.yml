@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      upload_preview:
+        description: Upload a one-day book preview for this ref
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -31,15 +36,22 @@ jobs:
           BASE: ${{ github.event.pull_request.base.sha }}
         run: python tools/release_policy.py --base "$(git merge-base "$BASE" HEAD)"
       - uses: ./.github/actions/build-editions
-      - uses: actions/upload-artifact@v7
+      - name: Identify preview
+        if: github.event_name == 'workflow_dispatch' && inputs.upload_preview
+        id: preview
+        run: python tools/artifact_storage.py preview-name
+      - name: Upload book preview
+        if: github.event_name == 'workflow_dispatch' && inputs.upload_preview
+        id: upload-preview
+        uses: actions/upload-artifact@v7
         with:
-          name: book-${{ github.sha }}
+          name: ${{ steps.preview.outputs.name }}
           path: |
             dist/*.pdf
             dist/*.epub
             dist/*.zip
           if-no-files-found: error
-          retention-days: 3
+          retention-days: 1
   preflight:
     name: Book release preflight
     if: always()
