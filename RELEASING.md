@@ -79,7 +79,7 @@ For someone else's non-draft PR, **webmaxru** submits an **Approve** review on i
 - **The command is exact and fresh.** It names the full SHA of the current head, was posted after the latest barrier, and was **never edited** (GitHub's `updated_at` equals `created_at`). Fixing a typo in a posted command revokes it, so post a new comment instead. A deleted comment authorizes nothing.
 - **The head includes current `main`.**
 
-The controller, **Release approved book**, inspects review and CI events; a scheduled scan of up to 30 open PRs (at :17 and :47 past each hour) and **Release approved book → Run workflow → pr** can recover missed signals. None of those triggers grants approval. It runs from `main` only, repeats preflight with the validators from `main` (never the PR's own code), rechecks approval and the base, and requests a squash merge conditional on the approved SHA. The repository has no branch protection or ruleset, so nothing enforces this gate: **a manual merge bypasses it** (scenario 10). Because the web deploy is gated too (see [Deploy](#deploy)), a manual merge cannot put unreleased content on the site, but it publishes nothing either.
+The controller, **Release approved book**, inspects review and CI events; a scheduled scan of up to 30 open PRs (at :17 and :47 past each hour) and **Release approved book → Run workflow → pr** can recover missed signals. None of those triggers grants approval. It releases content PRs only: an approval or command on a tooling-only or mixed PR gets a warning on a green run instead (scenarios 7 and 8). It runs from `main` only, repeats preflight with the validators from `main` (never the PR's own code), rechecks approval and the base, and requests a squash merge conditional on the approved SHA. The repository has no branch protection or ruleset, so nothing enforces this gate: **a manual merge bypasses it** (scenario 10). Because the web deploy is gated too (see [Deploy](#deploy)), a manual merge cannot put unreleased content on the site, but it publishes nothing either.
 
 The controller explicitly dispatches **Release book** because a `GITHUB_TOKEN` merge, tag or publication does not trigger the usual downstream events. Release book checks the merged PR, the approval as it stood at the merge, the exact tree, the squash parent, main ancestry and the version. It builds the merge commit *before* creating its annotated tag. A draft receives the PDF, EPUB, HTML zip and `SHA256SUMS.txt`; only then is it published, with notes from the same commit. Only the highest published stable edition is marked Latest and automatically deployed. A higher tag without a published stable release does not count. For store uploads see [Leanpub and KDP](README.md#leanpub).
 
@@ -154,6 +154,7 @@ Commands use the [GitHub CLI](https://cli.github.com/) (`gh`) from a clone of th
 | --- | --- | --- |
 | PR opened or pushed | **Book CI** runs tests, release policy, lint and a full build. Its **Book release preflight** job is the gate. | No |
 | Owner **Approve** review, or an owner `/release-book <SHA>` comment | **Book approval signal** relays a review; **Release approved book** re-checks everything and squash-merges the approved head. | Yes, through **Release book** |
+| The same on a tooling-only or mixed PR | **Release approved book** stops before any other check and leaves one warning on a green run (scenarios 7 and 8). Merge tooling yourself. | **No** |
 | Book CI or approval-signal run finishes, or the half-hourly scan | The controller looks for an approved PR it missed. It never approves anything itself. | Only if a valid approval exists |
 | **Release approved book → Run workflow** with `pr` | Same re-check for one PR. | Only if a valid approval exists |
 | **Release book → Run workflow** with the recorded inputs | Recovery of a PR the controller merged (scenario 12). A complete release is a no-op; anything partial stops without writes. | Only for a PR the controller merged |
@@ -256,11 +257,27 @@ If the run died within a second with no steps, see [Runs that fail without start
 
 ### 7. Tooling, docs and workflow changes
 
-A PR that touches only files outside the content allowlist (`tools/` other than `book.json` release keys, `.github/`, `theme/`, `infra/`, `README.md`, `RELEASING.md`, tests) is **tooling-only**. It needs no version bump, never releases, and the controller never merges it (`release_policy.py` prints `Tooling only`). Merge it yourself when CI is green. The merge triggers **deploy-swa**, whose gate deploys `main` only if its book content equals the latest release, so a tooling merge never puts unreleased content on the site. If `main` does carry unreleased content, the run is skipped (scenario 19).
+A PR that touches only files outside the content allowlist (`tools/` other than `book.json` release keys, `.github/`, `theme/`, `infra/`, `README.md`, `RELEASING.md`, tests) is **tooling-only**. It needs no version bump, never releases, and the controller never merges it (`release_policy.py` prints `Tooling only`). Merge it yourself when CI is green.
+
+An owner **Approve** review or a `/release-book <SHA>` comment on a tooling-only PR merges and releases nothing. The controller checks the PR's changed files before any other gate and answers on a green run with one warning, repeated in the run summary:
+
+```text
+PR #N is tooling-only (no book content changed: <first up to 5 paths, comma-separated>); the release controller never merges or releases tooling PRs. Merge it yourself once its checks are green.
+```
+
+The same warning answers **Release approved book → Run workflow** with that `pr`. Scheduled scans and other signals pass over tooling PRs with a plain log line and no warning.
+
+The merge triggers **deploy-swa**, whose gate deploys `main` only if its book content equals the latest release, so a tooling merge never puts unreleased content on the site. If `main` does carry unreleased content, the run is skipped (scenario 19).
 
 ### 8. Mixed content and tooling
 
-A PR that changes both content and tooling fails preflight with `Separate content from tooling: [...]`. Split it into two PRs: tooling first (merged by you), then the content PR.
+A PR that changes both content and tooling fails preflight with `Separate content from tooling: [...]`. Split it into two PRs: tooling first (merged by you), then the content PR. A renamed file counts under both its old and its new path.
+
+An owner **Approve** review or a `/release-book <SHA>` comment on a mixed PR merges and releases nothing. The controller answers on a green run with one warning, repeated in the run summary:
+
+```text
+PR #N mixes book content with tooling (<first up to 5 tooling paths>); split it: merge the tooling PR yourself, then authorize the content PR.
+```
 
 ### 9. Review copy (prerelease)
 
@@ -345,7 +362,7 @@ If you use the book control center, each alert has a fix on this page:
 
 | Alert | Cause and fix |
 | --- | --- |
-| `PR #N is ready for your approval` | Preflight is green. Approve the head (scenario 2) or comment `/release-book <SHA>` (scenario 1). |
+| `PR #N is ready for your approval` | Preflight is green. Approve the head (scenario 2) or comment `/release-book <SHA>` (scenario 1). A tooling-only PR is not released: merge it yourself (scenario 7). |
 | `PR #N release preflight is failing` | Open the failed **Book CI** run. Fix the PR, or re-run failed jobs if the failure was transient. |
 | `PR #N was approved but is still open` | Scenario 6. |
 | `PR #N changed after your approval` | Scenario 4. Approve the new head. |

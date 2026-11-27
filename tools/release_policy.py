@@ -61,6 +61,18 @@ def allowed(path):
     return path in {META, "CHANGELOG.md", "VALIDATION.md"} or path.startswith(DIRS)
 
 
+def classify(paths, old, new):
+    """Whether a change carries book content, and which of its paths are tooling.
+
+    The allowlist decides each path; tools/book.json is content on its release keys and tooling on any other key.
+    """
+    keys = {k for k in old.keys() | new.keys() if k not in old or k not in new or old[k] != new[k]}
+    tooling = {p for p in paths if not allowed(p)}
+    if keys - KEYS:
+        tooling.add(META)
+    return bool(paths - tooling - {META} or keys & KEYS), tooling
+
+
 def metadata(root, rev):
     return json.loads(git(root, "show", f"{rev}:{META}"))
 
@@ -110,12 +122,7 @@ def validate(root, base, head, *, content_only=False, existing_tag=False):
     paths = changed(root, base, head)
     old, new = metadata(root, base), metadata(root, head)
     version = new["version"]
-    key_changes = {k for k in old.keys() | new.keys() if k not in old or k not in new or old[k] != new[k]}
-    tooling = {p for p in paths if not allowed(p)}
-    if key_changes - KEYS:
-        tooling.add(META)
-    release_paths = paths - tooling - {META}
-    candidate = bool(release_paths or key_changes & KEYS)
+    candidate, tooling = classify(paths, old, new)
     if not candidate:
         require(not content_only, "Not a content PR")
         return None

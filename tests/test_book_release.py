@@ -1,3 +1,4 @@
+import base64
 import copy
 import hashlib
 import json
@@ -350,6 +351,20 @@ def options(args):
     return frozenset(a for a in args if a.startswith("--"))
 
 
+def tooling_only(*paths):
+    return (f"PR #7 is tooling-only (no book content changed: {', '.join(paths)}); the release controller never "
+            "merges or releases tooling PRs. Merge it yourself once its checks are green.")
+
+
+def mixed(*paths):
+    return (f"PR #7 mixes book content with tooling ({', '.join(paths)}); split it: merge the tooling PR yourself, "
+            "then authorize the content PR.")
+
+
+GATE_READS = {"pulls/7/reviews", "issues/7/comments", "issues/7/timeline", "actions/workflows/ci.yml/runs",
+              "git/ref/heads/main"}
+
+
 class RehearsalBase(Repository):
     """CLI → loopback API → local Git objects → gh upload shim. No real credentials.
 
@@ -391,6 +406,7 @@ class RehearsalBase(Repository):
         self.fail_routes = set()
         self.dispatched = {}
         self.writes = []
+        self.reads = []
         self.tagged = None
         self.release = None
         self.upload_log = self.root / "uploads.json"
@@ -412,7 +428,10 @@ class RehearsalBase(Repository):
 
         class Handler(BaseHTTPRequestHandler):
             def handle_api(self):
-                path = urlsplit(self.path).path.removeprefix("/repos/test/book/")
+                url = urlsplit(self.path)
+                path = url.path.removeprefix("/repos/test/book/")
+                if path.startswith("contents/"):
+                    path += "?" + url.query
                 size = int(self.headers.get("Content-Length", 0))
                 body = json.loads(self.rfile.read(size)) if size else None
                 try:
@@ -453,10 +472,33 @@ class RehearsalBase(Repository):
     def release_args(self):
         return self.params + ["--merge", self.squash, "--tag", self.tag]
 
+    def files(self):
+        """What GitHub lists as the files of the pull request: the three-dot diff, a rename with its old name."""
+        try:
+            out = self.g("diff", "--name-status", "-M", "-z", f"{self.pr['base']['sha']}...{self.pr['head']['sha']}")
+        except subprocess.CalledProcessError:
+            return []
+        fields, rows = iter(out.split("\0")), []
+        for status in fields:
+            if not status:
+                continue
+            row = {"status": status[0]} | ({"previous_filename": next(fields)} if status[0] in "RC" else {})
+            rows.append(dict(row, filename=next(fields)))
+        return rows
+
+    def contents(self, path):
+        name, ref = re.fullmatch(r"contents/([^?]+)\?ref=([0-9a-f]{40})", path).groups()
+        shown = subprocess.run(["git", "-C", str(self.root), "show", f"{ref}:{name}"], capture_output=True)
+        if shown.returncode:
+            return 404, {"message": "Not Found"}
+        return 200, {"type": "file", "encoding": "base64", "content": base64.b64encode(shown.stdout).decode()}
+
     def respond(self, method, path, body):
         if method != "GET":
             self.writes.append((method, path, body))
             assert (method, path) in self.WRITES, f"the controller must not {method} {path}"
+        else:
+            self.reads.append(path)
         if path in self.fail_routes:
             return 500, {"message": "forced failure"}
         if path == "pulls/7/merge":
@@ -497,7 +539,13 @@ class RehearsalBase(Repository):
                 pr="7", head_sha=self.head, base_sha=self.pr["base"]["sha"], merge_sha=self.squash, tag=self.tag), body
             self.dispatched["release.yml"] = body
             return 200, {}
-        routes = {"pulls/7": self.pr, "pulls/7/reviews": self.reviews, "issues/7/comments": self.comments,
+        if path.startswith("contents/"):
+            return self.contents(path)
+        if path == "pulls/7/files":
+            return 200, self.files()
+        if path == "pulls/7":
+            return 200, {"changed_files": len(self.files()), **self.pr}
+        routes = {"pulls/7/reviews": self.reviews, "issues/7/comments": self.comments,
                   "issues/7/timeline": self.timeline, "git/ref/heads/main": {"object": {"sha": self.main}},
                   "pulls": [{"number": 7}], "actions/workflows/ci.yml/runs": {"workflow_runs": self.runs},
                   "actions/runs/99": {"status": "completed", "conclusion": self.deploy_run},
@@ -811,25 +859,126 @@ class Rehearsal(RehearsalBase):
     def test_only_book_content_is_merged_by_the_controller(self):
         restore = self.checkpoint()
         other_name = json.dumps(dict(self.cfg, file_stem="Other"))
-        for name, files in {
-            "a build script": {"tools/build.py": "# changed"},
-            "a workflow": {".github/workflows/ci.yml": "name: changed"},
-            "the theme": {"theme/style.css": "body {}"},
-            "the infrastructure": {"infra/main.bicep": "// changed"},
-            "the deployment guide": {"DEPLOY.md": "changed"},
-            "a setting in the book configuration": {policy.META: other_name},
-        }.items():
+        for name, files, tooling in [
+            ("a build script", {"tools/build.py": "# changed"}, "tools/build.py"),
+            ("a workflow", {".github/workflows/ci.yml": "name: changed"}, ".github/workflows/ci.yml"),
+            ("the theme", {"theme/style.css": "body {}"}, "theme/style.css"),
+            ("the infrastructure", {"infra/main.bicep": "// changed"}, "infra/main.bicep"),
+            ("the deployment guide", {"DEPLOY.md": "changed"}, "DEPLOY.md"),
+            ("a setting in the book configuration", {policy.META: other_name}, policy.META),
+        ]:
             with self.subTest(name):
                 self.retarget(self.commit_on(self.head, files))
-                self.refuse("Separate content from tooling")
+                self.refuse(re.escape(mixed(tooling)))
                 restore()
         with self.subTest("tooling only"):
             self.retarget(self.commit_on(self.base, {"tools/build.py": "# changed"}))
-            self.refuse("Not a content PR")
+            self.refuse(re.escape(tooling_only("tools/build.py")))
+            restore()
+        with self.subTest("a setting in the book configuration only"):
+            self.retarget(self.commit_on(self.base, {policy.META: json.dumps(dict(self.cfg, version="2.2.0",
+                                                                                  file_stem="Other"))}))
+            self.refuse(re.escape(tooling_only(policy.META)))
             restore()
         with self.subTest("a changed chapter without evidence"):
             self.retarget(self.commit_on(self.head, {self.chapter: "# Changed again\n"}))
             self.refuse("Update editorial/01-intro-editorial-log.md")
+
+    def tooling_pull_request(self, files=None):
+        self.retarget(self.commit_on(self.base, files or {"tools/build.py": "# changed\n"}))
+
+    def owner_command(self):
+        return {"comment": {"body": "/release-book " + self.head, "user": {"login": "webmaxru"}},
+                "issue": {"number": 7, "pull_request": {}}}
+
+    def inspect_reports(self, reason):
+        """inspect answers with exactly one warning and a summary line, stays green and writes nothing."""
+        p = self.cli("inspect")
+        self.assertEqual(self.outputs(), {"eligible": "false"})
+        self.assertEqual([line for line in p.stdout.splitlines() if "::warning::" in line], ["::warning::" + reason])
+        self.assertNotIn("PR 7:", p.stdout)
+        self.assertEqual(self.summary(), reason + "\n")
+        self.assertEqual(self.writes, [])
+        return p
+
+    def test_a_release_command_for_a_tooling_pull_request_is_answered_on_a_green_run(self):
+        names = {f"tools/script{i}.py": "# changed\n" for i in range(6)}
+        self.tooling_pull_request(names)
+        reason = tooling_only(*sorted(names)[:5])
+        for name, event in [("a manual dispatch", {"inputs": {"pr": "7"}}), ("the owner's command", self.owner_command())]:
+            with self.subTest(name):
+                self.write("event", json.dumps(event))
+                self.reads.clear()
+                self.inspect_reports(reason)
+                self.assertEqual(set(self.reads) & GATE_READS, set(), "no approval, preflight or main reads")
+
+    def test_a_release_command_for_a_mixed_pull_request_asks_to_split_it(self):
+        self.retarget(self.commit_on(self.head, {"tools/build.py": "# changed\n", "theme/style.css": "body {}"}))
+        self.write("event", json.dumps(self.owner_command()))
+        self.inspect_reports(mixed("theme/style.css", "tools/build.py"))
+        self.assertEqual(set(self.reads) & GATE_READS, set())
+
+    def test_the_owners_approval_of_a_tooling_pull_request_is_answered_on_a_green_run(self):
+        self.tooling_pull_request()
+        reason = tooling_only("tools/build.py")
+
+        def signal(**changes):
+            return {"workflow_run": {"name": "Book approval signal", "event": "pull_request_review",
+                                     "head_sha": self.head, "actor": {"login": "webmaxru"},
+                                     "pull_requests": [{"number": 7}], **changes}}
+
+        self.write("event", json.dumps(signal()))
+        self.reads.clear()
+        self.inspect_reports(reason)
+        self.assertEqual(set(self.reads) & {"actions/workflows/ci.yml/runs", "git/ref/heads/main"}, set())
+        restore = self.checkpoint()
+        for name, event, change in [
+            ("a review by someone else", signal(actor={"login": "someone"}), None),
+            ("an approval of an older head", signal(), lambda: self.reviews.__setitem__(0, review("b" * 40))),
+            ("changes requested", signal(),
+             lambda: self.reviews.__setitem__(0, review(self.head, "CHANGES_REQUESTED"))),
+            ("a signal for an older head", signal(head_sha="b" * 40), None),
+            ("the owner's own pull request", signal(), lambda: (
+                self.pr["user"].update(login="webmaxru"), self.comments.append(owner_comment(self.head)))),
+            ("a finished Book CI run", signal(name="Book CI", event="pull_request"), None),
+            ("an owner comment that names no head", dict(self.owner_command(), comment={
+                "body": "/release-book now", "user": {"login": "webmaxru"}}), None),
+            ("the schedule", {"schedule": "17,47 * * * *"}, None),
+        ]:
+            with self.subTest(name):
+                if change:
+                    change()
+                self.write("event", json.dumps(event))
+                p = self.cli("inspect")
+                self.assertEqual(self.outputs(), {"eligible": "false"})
+                self.assertNotIn("::warning::", p.stdout)
+                self.assertIn("PR 7: " + reason, p.stdout)
+                self.assertEqual((self.summary(), self.writes), ("", []))
+                restore()
+
+    def test_a_scan_passes_over_a_tooling_pull_request_quietly(self):
+        self.tooling_pull_request()
+        self.write("event", json.dumps({"schedule": "17,47 * * * *"}))
+        p = self.cli("inspect")
+        self.assertEqual(self.outputs(), {"eligible": "false"})
+        self.assertNotIn("::warning::", p.stdout)
+        self.assertIn("PR 7: " + tooling_only("tools/build.py"), p.stdout)
+        self.assertEqual((self.summary(), self.writes), ("", []))
+        self.assertEqual(set(self.reads) & GATE_READS, set())
+
+    def test_a_renamed_chapter_counts_its_old_name_and_an_incomplete_file_list_is_refused(self):
+        self.g("switch", "-q", "--detach", self.base)
+        self.g("mv", self.chapter, "tools/intro.md")
+        moved = self.commit()
+        self.g("switch", "-q", "main")
+        self.retarget(moved)
+        self.refuse(re.escape(mixed("tools/intro.md")))
+        self.pr["changed_files"] = 3
+        self.refuse("The changed-file list is incomplete")
+        p = self.cli("inspect")
+        self.assertEqual(self.outputs(), {"eligible": "false"})
+        self.assertIn("PR 7: The changed-file list is incomplete", p.stdout)
+        self.assertNotIn("::warning::", p.stdout)
 
     def test_the_merge_is_conditional_on_the_approved_head(self):
         self.pushed_at_merge = "f" * 40
@@ -1041,9 +1190,10 @@ class Rehearsal(RehearsalBase):
         self.retarget(self.commit_on(self.head, dict.fromkeys(names, evil)))
         p = self.cli("inspect")
         self.assertEqual(self.outputs(), {"eligible": "false"})
-        self.assertIn("PR 7: Separate content from tooling", p.stdout)
+        reason = mixed("git.py", "json.py", "sitecustomize.py", "tools/book_release.py", "tools/release_policy.py")
+        self.assertIn("::warning::" + reason, p.stdout)
         p = self.cli("merge", *self.params, ok=False)
-        self.assertIn("Separate content from tooling", p.stderr)
+        self.assertIn(reason, p.stderr)
         self.assertEqual(self.writes, [])
         self.assertFalse(marker.exists())
         for name in names:
