@@ -221,7 +221,7 @@ fi
 if [ $DO_AZURE = 1 ]; then
   step "GitHub: $SECRET_NAME on $REPO"
   if [ $USE_GH = 1 ] && printf '%s' "$TOKEN" | gh secret set "$SECRET_NAME" --repo "$REPO" >/dev/null; then
-    ok "secret set; pushes to main and releases now deploy through .github/workflows/deploy-swa.yml"
+    ok "secret set; released editions now deploy through .github/workflows/deploy-swa.yml"
   else
     [ $USE_GH = 1 ] && warn "gh could not set the secret (you need admin rights on $REPO)."
     warn "Set it by hand so GitHub can deploy (the token goes to your clipboard, not the screen):"

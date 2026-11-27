@@ -13,7 +13,7 @@ This repository holds the manuscript of *Tools, Not Clicks: Building Agent-Ready
 | [`editorial/`](editorial/) | Editorial logs, one per chapter: the passes each chapter went through and what was checked. |
 | [`infra/`](infra/) | Azure Static Web Apps infrastructure for the web edition, with a one-command deploy. See [`DEPLOY.md`](DEPLOY.md) and [`CUSTOM-DOMAIN.md`](CUSTOM-DOMAIN.md). |
 | [`staticwebapp.config.json`](staticwebapp.config.json) | The web edition's hosting rules and security headers; the site build copies it into `dist/site/`. |
-| [`.github/workflows/`](.github/workflows/) | Book CI, the owner-approval controller, the dispatch-only Release workflow and the web deploy. |
+| [`.github/workflows/`](.github/workflows/) | Book CI, the owner-approval controller (Release approved book), the dispatch-only Release book workflow and the gated web deploy: the [release flow contract](RELEASING.md#book-release-flow-contract-v1) shared by the book repositories. |
 | [`.agents/skills/`](.agents/skills/) | Supporting agent instructions, not book content. |
 | [`CHANGELOG.md`](CHANGELOG.md), [`RELEASING.md`](RELEASING.md) | What changed in each version, and how to cut a release. |
 | [`VALIDATION.md`](VALIDATION.md) | How the second edition was checked against the Chrome documentation, the specification and the WebMCP repository, with every finding and its source. |
@@ -100,11 +100,11 @@ Use [`/update-book check`](.github/prompts/update-book.prompt.md) for a read-onl
 
 - **PDF**, 7 × 9.25 in, for reading, Leanpub and the KDP paperback.
 - **EPUB 3**, checked with EPUBCheck, for Leanpub, KDP (Kindle) and other e-book stores.
-- **Web edition**, deployed to Azure Static Web Apps on every change to `main` and on every release.
+- **Web edition**, deployed to Azure Static Web Apps. Production serves released editions only: each release deploys its own tag, and a push to `main` deploys only while the book content on `main` equals the latest release.
 - [Book CI](.github/workflows/ci.yml) lints the manuscript and builds all three editions on every pull request; the built files are attached to the run.
-- [`RELEASING.md`](RELEASING.md): version numbers, evidence, recovery and rollback. A manual merge bypasses approval and can deploy unreleased content.
+- [`RELEASING.md`](RELEASING.md): the release flow contract shared by the book repositories, this book's settings, version numbers, evidence, recovery and rollback. A manual merge bypasses approval and publishes nothing; the deploy gate keeps its content off the site until a catch-up release.
 
-Version 1.0.0 (15 October 2026) was the first edition and was never tagged. Version 2.0.0 is the first tagged release.
+Version 1.0.0 (15 October 2026) was the first edition. It has no GitHub release, so version 2.0.0 is the first release.
 
 ## Leanpub
 
