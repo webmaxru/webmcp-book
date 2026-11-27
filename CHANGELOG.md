@@ -6,6 +6,12 @@ Each version is a Git tag `vX.Y.Z`. Its GitHub Release carries the PDF, the EPUB
 
 ## [Unreleased]
 
+## [3.1.1] - 2026-11-27
+
+### Fixed
+
+- Listings 5.7, 10.12 and 17.2 catch the synchronous `InvalidStateError` or `NotAllowedError` from `waitForToolsUntil()` and still return the registration promise. The Chapter 10 summary now describes Listing 10.12 as `Promise.allSettled()` with successful registrations left in place. The rollback inside the promise is Listing 5.7.
+
 ## [3.1.0] - 2026-11-27
 
 ### Added

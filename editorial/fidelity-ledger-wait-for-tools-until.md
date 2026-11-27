@@ -2,6 +2,145 @@
 
 Checked 27 November 2026. Branch `spec/wait-for-tools-until`, from `main`.
 
+## Follow-up, book 3.1.1 (27 November 2026)
+
+Corrections after the demo sync of the 3.1.0 listings. No browser run. Listing 17.1 was not edited. The 24 November 2026 draft still throws `InvalidStateError` (document not fully active) and `NotAllowedError` (`tools` feature blocked) synchronously, before the promise is recorded. The `catch` in each listing handles those two names and rethrows anything else. On those two errors the function returns the batch promise.
+
+Sync the **After** blocks below into `webmaxru/webmcp-book-demos`. The 3.1.0 paragraphs later in this file describe the first landing of the method. They are not the files to copy.
+
+### Listing 5.7 — `chapters/05-registering-tools/wait-for-tools.js`
+
+Before (3.1.0):
+
+```js
+// Pass a promise that is still pending. Promise.all() would reject on the
+// first failure and end the wait while other registerTool() calls are running.
+export function registerToolsWhenReady(tools, signal) {
+  const batch = new AbortController();
+  const batchSignal = signal ? AbortSignal.any([signal, batch.signal]) : batch.signal;
+  const toolsUpdated = (async () => {
+    const results = await Promise.allSettled(tools.map((tool) =>
+      document.modelContext.registerTool(tool, { signal: batchSignal })
+    ));
+    if (results.some((result) => result.status === 'rejected')) {
+      batch.abort();
+    }
+    return results;
+  })();
+  document.modelContext.waitForToolsUntil?.(toolsUpdated);
+  return toolsUpdated;
+}
+```
+
+After (3.1.1):
+
+```js
+// Pass a promise that is still pending. Promise.all() would reject on the
+// first failure and end the wait while other registerTool() calls are running.
+export function registerToolsWhenReady(tools, signal) {
+  const batch = new AbortController();
+  const batchSignal = signal ? AbortSignal.any([signal, batch.signal]) : batch.signal;
+  const toolsUpdated = (async () => {
+    const results = await Promise.allSettled(tools.map((tool) =>
+      document.modelContext.registerTool(tool, { signal: batchSignal })
+    ));
+    if (results.some((result) => result.status === 'rejected')) {
+      batch.abort();
+    }
+    return results;
+  })();
+  // A synchronous InvalidStateError or NotAllowedError must not skip the return.
+  try {
+    document.modelContext.waitForToolsUntil?.(toolsUpdated);
+  } catch (err) {
+    if (err?.name !== 'InvalidStateError' && err?.name !== 'NotAllowedError') throw err;
+  }
+  return toolsUpdated;
+}
+```
+
+Rollback behavior is unchanged: a rejected `registerTool()` aborts the batch controller inside `toolsUpdated`.
+
+### Listing 10.12 — `chapters/10-webmcp-in-frameworks/on-route-change.js`
+
+Before (3.1.0). No rollback of the new batch. The function did not return the `Promise.allSettled()` promise. The Chapter 10 summary cited this listing for that rollback. That citation was wrong. Listing 5.7 is the rollback.
+
+```js
+let controller;
+
+export function onRouteChange(route) {
+  // Unregister the previous route's tools.
+  controller?.abort();
+  controller = new AbortController();
+
+  // allSettled, not all: one rejection must not end the wait early.
+  const toolsUpdated = Promise.allSettled(route.tools.map((tool) =>
+    document.modelContext.registerTool(tool, { signal: controller.signal })
+  ));
+
+  document.modelContext.waitForToolsUntil?.(toolsUpdated);
+}
+```
+
+After (3.1.1). Still no rollback of the new batch. A rejected `registerTool()` leaves the tools that succeeded. The function now returns `toolsUpdated`. The Chapter 10 summary and the route-change section point rollback at Listing 5.7.
+
+```js
+let controller;
+
+export function onRouteChange(route) {
+  // Unregister the previous route's tools.
+  controller?.abort();
+  controller = new AbortController();
+
+  // allSettled, not all: one rejection must not end the wait early.
+  // A rejected registerTool() leaves the tools that succeeded.
+  const toolsUpdated = Promise.allSettled(route.tools.map((tool) =>
+    document.modelContext.registerTool(tool, { signal: controller.signal })
+  ));
+
+  // A synchronous InvalidStateError or NotAllowedError must not skip the return.
+  try {
+    document.modelContext.waitForToolsUntil?.(toolsUpdated);
+  } catch (err) {
+    if (err?.name !== 'InvalidStateError' && err?.name !== 'NotAllowedError') throw err;
+  }
+  return toolsUpdated;
+}
+```
+
+### Listing 17.2 — `chapters/17-the-road-ahead/src/adapter.js`
+
+`registerBatch` is unchanged, including its `catch` that aborts the batch before the promise rejects. Listing 17.1’s schema was not edited.
+
+Before (3.1.0), `registerCatalog` only:
+
+```js
+export function registerCatalog(catalog, { signal, exposedTo } = {}) {
+  if (!webmcpAvailable()) return Promise.resolve([]);
+  // The caller awaits this same promise. The catch below aborts before it rejects.
+  const done = registerBatch(catalog, { signal, exposedTo });
+  document.modelContext.waitForToolsUntil?.(done);
+  return done;
+}
+```
+
+After (3.1.1), `registerCatalog` only. The rest of the file matches 3.1.0.
+
+```js
+export function registerCatalog(catalog, { signal, exposedTo } = {}) {
+  if (!webmcpAvailable()) return Promise.resolve([]);
+  // Callers await done. registerBatch aborts the batch before that promise rejects.
+  const done = registerBatch(catalog, { signal, exposedTo });
+  // A synchronous InvalidStateError or NotAllowedError must not skip the return.
+  try {
+    document.modelContext.waitForToolsUntil?.(done);
+  } catch (err) {
+    if (err?.name !== 'InvalidStateError' && err?.name !== 'NotAllowedError') throw err;
+  }
+  return done;
+}
+```
+
 ## Sources actually read
 
 - webmachinelearning/webmcp pull request #373, merged 24 November 2026 at 03:10 UTC (merge commit `47e2b993ea9fd0599ffca3f58588eb3fd5f474f2`). Title: “Signal tool stability with waitForToolsUntil() for user agent observations”. Diff of `index.bs` only. Description: implement the resolution from issue #328, add the IDL and `tools-ready` state, and record that state on an observation. Wiring the wait into `getTools()` and changing `toolchange` dispatch is deferred. The description’s earlier sentence about waiting inside `perform an observation` is not what merged. The merge commit message says “Move tools ready to observed tool collection and drop the wait algorithm”.
@@ -34,11 +173,11 @@ After: caption names the 24 November 2026 draft for `waitForToolsUntil()`. The l
 
 ### Listing 5.7 — new, `chapters/05-registering-tools/wait-for-tools.js`
 
-New file for the demos repo. `registerToolsWhenReady` uses `Promise.allSettled`, aborts a batch controller if any registration rejected, and calls `document.modelContext.waitForToolsUntil?.(toolsUpdated)` while that promise is still pending. Not run on Chromium 156 or Chrome 160. No `TODO` token.
+New file for the demos repo, as of 3.1.0. `registerToolsWhenReady` uses `Promise.allSettled`, aborts a batch controller if any registration rejected, and calls `document.modelContext.waitForToolsUntil?.(toolsUpdated)` while that promise is still pending. Not run on Chromium 156 or Chrome 160. No `TODO` token. The 3.1.1 follow-up at the top of this file wraps that call in `try`. Sync the follow-up’s After block.
 
 ### Listing 10.12 — new, `chapters/10-webmcp-in-frameworks/on-route-change.js`
 
-New file. `onRouteChange` aborts the previous controller, registers `route.tools` with `Promise.allSettled`, and calls `waitForToolsUntil?.`. It does not roll back a partial success. The prose points at Listing 5.7 for that. Not part of the Chromium 156 route suite.
+New file, as of 3.1.0. `onRouteChange` aborts the previous controller, registers `route.tools` with `Promise.allSettled`, and calls `waitForToolsUntil?.`. It does not roll back a partial success. The prose points at Listing 5.7 for that. Not part of the Chromium 156 route suite. The 3.1.0 Chapter 10 summary cited this listing for the rollback. That citation was corrected in 3.1.1. Sync the follow-up’s After block.
 
 ### Listing 15.2 — `chapters/15-browser-support-and-standards/webmcp-support.js`
 
@@ -50,7 +189,7 @@ After: the filter also includes `waitForToolsUntil`. The 2 November Chromium 156
 
 Before: `export async function registerCatalog` awaited each `registerTool` and aborted the batch in `catch`. No readiness call.
 
-After: `registerCatalog` is a non-async function. It returns `registerBatch`’s promise (or `Promise.resolve([])` when WebMCP is absent) and passes that same promise to `waitForToolsUntil?.`. `registerBatch` is the old body. Callers that `await registerCatalog(...)` still receive the array of names, because they await the returned promise. The fourteen checks were not re-run. On a build without the method, `?.` is a no-op.
+After (3.1.0): `registerCatalog` is a non-async function. It returns `registerBatch`’s promise (or `Promise.resolve([])` when WebMCP is absent) and passes that same promise to `waitForToolsUntil?.`. `registerBatch` is the old body. Callers that `await registerCatalog(...)` still receive the array of names, because they await the returned promise. The fourteen checks were not re-run. On a build without the method, `?.` is a no-op. The 3.1.1 follow-up wraps the readiness call in `try` and leaves `registerBatch` as it is. Sync that `registerCatalog`.
 
 ### Listing 17.3 — `chapters/17-the-road-ahead/src/probe.js`
 

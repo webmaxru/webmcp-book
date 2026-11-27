@@ -58,3 +58,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
 ## Pass: waitForToolsUntil (27 November 2026)
 
 Chapter 10 adds the route-change gap and Listing 10.12 (`on-route-change.js`). `usewebmcp`, VueUse and Angular were not re-read for this method. The Chromium 156 route tests were not re-run. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.
+
+## Follow-up: summary and synchronous throw (27 November 2026)
+
+The chapter summary had told the reader to keep a rollback inside the promise and cited Listing 10.12. Listing 10.12 uses `Promise.allSettled()` and leaves a successful sibling registered. The summary and the route-change section now say that, and point the rollback at Listing 5.7. Listing 10.12 wraps `waitForToolsUntil?.()` in `try`, catches `InvalidStateError` and `NotAllowedError`, and returns the `Promise.allSettled()` promise. It did not return that promise in 3.1.0. `usewebmcp`, VueUse and Angular were not re-read. The Chromium 156 route tests were not re-run. The exact listing text is in `editorial/fidelity-ledger-wait-for-tools-until.md`.

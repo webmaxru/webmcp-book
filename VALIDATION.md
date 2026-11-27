@@ -1,5 +1,15 @@
 # Validation report — Tools, Not Clicks
 
+## `waitForToolsUntil` follow-up (27 November 2026)
+
+Book version 3.1.1. Corrections to the 3.1.0 text. No new browser run, and no re-check of the 24 November 2026 draft beyond the method steps already recorded below.
+
+Listing 10.12 uses `Promise.allSettled()` and leaves a successful `registerTool()` in place when a sibling rejects. The rollback inside the promise is Listing 5.7. The Chapter 10 summary, the route-change section, and Appendix A section A.3 now say that. Listing 17.1 was not edited.
+
+Listings 5.7, 10.12 and 17.2 wrap `document.modelContext.waitForToolsUntil?.()` in `try` and catch synchronous `InvalidStateError` and `NotAllowedError`. Any other exception is rethrown. On those two errors the function still returns the batch promise: `toolsUpdated` from `registerToolsWhenReady` and `onRouteChange`, and `done` from `registerCatalog`. `onRouteChange` did not return that promise in 3.1.0. The throws are steps 1 and 2 of `waitForToolsUntil()` in the 24 November 2026 draft. They were not executed.
+
+The listing text is in [editorial/fidelity-ledger-wait-for-tools-until.md](editorial/fidelity-ledger-wait-for-tools-until.md).
+
 ## `waitForToolsUntil` (27 November 2026)
 
 Checked against the published draft of 24 November 2026, `index.bs` on `webmachinelearning/webmcp` `main` (merge commit `47e2b993`, the last commit that touches `index.bs` since the merge), pull request #373 (merged 24 November 2026, 03:10 UTC), and Chromium commit `dc7d570dff77eca05dae42b1fa6e3b816205a94f` (25 November 2026, canary 160.0.8185.0). No Chrome 160 probe was run. The listing ledger is [editorial/fidelity-ledger-wait-for-tools-until.md](editorial/fidelity-ledger-wait-for-tools-until.md).

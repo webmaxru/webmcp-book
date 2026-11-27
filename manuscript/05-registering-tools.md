@@ -603,7 +603,7 @@ On a page that already has `document.modelContext`, call the method only if the 
 document.modelContext.waitForToolsUntil?.(toolsUpdated);
 ```
 
-Before Chrome 160.0.8185.0 that optional call does nothing when `ModelContext` exists and the method does not. If `modelContext` itself may be missing, stay behind the check in Listing 5.3 and do not evaluate `document.modelContext` here.
+Before Chrome 160.0.8185.0 that optional call does nothing when `ModelContext` exists and the method does not. When the method is present it can still throw. Listing 5.7 catches `InvalidStateError` and `NotAllowedError`. If `modelContext` itself may be missing, stay behind the check in Listing 5.3 and do not evaluate `document.modelContext` here.
 
 `Promise.all()` rejects as soon as one `registerTool()` rejects. Rejection is settlement. If that combined promise is the only one you passed, the document becomes ready while the other registrations are still pending. `Promise.allSettled()` waits until every one of them has finished. A retry, or the abort that rolls a partial batch back, has to happen inside the promise you pass. Work that starts after that promise has settled is not covered.
 
@@ -626,12 +626,19 @@ export function registerToolsWhenReady(tools, signal) {
     }
     return results;
   })();
-  document.modelContext.waitForToolsUntil?.(toolsUpdated);
+  // A synchronous InvalidStateError or NotAllowedError must not skip the return.
+  try {
+    document.modelContext.waitForToolsUntil?.(toolsUpdated);
+  } catch (err) {
+    if (err?.name !== 'InvalidStateError' && err?.name !== 'NotAllowedError') throw err;
+  }
   return toolsUpdated;
 }
 ```
 
-The abort that removes the tools which did register is part of `toolsUpdated`, so the wait covers it. Chapter 10 uses the same method when a route changes and the previous route’s tools are aborted first. `toolchange` still fires once per registration and once per unregistration. Issue #374, open on 27 November 2026, asks whether those events should be coalesced. The draft still fires one event per change.[^ch05-52]
+The abort that removes the tools which did register is part of `toolsUpdated`, so the wait covers it when `waitForToolsUntil()` returns. The `registerTool()` calls have already started when `waitForToolsUntil()` runs. The method throws `InvalidStateError` or `NotAllowedError` synchronously, before it records the promise. The `try` handles those two names, so `return toolsUpdated` still runs and the caller receives the batch promise. Any other exception is rethrown.
+
+Chapter 10 uses the same method when a route changes and the previous route’s tools are aborted first. `toolchange` still fires once per registration and once per unregistration. Issue #374, open on 27 November 2026, asks whether those events should be coalesced. The draft still fires one event per change.[^ch05-52]
 
 The method throws. It does not return a rejected promise. A document that is not fully active throws `InvalidStateError`. A document that is not allowed to use `tools` throws `NotAllowedError`. Appendix A puts those next to the other exceptions. Neither throw was in the Chromium 156 probes.
 
@@ -659,7 +666,7 @@ Both tools wrap code Fjord Table already had, both put their results on screen b
 - The schema is stringified at registration and isn’t validated, and neither are calls against it. Whether schemas should become required and browser-validated is an active debate. Validate strictly in code, keep schemas simple and descriptive, and ask only for what the tool needs.
 - `execute(input, { signal })` receives a fresh object parsed from JSON. Its return value is serialized with `JSON.stringify()`: under the draft, `undefined`, `BigInt` and circular values fail (a proposal would turn `undefined` into `"null"`), and thrown errors reach the caller only as `OperationError`. Chromium 156 still says `UnknownError`, returns plain strings without quotes and turns `undefined` into the string `undefined`, and a Chrome documentation co-author has called the Chrome behaviour wrong. Resolve only when the page shows the same state, and return recoverable failures as values the agent can act on.
 - Unregister by aborting the `AbortSignal` passed at registration. One controller can remove many tools, and a view that owns several tools should register them as a batch. Unregistering doesn’t cancel a call that is already running, and changing what the model reads means unregistering and registering again.
-- `waitForToolsUntil(promise)` records that asynchronous registration is still in progress. Call it while the promise is pending. `Promise.allSettled()` covers every registration in the batch. `Promise.all()` can settle, by rejecting, while other registrations are still running. Put a retry or a rollback abort inside that same promise. The method returns `undefined` and throws `InvalidStateError` or `NotAllowedError`. `getTools()` does not wait. The specification’s timeout is implementation-defined. In Chrome 160.0.8185.0 a 10-second timer warns, and the agent observation times out at 10 seconds. The document stays not ready until the promises settle. Feature-detect with `waitForToolsUntil?.()`. None of that was re-tested in this book.
+- `waitForToolsUntil(promise)` records that asynchronous registration is still in progress. Call it while the promise is pending. `Promise.allSettled()` covers every registration in the batch. `Promise.all()` can settle, by rejecting, while other registrations are still running. Put a retry or a rollback abort inside that same promise. The method returns `undefined` and throws `InvalidStateError` or `NotAllowedError` synchronously. Listing 5.7 catches those two and still returns the batch promise. `getTools()` does not wait. The specification’s timeout is implementation-defined. In Chrome 160.0.8185.0 a 10-second timer warns, and the agent observation times out at 10 seconds. The document stays not ready until the promises settle. Feature-detect with `waitForToolsUntil?.()`. None of that was re-tested in this book.
 - Still open: whether `inputSchema` becomes required and who validates it, native checks of `outputSchema` (issue #92), the `undefined` and plain-string results, continuation tokens (an explainer, not yet in the draft or in Chrome), `null` results after navigation, the old `UnknownError` in Chrome, when a new document should start not-ready (issue #328), and small naming questions (`registerTool()`’s return value, empty titles, `execute` versus `run`). The `Tool` interface has merged (Appendix E).
 
 Chapter 6 picks up where this one stops: the four annotation hints Fjord Table has been setting without explanation, the step-by-step lifecycle of a call with its `toolactivated` and `toolcancel` events, cancellation through the per-call signal, and how the platform errors in Table 5.5 reach the caller.

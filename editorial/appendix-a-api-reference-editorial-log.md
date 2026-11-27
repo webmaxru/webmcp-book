@@ -35,3 +35,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
 ## Pass: waitForToolsUntil (27 November 2026)
 
 Appendix A’s IDL is the 24 November 2026 index, including `waitForToolsUntil`. New Section A.3. Old sections A.3–A.10 are now A.4–A.11. The method throws. Those throws were not in the Chromium 156 probes. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.
+
+## Follow-up: listing roles (27 November 2026)
+
+Section A.3 no longer cites Listing 5.7 and Listing 10.12 as the same call. Listing 5.7 is the rollback inside the promise. Listing 10.12 leaves a successful registration in place. The same paragraph says Listings 5.7, 10.12 and 17.2 catch the synchronous `InvalidStateError` or `NotAllowedError`. The IDL excerpt and the numbered steps are unchanged. Not run in a browser.

@@ -47,3 +47,7 @@ The sentence “Here is the listing again, unchanged except for numbered markers
 ## Pass: waitForToolsUntil (27 November 2026)
 
 Chapter 5 is the method’s home. Listing 5.2 adds `undefined waitForToolsUntil(Promise<any> promise)`. New Listing 5.7 (`wait-for-tools.js`) uses `Promise.allSettled` and a rollback inside the passed promise. The 10-second Chrome behavior is a warning plus the actor observation timeout, not the specification’s implementation-defined removal of the promise. Not run in a browser. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.
+
+## Follow-up: synchronous throw (27 November 2026)
+
+Listing 5.7 wraps `waitForToolsUntil?.()` in `try` and catches `InvalidStateError` and `NotAllowedError`. The return of `toolsUpdated` stays outside that `try`. Other exceptions are rethrown. The rollback inside the promise is unchanged. Not run in a browser. The exact listing text is in `editorial/fidelity-ledger-wait-for-tools-until.md`.
