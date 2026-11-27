@@ -36,3 +36,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
   - The parenthetical “I’m a member of that group myself” was removed in the first pass and restored in reconciliation. It is a factual disclosure next to the contributor-license requirement, not a blog aside.
   - “Most first bugs with WebMCP are not logic bugs at all” was already in the chapter and was left as written. The paragraph lists registration mistakes. It does not count them.
   - “Turn the most common bad inputs into new eval cases” was left. It refers to inputs the site’s own `INVALID_ARGUMENT` rate has already counted, not to a general frequency.
+
+## Pass: waitForToolsUntil (27 November 2026)
+
+Chapter 14 records Chrome 160.0.8185.0 as a later canary than the `Tool` build. This chapter’s tests were not re-run. The web-platform-tests directory was not re-counted on 27 November 2026. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.

@@ -30,3 +30,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
 - Generalized: nothing inside a surviving definition. The two deleted entries were the character definitions.
 - Kept on purpose: every B.1 term, Fjord Table, Helpdesk Widget, Ledgerly, Supportly, Test Agent, Trailhead, and “I checked every entry again against the 27 October 2026 draft”. Footnotes untouched. No renumbering.
 - Flags: None. Lars remains a Chapter 1 character outside this assignment. The glossary no longer defines him, per the contract, so a reader of Chapter 1 will not find a B.2 entry. Jonas was never an entry.
+
+## Pass: waitForToolsUntil (27 November 2026)
+
+`ModelContext` has four methods. New entries: tools ready and `waitForToolsUntil()`. The flux note says the draft date is 24 November 2026 and that pull request #375 was still open on 27 November. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.

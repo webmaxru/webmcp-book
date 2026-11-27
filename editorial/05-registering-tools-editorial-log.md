@@ -43,3 +43,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
 ## Reconciliation (22 November 2026)
 
 The sentence “Here is the listing again, unchanged except for numbered markers” and the Listing 5.1 title “Listing 4.1 again, annotated” were inaccurate. Listing 5.1 also declares `outputSchema`, so Listing 4.1 is not a contiguous excerpt of the runnable file. The prose now says that. The code fences were not changed. The listings themselves still need the author’s decision (see the fidelity ledger). “Bottomline:” on the empty-return advice is now “Until it is, always return something…”. The advice is unchanged.
+
+## Pass: waitForToolsUntil (27 November 2026)
+
+Chapter 5 is the method’s home. Listing 5.2 adds `undefined waitForToolsUntil(Promise<any> promise)`. New Listing 5.7 (`wait-for-tools.js`) uses `Promise.allSettled` and a rollback inside the passed promise. The 10-second Chrome behavior is a warning plus the actor observation timeout, not the specification’s implementation-defined removal of the promise. Not run in a browser. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.

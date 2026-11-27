@@ -92,7 +92,9 @@ Figure 17.1 was not redrawn. Its caption remains “as of 2 November 2026”. Th
 | Appendix E | New E.4. The `Tool` build 160.0.8173.0 and the method’s build 160.0.8185.0 are different canaries. |
 | Appendix F | Not superseded. #373 added the method on `document.modelContext`. #375 would move a method of the same signature to `window.toolManager` and was still open on 27 November. |
 | `Book.txt` | Unchanged. No new chapter file. |
-| `CHANGELOG.md` | Unreleased note. Version in `tools/book.json` was not bumped. No browser retest. |
+| `CHANGELOG.md` | Dated section `[3.1.0] - 2026-11-27`. |
+| `tools/book.json` | `version` is `3.1.0`. `chrome_version` stays `156` and `spec_date` stays `27 October 2026`, because this pass did not retest the book and did not re-check every chapter against the 24 November draft. |
+| `README.md` | Word count was regenerated locally. The table was not committed. Release policy rejects `README.md` in a content pull request. |
 | `VALIDATION.md` | Short 27 November evidence block pointing at this ledger. |
 
 ## Flagged

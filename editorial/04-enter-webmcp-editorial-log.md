@@ -42,3 +42,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
 ## Reconciliation (22 November 2026)
 
 Ingrid is now “a guest” / “the guest”, the same treatment as Lars. The Wednesday booking, the party of four, Friday at about seven, the window, and the email interruption stay. The `fetch`-handler aside (“anyone who has maintained…”) was cut. The rejection reason (declaration separated from implementation, sprawling `switch` statements) stays. `guest: 'Ingrid Hansen'` in Chapter 8 is inside a code listing and was not changed.
+
+## Pass: waitForToolsUntil (27 November 2026)
+
+Chapter 4 gains one sentence: the 24 November 2026 draft adds `waitForToolsUntil()` while registration is still running. No new listing. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.

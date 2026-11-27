@@ -67,3 +67,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
 - Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
   - The author’s personal acceptance of a double confirmation on checkout was removed and not replaced with a general claim that the cost is acceptable.
   - A quoted spec note still reads “the lifetime of an specific invocation.” Left as a quotation.
+
+## Pass: waitForToolsUntil (27 November 2026)
+
+Chapter 6 no longer says issue #328 has no decision. Pull request #373 merged the method. `toolchange` is still one event per change. Issue #374 remains open. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.

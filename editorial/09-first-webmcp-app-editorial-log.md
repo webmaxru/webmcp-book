@@ -57,3 +57,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
 - Flags (gaps, unsupported claims, likely factual problems). Write "None" if none.
   - “the practical questions every team asks” is an unsupported universal. It was already in the chapter. Left as written.
   - The closing “Bottomline:” was a blog label. A later check showed it was not a real quotation (the baseline span crossed a fence). The label is gone. The sentence is unchanged: the API calls fit on one screen, and the surrounding work is what makes the app.
+
+## Pass: waitForToolsUntil (27 November 2026)
+
+Chapter 9 adds one sentence after the all-or-nothing rollback. Listing 9.4 was not edited and was not re-run. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.

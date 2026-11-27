@@ -31,3 +31,7 @@ Register override: professional developer book. Blog scaffolding and named ficti
 - Generalized: None.
 - Kept on purpose: “when I last checked”, “for packages I give the npm registry’s own record”, “Two of them carry my name in the byline”, and the bylines “and me”. No Lars, Kari, or Jonas in this file.
 - Flags (gaps, unsupported claims, likely factual problems). Write "None" if none. None.
+
+## Pass: waitForToolsUntil (27 November 2026)
+
+Appendix C’s demo table names Listing 5.7, Listing 10.12 and the Chapter 17 adapter and probe changes. None of those files were executed. Sources and the listing ledger: `editorial/fidelity-ledger-wait-for-tools-until.md`.
