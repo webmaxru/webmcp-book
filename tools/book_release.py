@@ -207,16 +207,21 @@ def newest(api, tag):
     return latest(tag, editions(api))
 
 
-def publish(api, root, n, h, b, m, tag, folder):
-    if release_plan(api, root, n, h, b, m, tag):
-        return False
-    names = asset_names(metadata(root, m), tag)
+def release_files(cfg, tag, folder):
+    names = asset_names(cfg, tag)
     files = sorted(Path(folder).iterdir())
     require({p.name for p in files} == names and all(p.is_file() and p.stat().st_size for p in files),
             "Incomplete build artifact")
     checksums = {hashlib.sha256(p.read_bytes()).hexdigest() + "  " + p.name for p in files
                  if p.name != "SHA256SUMS.txt"}
     require(set((Path(folder) / "SHA256SUMS.txt").read_text().splitlines()) == checksums, "Invalid checksums")
+    return files
+
+
+def publish(api, root, n, h, b, m, tag, folder):
+    if release_plan(api, root, n, h, b, m, tag):
+        return False
+    files = release_files(metadata(root, m), tag, folder)
     notes = release_notes(git(root, "show", f"{m}:CHANGELOG.md"), tag[1:])
     notes = re.sub(r"\]\((?!https?:|#|mailto:)([^)]+)\)", rf"](https://github.com/{api.repo}/blob/{tag}/\1)", notes)
     obj = api.api("git/tags", "POST", {"tag": tag, "message": tag, "object": m, "type": "commit"})
