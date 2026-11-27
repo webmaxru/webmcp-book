@@ -676,7 +676,22 @@ class Rehearsal(RehearsalBase):
         self.refuse("PR moved", head=self.stable)
         self.refuse("PR moved", base=self.stable)
         self.main = self.g("commit-tree", self.base + "^{tree}", "-p", self.base, "-m", "main advanced")
-        self.refuse("main moved")
+        self.refuse(f"its base {self.base[:12]} is behind main {self.main[:12]}")
+
+    def test_an_approved_pull_request_left_behind_by_main_is_reported_until_its_branch_is_updated(self):
+        self.main = self.g("commit-tree", self.base + "^{tree}", "-p", self.base, "-m", "another pull request merged")
+        p = self.cli("inspect")
+        self.assertEqual((self.outputs(), self.writes), ({"eligible": "false"}, []))
+        self.assertIn(f"::warning::PR 7: approved, but its base {self.base[:12]} is behind main", p.stdout)
+        self.assertIn("update the branch from main, then approve the new head", self.summary())
+        updated = self.g("commit-tree", self.head + "^{tree}", "-p", self.main, "-m", "branch updated from main")
+        self.retarget(updated, base=self.main, approve=False)
+        p = self.cli("inspect")
+        self.assertEqual(self.outputs(), {"eligible": "false"})
+        self.assertNotIn("::warning::", p.stdout)
+        self.retarget(updated, base=self.main)
+        self.cli("inspect")
+        self.assertEqual(self.outputs()["eligible"], "true")
 
     def test_a_missing_vetoed_dismissed_or_outdated_approval_blocks_the_merge(self):
         restore = self.checkpoint()

@@ -20,6 +20,10 @@ OWNER = "webmaxru"
 CHECK = "Book release preflight"
 
 
+class Stale(Rejected):
+    """An approved, green pull request that cannot merge until its branch is updated from main."""
+
+
 class GitHub:
     def __init__(self):
         self.repo = os.environ["GITHUB_REPOSITORY"]
@@ -121,6 +125,10 @@ def candidate(api, root, n, head=None, base=None):
     h, b = sha(pr["head"]["sha"]), sha(pr["base"]["sha"])
     require((not head or head == h) and (not base or base == b), "PR moved")
     require(approval(api, pr) and preflight(api, pr), "Missing current owner approval or preflight")
+    tip = sha(api.api("git/ref/heads/main")["object"]["sha"])
+    if tip != b:
+        raise Stale(f"approved, but its base {b[:12]} is behind main {tip[:12]}. The controller only merges an "
+                    "approved head built on current main: update the branch from main, then approve the new head.")
     fetch(root, f"refs/pull/{n}/head")
     require(git(root, "rev-parse", "FETCH_HEAD").strip() == h, "Fetched PR changed")
     require(git(root, "merge-base", b, h).strip() == b, "Head is behind main")
@@ -330,6 +338,10 @@ def main():
         for number in event_numbers(api):
             try:
                 data = candidate(api, args.root, number)
+            except Stale as e:
+                print(f"::warning::PR {number}: {e}", flush=True)
+                summarize(f"PR #{number} is {e}")
+                continue
             except Rejected as e:
                 print(f"PR {number}: {e}")
                 continue

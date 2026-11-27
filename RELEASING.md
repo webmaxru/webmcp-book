@@ -238,7 +238,7 @@ An approval counts only for the head it was given on. A push after approval void
 
 ### 5. The branch is behind `main`
 
-The head must include current `main`. Update it and approve again:
+The head must include current `main`. This typically happens when another pull request merges right after you approve. The controller then skips the PR on every run and reports `PR N is approved, but its base … is behind main …` as a warning and in the run summary. Update the branch and approve the new head again:
 
 ```sh
 gh pr update-branch N
