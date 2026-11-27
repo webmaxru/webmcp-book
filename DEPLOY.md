@@ -70,19 +70,21 @@ No other secrets, variables or Azure credentials are used. The workflow uses onl
 
 ## How GitHub deploys after the first run
 
-`.github/workflows/deploy-swa.yml` builds the site and uploads it with `Azure/static-web-apps-deploy@v1` (pinned to a commit) on:
+`.github/workflows/deploy-swa.yml` builds the site and uploads it with `Azure/static-web-apps-deploy@v1` (pinned to a commit). **Production serves released editions only.** Its first job, `published-source`, decides what may be deployed before anything is built, from the GitHub Releases and tags (`tools/book_release.py`). It runs on:
 
-- a push to `main` that changes `manuscript/`, `theme/`, `tools/`, `staticwebapp.config.json`, `infra/check_site.py` or `CHANGELOG.md`;
-- a published GitHub Release (it builds the release's tag);
-- **Run workflow** in the Actions tab, optionally with a `ref`.
+- **A release.** **Release book** dispatches `deploy-swa` with `ref=vX.Y.Z` right after it publishes a stable version that is the highest one, waits for that run, and checks that its smoke test actually passed. Prereleases do not deploy.
+- **A push to `main`.** It deploys `main` only while its book content equals the latest published release. What counts as book content is defined once, in `tools/release_policy.py`, not as path patterns in the workflow. A theme, tooling or infrastructure change therefore deploys, and unreleased manuscript content does not: when a content PR was merged by hand, the run is skipped (green, with a notice) until a catch-up release publishes it. See [RELEASING.md](RELEASING.md#10-a-manual-merge-by-mistake).
+- **Run workflow** in the Actions tab, with the required `ref`: a published release tag or the full SHA of its commit. Branches, drafts, prereleases and unreleased commits are refused.
 
-The [approved content flow](RELEASING.md) does not rely on a bot merge or tag push triggering another workflow. After publishing a stable release, **Release** dispatches `deploy-swa` with `ref=vX.Y.Z`, waits for that run, and checks that its smoke test actually passed. Prereleases do not deploy. A manual content merge still deploys `main` on push; the live book may therefore be newer than its published version.
+The [approved content flow](RELEASING.md) does not rely on a bot merge or tag push triggering another workflow, which is why **Release book** dispatches the deploy itself.
 
 Without the secret (a fork, a fresh clone), `deploy-swa` skips with a notice. The release controller treats a skipped smoke test as a failed deployment. Runs never overlap (concurrency group `swa-production`). The run summary shows the URL and the status codes of `/` and a missing page.
 
 ## Rolling back
 
-Actions → **deploy-swa** → **Run workflow** → `ref` = the release tag to go back to (for example `v2.0.0`) → Run. It checks out that tag, builds it and uploads it to production. Roll forward the same way with a newer tag, or just push to `main`. Only refs that contain `tools/build.py` (v2.0.0 and later) can be built by this workflow; v1.0.0 was the old GitHub Pages site and was never tagged.
+Actions → **deploy-swa** → **Run workflow** → `ref` = the release tag to go back to (for example `v2.0.0`), or the full SHA of its commit → Run. It checks that the ref is a published release, checks it out, builds it and uploads it to production. A branch, a draft, a prerelease, a bare tag or an unreleased commit is refused. Only refs that contain `tools/build.py` (v2.0.0 and later) can be built by this workflow; v1.0.0 was the old GitHub Pages site and has a tag but no release, so it is refused.
+
+A rollback lasts until the next deploy: the next release, or a push to `main` that the gate allows (its content equals the latest release, as after a tooling merge). Roll forward by running the workflow with a newer release tag. A push to `main` does not roll forward while `main` carries unreleased content, because the gate skips it. The lasting fix for a bad edition is a new version ([RELEASING.md](RELEASING.md#15-a-published-release-is-wrong)).
 
 Locally: `git checkout v2.0.0 && ./infra/deploy.sh --upload-only`.
 
@@ -110,6 +112,6 @@ It deletes the resource group `rg-webmcp-book` with the Static Web App, its doma
 | `infra/main.bicepparam` | Parameters for a direct `az deployment group create` without the script. |
 | `infra/check_site.py` | Pre-upload check (limits, CSP vs. pages); `--update-csp` refreshes the inline-script hashes. |
 | `staticwebapp.config.json` | Headers (CSP, HSTS, nosniff, referrer and permissions policy), caching, the 404 page, MIME types. Copied into `dist/site/` by the build. |
-| `.github/workflows/deploy-swa.yml` | Build + upload on push, release and manual runs. |
+| `.github/workflows/deploy-swa.yml` | The `published-source` gate, then build + upload: a release's own tag, a push to `main` whose content is released, or a manual run of a released ref. |
 | `.github/workflows/infra.yml` | No-login validation of the infra files: Bicep build + lint, PowerShell parse (5.1 and 7), PSScriptAnalyzer, ShellCheck. |
 | `CUSTOM-DOMAIN.md` | webmcp.salnikov.no step by step. |

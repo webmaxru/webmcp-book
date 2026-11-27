@@ -35,8 +35,12 @@ def semver(version):
     return (*map(int, m.groups()[:3]), pre is None, tuple(parts))
 
 
+def is_stable(tag):
+    return bool(re.fullmatch(rf"v{NUMBER}\.{NUMBER}\.{NUMBER}", tag, re.ASCII))
+
+
 def highest_stable(tags):
-    stable = [t for t in tags if re.fullmatch(rf"v{NUMBER}\.{NUMBER}\.{NUMBER}", t, re.ASCII)]
+    stable = [t for t in tags if is_stable(t)]
     require(stable, "No stable book tag")
     return max(stable, key=lambda t: semver(t[1:]))
 
@@ -59,6 +63,19 @@ def allowed(path):
 
 def metadata(root, rev):
     return json.loads(git(root, "show", f"{rev}:{META}"))
+
+
+def unreleased(root, released, head):
+    """Book content in head that differs from a released commit.
+
+    The one definition of "content" behind the production deploy gate: the same allowlist as
+    `allowed`, with tools/book.json compared on its release keys only. Tooling never counts.
+    """
+    old, new = metadata(root, released), metadata(root, head)
+    paths = {p for p in changed(root, released, head) if allowed(p) and p != META}
+    if any((k in old, old.get(k)) != (k in new, new.get(k)) for k in KEYS):
+        paths.add(META)
+    return sorted(paths)
 
 
 def release_notes(text, version):

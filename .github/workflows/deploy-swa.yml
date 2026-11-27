@@ -1,30 +1,29 @@
 name: deploy-swa
+# Production serves released editions only. There are two ways in:
+#   - A push to main deploys main, but only while its book content equals the latest published
+#     release. The published-source job decides (tools/book_release.py published-source; the
+#     content definition lives in tools/release_policy.py, not in this file). Unreleased content,
+#     for example a content PR merged by hand, stays off the site until the controller releases it.
+#   - A manual run deploys a released edition: Actions > deploy-swa > Run workflow > ref = a
+#     published release tag (vX.Y.Z) or the full SHA of its commit. This is the rollback path.
+#     Branches, drafts, prereleases and unreleased commits are refused.
+# The "Release book" workflow dispatches this workflow for its own tag right after publishing.
+#
 # Builds the web edition (python3 tools/build.py site -> dist/site) and uploads it to the
 # Azure Static Web App created by infra/deploy.sh (Free plan). Needs one repository secret,
 # AZURE_STATIC_WEB_APPS_API_TOKEN (the app's deployment token; infra/deploy.sh sets it).
-# Until that secret exists (forks, a fresh clone, PRs) this workflow skips and stays green.
+# Until that secret exists (forks, a fresh clone, PRs) the deploy job skips and the run stays green.
 #
-# Rollback: Actions > deploy-swa > Run workflow > ref = a release tag (e.g. v2.0.0).
 # Only refs that contain tools/build.py (v2.0.0 and later) can be built by this workflow.
 on:
   push:
     branches: [main]
-    paths:
-      - "manuscript/**"
-      - "theme/**"
-      - "tools/**"
-      - "staticwebapp.config.json"
-      - "infra/check_site.py"
-      - "CHANGELOG.md"
-      - ".github/workflows/deploy-swa.yml"
-  release:
-    types: [published]
   workflow_dispatch:
     inputs:
       ref:
-        description: "Tag, branch or commit to build and deploy (empty = the branch selected above). Use a release tag to roll back."
-        required: false
-        default: ""
+        description: "Published release tag (vX.Y.Z) or the full commit SHA of one. Rollback path; anything unreleased is refused."
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -34,13 +33,38 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  published-source:
+    # The gate. It decides from the releases API and the tags (tools/book_release.py), never from path patterns here.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      deploy: ${{ steps.gate.outputs.deploy }}
+      sha: ${{ steps.gate.outputs.sha }}
+      tag: ${{ steps.gate.outputs.tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REF: ${{ inputs.ref }}
+        run: python tools/book_release.py published-source --head "$GITHUB_SHA" --ref "$REF"
+
   deploy:
-    runs-on: ubuntu-latest
+    needs: published-source
+    if: github.ref == 'refs/heads/main' && needs.published-source.outputs.deploy == 'true'
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       HAS_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN != '' }}
-      # release: the release's tag; dispatch: the ref input or the selected branch; push: the commit.
-      DEPLOY_REF: ${{ github.event_name == 'release' && github.event.release.tag_name || inputs.ref || github.sha }}
+      # The commit and the release edition the gate approved: main itself for a push, the release commit for a manual run.
+      DEPLOY_REF: ${{ needs.published-source.outputs.sha }}
+      EDITION: ${{ needs.published-source.outputs.tag }}
     steps:
       - name: Skip until the Static Web App exists
         if: env.HAS_TOKEN != 'true'
@@ -117,6 +141,7 @@ jobs:
           {
             echo "## Web edition deployed"
             echo
+            echo "- Edition: \`$EDITION\`"
             echo "- Ref: \`$DEPLOY_REF\`"
             echo "- URL: $SITE"
             echo "- \`/\` -> $code, missing page -> $missing (expected 200 and 404)"

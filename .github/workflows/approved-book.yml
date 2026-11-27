@@ -1,4 +1,4 @@
-name: Approved book
+name: Release approved book
 on:
   workflow_run:
     workflows: [Book approval signal, Book CI]

@@ -325,7 +325,7 @@ try {
       $prev = $ErrorActionPreference
       $ErrorActionPreference = 'Continue'
       try { $setOut = $token | & gh secret set $SecretName --repo $Repo 2>&1; $setCode = $LASTEXITCODE } finally { $ErrorActionPreference = $prev }
-      if ($setCode -eq 0) { Write-Ok 'secret set; pushes to main and releases now deploy through .github/workflows/deploy-swa.yml'; $manual = $false }
+      if ($setCode -eq 0) { Write-Ok 'secret set; released editions now deploy through .github/workflows/deploy-swa.yml'; $manual = $false }
       else { Write-Warn2 ("gh could not set the secret (admin rights on {0} needed): {1}" -f $Repo, (($setOut | ForEach-Object { "$_" }) -join ' ')) }
     }
     if ($manual) {
